@@ -1,0 +1,19 @@
+<?php
+/**
+ * Fired during plugin deactivation.
+ *
+ * This class defines all code necessary to run during the plugin's deactivation.
+ */
+class CF7_AntiSpam_Deactivator {
+
+	public static function deactivate() {
+
+		global $wpdb;
+
+		$wpdb->query( "DROP TABLE IF EXISTS ". $wpdb->prefix ."cf7_antispam_wordlist" );
+
+		delete_option("brb_db_version");
+		delete_option("brb_options");
+	}
+
+}
