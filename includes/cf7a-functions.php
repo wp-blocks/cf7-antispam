@@ -25,7 +25,7 @@ function cf7a_reverse_ipv4( $ip ) {
 }
 
 function cf7a_reverse_ipv6( $ip ) {
-	$ip = expand( $ip );
+	$ip = cf7a_expand_ipv6( $ip );
 	// remove ":" and reverse the string then
 	// add a dot for each digit
 	return implode( '.', str_split( strrev( str_replace( ":", "", $ip ) ) ) );
@@ -68,4 +68,20 @@ function cf7a_crypt( $value , $cipher = "aes-256-cbc" ) {
 
 function cf7a_decrypt( $value , $cipher = "aes-256-cbc" ) {
 	return openssl_decrypt( $value , $cipher, wp_salt('nonce'), $options=0, substr(wp_salt('nonce'), 0, 16) );
+}
+
+function microtimeFloat() {
+	list($usec, $sec) = explode(' ', microtime());
+	return (float) $usec + (float) $sec;
+}
+
+function formatRating($rating) {
+	if ($rating === false) {
+		return '<span style="color:red">could not calculate spaminess</span>';
+	}
+
+	$red   = floor(255 * $rating);
+	$green = floor(255 * (1 - $rating));
+	return "<span style=\"color:rgb($red, $green, 0);\"><b>" . sprintf("%5f", $rating)
+	       . "</b></span>";
 }

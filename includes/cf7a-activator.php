@@ -30,8 +30,8 @@ class CF7_AntiSpam_Activator {
 		  PRIMARY KEY (`token`)
 		) $charset_collate;";
 
-		$cf7a_database_version = "INSERT INTO `b8_wordlist` (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
-		$cf7a_database_texts = "INSERT INTO `b8_wordlist` (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
+		$cf7a_database_version = "INSERT INTO " . $wpdb->prefix . "cf7_antispam_wordlist (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
+		$cf7a_database_texts = "INSERT INTO " . $wpdb->prefix . "cf7_antispam_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
@@ -40,7 +40,7 @@ class CF7_AntiSpam_Activator {
 		dbDelta( $cf7a_database_texts );
 	}
 
-	public static function activate() {
+ 	public static function activate() {
 
 		// https://codex.wordpress.org/Creating_Tables_with_Plugins
 		$installed_ver = get_option( "cf7a_db_version" );
@@ -69,7 +69,6 @@ class CF7_AntiSpam_Activator {
 				),
 			) );
 		}
-
 	}
 
 }

@@ -57,19 +57,26 @@ class CF7_AntiSpam {
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/cf7a-i18n.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-i18n.php';
 
 		/**
 		 * The class responsible for defining frontend functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/cf7a-frontend.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-frontend.php';
+
+		/**
+		 * The class responsible for defining antispam functionality
+		 * of the plugin.
+		 */
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
 
 		/**
 		 * The class responsible for defining admin backend functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/admin.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin.php';
 
 		$this->loader = new CF7_AntiSpam_Loader();
 	}
@@ -99,7 +106,11 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_admin() {
-		new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
+
+		if (is_admin()) {
+			new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
+			new CF7_AntiSpam_Admin_Tools();
+		}
 	}
 
 	/**
@@ -114,12 +125,29 @@ class CF7_AntiSpam {
 	}
 
 	/**
+	 * Register all of the hooks related to the frontend area functionality
+	 * of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function load_antispam() {
+		new CF7_AntiSpam_Frontend();
+	}
+
+	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
 	 * @since    1.0.0
 	 */
 	public function run() {
-		$this->loader->run();
+		if ( defined( 'WPCF7_VERSION' ) ) {
+			$this->loader->run();
+		} else {
+			add_action('admin_notices', function () {
+				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __("CF7 AntiSpam needs Contact Form 7 Activated in order to work", "cf7-antispam" ) );
+			});
+		}
 	}
 
 	/**

@@ -1,6 +1,5 @@
 <?php
 
-require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-functions.php';
 require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-customizations.php';
 
 /**

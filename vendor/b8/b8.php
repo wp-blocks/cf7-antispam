@@ -30,11 +30,12 @@
 namespace b8;
 
 spl_autoload_register(
-    function ($class) {
-        $parts = explode('\\', $class);
-        require_once __DIR__ . DIRECTORY_SEPARATOR . $parts[1]
-                     . DIRECTORY_SEPARATOR . $parts[2] . '.php';
-    }
+	function ($class) {
+		$parts = explode('\\', $class);
+		if (isset($parts[1])) {
+			require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8' . DIRECTORY_SEPARATOR . $parts[1] . DIRECTORY_SEPARATOR . $parts[2] . '.php';
+		}
+	}
 );
 
 class b8
@@ -74,22 +75,25 @@ class b8
     private $degenerator = null;
     private $token_data  = null;
 
-    /**
-     * Constructs b8
-     *
-     * @access public
-     * @param array b8's configuration: [ 'lexer'        => string,
-                                          'degenerator'  => string,
-                                          'storage'      => string,
-                                          'use_relevant' => int,
-                                          'min_dev'      => float,
-                                          'rob_s'        => float,
-                                          'rob_x'        => float ]
-     * @param array The storage backend's config (depending on the backend used)
-     * @param array The lexer's config (depending on the lexer used)
-     * @param array The degenerator's config (depending on the degenerator used)
-     * @return void
-     */
+	/**
+	 * Constructs b8
+	 *
+	 * @access public
+	 *
+	 * @param array b8's configuration: [ 'lexer'        => string,
+	 * 'degenerator'  => string,
+	 * 'storage'      => string,
+	 * 'use_relevant' => int,
+	 * 'min_dev'      => float,
+	 * 'rob_s'        => float,
+	 * 'rob_x'        => float ]
+	 * @param array The storage backend's config (depending on the backend used)
+	 * @param array The lexer's config (depending on the lexer used)
+	 * @param array The degenerator's config (depending on the degenerator used)
+	 *
+	 * @throws \Exception
+	 * @return void
+	 */
     function __construct(array $config             = [],
                          array $config_storage     = [],
                          array $config_lexer       = [],

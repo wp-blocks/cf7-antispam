@@ -1,39 +1,45 @@
 <?php
 /*
-Plugin Name: CF7_AntiSpam
-Description: A trustworthy message storage plugin for Contact Form 7.
-Author: Takayuki Miyoshi
-Text Domain: cf7a
+Plugin Name: Contact Form 7 AntiSpam
+Description: A trustworthy antispam plugin for Contact Form 7.
+Author: codekraft
+Text Domain: cf7-antispam
 Domain Path: /languages/
-Version: 2.2.1
+Version: 0.0.1
 */
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {die;}
 
 
-// PLUGIN CONSTANTS
+// CONSTANTS
 define( 'CF7ANTISPAM_VERSION', '0.0.1' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
-define( 'CF7ANTISPAM_PLUGIN_BASENAME',
-	plugin_basename( CF7ANTISPAM_PLUGIN ) );
+define( 'CF7ANTISPAM_PLUGIN_BASENAME', plugin_basename( CF7ANTISPAM_PLUGIN ) );
 
-define( 'CF7ANTISPAM_PLUGIN_DIR',
-	untrailingslashit( dirname( CF7ANTISPAM_PLUGIN ) ) );
+define( 'CF7ANTISPAM_PLUGIN_DIR', untrailingslashit( dirname( CF7ANTISPAM_PLUGIN ) ) );
+
 
 // OPTIONS
 if ( ! defined( 'CF7ANTISPAM_security_level' ) ) {
 	define( 'CF7ANTISPAM_security_level', "standard" );
 }
 
+// PLUGIN
+
+/**
+ * CF7-AntiSpam functions
+ */
+require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-functions.php';
+
 /**
  * The code that runs during plugin activation.
  */
 function activate_cf7_antispam() {
-	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-importer-activator.php';
-	CF7A_Activator::activate();
+	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
+	CF7_AntiSpam_Activator::activate();
 }
 register_activation_hook( CF7ANTISPAM_PLUGIN, 'activate_cf7_antispam' );
 
@@ -42,15 +48,10 @@ register_activation_hook( CF7ANTISPAM_PLUGIN, 'activate_cf7_antispam' );
  */
 function deactivate_cf7_antispam() {
 	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-deactivator.php';
-	CF7A_Deactivator::deactivate();
+	CF7_AntiSpam_Deactivator::deactivate();
 }
 register_deactivation_hook( CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
 
-
-/**
- * CF7-AntiSpam core functions
- */
-require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-functions.php';
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -59,14 +60,10 @@ require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-functions.php';
 require CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-core.php';
 
 /**
- * Init
+ * Initialize the plugin once all other plugins have finished loading.
  */
 function run_cf7a() {
 	$cf7a = new CF7_AntiSpam();
 	$cf7a->run();
 }
-
-/**
- * Initialize the plugin once all other plugins have finished loading.
- */
 add_action( 'init', 'run_cf7a', 0 );

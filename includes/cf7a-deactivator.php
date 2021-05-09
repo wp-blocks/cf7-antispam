@@ -12,8 +12,8 @@ class CF7_AntiSpam_Deactivator {
 
 		$wpdb->query( "DROP TABLE IF EXISTS ". $wpdb->prefix ."cf7_antispam_wordlist" );
 
-		delete_option("brb_db_version");
-		delete_option("brb_options");
+		delete_option("cf7a_db_version");
+		delete_option("cf7a_options");
 	}
 
 }
