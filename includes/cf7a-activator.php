@@ -56,6 +56,9 @@ class CF7_AntiSpam_Activator {
 				"check_email" => true,
 				"check_dnsbl" => true,
 				"check_badwords" => true,
+				"enable_b8" => true,
+				"mail_send_time_min" => 3,
+				"mail_send_time_max" => 3600,
 				"dnsbl_list" => array(
 					'dnsbl-1.uceprotect.net',
 					'dnsbl-2.uceprotect.net',
@@ -63,9 +66,12 @@ class CF7_AntiSpam_Activator {
 					'zen.spamhaus.org',
 					'bogons.cymru.com'
 				),
-				"badwords_list" => array(
+				"bad_words_list" => array(
 					'viagra',
 					'bitcoin'
+				),
+				"bad_email_strings" => array(
+					str_replace( array( 'http://', 'https://' ), "", get_site_url() ) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
 				),
 			) );
 		}
