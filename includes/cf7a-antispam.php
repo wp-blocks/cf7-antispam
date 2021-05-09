@@ -3,10 +3,6 @@
 // the spam filter
 add_filter( 'wpcf7_spam', function ( $spam ) {
 
-	if ( $spam ) {
-		return $spam;
-	}
-
 	// the database
 	global $wpdb;
 
@@ -204,55 +200,27 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 		}
 
 		$text = stripslashes($message);
-		$postedText = htmlentities($text, ENT_QUOTES, 'UTF-8');
-		$action = "Classify";
 
-		switch($action) {
-			case 'Classify':
-				error_log('CF7 Antispam Mail Spaminess: ' . $b8->classify($text) );
-				break;
+		if ( $spam ) {
+			$ratingBefore = $b8->classify($text);
+			$b8->learn($text, b8\b8::SPAM);
+			$ratingAfter = $rating = $b8->classify($text);
+			error_log('Classification before learning: ' . $ratingBefore );
+			error_log('Classification after learning: ' . $ratingAfter );
+		} else {
+			$rating = $b8->classify($text);
+			error_log('CF7 Antispam Mail Spaminess: ' . $rating );
+		}
 
-			case 'Save as Spam':
-				$ratingBefore = $b8->classify($text);
-				$b8->learn($text, b8\b8::SPAM);
-				$ratingAfter = $b8->classify($text);
+		if ($rating > 0.9) {
+			error_log( "D8 detect spamminess of $rating while the minimum is > 0.9 so this mail will be marked as spam" );
 
-				echo "<p>Saved the text as Spam</p>\n\n";
-				echo "<div><table>\n";
-				echo '<tr><td>Classification before learning:</td><td>' . formatRating($ratingBefore)
-				     . "</td></tr>\n";
-				echo '<tr><td>Classification after learning:</td><td>'  . formatRating($ratingAfter)
-				     . "</td></tr>\n";
-				echo "</table></div>\n\n";
+			$spam = true;
 
-				break;
-
-			case 'Save as Ham':
-				$ratingBefore = $b8->classify($text);
-				$b8->learn($text, b8\b8::HAM);
-				$ratingAfter = $b8->classify($text);
-
-				echo "<p>Saved the text as Ham</p>\n\n";
-
-				echo "<div><table>\n";
-				echo '<tr><td>Classification before learning:</td><td>' . formatRating($ratingBefore)
-				     . "</td></tr>\n";
-				echo '<tr><td>Classification after learning:</td><td>'  . formatRating($ratingAfter)
-				     . "</td></tr>\n";
-				echo "</table></div>\n\n";
-
-				break;
-
-			case 'Delete from Spam':
-				$b8->unlearn($text, b8\b8::SPAM);
-				echo "<p style=\"color:green\">Deleted the text from Spam</p>\n\n";
-				break;
-
-			case 'Delete from Ham':
-				$b8->unlearn($text, b8\b8::HAM);
-				echo "<p style=\"color:green\">Deleted the text from Ham</p>\n\n";
-				break;
-
+			$submission->add_spam_log( array(
+				'agent'  => 'dnsbl_listed',
+				'reason' => "$remote_ip listed in the dnsbl IPv6 $dnsbl",
+			) );
 		}
 
 		$mem_used      = round(memory_get_usage() / 1048576, 5);
@@ -262,7 +230,6 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 		error_log( "CF7 Antispam stats : \r\nMemory: $mem_used \r\nPeak memory: $peak_mem_used \r\nTime Elapsed: $time_taken" );
 
 	}
-
 
 	return $spam;
 

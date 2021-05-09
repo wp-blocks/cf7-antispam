@@ -60,11 +60,20 @@ class CF7_AntiSpam_Activator {
 				"mail_send_time_min" => 3,
 				"mail_send_time_max" => 3600,
 				"dnsbl_list" => array(
-					'dnsbl-1.uceprotect.net',
-					'dnsbl-2.uceprotect.net',
-					'dnsbl.sorbs.net',
-					'zen.spamhaus.org',
-					'bogons.cymru.com'
+					// ipv4 dnsbl
+					"dnsbl-1.uceprotect.net",
+					"dnsbl-2.uceprotect.net",
+					// "dnsbl-3.uceprotect.net", // too much aggressive, use with caution
+					"dnsbl.sorbs.net",
+					"spam.dnsbl.sorbs.net",
+					"zen.spamhaus.org",
+					"bl.spamcop.net",
+					"b.barracudacentral.org",
+					"dnsbl.dronebl.org",
+					"ips.backscatterer.org",
+					// ipv6 dnsbl
+					"bogons.cymru.com",
+					"bl.ipv6.spameatingmonkey.net",
 				),
 				"bad_words_list" => array(
 					'viagra',
