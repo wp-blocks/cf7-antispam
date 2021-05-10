@@ -53,12 +53,13 @@ class CF7_AntiSpam_Activator {
 		/* If the options do not exist then create them*/
 		if ( false == get_option( 'cf7a_options' ) ) {
 			add_option( 'cf7a_options', array(
+				"check_time" => true,
 				"check_email" => true,
 				"check_dnsbl" => true,
-				"check_badwords" => true,
+				"check_bad_words" => true,
 				"enable_b8" => true,
-				"mail_send_time_min" => 3,
-				"mail_send_time_max" => 3600,
+				"check_time_min" => 3,
+				"check_time_max" => 3600,
 				"dnsbl_list" => array(
 					// ipv4 dnsbl
 					"dnsbl-1.uceprotect.net",

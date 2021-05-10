@@ -14,6 +14,8 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	// Get the submitted data
 	$submission = WPCF7_Submission::get_instance();
 
+	// error_log( print_r($submission, true) );
+
 	// this plugin options
 	$options = get_option('cf7a_options', array() );
 
@@ -76,7 +78,6 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 			'agent'  => 'timestamp_issue',
 			'reason' => "Sender send the email in $time_elapsed. Too little to complete this form!",
 		) );
-
 	}
 
 	/**
@@ -94,7 +95,6 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 			'agent'  => 'timestamp_issue',
 			'reason' => "Sender send the email in $time_elapsed. Too much time to complete this form or the timestamp was hacked!",
 		) );
-
 	}
 
 	/**
@@ -205,21 +205,21 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 			$ratingBefore = $b8->classify($text);
 			$b8->learn($text, b8\b8::SPAM);
 			$ratingAfter = $rating = $b8->classify($text);
-			error_log('Classification before learning: ' . $ratingBefore );
-			error_log('Classification after learning: ' . $ratingAfter );
+			error_log('CF7 Antispam - Classification before learning: ' . $ratingBefore );
+			error_log('CF7 Antispam - Classification after learning: ' . $ratingAfter );
 		} else {
 			$rating = $b8->classify($text);
 			error_log('CF7 Antispam Mail Spaminess: ' . $rating );
 		}
 
 		if ($rating > 0.9) {
-			error_log( "D8 detect spamminess of $rating while the minimum is > 0.9 so this mail will be marked as spam" );
+			error_log( "CF7 Antispam - D8 detect spamminess of $rating while the minimum is > 0.9 so this mail will be marked as spam" );
 
 			$spam = true;
 
 			$submission->add_spam_log( array(
-				'agent'  => 'dnsbl_listed',
-				'reason' => "$remote_ip listed in the dnsbl IPv6 $dnsbl",
+				'agent'  => 'd8_spam_detected',
+				'reason' => "d8 spam detected",
 			) );
 		}
 
