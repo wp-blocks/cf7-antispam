@@ -104,6 +104,73 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings', // Page
 			'cf7a_bad_words' // Section
 		);
+
+
+		// Section Bad Words
+		add_settings_section( 'cf7a_bad_email_strings', // ID
+			__('Bad email strings', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_section_bad_email_strings' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings check_time
+		add_settings_field( 'check_bad_email_strings', // ID
+			__('Check the message for prohibited words', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_check_bad_email_strings_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bad_email_strings' // Section
+		);
+
+		// Settings check_time
+		add_settings_field( 'bad_email_strings_list', // ID
+			__('Bad words List', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_bad_email_strings_list_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bad_email_strings' // Section
+		);
+
+
+
+
+		// Section DNSBL
+		add_settings_section( 'cf7a_dnsbl', // ID
+			__('DNS Blacklists', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_dnsbl' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings check_time
+		add_settings_field( 'check_dnsbl', // ID
+			__('Check IP on DNS blocklist', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_check_dnsbl_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_dnsbl' // Section
+		);
+
+		// Settings check_time
+		add_settings_field( 'dnsbl_list', // ID
+			__('DNS blocklist servers', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_dnsbl_list_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_dnsbl' // Section
+		);
+
+
+
+		// Section b8
+		add_settings_section( 'cf7a_b8', // ID
+			__('B8 statistical "Bayesian" spam filter', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_b8' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings check_time
+		add_settings_field( 'enable_b8', // ID
+			__('Enable b8', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_enable_b8_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_b8' // Section
+		);
 	}
 
 	public function cf7a_print_section_check_time() {
@@ -112,6 +179,18 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_section_bad_words() {
 		print '<p>Check if the mail message contains bad words</p>';
+	}
+
+	public function cf7a_print_section_bad_email_strings() {
+		print '<p>Check if the sender mail contains a prohibited text</p>';
+	}
+
+	public function cf7a_print_dnsbl() {
+		print '<p>Check sender ip on DNS Blacklists</p>';
+	}
+
+	public function cf7a_print_b8() {
+		print '<p>tells you whether a text is spam or not, using statistical text analysis of the text message</p>';
 	}
 
 	/**
@@ -125,6 +204,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// get the existing options
 		// $new_input = $this->options;
 
+		// elapsed time
 		$new_input['check_time'] =  isset( $input['check_time'] ) ? 1 : 0 ;
 
 		if ( isset( $input['check_time_min'] ) ) {
@@ -134,12 +214,29 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['check_time_max'] = intval( $input['check_time_max'] );
 		}
 
-
+		// bad words
 		$new_input['check_bad_words'] =  isset( $input['check_bad_words'] ) ? 1 : 0 ;
 
 		if ( isset( $input['bad_words_list'] ) ) {
 			$new_input['bad_words_list'] = explode("\r\n",sanitize_text_field( $input['bad_words_list'] ));
 		}
+
+		// email strings
+		$new_input['check_bad_email_strings'] =  isset( $input['check_bad_email_strings'] ) ? 1 : 0 ;
+
+		if ( isset( $input['bad_email_strings_list'] ) ) {
+			$new_input['bad_email_strings_list'] = explode("\r\n",sanitize_text_field( $input['bad_email_strings_list'] ));
+		}
+
+		// dnsbl
+		$new_input['check_dnsbl'] =  isset( $input['check_dnsbl'] ) ? 1 : 0 ;
+
+		if ( isset( $input['dnsbl_list'] ) ) {
+			$new_input['dnsbl_list'] = explode("\r\n",sanitize_text_field( $input['dnsbl_list'] ));
+		}
+
+		// b8
+		$new_input['enable_b8'] =  isset( $input['enable_b8'] ) ? 1 : 0 ;
 
 		// store the sanitized options
 		return $new_input;
@@ -182,4 +279,38 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
+	public function cf7a_check_bad_email_strings_callback() {
+		printf(
+			'<input type="checkbox" id="check_bad_email_strings" name="cf7a_options[check_bad_email_strings]" %s />',
+			isset( $this->options['check_bad_email_strings'] ) && $this->options['check_bad_email_strings'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_bad_email_strings_list_callback() {
+		printf(
+			'<textarea id="bad_email_strings_list" name="cf7a_options[bad_email_strings_list]" />%s</textarea>',
+			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? implode("\r\n", $this->options['bad_email_strings_list'] ) : ''
+		);
+	}
+
+
+	public function cf7a_check_dnsbl_callback() {
+		printf(
+			'<input type="checkbox" id="check_dnsbl" name="cf7a_options[check_dnsbl]" %s />',
+			isset( $this->options['check_dnsbl'] ) && $this->options['check_dnsbl'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_dnsbl_list_callback() {
+		printf(
+			'<textarea id="dnsbl_list" name="cf7a_options[dnsbl_list]" />%s</textarea>',
+			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? implode("\r\n", $this->options['dnsbl_list'] ) : ''
+		);
+	}
+
+
+	public function cf7a_enable_b8_callback() {
+		printf(
+			'<input type="checkbox" id="enable_b8" name="cf7a_options[enable_b8]" %s />',
+			isset( $this->options['enable_b8'] ) && $this->options['enable_b8'] == 1 ? 'checked="true"' : ''
+		);
+	}
 }
