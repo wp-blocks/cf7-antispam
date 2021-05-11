@@ -54,12 +54,13 @@ class CF7_AntiSpam_Activator {
 		if ( false == get_option( 'cf7a_options' ) ) {
 			add_option( 'cf7a_options', array(
 				"check_time" => true,
+				"check_time_min" => 3,
+				"check_time_max" => 3600,
 				"check_bad_words" => true,
 				"check_bad_email_strings" => true,
 				"check_dnsbl" => true,
 				"enable_b8" => true,
-				"check_time_min" => 3,
-				"check_time_max" => 3600,
+				"b8_threshold" => 0.95,
 				"bad_words_list" => array(
 					'viagra',
 					'bitcoin'

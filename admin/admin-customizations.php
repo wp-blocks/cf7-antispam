@@ -139,7 +139,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings' // Page
 		);
 
-		// Settings check_time
+		// Enable DNS Blacklist list
 		add_settings_field( 'check_dnsbl', // ID
 			__('Check IP on DNS blocklist', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_dnsbl_callback' ), // Callback
@@ -147,7 +147,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_dnsbl' // Section
 		);
 
-		// Settings check_time
+		// DNS Blacklist server list
 		add_settings_field( 'dnsbl_list', // ID
 			__('DNS blocklist servers', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_dnsbl_list_callback' ), // Callback
@@ -164,10 +164,18 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings' // Page
 		);
 
-		// Settings check_time
+		// Enable b8
 		add_settings_field( 'enable_b8', // ID
 			__('Enable b8', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_enable_b8_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_b8' // Section
+		);
+
+		// Settings check_time
+		add_settings_field( 'b8_threshold', // ID
+			__('b8 spam threshold', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_b8_threshold_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_b8' // Section
 		);
@@ -218,25 +226,28 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_bad_words'] =  isset( $input['check_bad_words'] ) ? 1 : 0 ;
 
 		if ( isset( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = explode("\r\n",sanitize_text_field( $input['bad_words_list'] ));
+			$new_input['bad_words_list'] = explode("<br/>",sanitize_textarea_field( $input['bad_words_list'] ));
 		}
 
 		// email strings
 		$new_input['check_bad_email_strings'] =  isset( $input['check_bad_email_strings'] ) ? 1 : 0 ;
 
 		if ( isset( $input['bad_email_strings_list'] ) ) {
-			$new_input['bad_email_strings_list'] = explode("\r\n",sanitize_text_field( $input['bad_email_strings_list'] ));
+			$new_input['bad_email_strings_list'] = explode("<br/>",sanitize_textarea_field( $input['bad_email_strings_list'] ));
 		}
 
 		// dnsbl
 		$new_input['check_dnsbl'] =  isset( $input['check_dnsbl'] ) ? 1 : 0 ;
 
 		if ( isset( $input['dnsbl_list'] ) ) {
-			$new_input['dnsbl_list'] = explode("\r\n",sanitize_text_field( $input['dnsbl_list'] ));
+			$new_input['dnsbl_list'] = explode("<br/>",sanitize_textarea_field( $input['dnsbl_list'] ));
 		}
 
 		// b8
 		$new_input['enable_b8'] =  isset( $input['enable_b8'] ) ? 1 : 0 ;
+
+		$threshold = floatval($input['b8_threshold']);
+		$new_input['b8_threshold'] = ($threshold > 0 && $threshold < 1) ? $threshold : 1;
 
 		// store the sanitized options
 		return $new_input;
@@ -274,7 +285,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_words_list_callback() {
 		printf(
 			'<textarea id="bad_words_list" name="cf7a_options[bad_words_list]" />%s</textarea>',
-			isset( $this->options['bad_words_list'] ) && is_array($this->options['bad_words_list']) ? implode("\r\n", $this->options['bad_words_list'] ) : ''
+			isset( $this->options['bad_words_list'] ) && is_array($this->options['bad_words_list']) ? implode("<br/>", $this->options['bad_words_list'] ) : ''
 		);
 	}
 
@@ -288,7 +299,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_email_strings_list_callback() {
 		printf(
 			'<textarea id="bad_email_strings_list" name="cf7a_options[bad_email_strings_list]" />%s</textarea>',
-			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? implode("\r\n", $this->options['bad_email_strings_list'] ) : ''
+			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? implode("<br/>", $this->options['bad_email_strings_list'] ) : ''
 		);
 	}
 
@@ -302,7 +313,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_dnsbl_list_callback() {
 		printf(
 			'<textarea id="dnsbl_list" name="cf7a_options[dnsbl_list]" />%s</textarea>',
-			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? implode("\r\n", $this->options['dnsbl_list'] ) : ''
+			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? implode("<br/>", $this->options['dnsbl_list'] ) : ''
 		);
 	}
 
@@ -311,6 +322,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="enable_b8" name="cf7a_options[enable_b8]" %s />',
 			isset( $this->options['enable_b8'] ) && $this->options['enable_b8'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_b8_threshold_callback() {
+		printf(
+			'<input type="number" id="b8_threshold" name="cf7a_options[b8_threshold]" value="%s" min="0" max="1" step="0.01" /> <small>(0-1)</small>',
+			isset( $this->options['b8_threshold'] ) ? esc_attr( $this->options['b8_threshold']) : 'none'
 		);
 	}
 }
