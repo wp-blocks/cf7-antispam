@@ -6,7 +6,7 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	// the database
 	global $wpdb;
 
-	$options = get_option('my_plugin_options', array() );
+	$options = get_option( 'my_plugin_options', array() );
 
 	// Time Counter
 	$time_elapsed = null;
@@ -16,10 +16,10 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	// error_log( print_r($submission, true) );
 
 	// this plugin options
-	$options = get_option('cf7a_options', array() );
+	$options = get_option( 'cf7a_options', array() );
 
 	// check the timestamp
-	$timestamp                       = intval(cf7a_decrypt($_POST['_wpcf7_form_creation_timestamp']));
+	$timestamp                       = intval( cf7a_decrypt( $_POST['_wpcf7_form_creation_timestamp'] ) );
 	$submission_minimum_time_elapsed = 3;
 	$submission_maximum_time_elapsed = 3600;
 
@@ -32,16 +32,16 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	// Get the contact form additional data
 	$contact_form = $submission->get_contact_form();
 
-	$email = $contact_form->pref( 'flamingo_email' );
+	$email   = $contact_form->pref( 'flamingo_email' );
 	$subject = $contact_form->pref( 'flamingo_subject' );
 	$message = $contact_form->pref( 'flamingo_message' );
 
-	$message_compressed = str_replace( " ", "", strtolower($message) );
+	$message_compressed = str_replace( " ", "", strtolower( $message ) );
 
 	// check the remote ip
 	$remote_ip = $submission->get_meta( 'remote_ip' );
 
-	$remote_ip = cf7a_decrypt($_POST['_wpcf7_real_sender_ip']);
+	$remote_ip = cf7a_decrypt( $_POST['_wpcf7_real_sender_ip'] );
 	$remote_ip = filter_var( $remote_ip, FILTER_VALIDATE_IP ) ? $remote_ip : '';
 
 	// TESTING
@@ -51,7 +51,7 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	// $remote_ip = "2a00:23c6:f508:7b00:41aa:8900:7785:3824"; //test ipv6 ok
 
 	// B8 config
-	$mysql = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+	$mysql = new mysqli( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
 
 	$config_b8      = array( 'storage' => 'mysql' );
 	$config_storage = array(
@@ -59,8 +59,8 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 		'table'    => $wpdb->prefix . 'cf7_antispam_wordlist'
 	);
 
-	$b8_threshold = floatval($options['b8_threshold']);
-	$b8_threshold = ($b8_threshold > 0 && $b8_threshold < 1) ? $b8_threshold : 1;
+	$b8_threshold = floatval( $options['b8_threshold'] );
+	$b8_threshold = ( $b8_threshold > 0 && $b8_threshold < 1 ) ? $b8_threshold : 1;
 
 	// We use the default lexer settings
 	$config_lexer = [];
@@ -113,7 +113,7 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	if ( $options['check_bad_email_strings'] && $email ) {
 		foreach ( $bad_email_strings as $bad_email_string ) {
 
-			if ( false !== stripos( strtolower($email), strtolower( $bad_email_string ) ) ) {
+			if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
 				$spam = true;
 
 				error_log( "The sender mail domain is the same of the website - {$email} contains $bad_email_string" );
@@ -193,7 +193,7 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	 * B8 is a statistical "Bayesian" spam filter
 	 * https://nasauber.de/opensource/b8/
 	 */
-	if ($options['enable_b8'] && $message) {
+	if ( $options['enable_b8'] && $message ) {
 
 		$time_elapsed = microtimeFloat();
 
@@ -202,23 +202,23 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 
 		# Create a new b8 instance
 		try {
-			$b8 = new b8\b8($config_b8, $config_storage, $config_lexer, $config_degenerator);
-		} catch(Exception $e) {
+			$b8 = new b8\b8( $config_b8, $config_storage, $config_lexer, $config_degenerator );
+		} catch ( Exception $e ) {
 			error_log( 'CF7 Antispam error message: ' . $e->getMessage() );
 			exit();
 		}
 
-		$text = stripslashes($message);
-		$rating = $b8->classify($text);
-		error_log('CF7 Antispam - Classification before learning: ' . $rating );
+		$text   = stripslashes( $message );
+		$rating = $b8->classify( $text );
+		error_log( 'CF7 Antispam - Classification before learning: ' . $rating );
 
-		if ( $spam || $rating > $b8_threshold) {
-			$b8->learn($text, b8\b8::SPAM);
-			$ratingAfter = $rating = $b8->classify($text);
-			error_log('CF7 Antispam - Classification after learning: ' . $ratingAfter );
+		if ( $spam || $rating > $b8_threshold ) {
+			$b8->learn( $text, b8\b8::SPAM );
+			$ratingAfter = $rating = $b8->classify( $text );
+			error_log( 'CF7 Antispam - Classification after learning: ' . $ratingAfter );
 		}
 
-		if ($rating > $b8_threshold) {
+		if ( $rating > $b8_threshold ) {
 
 			error_log( "CF7 Antispam - D8 detect spamminess of $rating while the minimum is > $b8_threshold so this mail will be marked as spam" );
 
@@ -229,19 +229,19 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 				'reason' => "d8 spam detected",
 			) );
 
-		} else if ($rating > ($b8_threshold * .5)) {
+		} else if ( $rating > ( $b8_threshold * .5 ) ) {
 
 			error_log( "CF7 Antispam - D8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so this mail will be marked as ham" );
 
 			// the mail was classified as ham so we let learn to d8 what is considered (a probable) ham
-			$b8->learn($text, b8\b8::HAM);
-			$ratingAfter = $rating = $b8->classify($text);
-			error_log('CF7 Antispam - Classification after learning: ' . $ratingAfter );
+			$b8->learn( $text, b8\b8::HAM );
+			$ratingAfter = $rating = $b8->classify( $text );
+			error_log( 'CF7 Antispam - Classification after learning: ' . $ratingAfter );
 		}
 
-		$mem_used      = round(memory_get_usage() / 1048576, 5);
-		$peak_mem_used = round(memory_get_peak_usage() / 1048576, 5);
-		$time_taken    = round(microtimeFloat() - $time_elapsed, 5);
+		$mem_used      = round( memory_get_usage() / 1048576, 5 );
+		$peak_mem_used = round( memory_get_peak_usage() / 1048576, 5 );
+		$time_taken    = round( microtimeFloat() - $time_elapsed, 5 );
 
 		error_log( "CF7 Antispam stats : Memory: $mem_used - Peak memory: $peak_mem_used - Time Elapsed: $time_taken" );
 
