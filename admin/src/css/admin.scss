@@ -1,0 +1,60 @@
+body.contact_page_wpcf7-antispam {
+  
+  .dashicons.dashicons-shield-alt {
+    font-weight: inherit;
+    font-size: 24px;
+    width: 24px;
+    margin: 0 5px 0 0;
+    padding: 0;
+    line-height: 1.3;
+    color: #666;
+  
+    position: relative;
+    transform-style: preserve-3d;
+    animation: spin 30s linear;
+  }
+  
+  form {
+    
+    // input style
+    h2 {
+      padding-top: 24px;
+      border-top: 1px solid #eee;
+      margin-top: 32px;
+      margin-bottom: 4px;
+      
+      + p {
+        margin-top: 0;
+        color: #666
+      }
+    }
+    
+    // remove the border for the first subtitle
+    input[type="hidden"] + h2 {
+      margin-top: 0;
+      border: 0;
+    }
+    
+    // input style
+    textarea {
+      width: 100%;
+      min-height: 160px;
+    }
+    
+  }
+  
+}
+
+@keyframes spin {
+  90%{
+    color: #666;
+    transform: rotateY(0deg);
+  }
+  95%{
+    color: #ff5722
+  }
+  100% {
+    color: #666;
+    transform: rotateY(180deg);
+  }
+}
