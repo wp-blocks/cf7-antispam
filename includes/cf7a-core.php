@@ -106,11 +106,14 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_admin() {
-
 		if (is_admin()) {
-			new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
+			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 			new CF7_AntiSpam_Admin_Tools();
+
+			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		}
+
 	}
 
 	/**
@@ -121,17 +124,6 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_frontend() {
-		new CF7_AntiSpam_Frontend();
-	}
-
-	/**
-	 * Register all of the hooks related to the frontend area functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function load_antispam() {
 		new CF7_AntiSpam_Frontend();
 	}
 

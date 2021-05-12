@@ -6,8 +6,6 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	// the database
 	global $wpdb;
 
-	$options = get_option( 'my_plugin_options', array() );
-
 	// Time Counter
 	$time_elapsed = null;
 
@@ -114,6 +112,7 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 		foreach ( $bad_email_strings as $bad_email_string ) {
 
 			if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
+
 				$spam = true;
 
 				error_log( "The sender mail domain is the same of the website - {$email} contains $bad_email_string" );
@@ -213,30 +212,26 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 		error_log( 'CF7 Antispam - Classification before learning: ' . $rating );
 
 		if ( $spam || $rating > $b8_threshold ) {
+
 			$b8->learn( $text, b8\b8::SPAM );
-			$ratingAfter = $rating = $b8->classify( $text );
-			error_log( 'CF7 Antispam - Classification after learning: ' . $ratingAfter );
-		}
 
-		if ( $rating > $b8_threshold ) {
+			if ($rating > $b8_threshold) {
+				error_log( "CF7 Antispam - D8 detect spamminess of $rating while the minimum is > $b8_threshold so this mail will be marked as spam" );
 
-			error_log( "CF7 Antispam - D8 detect spamminess of $rating while the minimum is > $b8_threshold so this mail will be marked as spam" );
+				$spam = true;
 
-			$spam = true;
+				$submission->add_spam_log( array(
+					'agent'  => 'd8_spam_detected',
+					'reason' => "d8 spam detected",
+				) );
+			}
 
-			$submission->add_spam_log( array(
-				'agent'  => 'd8_spam_detected',
-				'reason' => "d8 spam detected",
-			) );
-
-		} else if ( $rating > ( $b8_threshold * .5 ) ) {
+		} else if ( $rating < ( $b8_threshold * .5 ) ) {
 
 			error_log( "CF7 Antispam - D8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so this mail will be marked as ham" );
 
 			// the mail was classified as ham so we let learn to d8 what is considered (a probable) ham
 			$b8->learn( $text, b8\b8::HAM );
-			$ratingAfter = $rating = $b8->classify( $text );
-			error_log( 'CF7 Antispam - Classification after learning: ' . $ratingAfter );
 		}
 
 		$mem_used      = round( memory_get_usage() / 1048576, 5 );
