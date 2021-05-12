@@ -11,8 +11,6 @@ class CF7_AntiSpam_Admin_Customizations {
 	public $options;
 
 	public function __construct() {
-		// the menu item
-		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 99, 0 );
 		// the plugin main menu
 		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
 
@@ -20,25 +18,11 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/**
-	 * the CF7 AntiSpam upload folder to store csv files
+	 * the CF7 AntiSpam options
 	 * @return string
 	 */
 	public static function get_options() {
 		return get_option( 'cf7a_options' );
-	}
-
-
-	public function cf7a_admin_menu() {
-
-		$addnew = add_submenu_page( 'wpcf7', __( 'Antispam', 'cf7-antispam' ), __( 'Antispam', 'cf7-antispam' ), 'wpcf7_edit_contact_forms', 'wpcf7-antispam', array( $this, 'cf7a_admin_dashboard' ) );
-
-		add_action( 'load-' . $addnew, 'wpcf7_load_contact_form_admin', 10, 0 );
-	}
-
-	public function cf7a_admin_dashboard() {
-		require CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
-		print_r("options<br/>");
-		print_r($this->options);
 	}
 
 
@@ -226,21 +210,21 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_bad_words'] =  isset( $input['check_bad_words'] ) ? 1 : 0 ;
 
 		if ( isset( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = explode("<br/>",sanitize_textarea_field( $input['bad_words_list'] ));
+			$new_input['bad_words_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_words_list'] ));
 		}
 
 		// email strings
 		$new_input['check_bad_email_strings'] =  isset( $input['check_bad_email_strings'] ) ? 1 : 0 ;
 
 		if ( isset( $input['bad_email_strings_list'] ) ) {
-			$new_input['bad_email_strings_list'] = explode("<br/>",sanitize_textarea_field( $input['bad_email_strings_list'] ));
+			$new_input['bad_email_strings_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_email_strings_list'] ));
 		}
 
 		// dnsbl
 		$new_input['check_dnsbl'] =  isset( $input['check_dnsbl'] ) ? 1 : 0 ;
 
 		if ( isset( $input['dnsbl_list'] ) ) {
-			$new_input['dnsbl_list'] = explode("<br/>",sanitize_textarea_field( $input['dnsbl_list'] ));
+			$new_input['dnsbl_list'] = explode("\r\n",sanitize_textarea_field( $input['dnsbl_list'] ));
 		}
 
 		// b8
@@ -285,7 +269,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_words_list_callback() {
 		printf(
 			'<textarea id="bad_words_list" name="cf7a_options[bad_words_list]" />%s</textarea>',
-			isset( $this->options['bad_words_list'] ) && is_array($this->options['bad_words_list']) ? implode("<br/>", $this->options['bad_words_list'] ) : ''
+			isset( $this->options['bad_words_list'] ) && is_array($this->options['bad_words_list']) ? implode("\r\n", $this->options['bad_words_list'] ) : ''
 		);
 	}
 
@@ -299,7 +283,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_email_strings_list_callback() {
 		printf(
 			'<textarea id="bad_email_strings_list" name="cf7a_options[bad_email_strings_list]" />%s</textarea>',
-			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? implode("<br/>", $this->options['bad_email_strings_list'] ) : ''
+			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? implode("\r\n", $this->options['bad_email_strings_list'] ) : ''
 		);
 	}
 
@@ -313,7 +297,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_dnsbl_list_callback() {
 		printf(
 			'<textarea id="dnsbl_list" name="cf7a_options[dnsbl_list]" />%s</textarea>',
-			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? implode("<br/>", $this->options['dnsbl_list'] ) : ''
+			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? implode("\r\n", $this->options['dnsbl_list'] ) : ''
 		);
 	}
 

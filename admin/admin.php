@@ -41,6 +41,72 @@ class CF7_AntiSpam_Admin {
 	 * @param      string $version The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
+
+		$this->plugin_name = $plugin_name;
+		$this->version     = $version;
+
+		// the menu item
+		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 99, 0 );
+
+		if ( defined( 'FLAMINGO_VERSION' ) ) {
+			add_action( 'flamingo_admin_updated_message', 'cf7a_d8_classify_spam', 99, 1 );
+		}
+
 		new CF7_AntiSpam_Admin_Customizations();
+	}
+
+
+	public function cf7a_admin_menu() {
+		$addnew = add_submenu_page( 'wpcf7', __( 'Antispam', 'cf7-antispam' ), __( 'Antispam', 'cf7-antispam' ), 'wpcf7_edit_contact_forms', 'wpcf7-antispam', array( $this, 'cf7a_admin_dashboard' ) );
+
+		add_action( 'load-' . $addnew, 'wpcf7_load_contact_form_admin', 10, 0 );
+	}
+
+	public function cf7a_admin_dashboard() {
+		require CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
+	}
+
+	/**
+	 * Register the stylesheets for the admin area.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_styles() {
+
+		/**
+		 *
+		 * An instance of this class should be passed to the run() function
+		 * defined in load_admin as all of the hooks are defined
+		 * in that particular class.
+		 *
+		 * The load_admin will then create the relationship
+		 * between the defined hooks and the functions defined in this
+		 * class.
+		 */
+
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/style.css', array(), $this->version, 'all' );
+
+	}
+
+	/**
+	 * Register the JavaScript for the admin area.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_scripts() {
+
+		/**
+		 *
+		 * An instance of this class should be passed to the run() function
+		 * defined in load_admin as all of the hooks are defined
+		 * in that particular class.
+		 *
+		 * The load_admin will then create the relationship
+		 * between the defined hooks and the functions defined in this
+		 * class.
+		 */
+
+		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/script.js', array( 'jquery' ), $this->version, true );
+
 	}
 }
