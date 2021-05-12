@@ -2,6 +2,6 @@
 
 	'use strict';
 
-	console.log('CF7-AntiSpam ready!');
+	console.log('CF7-AntiSpam is ready!');
 
 } )( jQuery );
