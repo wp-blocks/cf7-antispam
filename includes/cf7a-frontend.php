@@ -39,7 +39,6 @@ class CF7_AntiSpam_Frontend {
 
 		if (isset($this->options['check_bot_fingerprint'])) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting') , 100, 1 );
-			add_action( "wp_enqueue_scripts" , 'enqueue_script' , 1);
 		}
 	}
 
