@@ -39,17 +39,20 @@ class CF7_AntiSpam_b8 {
 		}
 	}
 
-	public function cf7a_b8_classify($message) {
+	public function cf7a_b8_classify($message, $verbose = false) {
 		$time_elapsed = microtimeFloat();
 
 		$rating = $this->b8->classify( $message );
-		error_log( 'CF7 Antispam - Classification before learning: ' . $rating );
 
-		$mem_used      = round( memory_get_usage() / 1048576, 5 );
-		$peak_mem_used = round( memory_get_peak_usage() / 1048576, 5 );
-		$time_taken    = round( microtimeFloat() - $time_elapsed, 5 );
+		if ($verbose) {
+			error_log( 'CF7 Antispam - Classification: ' . $rating );
 
-		error_log( "CF7 Antispam stats : Memory: $mem_used - Peak memory: $peak_mem_used - Time Elapsed: $time_taken" );
+			$mem_used      = round( memory_get_usage() / 1048576, 5 );
+			$peak_mem_used = round( memory_get_peak_usage() / 1048576, 5 );
+			$time_taken    = round( microtimeFloat() - $time_elapsed, 5 );
+
+			error_log( "CF7 Antispam stats : Memory: $mem_used - Peak memory: $peak_mem_used - Time Elapsed: $time_taken" );
+		}
 
 		return $rating;
 	}
@@ -135,6 +138,17 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	 * Check if the time to submit the email il lower than expected
 	 */
 	if ( $options['check_time'] ) {
+		if ($timestamp == 0) {
+			$spam = true;
+
+			error_log( "_wpcf7a_timestamp field is missing, probable form hacking attempt" );
+
+			$submission->add_spam_log( array(
+				'agent'  => 'timestamp_issue',
+				'reason' => "_wpcf7a_timestamp field is missing, probable form hacking attempt",
+			) );
+		}
+
 		if ( $timestamp_submitted <= ( $timestamp + $submission_minimum_time_elapsed ) ) {
 
 			$spam = true;
