@@ -66,4 +66,4 @@ function run_cf7a() {
 	$cf7a = new CF7_AntiSpam();
 	$cf7a->run();
 }
-add_action( 'init', 'run_cf7a', 0 );
+add_action( 'init', 'run_cf7a', 11 );
