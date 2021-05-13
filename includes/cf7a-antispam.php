@@ -88,7 +88,7 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	$options = get_option( 'cf7a_options', array() );
 
 	// check the timestamp
-	$timestamp                       = intval( cf7a_decrypt( $_POST['_wpcf7_form_creation_timestamp'] ) );
+	$timestamp                       = isset($_POST['_wpcf7a_form_creation_timestamp']) ? intval( cf7a_decrypt( $_POST['_wpcf7a_form_creation_timestamp'] ) ) : 0;
 	$timestamp_submitted             = $submission->get_meta( 'timestamp' );
 	$submission_minimum_time_elapsed = 3;
 	$submission_maximum_time_elapsed = 3600;
@@ -115,8 +115,8 @@ add_filter( 'wpcf7_spam', function ( $spam ) {
 	// check the remote ip
 	$remote_ip = $submission->get_meta( 'remote_ip' );
 
-	$remote_ip = cf7a_decrypt( $_POST['_wpcf7_real_sender_ip'] );
-	$remote_ip = filter_var( $remote_ip, FILTER_VALIDATE_IP ) ? $remote_ip : '';
+	$real_remote_ip = cf7a_decrypt( $_POST['_wpcf7a_real_sender_ip'] );
+	$real_remote_ip = filter_var( $remote_ip, FILTER_VALIDATE_IP ) ? $remote_ip : '';
 
 	// TESTING
 	// $remote_ip = "93.57.247.109"; //test ipv4
