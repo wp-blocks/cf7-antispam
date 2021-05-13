@@ -46,11 +46,7 @@ class CF7_AntiSpam_Admin {
 		$this->version     = $version;
 
 		// the menu item
-		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 99, 0 );
-
-		if ( defined( 'FLAMINGO_VERSION' ) ) {
-			add_action( 'flamingo_admin_updated_message', 'cf7a_d8_classify_spam', 99, 1 );
-		}
+		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
 
 		new CF7_AntiSpam_Admin_Customizations();
 	}

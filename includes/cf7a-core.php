@@ -112,8 +112,9 @@ class CF7_AntiSpam {
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-		}
 
+			add_action( 'load-flamingo_page_flamingo_inbound', 'cf7a_d8_classify_spam', 9, 0 );
+		}
 	}
 
 	/**
