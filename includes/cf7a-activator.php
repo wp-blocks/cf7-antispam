@@ -53,6 +53,7 @@ class CF7_AntiSpam_Activator {
 		/* If the options do not exist then create them*/
 		if ( false == get_option( 'cf7a_options' ) ) {
 			add_option( 'cf7a_options', array(
+				"check_bot_fingerprint" => true,
 				"check_time" => true,
 				"check_time_min" => 3,
 				"check_time_max" => 3600,
@@ -70,7 +71,9 @@ class CF7_AntiSpam_Activator {
 					str_replace( array( 'http://', 'https://' ), "", get_site_url() ) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
 				),
 				"bad_user_agent_list" => array(
-					'bot'
+					'bot',
+					'puppeteer',
+					'phantom',
 				),
 				"dnsbl_list" => array(
 					// ipv4 dnsbl

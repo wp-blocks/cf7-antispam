@@ -16,6 +16,33 @@
 class CF7_AntiSpam {
 
 	/**
+	 * The ID of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string $plugin_name The ID of this plugin.
+	 */
+	private $plugin_name;
+
+	/**
+	 * The version of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string $version The current version of this plugin.
+	 */
+	private $version;
+
+	/**
+	 * The options of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   public
+	 * @var      array    $options    options of this plugin.
+	 */
+	private $options;
+
+	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
 	 *
@@ -34,15 +61,16 @@ class CF7_AntiSpam {
 
 		$this->plugin_name = 'contact-form-7-antispam';
 
+		$this->options = $this->get_options(); // the plugin options
+
 		$this->load_dependencies();
 		$this->set_locale();
 
 		// the admin area
-		if( is_admin() ){
-			$this->load_admin();
-		} else {
-			$this->load_frontend();
-		}
+		$this->load_admin();
+
+		// the frontend area
+		$this->load_frontend();
 	}
 
 	private function load_dependencies() {
@@ -108,12 +136,14 @@ class CF7_AntiSpam {
 	private function load_admin() {
 		if (is_admin()) {
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
+
 			new CF7_AntiSpam_Admin_Tools();
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-			add_action( 'load-flamingo_page_flamingo_inbound', 'cf7a_d8_classify_spam', 9, 0 );
+			// if flamingo is enabled use submitted spam / ham to feed d8
+			if ( defined( 'FLAMINGO_VERSION' ) ) add_action( 'load-flamingo_page_flamingo_inbound', 'cf7a_d8_classify', 9, 0 );
 		}
 	}
 
@@ -125,7 +155,14 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_frontend() {
-		new CF7_AntiSpam_Frontend();
+		if (!is_admin()) {
+			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
+
+			if (isset($this->options['check_bot_fingerprint'])) {
+				$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'enqueue_scripts' );
+			}
+
+		}
 	}
 
 	/**
@@ -155,6 +192,16 @@ class CF7_AntiSpam {
 	}
 
 	/**
+	 * Retrieve the version number of the plugin.
+	 *
+	 * @since     1.0.0
+	 * @return    string    The version number of the plugin.
+	 */
+	public function get_version() {
+		return $this->version;
+	}
+
+	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
@@ -165,12 +212,10 @@ class CF7_AntiSpam {
 	}
 
 	/**
-	 * Retrieve the version number of the plugin.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The version number of the plugin.
+	 * the CF7 AntiSpam options
+	 * @return string
 	 */
-	public function get_version() {
-		return $this->version;
+	public static function get_options() {
+		return get_option( 'cf7a_options' );
 	}
 }

@@ -14,17 +14,8 @@ class CF7_AntiSpam_Admin_Customizations {
 		// the plugin main menu
 		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
 
-		$this->options = $this->get_options(); // the plugin options
+		$this->options = CF7_AntiSpam::get_options(); // the plugin options
 	}
-
-	/**
-	 * the CF7 AntiSpam options
-	 * @return string
-	 */
-	public static function get_options() {
-		return get_option( 'cf7a_options' );
-	}
-
 
 	public function cf7a_options_init() {
 
@@ -32,6 +23,23 @@ class CF7_AntiSpam_Admin_Customizations {
 		register_setting( 'cf7_antispam_options', // Option group
 			'cf7a_options', // Option name
 			array( $this, 'cf7a_sanitize' ) // Sanitize
+		);
+
+
+
+		// Section Bot Fingerprint
+		add_settings_section( 'cf7a_bot_fingerprint', // ID
+			__('Bot Fingerprinting', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_section_bot_fingerprint' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings bot_fingerprint
+		add_settings_field( 'check_bot_fingerprint', // ID
+			__('Enable anti-bot checks', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_check_bot_fingerprint_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bot_fingerprint' // Section
 		);
 
 
@@ -193,6 +201,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	public function cf7a_print_section_bot_fingerprint() {
+		print '<p>Enable some extra check to detect bot activity</p>';
+	}
 	public function cf7a_print_section_check_time() {
 		print '<p>This test the submission time</p>';
 	}
@@ -227,7 +238,10 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_sanitize( $input ) {
 
 		// get the existing options
-		// $new_input = $this->options;
+		$new_input = $this->options;
+
+		// elapsed time
+		$new_input['check_bot_fingerprint'] =  isset( $input['check_bot_fingerprint'] ) ? 1 : 0 ;
 
 		// elapsed time
 		$new_input['check_time'] =  isset( $input['check_time'] ) ? 1 : 0 ;
@@ -280,6 +294,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * Get the settings option array and print one of its values
 	 */
+	public function cf7a_check_bot_fingerprint_callback() {
+		printf(
+			'<input type="checkbox" id="check_bot_fingerprint" name="cf7a_options[check_bot_fingerprint]" %s />',
+			isset( $this->options['check_bot_fingerprint'] ) && $this->options['check_bot_fingerprint'] == 1 ? 'checked="true"' : ''
+		);
+	}
 	public function cf7a_check_time_callback() {
 		printf(
 			'<input type="checkbox" id="check_time" name="cf7a_options[check_time]" %s />',
