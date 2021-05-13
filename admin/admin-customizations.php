@@ -34,6 +34,8 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_sanitize' ) // Sanitize
 		);
 
+
+
 		// Section Time Checks
 		add_settings_section( 'cf7a_time_elapsed', // ID
 			__('Time checks', 'cf7-antispam'), // Title
@@ -66,6 +68,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 
+
 		// Section Bad Words
 		add_settings_section( 'cf7a_bad_words', // ID
 			__('Bad words', 'cf7-antispam'), // Title
@@ -90,14 +93,15 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 
-		// Section Bad Words
+
+		// Section Bad Email Strings
 		add_settings_section( 'cf7a_bad_email_strings', // ID
 			__('Bad email strings', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_print_section_bad_email_strings' ), // Callback
 			'cf7a-settings' // Page
 		);
 
-		// Settings check_time
+		// Settings check_bad_email_strings
 		add_settings_field( 'check_bad_email_strings', // ID
 			__('Check the message for prohibited words', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_bad_email_strings_callback' ), // Callback
@@ -105,7 +109,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bad_email_strings' // Section
 		);
 
-		// Settings check_time
+		// Settings bad_email_strings_list
 		add_settings_field( 'bad_email_strings_list', // ID
 			__('Bad words List', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_bad_email_strings_list_callback' ), // Callback
@@ -113,6 +117,30 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bad_email_strings' // Section
 		);
 
+
+
+		// Section User Agent
+		add_settings_section( 'cf7a_user_agent', // ID
+			__('User Agent blacklist', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_user_agent' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Enable User Agent Blacklist
+		add_settings_field( 'check_bad_user_agent', // ID
+			__('Enable User Agent blacklist', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_check_user_agent_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_user_agent' // Section
+		);
+
+		// User Agent Blacklist list
+		add_settings_field( 'bad_user_agent_list', // ID
+			__('disallowed user agents', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_user_agent_list_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_user_agent' // Section
+		);
 
 
 
@@ -177,6 +205,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		print '<p>Check if the sender mail contains a prohibited text</p>';
 	}
 
+
+	public function cf7a_print_user_agent() {
+		print '<p>Check the User Agent if is listed into blacklist</p>';
+	}
+
 	public function cf7a_print_dnsbl() {
 		print '<p>Check sender ip on DNS Blacklists</p>';
 	}
@@ -218,6 +251,13 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		if ( isset( $input['bad_email_strings_list'] ) ) {
 			$new_input['bad_email_strings_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_email_strings_list'] ));
+		}
+
+		// user_agent
+		$new_input['check_bad_user_agent'] =  isset( $input['check_bad_user_agent'] ) ? 1 : 0 ;
+
+		if ( isset( $input['bad_user_agent_list'] ) ) {
+			$new_input['bad_user_agent_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_user_agent_list'] ));
 		}
 
 		// dnsbl
@@ -284,6 +324,20 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<textarea id="bad_email_strings_list" name="cf7a_options[bad_email_strings_list]" />%s</textarea>',
 			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? implode("\r\n", $this->options['bad_email_strings_list'] ) : ''
+		);
+	}
+
+
+	public function cf7a_check_user_agent_callback() {
+		printf(
+			'<input type="checkbox" id="check_bad_user_agent" name="cf7a_options[check_bad_user_agent]" %s />',
+			isset( $this->options['check_bad_user_agent'] ) && $this->options['check_bad_user_agent'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_user_agent_list_callback() {
+		printf(
+			'<textarea id="bad_user_agent_list" name="cf7a_options[bad_user_agent_list]" />%s</textarea>',
+			isset( $this->options['bad_user_agent_list'] ) && is_array($this->options['bad_user_agent_list']) ? implode("\r\n", $this->options['bad_user_agent_list'] ) : ''
 		);
 	}
 

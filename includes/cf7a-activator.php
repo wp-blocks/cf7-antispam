@@ -58,6 +58,7 @@ class CF7_AntiSpam_Activator {
 				"check_time_max" => 3600,
 				"check_bad_words" => true,
 				"check_bad_email_strings" => true,
+				"check_bad_user_agent" => true,
 				"check_dnsbl" => true,
 				"enable_b8" => true,
 				"b8_threshold" => 0.95,
@@ -67,6 +68,9 @@ class CF7_AntiSpam_Activator {
 				),
 				"bad_email_strings_list" => array(
 					str_replace( array( 'http://', 'https://' ), "", get_site_url() ) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
+				),
+				"bad_user_agent_list" => array(
+					'bot'
 				),
 				"dnsbl_list" => array(
 					// ipv4 dnsbl
