@@ -139,6 +139,10 @@ class CF7_AntiSpam {
 		// the spam filter
 		add_filter( 'wpcf7_spam', array($plugin_antispam, 'cf7a_spam_filter'), 10, 1 );
 
+		if ( defined( 'FLAMINGO_VERSION' ) ) {
+			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_d8_flamingo_classify_first' ), 11, 1 );
+		}
+
 		if (is_admin()) {
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
@@ -146,8 +150,6 @@ class CF7_AntiSpam {
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-
-
 
 			// if flamingo is enabled use submitted spam / ham to feed d8
 			if ( defined( 'FLAMINGO_VERSION' ) ) {

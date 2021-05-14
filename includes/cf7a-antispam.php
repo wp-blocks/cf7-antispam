@@ -74,11 +74,32 @@ class CF7_AntiSpam_filters {
 		$this->b8->unlearn( $message, b8\b8::HAM );
 	}
 
-	public function cf7a_d8_flamingo_message() {
+	public function cf7a_d8_flamingo_message($before, $after) {
 		echo sprintf(
 			'<div id="message" class="notice notice-success is-dismissible"><p>%s</p></div>',
-			esc_html( sprintf( __( "I learned this was spam - score before/after: %s/%s", 'cf7-antispam'), "100", "200") )
+			esc_html( sprintf( __( "I learned this was spam - score before/after: %s/%s", 'cf7-antispam'), $before, $after) )
 		);
+	}
+
+	public function cf7a_get_mail_additional_data($form_post_id) {
+
+		// get the additional setting of the form
+		$form_additional_settings = get_post_meta( $form_post_id, '_additional_settings', true) ;
+
+		if ($form_additional_settings !== '') {
+			$lines = explode( "\n", $form_additional_settings); // TODO: best practice is to explode using EOL (End Of Line).
+
+			$additional_settings = array();
+
+			// extract the flamingo_key = value;
+			foreach ($lines as $line) {
+				$matches = array();
+				preg_match('/flamingo_(.*)(?=:): "\[(.*)]"/', $line , $matches);
+				$additional_settings[$matches[1]] = $matches[2];
+			}
+
+			return $additional_settings;
+		}
 	}
 
 	public function cf7a_d8_flamingo_classify() {
@@ -105,21 +126,10 @@ class CF7_AntiSpam_filters {
 			$form = get_term_by('slug', $flamingo_post->channel,'flamingo_inbound_channel');
 
 			// get the post where are stored the form data
-			$additional_f = get_page_by_path($form->slug, '', 'wpcf7_contact_form');
+			$form_post = get_page_by_path($form->slug, '', 'wpcf7_contact_form');
 
 			// get the additional setting of the form
-			$form_additional_settings = get_post_meta( $additional_f->ID, '_additional_settings', true) ;
-
-			if ($form_additional_settings !== '') {
-				$lines = explode( "\n", $form_additional_settings); // TODO: best practice is to explode using EOL (End Of Line).
-
-				// extract the flamingo_key = value;
-				foreach ($lines as $line) {
-					$matches = array();
-					preg_match('/flamingo_(.*)(?=:): "\[(.*)]"/', $line , $matches);
-					$additional_settings[$matches[1]] = $matches[2];
-				}
-			}
+			$additional_settings = $this->cf7a_get_mail_additional_data($form_post->ID);
 
 			if ( isset($additional_settings) && isset( $flamingo_post->fields[$additional_settings['message']] ) ) {
 
@@ -149,6 +159,26 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
+	public function cf7a_d8_flamingo_classify_first( $result ) {
+
+		$submission = WPCF7_Submission::get_instance();
+
+		if ( ! $submission
+		     or ! $posted_data = $submission->get_posted_data() ) {
+			return;
+		}
+
+		$additional_settings = $this->cf7a_get_mail_additional_data($result['contact_form_id']);
+
+		if ( isset($additional_settings) && isset( $posted_data[$additional_settings['message']] ) ) {
+
+			$text   = stripslashes( $posted_data[$additional_settings['message']] );
+			$rating = $text != '' ? $this->cf7a_b8_classify( $text ) : "none";
+
+			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', $rating );
+		}
+	}
+
 	public function flamingo_columns($columns) {
 		return array_merge( $columns, array(
 			'd8' => __( 'd8 classification', 'cf7-antispam' )
@@ -163,14 +193,17 @@ class CF7_AntiSpam_filters {
 	}
 
 	public function cf7a_spam_filter( $spam ) {
-		// the database
-		global $wpdb;
 
 		// Time Counter
 		$time_elapsed = null;
 
 		// Get the submitted data
 		$submission = WPCF7_Submission::get_instance();
+
+		if ( ! $submission
+		     or ! $posted_data = $submission->get_posted_data() ) {
+			return;
+		}
 
 		// this plugin options
 		$options = get_option( 'cf7a_options', array() );
@@ -194,9 +227,12 @@ class CF7_AntiSpam_filters {
 		// Get the contact form additional data
 		$contact_form = $submission->get_contact_form();
 
-		$email   = $contact_form->pref( 'flamingo_email' );
-		$subject = $contact_form->pref( 'flamingo_subject' );
-		$message = $contact_form->pref( 'flamingo_message' );
+		$email_tag   = substr($contact_form->pref( 'flamingo_email' ), 2, -2);
+		$subject_tag = substr($contact_form->pref( 'flamingo_subject' ), 2, -2);
+		$message_tag = substr($contact_form->pref( 'flamingo_message' ), 2, -2);
+
+		$email = isset($posted_data{$email_tag}) ? $posted_data{$email_tag} : false;
+		$message = isset($posted_data{$message_tag}) ? $posted_data{$message_tag} : false;
 
 		$message_compressed = str_replace( " ", "", strtolower( $message ) );
 
@@ -377,8 +413,9 @@ class CF7_AntiSpam_filters {
 		if ( $options['enable_b8'] && $message ) {
 
 			$text   = stripslashes( $message );
+
 			$rating = $this->cf7a_b8_classify($text);
-			error_log( 'CF7 Antispam - Classification before learning: ' . $rating );
+			error_log( 'CF7 Antispam - Classification: ' . $rating );
 
 			if ( $spam || $rating > $b8_threshold ) {
 
