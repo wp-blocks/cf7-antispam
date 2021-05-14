@@ -17,6 +17,8 @@
     "start": "wp-scripts start",
     "test:e2e": "wp-scripts test-e2e",
     "test:unit": "wp-scripts test-unit-js",
+    "start:user-js": "wp-scripts start includes/src/script.js --output-path=includes/js",
+    "build:user-js": "wp-scripts build includes/src/script.js --output-path=includes/js",
     "start:admin-js": "wp-scripts start admin/src/admin-script.js --output-path=admin/js",
     "build:admin-js": "wp-scripts build admin/src/admin-script.js --output-path=admin/js",
     "start:admin-css": "wp-scripts start admin/src/css/style.js --output-path=admin/css",
