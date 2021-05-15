@@ -54,18 +54,22 @@ class CF7_AntiSpam_Activator {
 		if ( false == get_option( 'cf7a_options' ) ) {
 			add_option( 'cf7a_options', array(
 				"check_bot_fingerprint" => true,
+				"bot_fingerprint_tolerance" => 2,
 				"check_time" => true,
-				"check_time_min" => 3,
+				"check_time_min" => 6,
 				"check_time_max" => 3600,
 				"check_bad_words" => true,
 				"check_bad_email_strings" => true,
 				"check_bad_user_agent" => true,
 				"check_dnsbl" => true,
 				"enable_b8" => true,
+				"dnsbl_tolerance" => 2,
 				"b8_threshold" => 0.95,
 				"bad_words_list" => array(
 					'viagra',
-					'bitcoin'
+					'Earn extra cash',
+					'MEET SINGLES',
+					'billion',
 				),
 				"bad_email_strings_list" => array(
 					str_replace( array( 'http://', 'https://' ), "", get_site_url() ) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
@@ -74,20 +78,25 @@ class CF7_AntiSpam_Activator {
 					'bot',
 					'puppeteer',
 					'phantom',
+					'User-Agent',
+					'Java',
+					'PHP',
 				),
 				"dnsbl_list" => array(
 					// ipv4 dnsbl
 					"dnsbl-1.uceprotect.net",
 					"dnsbl-2.uceprotect.net",
-					// "dnsbl-3.uceprotect.net", // too much aggressive, use with caution
+					"dnsbl-3.uceprotect.net",
 					"dnsbl.sorbs.net",
 					"spam.dnsbl.sorbs.net",
 					"zen.spamhaus.org",
 					"bl.spamcop.net",
 					"b.barracudacentral.org",
 					"dnsbl.dronebl.org",
+					"spam.spamrats.com",
 					"ips.backscatterer.org",
 					// ipv6 dnsbl
+					"dnsbl.spfbl.net",
 					"bogons.cymru.com",
 					"bl.ipv6.spameatingmonkey.net",
 				),
