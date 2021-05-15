@@ -26,7 +26,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 
-
 		// Section Bot Fingerprint
 		add_settings_section( 'cf7a_bot_fingerprint', // ID
 			__('Bot Fingerprinting', 'cf7-antispam'), // Title
@@ -38,6 +37,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		add_settings_field( 'check_bot_fingerprint', // ID
 			__('Enable anti-bot checks', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_bot_fingerprint_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bot_fingerprint' // Section
+		);
+
+		// Settings bot_fingerprint
+		add_settings_field( 'bot_fingerprint_tolerance', // ID
+			__('How many checks can fail', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_bot_fingerprint_tolerance_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_bot_fingerprint' // Section
 		);
@@ -167,6 +174,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_dnsbl' // Section
 		);
 
+		// DNS Blacklist list tolerance
+		add_settings_field( 'dnsbl_tolerance', // ID
+			__('How many times ip has to be blacklisted by DNSBL to become spam', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_dnsbl_tolerance_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_dnsbl' // Section
+		);
+
 		// DNS Blacklist server list
 		add_settings_field( 'dnsbl_list', // ID
 			__('DNS blocklist servers', 'cf7-antispam'), // Title
@@ -192,7 +207,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_b8' // Section
 		);
 
-		// Settings check_time
+		// Settings b8_threshold
 		add_settings_field( 'b8_threshold', // ID
 			__('b8 spam threshold', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_b8_threshold_callback' ), // Callback
@@ -202,31 +217,30 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_print_section_bot_fingerprint() {
-		print '<p>Enable some extra check to detect bot activity</p>';
+		printf( '<p>' . esc_html__("Enable some extra check to detect bot activity", 'cf7-amntispam') . '</p>' );
 	}
 	public function cf7a_print_section_check_time() {
-		print '<p>This test the submission time</p>';
+		printf( '<p>' . esc_html__("This test the submission time", 'cf7-amntispam') . '</p>' );
 	}
 
 	public function cf7a_print_section_bad_words() {
-		print '<p>Check if the mail message contains bad words</p>';
+		printf( '<p>' . esc_html__("Check if the mail message contains bad words", 'cf7-amntispam') . '</p>' );
 	}
 
 	public function cf7a_print_section_bad_email_strings() {
-		print '<p>Check if the sender mail contains a prohibited text</p>';
+		printf( '<p>' . esc_html__("Check if the sender mail contains a prohibited text", 'cf7-amntispam') . '</p>' );
 	}
 
-
 	public function cf7a_print_user_agent() {
-		print '<p>Check the User Agent if is listed into blacklist</p>';
+		printf( '<p>' . esc_html__("Check the User Agent if is listed into blacklist", 'cf7-amntispam') . '</p>' );
 	}
 
 	public function cf7a_print_dnsbl() {
-		print '<p>Check sender ip on DNS Blacklists</p>';
+		printf( '<p>' . esc_html__("Check sender ip on DNS Blacklists", 'cf7-amntispam') . '</p>' );
 	}
 
 	public function cf7a_print_b8() {
-		print '<p>tells you whether a text is spam or not, using statistical text analysis of the text message</p>';
+		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-amntispam') . '</p>' );
 	}
 
 	/**
@@ -240,8 +254,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		// get the existing options
 		$new_input = $this->options;
 
-		// elapsed time
+		// bot fingerprint
 		$new_input['check_bot_fingerprint'] =  isset( $input['check_bot_fingerprint'] ) ? 1 : 0 ;
+
+		$new_input['bot_fingerprint_tolerance'] =  isset( $input['bot_fingerprint_tolerance'] ) ? intval( $input['bot_fingerprint_tolerance'] ) : 2 ;
+
 
 		// elapsed time
 		$new_input['check_time'] =  isset( $input['check_time'] ) ? 1 : 0 ;
@@ -253,12 +270,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['check_time_max'] = intval( $input['check_time_max'] );
 		}
 
+
 		// bad words
 		$new_input['check_bad_words'] =  isset( $input['check_bad_words'] ) ? 1 : 0 ;
 
 		if ( isset( $input['bad_words_list'] ) ) {
 			$new_input['bad_words_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_words_list'] ));
 		}
+
 
 		// email strings
 		$new_input['check_bad_email_strings'] =  isset( $input['check_bad_email_strings'] ) ? 1 : 0 ;
@@ -267,6 +286,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['bad_email_strings_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_email_strings_list'] ));
 		}
 
+
 		// user_agent
 		$new_input['check_bad_user_agent'] =  isset( $input['check_bad_user_agent'] ) ? 1 : 0 ;
 
@@ -274,12 +294,16 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['bad_user_agent_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_user_agent_list'] ));
 		}
 
+
 		// dnsbl
 		$new_input['check_dnsbl'] =  isset( $input['check_dnsbl'] ) ? 1 : 0 ;
+
+		$new_input['dnsbl_tolerance'] =  isset( $input['dnsbl_tolerance'] ) ? intval( $input['dnsbl_tolerance'] ) : 2 ;
 
 		if ( isset( $input['dnsbl_list'] ) ) {
 			$new_input['dnsbl_list'] = explode("\r\n",sanitize_textarea_field( $input['dnsbl_list'] ));
 		}
+
 
 		// b8
 		$new_input['enable_b8'] =  isset( $input['enable_b8'] ) ? 1 : 0 ;
@@ -300,6 +324,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			isset( $this->options['check_bot_fingerprint'] ) && $this->options['check_bot_fingerprint'] == 1 ? 'checked="true"' : ''
 		);
 	}
+	public function cf7a_bot_fingerprint_tolerance_callback() {
+		printf(
+			'<input type="number" id="bot_fingerprint_tolerance" name="cf7a_options[bot_fingerprint_tolerance]" value="%s" min="1" step="1" />',
+			isset( $this->options['bot_fingerprint_tolerance'] ) ? esc_attr( $this->options['bot_fingerprint_tolerance']) : 'none'
+		);
+	}
+
+
 	public function cf7a_check_time_callback() {
 		printf(
 			'<input type="checkbox" id="check_time" name="cf7a_options[check_time]" %s />',
@@ -366,6 +398,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="check_dnsbl" name="cf7a_options[check_dnsbl]" %s />',
 			isset( $this->options['check_dnsbl'] ) && $this->options['check_dnsbl'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_dnsbl_tolerance_callback() {
+		printf(
+			'<input type="number" id="dnsbl_tolerance" name="cf7a_options[dnsbl_tolerance]" value="%s"  min="1" step="1" />',
+			isset( $this->options['dnsbl_tolerance'] ) ? esc_attr( $this->options['dnsbl_tolerance']) : 'none'
 		);
 	}
 	public function cf7a_dnsbl_list_callback() {
