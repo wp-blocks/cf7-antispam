@@ -14,54 +14,6 @@ function get_real_ip() {
 	}
 }
 
-// expand IPv6 address
-function cf7a_expand_ipv6( $ip ) {
-	$hex = unpack( "H*hex", inet_pton( $ip ) );
-	return substr( preg_replace( "/([A-f0-9]{4})/", "$1:", $hex['hex'] ), 0, - 1 );
-}
-
-function cf7a_reverse_ipv4( $ip ) {
-	return implode( ".", array_reverse( explode( ".", $ip ) ) );
-}
-
-function cf7a_reverse_ipv6( $ip ) {
-	$ip = cf7a_expand_ipv6( $ip );
-	// remove ":" and reverse the string then
-	// add a dot for each digit
-	return implode( '.', str_split( strrev( str_replace( ":", "", $ip ) ) ) );
-}
-
-function cf7a_check_dnsbl( $reverse_ip, $ip_type = "ipv4" ) {
-
-	$dnsbl_blacklists = array(
-		"dnsbl-1.uceprotect.net",
-		"dnsbl-2.uceprotect.net",
-
-		"dnsbl.sorbs.net",
-		"spam.dnsbl.sorbs.net",
-		"zen.spamhaus.org",
-		"bl.spamcop.net",
-		"b.barracudacentral.org",
-		"dnsbl.dronebl.org",
-		"ips.backscatterer.org",
-
-		// too much aggressive, use with caution
-		// "dnsbl-3.uceprotect.net",
-
-		// ipv6 dnsbl
-		"bogons.cymru.com",
-		"bl.ipv6.spameatingmonkey.net",
-	);
-
-	foreach ( $dnsbl_blacklists as $dnsbl ) {
-		if ( checkdnsrr( $reverse_ip . "." . $dnsbl . ".", "A" ) ) {
-			return $dnsbl;
-		}
-	}
-
-	return false;
-}
-
 function cf7a_crypt( $value , $cipher = "aes-256-cbc" ) {
 	return openssl_encrypt( $value , $cipher, wp_salt('nonce'), $options=0, substr(wp_salt('nonce'), 0, 16) );
 }
@@ -77,7 +29,7 @@ function microtimeFloat() {
 
 function formatRating($rating) {
 	if ($rating === false) {
-		return '<span style="color:red">could not calculate spaminess</span>';
+		return '<span style="color:red">'.__('Not available').'</span>';
 	}
 
 	$red   = floor(255 * $rating);
