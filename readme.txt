@@ -1,8 +1,9 @@
 === CF7_AntiSpam ===
 Contributors: codekraft
-Tags: bird, contact, mail, crm, spam
+Tags: spam, bot, mail, blacklist
 Requires at least: 5.4
-Tested up to: 5.6
+Tested up to: 5.7.1
+Requires PHP: 5.4
 Stable tag: 0.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -10,6 +11,14 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
+Contact Form 7 Antispam - is a new plugin that, without boring you with configurations, filters out spam-bots with an auto-learning ai mechanism.
+Summarising:
+- for first the plugin perform a quick, trasparent but effective check on the humanity of the sender (without i'm not a robot checkbox or something like that)
+- Then the IP is checked to see if it is on any spammer blocklists
+- After that it is analysed by a predictive algorithm that learns what is spam and what is not, so that as you receive spam your site learns to protect itself!
+
+By the way nothing is perfect so if you don't want to loose any submitted mail you may want to install also [flamingo] (https://wordpress.org/plugins/flamingo/)
+Flamingo also is integrated with CF7 Antispam and when you mark an email as spam (or ham) the intelligent algorithm learns again!
 
 = Privacy Notices =
 
@@ -17,12 +26,10 @@ A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 1. Upload the entire `contact-form-7-antispam` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress, you MUST have Contact Form 7 installed and enabled.
-3. Setup advanced settings in Contact Form 7 in the same way you do for flamingo, but add also flamingo_message: "[your-message]" (ref. https://contactform7.com/save-submitted-messages-with-flamingo/)
+3. Setup advanced settings in Contact Form 7 in the same way you do for flamingo, but add also 'flamingo_message: "[your-message]"' - reference https://contactform7.com/save-submitted-messages-with-flamingo/
 4. You can tune the options of this plugin, check the page "Antispam" under the Contact Form 7 menu
 
-== Frequently Asked Questions ==
-
-== Screenshots ==
+== Upgrade Notice ==
 
 == Changelog ==
 
