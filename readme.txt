@@ -20,7 +20,7 @@ Summarising:
 By the way nothing is perfect so if you don't want to loose any submitted mail you may want to install also [flamingo] (https://wordpress.org/plugins/flamingo/)
 Flamingo also is integrated with CF7 Antispam and when you mark an email as spam (or ham) the intelligent algorithm learns again!
 
-= Privacy Notices =
+== Privacy Notices ==
 
 == Installation ==
 
@@ -34,8 +34,10 @@ Flamingo also is integrated with CF7 Antispam and when you mark an email as spam
 == Changelog ==
 
 = 0.0.1 =
+* This is the first release
 
-* First release
+== Screenshot ==
+1. the plugin options
 
 == Copyright ==
 Modul R, Copyright 2021 Codekraft Studio
