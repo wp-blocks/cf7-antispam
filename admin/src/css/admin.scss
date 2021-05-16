@@ -1,3 +1,11 @@
+// VARS
+$color__white: #fff;
+$color__black: #000;
+$color__light-grey: #ccc;
+$color__dark-grey: #666;
+$color__primary: #ff5722;
+
+// Plugin style
 body.contact_page_cf7-antispam {
   
   .dashicons.dashicons-shield-alt {
@@ -7,7 +15,7 @@ body.contact_page_cf7-antispam {
     margin: 0 5px 0 0;
     padding: 0;
     line-height: 1.3;
-    color: #666;
+    color: $color__dark-grey;
   
     position: relative;
     transform-style: preserve-3d;
@@ -40,21 +48,44 @@ body.contact_page_cf7-antispam {
       width: 100%;
       min-height: 100px;
     }
-    
   }
-  
 }
 
+// Flamingo customization
+body.flamingo_page_flamingo_inbound {
+  span.flamingo-rating-label {
+    display: inline-block;
+    min-width: 24px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 15px;
+    padding: 5px;
+    b{
+      color: $color__white;
+      font-size: 11px;
+      text-shadow: 0 1px 1px transparentize($color__black, .7);
+      vertical-align: text-bottom;
+    }
+  }
+  
+  .column-d8 {
+    width: 120px;
+    text-align: center;
+  }
+}
+
+// Animations
 @keyframes spin {
   90%{
-    color: #666;
+    color: $color__dark-grey;
     transform: rotateY(0deg);
   }
   95%{
-    color: #ff5722
+    color: $color__primary;
   }
   100% {
-    color: #666;
+    color: $color__dark-grey;
     transform: rotateY(180deg);
   }
 }

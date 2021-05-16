@@ -215,7 +215,7 @@ class CF7_AntiSpam_filters {
 	public function flamingo_d8_column( $column, $post_id ) {
 		$classification = get_post_meta($post_id, '_cf7a_b8_classification', true);
 		if ( 'd8' === $column ) {
-			echo $classification ? round(floatval($classification)  * 100) . '%' : 'none';
+			echo formatRating( $classification );
 		}
 	}
 
@@ -485,6 +485,8 @@ class CF7_AntiSpam_filters {
 		 * Check the remote ip if is listed into Domain Name System Blacklists
 		 * DNS blacklist are spam blocking DNS like lists that allow to block messages from specific systems that have a history of sending spam
 		 * inspiration taken from https://gist.github.com/tbreuss/74da96ff5f976ce770e6628badbd7dfc
+		 *
+		 * TODO: enhance the performance using curl or threading. break after threshold reached
 		 */
 		if ( $options['check_dnsbl'] && $remote_ip ) {
 
@@ -502,10 +504,9 @@ class CF7_AntiSpam_filters {
 			foreach ($options['dnsbl_list'] as $dnsbl) {
 
 				if ( false !== ( $dnsbl = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
-
 					$dsnbl_listed[] = $dnsbl;
-
 				}
+
 			}
 
 			if ( count($dsnbl_listed) >= $dnsbl_tolerance ) {

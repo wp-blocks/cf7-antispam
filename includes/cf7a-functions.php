@@ -28,12 +28,11 @@ function microtimeFloat() {
 }
 
 function formatRating($rating) {
-	if ($rating === false) {
-		return '<span style="color:red">'.__('Not available').'</span>';
-	}
 
-	$red   = floor(255 * $rating);
-	$green = floor(255 * (1 - $rating));
-	return "<span style=\"color:rgb($red, $green, 0);\"><b>" . sprintf("%5f", $rating)
-	       . "</b></span>";
+	if (!is_numeric($rating)) return '<span class="flamingo-rating-label" style="background-color:rgb(100,100,100)"><b>'.__('none').'</b></span>';
+
+	$red   = floor(200 * $rating);
+	$green = floor(200 * (1 - $rating));
+	$color = "rgb($red,$green,0)";
+	return '<span class="flamingo-rating-label" style="background-color:'.$color.'" ><b>' . round( $rating * 100) . "% </b></span>";
 }
