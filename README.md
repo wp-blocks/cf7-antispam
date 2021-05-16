@@ -1,6 +1,8 @@
-# contact-form-7-antispam
-A trustworthy antispam plugin for Contact Form 7 a WordPress plugin that lets you manage contact forms on your website. A copy of the plugin package is downloadable from the [WordPress.org Plugin Directory](https://wordpress.org/plugins/contact-form-7-antispam/).
+# Contact Form 7 - Antispam
+A trustworthy antispam plugin for Contact Form 7 a WordPress, simple but effective!
+Contact Form 7 Antispam without boring you with configurations, filters out spam-bots with an auto-learning ai mechanism. 
 
+A copy of the plugin package is downloadable from the [WordPress.org Plugin Directory](https://wordpress.org/plugins/contact-form-7-antispam/).
 
 License
 -------

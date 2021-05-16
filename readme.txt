@@ -1,9 +1,9 @@
-=== CF7_AntiSpam ===
-Contributors: codekraft
-Tags: spam, bot, mail, blacklist
-Requires at least: 5.4
+=== CF7 AntiSpam ===
+Contributors: Codekraft
+Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, security
+Requires at least: 5.1
 Tested up to: 5.7.1
-Requires PHP: 5.4
+Requires PHP: 5.6
 Stable tag: 0.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -11,8 +11,8 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
-Contact Form 7 Antispam - is a new plugin that, without boring you with configurations, filters out spam-bots with an auto-learning ai mechanism.
-Summarising:
+Contact Form 7 Antispam - is an Anti-spam plugin that without boring you with configurations, filters out spam-bots with an auto-learning ai mechanism.
+What the plugin does in detail:
 - for first the plugin perform a quick, trasparent but effective check on the humanity of the sender (without i'm not a robot checkbox or something like that)
 - Then the IP is checked to see if it is on any spammer blocklists
 - After that it is analysed by a predictive algorithm that learns what is spam and what is not, so that as you receive spam your site learns to protect itself!
@@ -21,13 +21,19 @@ By the way nothing is perfect so if you don't want to loose any submitted mail y
 Flamingo also is integrated with CF7 Antispam and when you mark an email as spam (or ham) the intelligent algorithm learns again!
 
 == Privacy Notices ==
+CF7 Antispam only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
+This database may contain words that are in the e-mail message, so can contain also personal data.
+The purpose of this word collecting is to build a dictionary used for the spam detection.
 
 == Installation ==
-
 1. Upload the entire `contact-form-7-antispam` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress, you MUST have Contact Form 7 installed and enabled.
 3. Setup advanced settings in Contact Form 7 in the same way you do for flamingo, but add also 'flamingo_message: "[your-message]"' - reference https://contactform7.com/save-submitted-messages-with-flamingo/
 4. You can tune the options of this plugin, check the page "Antispam" under the Contact Form 7 menu
+
+== Support==
+Community support via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
+Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 
 == Upgrade Notice ==
 

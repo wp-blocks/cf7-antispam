@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Contact Form 7 AntiSpam
+Plugin Name: ContactForm 7 AntiSpam
 Description: A trustworthy antispam plugin for Contact Form 7. Simple but effective.
-Author: codekraft
+Author: Codekraft
 Text Domain: cf7-antispam
 Domain Path: /languages/
 Version: 0.0.1
