@@ -89,13 +89,11 @@ class CF7_AntiSpam_Activator {
 					"dnsbl-2.uceprotect.net",
 					"dnsbl-3.uceprotect.net",
 					"dnsbl.sorbs.net",
-					"spam.dnsbl.sorbs.net",
 					"zen.spamhaus.org",
 					"bl.spamcop.net",
 					"b.barracudacentral.org",
 					"dnsbl.dronebl.org",
 					"spam.spamrats.com",
-					"ips.backscatterer.org",
 					// ipv6 dnsbl
 					"dnsbl.spfbl.net",
 					"bogons.cymru.com",

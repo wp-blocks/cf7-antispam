@@ -341,7 +341,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 	public function cf7a_bot_fingerprint_tolerance_callback() {
 		printf(
-			'<input type="number" id="bot_fingerprint_tolerance" name="cf7a_options[bot_fingerprint_tolerance]" value="%s" min="1" step="1" />',
+			'<input type="number" id="bot_fingerprint_tolerance" name="cf7a_options[bot_fingerprint_tolerance]" value="%s" min="0" step="1" />',
 			isset( $this->options['bot_fingerprint_tolerance'] ) ? esc_attr( $this->options['bot_fingerprint_tolerance']) : 'none'
 		);
 	}

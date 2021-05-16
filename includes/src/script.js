@@ -81,7 +81,7 @@
         const mouseMove= function (e) {
           moved += e.clientX > 100 ? 1 : 0;
 
-          if (moved > 200) {
+          if (moved > 50) {
             document.removeEventListener('mousemove', mouseMove);
             $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "true"));
           }

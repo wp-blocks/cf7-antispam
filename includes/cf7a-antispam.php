@@ -282,8 +282,6 @@ class CF7_AntiSpam_filters {
 		 */
 		if ( $options['check_bot_fingerprint'] ) {
 			$bot_fingerprint = array(
-				"activity" => $_POST['_wpcf7a_activity'],
-				"mousemove_activity" => $_POST['_wpcf7a_mousemove_activity'],
 				"timezone" => $_POST['_wpcf7a_timezone'],
 				"platform" => $_POST['_wpcf7a_platform'],
 				"hardware_concurrency" => $_POST['_wpcf7a_hardware_concurrency'],
@@ -297,30 +295,29 @@ class CF7_AntiSpam_filters {
 				"fingerprint" => $_POST['_wpcf7a_bot_fingerprint'],
 			);
 
-			$score = 0;
+			$fail = [];
+			$fail[] = $bot_fingerprint["timezone"] != '' ? 1 : "timezon";
+			$fail[] = $bot_fingerprint["platform"] != '' ? 1 : "platform";
+			$fail[] = $bot_fingerprint["hardware_concurrency"] == 4 ? 1 : "hardware_concurrency";
+			$fail[] = $bot_fingerprint["screens"] != '' ? 1 : "screens";
+			$fail[] = $bot_fingerprint["memory"] > 4 ? 1 : "memory";
+			$fail[] = $bot_fingerprint["user_agent"] != '' ? 1 : "memory";
+			$fail[] = $bot_fingerprint["app_version"] != '' ? 1 : "user_agent";
+			$fail[] = $bot_fingerprint["webdriver"] != '' ? 1 : "app_version";
+			$fail[] = $bot_fingerprint["session_storage"] != '' ? 1 : "webdriver";
+			$fail[] = $bot_fingerprint["plugins"] !== 0 ? 1 : "session_storage";
+			$fail[] = strlen($bot_fingerprint["fingerprint"]) == 5 ? 1 : "plugins";
 
-			$score += $bot_fingerprint["timezone"] != '' ? 1 : 0 ;
-			$score += $bot_fingerprint["platform"] != '' ? 1 : 0 ;
-			$score += $bot_fingerprint["hardware_concurrency"] == 4 ? 1 : 0 ;
-			$score += $bot_fingerprint["screens"] != '' ? 1 : 0 ;
-			$score += $bot_fingerprint["memory"] == 4 ? 1 : 0 ;
-			$score += $bot_fingerprint["user_agent"] != '' ? 1 : 0 ;
-			$score += $bot_fingerprint["app_version"] != '' ? 1 : 0 ;
-			$score += $bot_fingerprint["webdriver"] != '' ? 1 : 0 ;
-			$score += $bot_fingerprint["session_storage"] != '' ? 1 : 0 ;
-			$score += $bot_fingerprint["plugins"] !== 0 ? 1 : 0 ;
-			$score += strlen($bot_fingerprint["fingerprint"]) == 5 ? 1 : 0 ;
-
-			if ( $score + $bot_fp_tolerance < count( $bot_fingerprint ) ) {
+			if ( count($fail) < $bot_fp_tolerance ) {
 
 				$spam = true;
 
 				if (WP_DEBUG) error_log( "CF7 Antispam - the submitter hasn't passed the bot fingerprint test" );
-				if (WP_DEBUG) error_log( print_r($bot_fingerprint, true) );
+				if (WP_DEBUG) error_log( print_r($fail, true) );
 
 				$submission->add_spam_log( array(
 					'agent'  => 'fingerprint_test',
-					'reason' => "fingerprint test not passed (score $score/" . count( $bot_fingerprint ) . ")",
+					'reason' => "fingerprint test not passed (".count($fail)." failed / " . count( $bot_fingerprint ) . ")",
 				) );
 			}
 		}
@@ -330,28 +327,31 @@ class CF7_AntiSpam_filters {
 		 */
 		if ( $options['check_bot_fingerprint_extras'] ) {
 			$bot_fingerprint = array(
+				"extras" => $_POST['_wpcf7a_bot_fingerprint_extras'],
 				"activity" => $_POST['_wpcf7a_activity'],
-				"mousemove_activity" => $_POST['_wpcf7a_mousemove_activity']
+				"mousemove_activity" => $_POST['_wpcf7a_mousemove_activity'],
+				"webgl" => $_POST['_wpcf7a_webgl'],
+				"webgl_render" => $_POST['_wpcf7a_webgl_render'],
 			);
 
-			$score = 0;
+			$fail = [];
 
-			$score += $bot_fingerprint["extras"] = "" ? 1 : 0 ;
-			$score += $bot_fingerprint["activity"] > 2 ? 1 : 0 ;
-			$score += $bot_fingerprint["mousemove_activity"] == true ? 1 : 0 ;
-			$score += $bot_fingerprint["webgl"] == "passed" ? 1 : 0 ;
-			$score += $bot_fingerprint["webgl_render"] == "passed" ? 1 : 0 ;
+			$fail[] = $bot_fingerprint["extras"] == "" ? 1 : "extras";
+			$fail[] = $bot_fingerprint["activity"] > 2 ? 1 : "activity";
+			$fail[] = $bot_fingerprint["mousemove_activity"] == true ? 1 : "mousemove_activity";
+			$fail[] = $bot_fingerprint["webgl"] == "passed" ? 1 : "webgl";
+			$fail[] = $bot_fingerprint["webgl_render"] == "passed" ? 1 : "webgl_render";
 
-			if ( $score + $bot_fp_tolerance < count( $bot_fingerprint ) ) {
+			if ( count($fail) < $bot_fp_tolerance ) {
 
 				$spam = true;
 
 				if (WP_DEBUG) error_log( "CF7 Antispam - the submitter hasn't passed the bot fingerprint extra test" );
-				if (WP_DEBUG) error_log( print_r($bot_fingerprint, true) );
+				if (WP_DEBUG) error_log( print_r($fail, true) );
 
 				$submission->add_spam_log( array(
 					'agent'  => 'fingerprint_extra tests',
-					'reason' => "fingerprint extra tests not passed (score $score/" . count( $bot_fingerprint ) . ")",
+					'reason' => "fingerprint extra tests not passed (".count($fail)." failed / " . count( $bot_fingerprint ) . ")",
 				) );
 			}
 		}
@@ -491,6 +491,7 @@ class CF7_AntiSpam_filters {
 		if ( $options['check_dnsbl'] && $remote_ip ) {
 
 			$dsnbl_listed = [];
+			$reverse_ip = '';
 
 			if ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
 
