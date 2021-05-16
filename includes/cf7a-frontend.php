@@ -40,6 +40,10 @@ class CF7_AntiSpam_Frontend {
 		if (isset($this->options['check_bot_fingerprint'])) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting') , 100, 1 );
 		}
+
+		if (isset($this->options['check_bot_fingerprint_extras'])) {
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras') , 100, 1 );
+		}
 	}
 
 	public function cf7a_add_hidden_fields( $fields ) {
@@ -58,6 +62,12 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_add_bot_fingerprinting( $fields ) {
 		return array_merge( $fields, array(
 			'_wpcf7a_bot_fingerprint' => wp_hash_password(time())
+		));
+	}
+
+	public function cf7a_add_bot_fingerprinting_extras( $fields ) {
+		return array_merge( $fields, array(
+			'_wpcf7a_bot_fingerprint_extras' => false
 		));
 	}
 

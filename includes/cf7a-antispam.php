@@ -71,7 +71,6 @@ class CF7_AntiSpam_filters {
 		$rating = $this->b8->classify( $message );
 
 		if ( $verbose || WP_DEBUG ) {
-			error_log( "CF7 Antispam - message:\r\n$message"  );
 			error_log( 'CF7 Antispam - Classification: ' . $rating );
 
 			$mem_used      = round( memory_get_usage() / 1048576, 5 );
@@ -284,6 +283,7 @@ class CF7_AntiSpam_filters {
 		if ( $options['check_bot_fingerprint'] ) {
 			$bot_fingerprint = array(
 				"activity" => $_POST['_wpcf7a_activity'],
+				"mousemove_activity" => $_POST['_wpcf7a_mousemove_activity'],
 				"timezone" => $_POST['_wpcf7a_timezone'],
 				"platform" => $_POST['_wpcf7a_platform'],
 				"hardware_concurrency" => $_POST['_wpcf7a_hardware_concurrency'],
@@ -293,12 +293,12 @@ class CF7_AntiSpam_filters {
 				"app_version" => $_POST['_wpcf7a_app_version'],
 				"webdriver" => $_POST['_wpcf7a_webdriver'],
 				"session_storage" => $_POST['_wpcf7a_session_storage'],
+				"plugins" => $_POST['_wpcf7a_plugins'],
 				"fingerprint" => $_POST['_wpcf7a_bot_fingerprint'],
 			);
 
 			$score = 0;
 
-			$score += $bot_fingerprint["activity"] > 2 ? 1 : 0 ; // todo: may an option for this field can be useful?
 			$score += $bot_fingerprint["timezone"] != '' ? 1 : 0 ;
 			$score += $bot_fingerprint["platform"] != '' ? 1 : 0 ;
 			$score += $bot_fingerprint["hardware_concurrency"] == 4 ? 1 : 0 ;
@@ -308,6 +308,7 @@ class CF7_AntiSpam_filters {
 			$score += $bot_fingerprint["app_version"] != '' ? 1 : 0 ;
 			$score += $bot_fingerprint["webdriver"] != '' ? 1 : 0 ;
 			$score += $bot_fingerprint["session_storage"] != '' ? 1 : 0 ;
+			$score += $bot_fingerprint["plugins"] !== 0 ? 1 : 0 ;
 			$score += strlen($bot_fingerprint["fingerprint"]) == 5 ? 1 : 0 ;
 
 			if ( $score + $bot_fp_tolerance < count( $bot_fingerprint ) ) {
@@ -323,6 +324,38 @@ class CF7_AntiSpam_filters {
 				) );
 			}
 		}
+
+		/**
+		 * Bot fingerprints extras
+		 */
+		if ( $options['check_bot_fingerprint_extras'] ) {
+			$bot_fingerprint = array(
+				"activity" => $_POST['_wpcf7a_activity'],
+				"mousemove_activity" => $_POST['_wpcf7a_mousemove_activity']
+			);
+
+			$score = 0;
+
+			$score += $bot_fingerprint["extras"] = "" ? 1 : 0 ;
+			$score += $bot_fingerprint["activity"] > 2 ? 1 : 0 ;
+			$score += $bot_fingerprint["mousemove_activity"] == true ? 1 : 0 ;
+			$score += $bot_fingerprint["webgl"] == "passed" ? 1 : 0 ;
+			$score += $bot_fingerprint["webgl_render"] == "passed" ? 1 : 0 ;
+
+			if ( $score + $bot_fp_tolerance < count( $bot_fingerprint ) ) {
+
+				$spam = true;
+
+				if (WP_DEBUG) error_log( "CF7 Antispam - the submitter hasn't passed the bot fingerprint extra test" );
+				if (WP_DEBUG) error_log( print_r($bot_fingerprint, true) );
+
+				$submission->add_spam_log( array(
+					'agent'  => 'fingerprint_extra tests',
+					'reason' => "fingerprint extra tests not passed (score $score/" . count( $bot_fingerprint ) . ")",
+				) );
+			}
+		}
+
 
 		/**
 		 * Check if the time to submit the email il lower than expected
@@ -499,8 +532,6 @@ class CF7_AntiSpam_filters {
 			$text   = stripslashes( $message );
 
 			$rating = $this->cf7a_b8_classify($text);
-
-			if (WP_DEBUG) error_log( 'CF7 Antispam - Mail Classification: ' . $rating );
 
 			if ( $spam || $rating > $b8_threshold ) {
 

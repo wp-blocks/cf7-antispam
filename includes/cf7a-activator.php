@@ -55,6 +55,7 @@ class CF7_AntiSpam_Activator {
 
 			add_option( 'cf7a_options', array(
 				"check_bot_fingerprint" => true,
+				"check_bot_fingerprint_extras" => true,
 				"bot_fingerprint_tolerance" => 2,
 				"check_time" => true,
 				"check_time_min" => 6,
@@ -71,9 +72,9 @@ class CF7_AntiSpam_Activator {
 					'Earn extra cash',
 					'MEET SINGLES'
 				),
-				"bad_email_strings_list" =>
+				"bad_email_strings_list" => array(
 					str_replace( array( 'http://', 'https://', 'www' ), "", get_site_url()) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
-				,
+				),
 				"bad_user_agent_list" => array(
 					'bot',
 					'puppeteer',

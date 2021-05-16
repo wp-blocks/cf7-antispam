@@ -42,6 +42,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		// Settings bot_fingerprint
+		add_settings_field( 'check_bot_fingerprint_extras', // ID
+			__('Enable anti-bot extra checks', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_check_bot_fingerprint_extras_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bot_fingerprint' // Section
+		);
+
+		// Settings bot_fingerprint
 		add_settings_field( 'bot_fingerprint_tolerance', // ID
 			__('How many checks can fail', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_bot_fingerprint_tolerance_callback' ), // Callback
@@ -118,7 +126,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Settings check_bad_email_strings
 		add_settings_field( 'check_bad_email_strings', // ID
-			__('Check the message for prohibited words', 'cf7-antispam'), // Title
+			__('Check the email for prohibited words', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_bad_email_strings_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_bad_email_strings' // Section
@@ -126,7 +134,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Settings bad_email_strings_list
 		add_settings_field( 'bad_email_strings_list', // ID
-			__('Bad words List', 'cf7-antispam'), // Title
+			__('Email prohibited words', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_bad_email_strings_list_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_bad_email_strings' // Section
@@ -256,6 +264,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// bot fingerprint
 		$new_input['check_bot_fingerprint'] =  isset( $input['check_bot_fingerprint'] ) ? 1 : 0 ;
+		$new_input['check_bot_fingerprint_extras'] =  isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0 ;
 
 		$new_input['bot_fingerprint_tolerance'] =  isset( $input['bot_fingerprint_tolerance'] ) ? intval( $input['bot_fingerprint_tolerance'] ) : 2 ;
 
@@ -322,6 +331,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint" name="cf7a_options[check_bot_fingerprint]" %s />',
 			isset( $this->options['check_bot_fingerprint'] ) && $this->options['check_bot_fingerprint'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_check_bot_fingerprint_extras_callback() {
+		printf(
+			'<input type="checkbox" id="check_bot_fingerprint_extras" name="cf7a_options[check_bot_fingerprint_extras]" %s />',
+			isset( $this->options['check_bot_fingerprint_extras'] ) && $this->options['check_bot_fingerprint_extras'] == 1 ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_bot_fingerprint_tolerance_callback() {

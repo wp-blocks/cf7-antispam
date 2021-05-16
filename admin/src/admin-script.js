@@ -1,5 +1,5 @@
 // save on ctrl-s keypress
-if (document.body.classList.contains('contact_page_wpcf7-antispam')) {
+if (document.body.classList.contains('contact_page_cf7-antispam')) {
   document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.key === 's') {
       e.preventDefault();
