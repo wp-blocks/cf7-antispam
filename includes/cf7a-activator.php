@@ -52,6 +52,7 @@ class CF7_AntiSpam_Activator {
 
 		/* If the options do not exist then create them*/
 		if ( false == get_option( 'cf7a_options' ) ) {
+
 			add_option( 'cf7a_options', array(
 				"check_bot_fingerprint" => true,
 				"bot_fingerprint_tolerance" => 2,
@@ -68,12 +69,11 @@ class CF7_AntiSpam_Activator {
 				"bad_words_list" => array(
 					'viagra',
 					'Earn extra cash',
-					'MEET SINGLES',
-					'billion',
+					'MEET SINGLES'
 				),
-				"bad_email_strings_list" => array(
-					str_replace( array( 'http://', 'https://' ), "", get_site_url() ) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
-				),
+				"bad_email_strings_list" =>
+					str_replace( array( 'http://', 'https://', 'www' ), "", get_site_url()) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
+				,
 				"bad_user_agent_list" => array(
 					'bot',
 					'puppeteer',
@@ -102,6 +102,34 @@ class CF7_AntiSpam_Activator {
 				),
 			) );
 		}
+
+		// get all the flamingo inbound post and classify them
+	    $args = array(
+		    'post_type' => 'flamingo_inbound',
+		    'posts_per_page' => -1
+	    );
+
+		$query = new WP_Query($args);
+		if ($query->have_posts() ) :
+
+			require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
+
+			$cf7a_antispam_filters = new CF7_AntiSpam_filters();
+
+			while ( $query->have_posts() ) : $query->the_post();
+				$post_id = get_the_ID();
+				$post_status = get_post_status();
+
+				if (get_post_status( $post_id ) == 'flamingo-spam') {
+					$cf7a_antispam_filters->cf7a_b8_learn_spam(get_the_content());
+					update_post_meta( $post_id, '_cf7a_b8_classification', $cf7a_antispam_filters->cf7a_b8_classify(get_the_content()) );
+				} else if ( $post_status == 'publish'){
+					$cf7a_antispam_filters->cf7a_b8_learn_ham(get_the_content());
+					update_post_meta( $post_id, '_cf7a_b8_classification', $cf7a_antispam_filters->cf7a_b8_classify(get_the_content()) );
+				};
+
+			endwhile;
+		endif;
 	}
 
 }
