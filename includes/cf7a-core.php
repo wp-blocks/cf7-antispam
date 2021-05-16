@@ -59,7 +59,7 @@ class CF7_AntiSpam {
 			$this->version = '1.0.0';
 		}
 
-		$this->plugin_name = 'contact-form-7-antispam';
+		$this->plugin_name = 'cf7-antispam';
 
 		$this->options = $this->get_options(); // the plugin options
 

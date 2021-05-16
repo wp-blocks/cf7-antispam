@@ -1,4 +1,4 @@
-=== CF7 AntiSpam ===
+=== AntiSpam for Contact Form 7 ===
 Contributors: Codekraft
 Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, security
 Requires at least: 5.1
@@ -18,10 +18,10 @@ What the plugin does in detail:
 - After that it is analysed by a predictive algorithm that learns what is spam and what is not, so that as you receive spam your site learns to protect itself!
 
 By the way nothing is perfect so if you don't want to loose any submitted mail you may want to install also [flamingo] (https://wordpress.org/plugins/flamingo/)
-Flamingo also is integrated with CF7 Antispam and when you mark an email as spam (or ham) the intelligent algorithm learns again!
+Flamingo also is integrated with AntiSpam for Contact Form 7 and when you mark an email as spam (or ham) the intelligent algorithm learns again!
 
 == Privacy Notices ==
-CF7 Antispam only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
+AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
 This database may contain words that are in the e-mail message, so can contain also personal data.
 The purpose of this word collecting is to build a dictionary used for the spam detection.
 
@@ -62,3 +62,7 @@ See the LICENSE file for more details.
 == Resources ==
 * b8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
 * Sudden Shower in the Summer, Public domain, Wikimedia Commons https://commons.wikimedia.org/wiki/File:Sudden_Shower_in_the_Summer_(5759500422).jpg
+
+== Inspirations ==
+Alexander Romanov [Bot detection page](bot.sannysoft.com)
+Nikolai Tschacher [incolumitas.com](https://incolumitas.com/pages/BotOrNot/)
