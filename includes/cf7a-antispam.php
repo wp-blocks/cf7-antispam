@@ -283,6 +283,7 @@ class CF7_AntiSpam_filters {
 		 */
 		if ( $options['check_bot_fingerprint'] ) {
 			$bot_fingerprint = array(
+				"activity" => $_POST['_wpcf7a_activity'],
 				"timezone" => $_POST['_wpcf7a_timezone'],
 				"platform" => $_POST['_wpcf7a_platform'],
 				"hardware_concurrency" => $_POST['_wpcf7a_hardware_concurrency'],
@@ -297,6 +298,7 @@ class CF7_AntiSpam_filters {
 
 			$score = 0;
 
+			$score += $bot_fingerprint["activity"] > 2 ? 1 : 0 ; // todo: may an option for this field can be useful?
 			$score += $bot_fingerprint["timezone"] != '' ? 1 : 0 ;
 			$score += $bot_fingerprint["platform"] != '' ? 1 : 0 ;
 			$score += $bot_fingerprint["hardware_concurrency"] == 4 ? 1 : 0 ;
@@ -317,7 +319,7 @@ class CF7_AntiSpam_filters {
 
 				$submission->add_spam_log( array(
 					'agent'  => 'fingerprint_test',
-					'reason' => "fingerprint test not passed",
+					'reason' => "fingerprint test not passed (score $score/" . count( $bot_fingerprint ) . ")",
 				) );
 			}
 		}
@@ -402,7 +404,7 @@ class CF7_AntiSpam_filters {
 			if ($user_agent == '') {
 				$spam = true;
 
-				if (WP_DEBUG) error_log( "The email user agent is listed into bad user agent list - $user_agent contains $bad_user_agent" );
+				if (WP_DEBUG) error_log( "The email user agent is empty, look like a spambot");
 
 				$submission->add_spam_log( array(
 					'agent'  => 'no_user_agent',
