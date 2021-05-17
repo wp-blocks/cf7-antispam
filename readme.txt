@@ -71,7 +71,7 @@ zen.spamhaus.org [spamhaus.org license](https://www.spamhaus.org/organization/dn
 bl.spamcop.net [spamcop.net license](https://www.spamcop.net/fom-serve/cache/297.html)
 b.barracudacentral.org [barracudacentral.org privacy-policy](https://www.barracuda.com/company/legal/trust-center/data-privacy/privacy-policy)
 dnsbl.dronebl.org [dronebl.org](https://dronebl.org/docs/faq)
-spam.spamrats.com [spamrats.com](https://spamrats.com/about.php)
+dns.spfbl.net [spfbl.net](https://spfbl.net/dnsbl/)
 bogons.cymru.com [cymru.com privacy](https://team-cymru.com/privacy/)
 bl.ipv6.spameatingmonkey.net [spameatingmonkey.net](https://spameatingmonkey.com/faq)
 
