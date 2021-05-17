@@ -33,9 +33,6 @@
 
   const wpcf7Forms = document.querySelectorAll( '.wpcf7' );
 
-  // used to store the mouse movements
-  let moved = 0;
-
   function createCF7Afield(key, value) {
     let e = document.createElement('input');
     e.setAttribute("type", "hidden");
@@ -43,6 +40,8 @@
     e.setAttribute("value", value );
     return e;
   }
+
+  let oldy = 0, moved = 0;
 
   if (wpcf7Forms.length) {
     for (const wpcf7Form of wpcf7Forms) {
@@ -73,20 +72,34 @@
         // check for mouse clicks
         let activity = $(wpcf7Form)[0].querySelector('form > div input[name=_wpcf7a_activity]');
         let activity_value = 0;
-        document.body.addEventListener('click', function (e) {
+        document.body.addEventListener('click touchstart', function (e) {
           activity.setAttribute("value", activity_value++ );
         }, true);
 
-        // detect the mouse movements
+        // detect the mouse/touch movements
         const mouseMove= function (e) {
-          moved += e.clientX > 100 ? 1 : 0;
+          if (e.pageY > oldy) {
+            moved += 1;
+          }
 
-          if (moved > 50) {
+          oldy = e.pageY;
+
+          if (moved > 3) {
             document.removeEventListener('mousemove', mouseMove);
+            document.removeEventListener('touchstart', onFirstTouch);
             $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
-        document.addEventListener('mousemove', mouseMove);
+        document.addEventListener('mousemove', mouseMove );
+        const onFirstTouch= function (e) {
+          moved += 1;
+          if (moved > 3) {
+            document.removeEventListener('mousemove', mouseMove);
+            document.removeEventListener('touchstart', onFirstTouch);
+            $(wpcf7Form).find('form > div').append(createCF7Afield("touchmove_activity", "passed"));
+          }
+        };
+        document.addEventListener('touchstart', onFirstTouch );
 
         let hidden = document.createElement('div');
         hidden.id = 'hidden';

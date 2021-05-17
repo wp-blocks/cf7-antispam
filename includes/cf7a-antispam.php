@@ -434,11 +434,11 @@ class CF7_AntiSpam_filters {
 		 */
 		if ( $options['check_bot_fingerprint_extras'] ) {
 			$bot_fingerprint = array(
-				"extras" => esc_html($_POST['_wpcf7a_bot_fingerprint_extras']),
-				"activity" => intval($_POST['_wpcf7a_activity']),
-				"mousemove_activity" => $_POST['_wpcf7a_mousemove_activity'] === 'passed' ? 'passed' : 0,
-				"webgl" => $_POST['_wpcf7a_webgl'] === 'passed' ? 'passed' : 0,
-				"webgl_render" => $_POST['_wpcf7a_webgl_render'] === 'passed' ? 'passed' : 0,
+				"extras"             => esc_html( $_POST['_wpcf7a_bot_fingerprint_extras'] ),
+				"activity"           => intval( $_POST['_wpcf7a_activity'] ),
+				"mousemove_activity" => isset( $_POST['_wpcf7a_mousemove_activity'] ) && esc_html( $_POST['_wpcf7a_mousemove_activity'] ) === 'passed' ? 'passed' : 0,
+				"webgl"              => esc_html( $_POST['_wpcf7a_webgl'] ) === 'passed' ? 'passed' : 0,
+				"webgl_render"       => esc_html( $_POST['_wpcf7a_webgl_render'] ) === 'passed' ? 'passed' : 0,
 			);
 
 			$fail = [];
