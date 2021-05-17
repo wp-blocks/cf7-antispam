@@ -23,21 +23,30 @@ class CF7_AntiSpam_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
 		// create the term database
-		$cf7a_database = "CREATE TABLE " . $wpdb->prefix . "cf7_antispam_wordlist (
+		$cf7a_wordlist = "CREATE TABLE " . $wpdb->prefix . "cf7a_wordlist (
 		  `token` varchar(255) character set utf8 collate utf8_bin NOT NULL,
 		  `count_ham` int unsigned default NULL,
 		  `count_spam` int unsigned default NULL,
 		  PRIMARY KEY (`token`)
 		) $charset_collate;";
 
-		$cf7a_database_version = "INSERT INTO " . $wpdb->prefix . "cf7_antispam_wordlist (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
-		$cf7a_database_texts = "INSERT INTO " . $wpdb->prefix . "cf7_antispam_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
+		$cf7a_wordlist_version = "INSERT INTO " . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
+		$cf7a_wordlist_texts = "INSERT INTO " . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
+
+		$cf7a_database = "CREATE TABLE " . $wpdb->prefix . "cf7a_blacklist (
+		  `ip` varchar(255) character set utf8 collate utf8_bin NOT NULL,
+		  `status` int unsigned default NULL,
+		  `reason` longtext CHARACTER SET utf8 COLLATE $charset_collate,
+		  PRIMARY KEY (`ip`)
+		) $charset_collate;";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
+		dbDelta( $cf7a_wordlist );
+		dbDelta( $cf7a_wordlist_version );
+		dbDelta( $cf7a_wordlist_texts );
+
 		dbDelta( $cf7a_database );
-		dbDelta( $cf7a_database_version );
-		dbDelta( $cf7a_database_texts );
 	}
 
  	public static function activate() {
@@ -60,6 +69,8 @@ class CF7_AntiSpam_Activator {
 				"check_time" => true,
 				"check_time_min" => 6,
 				"check_time_max" => 3600,
+				"check_bad_ip" => true,
+				"autostore_bad_ip" => true,
 				"check_bad_words" => true,
 				"check_bad_email_strings" => true,
 				"check_bad_user_agent" => true,
@@ -72,6 +83,7 @@ class CF7_AntiSpam_Activator {
 					'Earn extra cash',
 					'MEET SINGLES'
 				),
+				"bad_ip_list" => array(),
 				"bad_email_strings_list" => array(
 					str_replace( array( 'http://', 'https://', 'www' ), "", get_site_url()) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
 				),

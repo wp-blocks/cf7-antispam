@@ -92,6 +92,39 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
+		// Section Bad IP
+		add_settings_section( 'cf7a_bad_ip', // ID
+			__('Bad IP Address', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_section_bad_ip' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings check_bad_ip
+		add_settings_field( 'check_bad_ip', // ID
+			__('Check the sender IP Address', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_check_bad_ip_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bad_ip' // Section
+		);
+
+		// Settings autostore_bad_ip
+		add_settings_field( 'autostore_bad_ip', // ID
+			__('automatically blacklists spammers IP Address', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_autostore_bad_ip_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bad_ip' // Section
+		);
+
+		// Settings bad_ip_list
+		add_settings_field( 'bad_ip_list', // ID
+			__('Bad IP Address List', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_bad_ip_list_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bad_ip' // Section
+		);
+
+
+
 		// Section Bad Words
 		add_settings_section( 'cf7a_bad_words', // ID
 			__('Bad words', 'cf7-antispam'), // Title
@@ -231,6 +264,10 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf( '<p>' . esc_html__("This test the submission time", 'cf7-amntispam') . '</p>' );
 	}
 
+	public function cf7a_print_section_bad_ip() {
+		printf( '<p>' . esc_html__("Filter the sender IP Address", 'cf7-amntispam') . '</p>' );
+	}
+
 	public function cf7a_print_section_bad_words() {
 		printf( '<p>' . esc_html__("Check if the mail message contains bad words", 'cf7-amntispam') . '</p>' );
 	}
@@ -277,6 +314,15 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 		if ( isset( $input['check_time_max'] ) ) {
 			$new_input['check_time_max'] = intval( $input['check_time_max'] );
+		}
+
+
+		// bad ip
+		$new_input['check_bad_ip'] =  isset( $input['check_bad_ip'] ) ? 1 : 0 ;
+		$new_input['autostore_bad_ip'] =  isset( $input['autostore_bad_ip'] ) ? 1 : 0 ;
+
+		if ( isset( $input['bad_ip_list'] ) ) {
+			$new_input['bad_ip_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_ip_list'] ));
 		}
 
 
@@ -367,6 +413,26 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
+	public function cf7a_check_bad_ip_callback() {
+		printf(
+			'<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />',
+			isset( $this->options['check_bad_ip'] ) && $this->options['check_bad_ip'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_autostore_bad_ip_callback() {
+		printf(
+			'<input type="checkbox" id="autostore_bad_ip" name="cf7a_options[autostore_bad_ip]" %s />',
+			isset( $this->options['autostore_bad_ip'] ) && $this->options['autostore_bad_ip'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_bad_ip_list_callback() {
+		printf(
+			'<textarea id="bad_ip_list" name="cf7a_options[bad_ip_list]" />%s</textarea>',
+			isset( $this->options['bad_ip_list'] ) && is_array($this->options['bad_ip_list']) ? implode("\r\n", $this->options['bad_ip_list'] ) : ''
+		);
+	}
+
+
 	public function cf7a_bad_words_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_words" name="cf7a_options[check_bad_words]" %s />',
@@ -427,6 +493,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? implode("\r\n", $this->options['dnsbl_list'] ) : ''
 		);
 	}
+
 
 
 	public function cf7a_enable_b8_callback() {
