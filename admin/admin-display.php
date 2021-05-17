@@ -19,7 +19,7 @@
 		          )
 	          );
 	          ?></p>
-          <p><?php echo esc_html( __( "And don't forget to add also flamingo_message: \"[your-message]\" to your message to get the full functionality of this plugin", 'cf7-antispam' ) ); ?></p>
+          <b><p><?php echo esc_html( __( "And don't forget to add also flamingo_message: \"[your-message]\" to your message to get the full functionality of this plugin", 'cf7-antispam' ) ); ?></p></b>
         </div>
 			<?php
 				// This prints out all hidden setting fields
@@ -31,6 +31,12 @@
 			</form>
 		</div>
 	</div>
+  <div class="card">
+    <h4><?php _e('IP Blacklist') ?></h4>
+    <p><?php CF7_AntiSpam_Admin_Tools::cf7a_get_blacklisted_table(); ?></p>
+  </div>
+
+
 
 <?php if (WP_DEBUG) {
 	echo '<div class="card">';
@@ -40,4 +46,6 @@
 	echo '<pre>' . htmlentities(print_r(get_option( 'cf7a_options' ), true)) . '</pre>';
 	echo '</div>';
 }
+
+
 echo '</div>';
