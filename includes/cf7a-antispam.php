@@ -622,10 +622,10 @@ class CF7_AntiSpam_filters {
 			}
 
 			foreach ($options['dnsbl_list'] as $dnsbl) {
-				error_log( $dnsbl );
 				$time_elapsed = cf7a_microtimeFloat();
-				if ( false !== ( $dnsbl = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
-					$dsnbl_listed[] = $dnsbl;
+				error_log( $dnsbl );
+				if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
+					$dsnbl_listed[] = $listed;
 				}
 				$time_taken = round( cf7a_microtimeFloat() - $time_elapsed, 5 );
 				$performance_test[$dnsbl] = $time_taken;

@@ -107,7 +107,6 @@ class CF7_AntiSpam_Activator {
 					"dnsbl.dronebl.org",
 					"spam.spamrats.com",
 					// ipv6 dnsbl
-					"dnsbl.spfbl.net",
 					"bogons.cymru.com",
 					"bl.ipv6.spameatingmonkey.net",
 				),
