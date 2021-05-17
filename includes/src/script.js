@@ -83,7 +83,7 @@
 
           if (moved > 50) {
             document.removeEventListener('mousemove', mouseMove);
-            $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "true"));
+            $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
         document.addEventListener('mousemove', mouseMove);
