@@ -104,11 +104,11 @@ class CF7_AntiSpam_filters {
 		if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) return false;
 
 		global $wpdb;
-		$ip_row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->cf7a_blacklist WHERE ip = %d", $ip ) );
+		$ip_row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %d", $ip ) );
 
-		if ($ip_row->ip) {
+		if ($ip_row > 0 && $ip_row->ip) {
 			$ip_row = $wpdb->replace(
-				$wpdb->cf7a_blacklist,
+				$wpdb->prefix . "cf7a_blacklist",
 				array(
 					'ip' => $ip,
 					'status' => isset($ip_row->status) ? $ip_row->status + 1 : 1,
@@ -123,7 +123,7 @@ class CF7_AntiSpam_filters {
 				array( '%s' )
 			);
 
-			if (!$ip_row) error_log(printf(__("unable to  %s", "cf7-antispam" ), $ip ));
+			if (!$ip_row) error_log(printf(__("AntiSpam for Contact Form 7 - unable to blacklist %s", "cf7-antispam" ), $ip ));
 		}
 
 	}
@@ -133,13 +133,13 @@ class CF7_AntiSpam_filters {
 		if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) return false;
 
 		global $wpdb;
-		$ip_row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->cf7a_blacklist WHERE ip = %d", $ip ) );
+		$ip_row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %d", $ip ) );
 
 		$new_status = isset($ip_row->status) ? $ip_row->status - $status_remove : 0;
 
-		if ($ip_row->ip) {
+		if ($ip_row > 0 && $ip_row->ip) {
 			$ip_row = $wpdb->replace(
-				$wpdb->cf7a_blacklist,
+				$wpdb->prefix . "cf7a_blacklist",
 				array(
 					'ip' => $ip,
 					'status' => $new_status < 0 ? 0 : $new_status,
@@ -154,7 +154,7 @@ class CF7_AntiSpam_filters {
 				array( '%s' )
 			);
 
-			if (!$ip_row) error_log(printf(__("unable to unban %s", "cf7-antispam"), $ip ));
+			if (!$ip_row) error_log(printf(__("AntiSpam for Contact Form 7 - unable to unban %s", "cf7-antispam"), $ip ));
 		}
 	}
 
@@ -622,6 +622,7 @@ class CF7_AntiSpam_filters {
 			}
 
 			foreach ($options['dnsbl_list'] as $dnsbl) {
+				error_log( $dnsbl );
 				$time_elapsed = cf7a_microtimeFloat();
 				if ( false !== ( $dnsbl = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 					$dsnbl_listed[] = $dnsbl;
@@ -630,7 +631,10 @@ class CF7_AntiSpam_filters {
 				$performance_test[$dnsbl] = $time_taken;
 			}
 
-			if (CF7ANTISPAM_DEBUG) error_log( print_r($performance_test, true) );
+			if (CF7ANTISPAM_DEBUG) {
+				error_log( "DNSBL performance test" );
+				error_log( print_r($performance_test, true) );
+			}
 
 
 			if ( count($dsnbl_listed) >= $dnsbl_tolerance ) {
