@@ -60,9 +60,24 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the LICENSE file for more details.
 
 == Resources ==
+* Contact Form 7, Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
 * b8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
 * Sudden Shower in the Summer, Public domain, Wikimedia Commons https://commons.wikimedia.org/wiki/File:Sudden_Shower_in_the_Summer_(5759500422).jpg
+dnsbl-1.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
+dnsbl-2.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
+dnsbl-3.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
+dnsbl.sorbs.net [sorbs.net license](http://www.sorbs.net/information/faq/)
+zen.spamhaus.org [spamhaus.org license](https://www.spamhaus.org/organization/dnsblusage/)
+bl.spamcop.net [spamcop.net license](https://www.spamcop.net/fom-serve/cache/297.html)
+b.barracudacentral.org [barracudacentral.org privacy-policy](https://www.barracuda.com/company/legal/trust-center/data-privacy/privacy-policy)
+dnsbl.dronebl.org [dronebl.org](https://dronebl.org/docs/faq)
+spam.spamrats.com [spamrats.com](https://spamrats.com/about.php)
+bogons.cymru.com [cymru.com privacy](https://team-cymru.com/privacy/)
+bl.ipv6.spameatingmonkey.net [spameatingmonkey.net](https://spameatingmonkey.com/faq)
 
 == Inspirations ==
 Alexander Romanov [Bot detection page](bot.sannysoft.com)
 Nikolai Tschacher [incolumitas.com](https://incolumitas.com/pages/BotOrNot/)
+Thomas Breuss [tbreuss](https://gist.github.com/tbreuss/74da96ff5f976ce770e6628badbd7dfc)
+Domain Name System-based blackhole list [wiki](https://en.wikipedia.org/wiki/Domain_Name_System-based_blackhole_list)
+dnsbl list [wiki](https://en.wikipedia.org/wiki/Comparison_of_DNS_blacklists)

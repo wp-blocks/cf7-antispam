@@ -13,6 +13,8 @@ if ( ! defined( 'WPINC' ) ) {die;}
 
 
 // CONSTANTS
+if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', true);
+
 define( 'CF7ANTISPAM_VERSION', '0.0.1' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );

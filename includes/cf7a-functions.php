@@ -1,6 +1,6 @@
 <?php
 
-function get_real_ip() {
+function cf7a_get_real_ip() {
 	if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && filter_var( $_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP ) ) {
 		return $_SERVER['HTTP_CLIENT_IP'];
 	} else if ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && filter_var( $_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP ) ) {
@@ -22,12 +22,12 @@ function cf7a_decrypt( $value , $cipher = "aes-256-cbc" ) {
 	return openssl_decrypt( $value , $cipher, wp_salt('nonce'), $options=0, substr(wp_salt('nonce'), 0, 16) );
 }
 
-function microtimeFloat() {
+function cf7a_microtimeFloat() {
 	list($usec, $sec) = explode(' ', microtime());
 	return (float) $usec + (float) $sec;
 }
 
-function formatRating($rating) {
+function cf7a_formatRating($rating) {
 
 	if (!is_numeric($rating)) return '<span class="flamingo-rating-label" style="background-color:rgb(100,100,100)"><b>'.__('none').'</b></span>';
 

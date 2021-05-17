@@ -50,7 +50,7 @@ class CF7_AntiSpam_Frontend {
 
 		$timestamp = time();
 
-		$ip = get_real_ip();
+		$ip = cf7a_get_real_ip();
 
 		return array_merge( $fields, array(
 			'_wpcf7a_version' => $this->version,
