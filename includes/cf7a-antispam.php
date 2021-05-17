@@ -286,11 +286,9 @@ class CF7_AntiSpam_filters {
 
 	public function cf7a_spam_filter( $spam ) {
 
-		// Time Counter
-		$time_elapsed = null;
-
 		// Get the submitted data
 		$submission = WPCF7_Submission::get_instance();
+		// error_log( print_r($submission, true) );
 
 		if ( ! $submission
 		     or ! $posted_data = $submission->get_posted_data() ) {
@@ -622,12 +620,12 @@ class CF7_AntiSpam_filters {
 			}
 
 			foreach ($options['dnsbl_list'] as $dnsbl) {
-				$time_elapsed = cf7a_microtimeFloat();
+				$microtime = cf7a_microtimeFloat();
 				error_log( $dnsbl );
 				if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 					$dsnbl_listed[] = $listed;
 				}
-				$time_taken = round( cf7a_microtimeFloat() - $time_elapsed, 5 );
+				$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
 				$performance_test[$dnsbl] = $time_taken;
 			}
 
