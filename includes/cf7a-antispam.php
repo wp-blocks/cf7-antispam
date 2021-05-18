@@ -103,7 +103,7 @@ class CF7_AntiSpam_filters {
 		if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) return false;
 
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %d", $ip ) );
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %s", $ip ) );
 
 	}
 
@@ -204,8 +204,6 @@ class CF7_AntiSpam_filters {
 		foreach ( (array) $_REQUEST['post'] as $post ) {
 
 			$flamingo_post = new Flamingo_Inbound_Message( $post );
-
-			//TODO there is 4 sure a better way to get the additional settings, at @Takayuki
 
 			// get the form tax using the slug we find in the flamingo message
 			$form = get_term_by('slug', $flamingo_post->channel,'flamingo_inbound_channel');
@@ -311,9 +309,8 @@ class CF7_AntiSpam_filters {
 		// the sender data
 		$real_remote_ip = cf7a_decrypt( esc_html($_POST['_wpcf7a_real_sender_ip']) );
 		$remote_ip = filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) ? $real_remote_ip : '';
+
 		$user_agent = $submission->get_meta( 'user_agent' );
-
-
 
 		// this plugin options
 		$options = get_option( 'cf7a_options', array() );
@@ -638,7 +635,7 @@ class CF7_AntiSpam_filters {
 					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 						$dsnbl_listed[] = $listed;
-						$spam_score += .5;
+						$spam_score += 1 / $dnsbl_tolerance;
 					}
 					$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
 					$performance_test[$dnsbl] = $time_taken;
@@ -708,7 +705,7 @@ class CF7_AntiSpam_filters {
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
 		if ($options['autostore_bad_ip'] && $spam) {
-			if (false == $this->cf7a_ban_ip($remote_ip, $reason, intval(round($spam_score)) ) && CF7ANTISPAM_DEBUG)
+			if (false == $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) && CF7ANTISPAM_DEBUG)
 				error_log( "Antispam for Contact Form 7: unable to ban $remote_ip" );
 		}
 
