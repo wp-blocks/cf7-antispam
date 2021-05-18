@@ -37,13 +37,47 @@ class CF7_AntiSpam_Frontend {
 
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
 
-		if (isset($this->options['check_bot_fingerprint'])) {
-			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting') , 100, 1 );
+		// TODO: change with honeypot
+		if ( isset( $this->options['check_bot_fingerprint'] ) ) {
+			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_add_honeypot'), 10, 1  );
 		}
 
-		if (isset($this->options['check_bot_fingerprint_extras'])) {
-			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras') , 100, 1 );
+		if ( isset( $this->options['check_bot_fingerprint'] ) ) {
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100, 1 );
 		}
+
+		if ( isset( $this->options['check_bot_fingerprint_extras'] ) ) {
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100, 1 );
+		}
+	}
+
+	public function cf7a_add_honeypot( $form_elements ) {
+
+		$html = new DOMDocument();
+		$html->loadHTML( $form_elements, LIBXML_HTML_NODEFDTD );
+
+		$inputs  = $html->getelementsbytagname( 'input' );
+		$parents = [];
+		$clones  = [];
+
+		if ( $inputs && $inputs->length > 0 ) {
+			for ( $i = 0; $i < count( $inputs ); $i ++ ) {
+				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
+					$parents[] = $inputs->item( $i )->parentNode;
+					$clones[]  = $inputs->item( $i )->cloneNode();
+					if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
+						$inputs->item( $i )->setAttribute( 'name', cf7a_crypt( $inputs->item( $i )->getAttribute( 'name' ) ) );
+						$inputs->item( $i )->setAttribute( 'class', 'honeypot ' . $inputs->item( $i )->getAttribute( 'class' ) );
+					}
+				}
+			}
+		}
+
+		foreach ( $parents as $k => $parent ) {
+			$parent->appendChild( $clones[ $k ] );
+		}
+
+		return $html->saveHTML();
 	}
 
 	public function cf7a_add_hidden_fields( $fields ) {
