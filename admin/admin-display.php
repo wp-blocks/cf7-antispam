@@ -38,12 +38,14 @@
 
 
 
-<?php if (WP_DEBUG) {
+<?php
+$options = get_option( 'cf7a_options' );
+if (WP_DEBUG) {
 	echo '<div class="card">';
 	echo '<h3>'.__('Debug info').'</h3>';
 	echo '<p>'.__('If you see this box it is because wp_debug is active!').'</p>';
 
-	echo '<pre>' . htmlentities(print_r(get_option( 'cf7a_options' ), true)) . '</pre>';
+	echo '<pre>' . htmlentities(print_r($options, true)) . '</pre>';
 	echo '</div>';
 }
 

@@ -18,11 +18,13 @@ class CF7_AntiSpam_Admin_Tools {
 		global $wpdb;
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
 
-		echo '<div class="widefat blacklist-table">';
-		foreach ($blacklisted as $row) {
-			printf("<div class='row'><div class='status'>%s</div><div><p class='ip'>%s</p><span class='ellipsis'>%s</span></div></div>", self::cf7a_format_status($row->status), $row->ip, $row->reason);
+		if ($blacklisted) {
+			echo '<div class="widefat blacklist-table">';
+			foreach ($blacklisted as $row) {
+				printf("<div class='row'><div class='status'>%s</div><div><p class='ip'>%s</p><span class='ellipsis'>%s</span></div></div>", self::cf7a_format_status($row->status), $row->ip, $row->reason);
+			}
+			echo '</div>';
 		}
-		echo '</div>';
 	}
 
 }
