@@ -72,39 +72,32 @@
         // check for mouse clicks
         let activity = $(wpcf7Form)[0].querySelector('form > div input[name=_wpcf7a_activity]');
         let activity_value = 0;
-        document.body.addEventListener('click touchstart', function (e) {
+        document.body.addEventListener('mouseup', function (e) {
           activity.setAttribute("value", activity_value++ );
         }, true);
+        document.body.addEventListener('touchend', function (e) {
+          activity.setAttribute("value", activity_value++ );
+          if (activity_value == 3) $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
+        }, true);
 
-        // detect the mouse/touch movements
+        // detect the mouse/touch direction change OR touchscreen iterations
         const mouseMove= function (e) {
           if (e.pageY > oldy) {
             moved += 1;
           }
-
           oldy = e.pageY;
 
           if (moved > 3) {
             document.removeEventListener('mousemove', mouseMove);
-            document.removeEventListener('touchstart', onFirstTouch);
             $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
         document.addEventListener('mousemove', mouseMove );
-        const onFirstTouch= function (e) {
-          moved += 1;
-          if (moved > 3) {
-            document.removeEventListener('mousemove', mouseMove);
-            document.removeEventListener('touchstart', onFirstTouch);
-            $(wpcf7Form).find('form > div').append(createCF7Afield("touchmove_activity", "passed"));
-          }
-        };
-        document.addEventListener('touchstart', onFirstTouch );
 
-        let hidden = document.createElement('div');
-        hidden.id = 'hidden';
+        let wpcf7box = document.createElement('div');
+        wpcf7box.id = 'hidden';
         let form_hidden_field = $(wpcf7Form)[0].querySelector('form > div');
-        form_hidden_field.append(hidden);
+        form_hidden_field.append(wpcf7box);
 
         // credits //bot.sannysoft.com
         // tools
@@ -122,11 +115,11 @@
         // WebGL Tests
         let wglv = document.createElement('div');
         wglv.id = 'webgl-vendor';
-        hidden.append(wglv);
+        wpcf7box.append(wglv);
         const webGLVendorElement = document.getElementById('webgl-vendor');
         let wgle = document.createElement('div');
         wgle.id = 'webgl-renderer';
-        hidden.append(wgle);
+        wpcf7box.append(wgle);
         const webGLRendererElement = document.getElementById('webgl-renderer');
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('webgl-experimental');
@@ -195,7 +188,7 @@
         testCanvas[5].append(testCanvasIframe[5]);
 
         testCanvas.forEach(function (e) {
-          hidden.appendChild(e);
+          wpcf7box.appendChild(e);
         });
 
         let drawCanvas2 = function (num, useIframe = false) {
@@ -302,11 +295,10 @@
         drawCanvas2("4", true);
         drawCanvas2("5", true);
 
+        // then remove the useless div
+        wpcf7box.remove();
+
       }
-
-      // then remove the useless div
-      hidden.remove();
-
     }
   }
 
