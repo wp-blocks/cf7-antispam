@@ -9,9 +9,9 @@ class CF7_AntiSpam_Admin_Tools {
 	}
 
 	public static function cf7a_format_status($rank) {
-		$color = $rank < 3 ? 'warn' :
-			($rank < 8 ? 'alert' : 'spammer');
-		return "<span class='ico $color'>$rank</span>";
+		$color = 200 - ($rank * 2);
+		$color =  $color < 0 ? 0 : $color;
+		return "<span class='ico' style='background-color: rgba(250,$color,0)'>$rank</span>";
 	}
 
 	public static function cf7a_get_blacklisted_table() {

@@ -94,15 +94,6 @@ body.contact_page_cf7-antispam {
           text-align: center;
           margin: 0;
           padding: 5px;
-          &.spammer {
-            background: $color__error;
-          }
-          &.alert {
-            background: $color__alert;
-          }
-          &.warn {
-            background: $color__warn;
-          }
         }
       }
   
@@ -110,6 +101,11 @@ body.contact_page_cf7-antispam {
         font-family: monospace;
         font-weight: bold;
         margin: 0
+      }
+      
+      span {
+        display: block;
+        max-width: 400px;
       }
       
     }
