@@ -107,33 +107,29 @@ class CF7_AntiSpam_filters {
 
 	}
 
-	public function cf7a_ban_ip($ip, $spam_score = 1, $reason = false) {
+	public function cf7a_ban_ip($ip, $reason = "", $spam_score = 1) {
 
 		if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) return false;
 
 		$ip_row = self::cf7a_blacklist_get_ip($ip);
 
-		if ($ip_row > 0 && $ip_row->ip) {
-			global $wpdb;
-			$ip_row = $wpdb->replace(
-				$wpdb->prefix . "cf7a_blacklist",
-				array(
-					'ip' => $ip,
-					'status' => isset($ip_row->status) ? $ip_row->status + $spam_score : 1,
-					'reason' => $reason
-				),
-				array( 'ip' => $ip ),
-				array(
-					'%s',
-					'%d',
-					'%s'
-				),
-				array( '%s' )
-			);
+		global $wpdb;
 
-			if (!$ip_row) error_log(printf(__("AntiSpam for Contact Form 7 - unable to blacklist %s", "cf7-antispam" ), $ip ));
-		}
+		$r = $wpdb->replace(
+			$wpdb->prefix . "cf7a_blacklist",
+			array(
+				'ip' => $ip,
+				'status' => isset($ip_row->status) ? intval($ip_row->status) + intval($spam_score) : 1,
+				'reason' => $reason
+			),
+			array(
+				'%s',
+				'%d',
+				'%s'
+			)
+		);
 
+		return $r ? true : error_log(printf(__("AntiSpam for Contact Form 7 - unable to blacklist %s", "cf7-antispam" ), $ip ));
 	}
 
 	public function cf7a_unban_ip($ip, $status_remove = 1) {
@@ -142,28 +138,25 @@ class CF7_AntiSpam_filters {
 
 		$ip_row = self::cf7a_blacklist_get_ip($ip);
 
+		global $wpdb;
+
 		$new_status = isset($ip_row->status) ? $ip_row->status - $status_remove : 0;
 
-		if ($ip_row > 0 && $ip_row->ip) {
-			global $wpdb;
-			$ip_row = $wpdb->replace(
-				$wpdb->prefix . "cf7a_blacklist",
-				array(
-					'ip' => $ip,
-					'status' => $new_status < 0 ? 0 : $new_status,
-					'reason' => $ip_row->reason
-				),
-				array( 'ip' => $ip ),
-				array(
-					'%s',
-					'%d',
-					'%s'
-				),
-				array( '%s' )
-			);
+		$r = $wpdb->replace(
+			$wpdb->prefix . "cf7a_blacklist",
+			array(
+				'ip' => $ip,
+				'status' => $new_status < 0 ? 0 : $new_status,
+				'reason' => esc_html($ip_row->reason)
+			),
+			array(
+				'%s',
+				'%d',
+				'%s'
+			)
+		);
 
-			if (!$ip_row) error_log(printf(__("AntiSpam for Contact Form 7 - unable to unban %s", "cf7-antispam"), $ip ));
-		}
+		return $r ? true : error_log(printf(__("AntiSpam for Contact Form 7 - unable to unban %s", "cf7-antispam" ), $ip ));
 	}
 
 
@@ -716,7 +709,7 @@ class CF7_AntiSpam_filters {
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
 		if ($options['autostore_bad_ip'] && $spam) {
-			if (false == $this->cf7a_ban_ip($remote_ip, $reason, $spam_score) && CF7ANTISPAM_DEBUG)
+			if (false == $this->cf7a_ban_ip($remote_ip, $reason, intval(round($spam_score)) ) && CF7ANTISPAM_DEBUG)
 				error_log( "Antispam for Contact Form 7: unable to ban $remote_ip" );
 		}
 
