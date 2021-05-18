@@ -36,3 +36,14 @@ function cf7a_formatRating($rating) {
 	$color = "rgb($red,$green,0)";
 	return '<span class="flamingo-rating-label" style="background-color:'.$color.'" ><b>' . round( $rating * 100) . "% </b></span>";
 }
+
+function compress_reasons_array($reason) {
+
+	if (!is_array($reason)) return;
+
+	foreach($reason as $k => $v){
+		$reasons[] = $k.": ".$v;
+	}
+
+	return implode(", ",$reasons);
+}

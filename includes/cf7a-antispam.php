@@ -8,17 +8,6 @@ class CF7_AntiSpam_filters {
 		$this->b8 = $this->cf7a_b8_init();
 	}
 
-	private function compress_reasons_array($reason) {
-
-		if (!is_array($reason)) return;
-
-		foreach($reason as $k => $v){
-			$reasons[] = $k.": ".$v;
-		}
-
-		return implode(", ",$reasons);
-	}
-
 	// expand IPv6 address
 	public function cf7a_expand_ipv6( $ip ) {
 		$hex = unpack( "H*hex", inet_pton( $ip ) );
@@ -131,7 +120,7 @@ class CF7_AntiSpam_filters {
 			array(
 				'ip' => $ip,
 				'status' => isset($ip_row->status) ? intval($ip_row->status) + intval($spam_score) : 1,
-				'reason' => is_array($reason) ? $this->compress_reasons_array($reason) : $reason,
+				'reason' => is_array($reason) ? compress_reasons_array($reason) : $reason,
 			),
 			array(
 				'%s',
@@ -365,9 +354,10 @@ class CF7_AntiSpam_filters {
 		 * Checks if the ip is already banned - no mercy :)
 		 */
 		$ip_data = self::cf7a_blacklist_get_ip($remote_ip);
-		if ( $ip_data && $ip_data->ip && $ip_data->status <= 0 ) {
+		if ( $ip_data && $ip_data->status != 0 ) {
 
 			$spam_score += 1;
+			$reason['blacklisted'] = "status " . ($ip_data->status + 1);
 
 		} else {
 
