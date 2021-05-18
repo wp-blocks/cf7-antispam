@@ -14,6 +14,8 @@ if ( ! defined( 'WPINC' ) ) {die;}
 
 // CONSTANTS
 if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', true);
+if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);
+if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
 
 define( 'CF7ANTISPAM_VERSION', '0.0.1' );
 
