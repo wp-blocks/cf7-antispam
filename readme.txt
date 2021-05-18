@@ -35,6 +35,12 @@ The purpose of this word collecting is to build a dictionary used for the spam d
 Community support via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
 Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 
+== How it Work ==
+
+== TO DOs ==
+Honeypot
+Ban by geolocation
+
 == Upgrade Notice ==
 
 == Changelog ==
@@ -81,3 +87,4 @@ Nikolai Tschacher [incolumitas.com](https://incolumitas.com/pages/BotOrNot/)
 Thomas Breuss [tbreuss](https://gist.github.com/tbreuss/74da96ff5f976ce770e6628badbd7dfc)
 Domain Name System-based blackhole list [wiki](https://en.wikipedia.org/wiki/Domain_Name_System-based_blackhole_list)
 dnsbl list [wiki](https://en.wikipedia.org/wiki/Comparison_of_DNS_blacklists)
+
