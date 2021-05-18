@@ -11,18 +11,18 @@ class CF7_AntiSpam_Admin_Tools {
 	public static function cf7a_format_status($rank) {
 		$color = $rank < 3 ? 'warn' :
 			($rank < 8 ? 'alert' : 'spammer');
-		return "<span class='status $color'>$rank</span>";
+		return "<span class='ico $color'>$rank</span>";
 	}
 
 	public static function cf7a_get_blacklisted_table() {
 		global $wpdb;
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
 
-		echo '<table class="widefat blacklist-table">';
+		echo '<div class="widefat blacklist-table">';
 		foreach ($blacklisted as $row) {
-			echo "<tr><td>". self::cf7a_format_status($row->status)."</td><td><p class='ip'>$row->ip</p>$row->reason</td></tr>";
+			printf("<div class='row'><div class='status'>%s</div><div><p class='ip'>%s</p><span class='ellipsis'>%s</span></div></div>", self::cf7a_format_status($row->status), $row->ip, $row->reason);
 		}
-		echo '</table>';
+		echo '</div>';
 	}
 
 }

@@ -13,6 +13,13 @@ $color__error: $color__red;
 $color__alert: $color__orange;
 $color__warn: $color__yellow;
 
+// utils
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 // Plugin style
 body.contact_page_cf7-antispam {
   
@@ -59,42 +66,54 @@ body.contact_page_cf7-antispam {
   }
 
   .blacklist-table {
+    display: block;
+    max-width: 100%;
     width: 100%;
-    tr {
-      border-bottom: 1px solid $color__light-grey;
-    }
-    td:first-child {
-      width: 50px;
+    
+    div.row {
+      display: flex;
       font-size: 12px;
-    }
-    .ip {
-      font-family: monospace;
-      font-weight: bold;
-      margin: 0
-    }
-    .status {
-      font-family: monospace;
-      border-radius: 50%;
-      color: $color__white;
-      width: 32px;
-      line-height: 32px;
-      font-size: 20px;
-      font-weight: bold;
-      text-shadow: 0 1px 1px transparentize($color__black, .7);
-      display: inline-block;
-      text-align: center;
-      margin: 0 5px;
-      padding: 2px 4px;
-      &.spammer {
-        background: $color__error;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid darken($color__white, 4%);
+      &:last-child { border: 0}
+      
+      .status {
+        width: 50px;
+        margin-right: 8px;
+        .ico {
+          font-family: monospace;
+          border-radius: 50%;
+          color: $color__white;
+          width: 30px;
+          line-height: 30px;
+          font-size: 20px;
+          font-weight: bold;
+          text-shadow: 0 1px 1px transparentize($color__black, .7);
+          display: inline-block;
+          text-align: center;
+          margin: 0;
+          padding: 5px;
+          &.spammer {
+            background: $color__error;
+          }
+          &.alert {
+            background: $color__alert;
+          }
+          &.warn {
+            background: $color__warn;
+          }
+        }
       }
-      &.alert {
-        background: $color__alert;
+  
+      .ip {
+        font-family: monospace;
+        font-weight: bold;
+        margin: 0
       }
-      &.warn {
-        background: $color__warn;
-      }
+      
     }
+    
   }
 }
 
