@@ -136,13 +136,15 @@ class CF7_AntiSpam_filters {
 	public function cf7a_unban_ip($ip, $status_remove = 1) {
 
 		if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) return false;
+		$status_remove = intval($status_remove);
 
+		// get ip data (if any)
 		$ip_row = self::cf7a_blacklist_get_ip($ip);
 
-		global $wpdb;
-
+		// calc the new rating
 		$new_status = isset($ip_row->status) ? $ip_row->status - $status_remove : 0;
 
+		global $wpdb;
 		$r = $wpdb->replace(
 			$wpdb->prefix . "cf7a_blacklist",
 			array(
@@ -232,6 +234,7 @@ class CF7_AntiSpam_filters {
 					$this->cf7a_b8_unlearn_spam($text);
 					$this->cf7a_b8_learn_ham($text);
 
+					//TODO: this ip and the one gathered by plugin can change
 					$this->cf7a_unban_ip($flamingo_post->meta['remote_ip'], 9999 );
 
 				} else {
@@ -322,7 +325,7 @@ class CF7_AntiSpam_filters {
 		$submission_maximum_time_elapsed = 3600;
 
 		// Checks sender has a blacklisted ip address
-		$bad_ip_list = $options['bad_user_agent_list'];
+		$bad_ip_list = $options['bad_ip_list'];
 
 		// Checks if the mail contains bad words
 		$bad_words = $options['bad_words_list'];
@@ -377,10 +380,14 @@ class CF7_AntiSpam_filters {
 				}
 
 				foreach ( $bad_ip_list as $bad_ip ) {
+
 					if ( false !== stripos( $remote_ip , $bad_ip ) ) {
+						error_log(print_r("$remote_ip contains $bad_ip", true));
+
+						$bad_ip = filter_var($bad_ip, FILTER_VALIDATE_IP);
 
 						$spam_score += 1;
-						$reason['ip'] = $remote_ip;
+						$reason['ip'][] = $remote_ip . '('.$bad_ip.')';
 
 						if (CF7ANTISPAM_DEBUG) error_log( "The ip address is listed into bad ip list - $remote_ip contains $bad_ip" );
 
@@ -389,6 +396,7 @@ class CF7_AntiSpam_filters {
 							'reason' => "The sender ip address is blacklisted",
 						) );
 					}
+					if (!empty($reason['ip'])) $reason['ip'] = implode(",", $reason['ip']);
 				}
 			}
 
