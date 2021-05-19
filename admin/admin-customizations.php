@@ -192,7 +192,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// User Agent Blacklist list
 		add_settings_field( 'bad_user_agent_list', // ID
-			__('disallowed user agents', 'cf7-antispam'), // Title
+			__('Disallowed user agents', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_user_agent_list_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_user_agent' // Section
@@ -233,6 +233,23 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
+		// Section honeypot
+		add_settings_section( 'cf7a_honeypot', // ID
+			__('Honeypot', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_honeypot' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Enable honeypot
+		add_settings_field( 'enable_honeypot', // ID
+			__('Add some fake input inside the form', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_enable_honeypot_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_honeypot' // Section
+		);
+
+
+
 		// Section b8
 		add_settings_section( 'cf7a_b8', // ID
 			__('B8 statistical "Bayesian" spam filter', 'cf7-antispam'), // Title
@@ -242,7 +259,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Enable b8
 		add_settings_field( 'enable_b8', // ID
-			__('Enable b8', 'cf7-antispam'), // Title
+			__('Enable B8', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_enable_b8_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_b8' // Section
@@ -250,7 +267,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Settings b8_threshold
 		add_settings_field( 'b8_threshold', // ID
-			__('b8 spam threshold', 'cf7-antispam'), // Title
+			__('B8 spam threshold', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_b8_threshold_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_b8' // Section
@@ -282,6 +299,10 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_dnsbl() {
 		printf( '<p>' . esc_html__("Check sender ip on DNS Blacklists", 'cf7-amntispam') . '</p>' );
+	}
+
+	public function cf7a_print_honeypot() {
+		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-amntispam') . '</p>' );
 	}
 
 	public function cf7a_print_b8() {
@@ -360,11 +381,17 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 
 
+		// honeypot
+		$new_input['enable_honeypot'] =  isset( $input['enable_honeypot'] ) ? 1 : 0 ;
+
+
+
 		// b8
 		$new_input['enable_b8'] =  isset( $input['enable_b8'] ) ? 1 : 0 ;
 
 		$threshold = floatval($input['b8_threshold']);
 		$new_input['b8_threshold'] = ($threshold > 0 && $threshold < 1) ? $threshold : 1;
+
 
 		// store the sanitized options
 		return $new_input;
@@ -506,6 +533,15 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="number" id="b8_threshold" name="cf7a_options[b8_threshold]" value="%s" min="0" max="1" step="0.01" /> <small>(0-1)</small>',
 			isset( $this->options['b8_threshold'] ) ? esc_attr( $this->options['b8_threshold']) : 'none'
+		);
+	}
+
+
+
+	public function cf7a_enable_honeypot_callback() {
+		printf(
+			'<input type="checkbox" id="enable_honeypot" name="cf7a_options[enable_honeypot]" %s />',
+			isset( $this->options['enable_honeypot'] ) && $this->options['enable_honeypot'] == 1 ? 'checked="true"' : ''
 		);
 	}
 }

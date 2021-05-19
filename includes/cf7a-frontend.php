@@ -37,13 +37,98 @@ class CF7_AntiSpam_Frontend {
 
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
 
-		if (isset($this->options['check_bot_fingerprint'])) {
-			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting') , 100, 1 );
+		// TODO: change with honeypot
+		if ( isset( $this->options['enable_honeypot'] ) ) {
+			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_honeypot_add'), 10, 1  );
+			add_filter( 'wpcf7_spam', array($this, 'cf7_honeypot_verify_response'), 5, 1 );
 		}
 
-		if (isset($this->options['check_bot_fingerprint_extras'])) {
-			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras') , 100, 1 );
+		if ( isset( $this->options['check_bot_fingerprint'] ) ) {
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100, 1 );
 		}
+
+		if ( isset( $this->options['check_bot_fingerprint_extras'] ) ) {
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100, 1 );
+		}
+	}
+
+	public function cf7a_honeypot_add( $form_elements ) {
+
+		$html = new DOMDocument();
+		$html->loadHTML( $form_elements, LIBXML_HTML_NODEFDTD );
+
+		$inputs  = $html->getelementsbytagname( 'input' );
+		$parents = [];
+		$clones  = [];
+
+		// $input_names = $this->options['custom_input_names'];
+		$input_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
+
+		//create the style
+		$style = $html->createElement('style');
+		$style->textContent = '.fit-the-fullspace {position:absolute;margin-left:-999em}';
+		$html->appendChild($style);
+
+		// get the inputs data
+		if ( $inputs && $inputs->length > 0 ) {
+			for ( $i = 0; $i < count( $inputs ); $i ++ ) {
+				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
+
+					$parents[] = $inputs->item( $i )->parentNode;
+					$clones[]  = $inputs->item( $i )->cloneNode();
+
+					// $inputs->item( $i )->setAttribute( 'name', cf7a_crypt( $inputs->item( $i )->getAttribute( 'name' ) ) );
+					$inputs->item( $i )->setAttribute( 'tabindex', '' );
+					$inputs->item( $i )->setAttribute( 'class', $inputs->item( $i )->getAttribute( 'class' ) );
+				}
+			}
+		}
+
+		// duplicate the inputs into honeypots
+		foreach ( $parents as $k => $parent ) {
+			$name = isset($input_names[$k]) ? $input_names[$k] : $input_names[$k - count([$parent]) ];
+			$clones[$k]->setAttribute( 'name', $name );
+			$clones[$k]->setAttribute( 'autocomplete', 'fill' );
+			$clones[$k]->setAttribute( 'tabindex', '-1' );
+			$clones[$k]->setAttribute( 'class', $clones[$k]->getAttribute( 'class' ) . ' fit-the-fullspace autocomplete input' ); //TODO: leave the user able to set a new class
+			$parent->appendChild( $clones[ $k ] );
+		}
+
+		return $html->saveHTML();
+	}
+
+	public function cf7_honeypot_verify_response($spam) {
+		if ( $spam ) return $spam;
+
+		$submission = WPCF7_Submission::get_instance();
+		$contact_form = $submission->get_contact_form();
+		$mail_tags=$contact_form->scan_form_tags();
+
+		// we need only the text tags
+		foreach ($mail_tags as $mail_tag) {
+			if ( $mail_tag['type'] == 'text' || $mail_tag['type'] == 'text*' ) $mail_tag_text[] = $mail_tag['name'];
+		}
+
+		$count = 0;
+		$input_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
+
+		for ($i = 0; $i < count($mail_tag_text); $i++) {
+
+			$_POST[$input_names[$i]] = isset($_POST[$input_names[$i]]) ? 1 : false;
+
+			if ( !$_POST[$input_names[$i]] ) {
+				$spam = true;
+				$count++;
+			}
+			unset($_POST[$input_names[$i]]);
+
+			$submission->add_spam_log( array(
+				'agent' => 'honeypot',
+				'reason' => "the bot has filled $count honeypot input",
+			) );
+		}
+
+		return $spam;
 	}
 
 	public function cf7a_add_hidden_fields( $fields ) {
