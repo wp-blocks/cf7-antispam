@@ -48,10 +48,10 @@ class CF7_AntiSpam_filters {
 		);
 
 		// We use the default lexer settings
-		$config_lexer = [];
+		$config_lexer = array();
 
 		// We use the default degenerator configuration
-		$config_degenerator = [];
+		$config_degenerator = array();
 
 		// Include the b8 code
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8/b8.php';
