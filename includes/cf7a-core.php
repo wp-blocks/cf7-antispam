@@ -134,10 +134,11 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_admin() {
+
 		$plugin_antispam = new CF7_AntiSpam_filters();
 
 		// the spam filter
-		add_filter( 'wpcf7_spam', array($plugin_antispam, 'cf7a_spam_filter'), 10, 1 );
+		add_filter( 'wpcf7_spam', array($plugin_antispam, 'cf7a_spam_filter'), 8, 1 );
 
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
 			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_d8_flamingo_classify_first' ), 11, 1 );
