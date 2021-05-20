@@ -314,7 +314,7 @@ class CF7_AntiSpam_filters {
 
 
 		// the sender data
-		$real_remote_ip = cf7a_decrypt( esc_html($_POST['_wpcf7a_real_sender_ip']) );
+		$real_remote_ip = cf7a_decrypt( sanitize_text_field($_POST['_wpcf7a_real_sender_ip']) );
 		$remote_ip = filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) ? $real_remote_ip : '';
 
 		$user_agent = $submission->get_meta( 'user_agent' );
@@ -323,7 +323,7 @@ class CF7_AntiSpam_filters {
 		$options = get_option( 'cf7a_options', array() );
 
 		// check the timestamp
-		$timestamp                       = isset($_POST['_wpcf7a_form_creation_timestamp']) ? intval( cf7a_decrypt( esc_html($_POST['_wpcf7a_form_creation_timestamp']) ) ) : 0;
+		$timestamp                       = isset($_POST['_wpcf7a_form_creation_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST['_wpcf7a_form_creation_timestamp']) ) ) : 0;
 		$timestamp_submitted             = $submission->get_meta( 'timestamp' );
 		$submission_minimum_time_elapsed = 3;
 		$submission_maximum_time_elapsed = 3600;
@@ -403,31 +403,31 @@ class CF7_AntiSpam_filters {
 			 */
 			if ( $options['check_bot_fingerprint'] ) {
 				$bot_fingerprint = array(
-					"timezone" => esc_html($_POST['_wpcf7a_timezone']),
-					"platform" => esc_html($_POST['_wpcf7a_platform']),
-					"hardware_concurrency" => esc_html($_POST['_wpcf7a_hardware_concurrency']),
-					"screens" => esc_html($_POST['_wpcf7a_screens']),
-					"memory" => intval($_POST['_wpcf7a_memory']),
-					"user_agent" => esc_html($_POST['_wpcf7a_user_agent']),
-					"app_version" => esc_html($_POST['_wpcf7a_app_version']),
-					"webdriver" => esc_html($_POST['_wpcf7a_webdriver']),
-					"session_storage" => esc_html($_POST['_wpcf7a_session_storage']),
-					"plugins" => intval($_POST['_wpcf7a_plugins']),
-					"fingerprint" => esc_html($_POST['_wpcf7a_bot_fingerprint']),
+					"timezone"             => isset( $_POST['_wpcf7a_timezone'] ) ? sanitize_text_field( $_POST['_wpcf7a_timezone'] ) : '',
+					"platform"             => isset( $_POST['_wpcf7a_platform'] ) ? sanitize_text_field( $_POST['_wpcf7a_platform'] ) : '',
+					"hardware_concurrency" => isset( $_POST['_wpcf7a_hardware_concurrency'] ) ? intval( $_POST['_wpcf7a_hardware_concurrency'] ) : '',
+					"screens"              => isset( $_POST['_wpcf7a_screens'] ) ? sanitize_text_field( $_POST['_wpcf7a_screens'] ) : '',
+					"memory"               => isset( $_POST['_wpcf7a_memory'] ) ? intval( $_POST['_wpcf7a_memory'] ) : '',
+					"user_agent"           => isset( $_POST['_wpcf7a_user_agent'] ) ? sanitize_text_field( $_POST['_wpcf7a_user_agent'] ) : '',
+					"app_version"          => isset( $_POST['_wpcf7a_app_version'] ) ? sanitize_text_field( $_POST['_wpcf7a_app_version'] ) : '',
+					"webdriver"            => isset( $_POST['_wpcf7a_webdriver'] ) ? sanitize_text_field( $_POST['_wpcf7a_webdriver'] ) : '',
+					"session_storage"      => isset( $_POST['_wpcf7a_session_storage'] ) ? sanitize_text_field( $_POST['_wpcf7a_session_storage'] ) : '',
+					"plugins"              => isset( $_POST['_wpcf7a_plugins'] ) ? intval( $_POST['_wpcf7a_plugins'] ) : '',
+					"fingerprint"          => isset( $_POST['_wpcf7a_bot_fingerprint'] ) ? sanitize_text_field( $_POST['_wpcf7a_bot_fingerprint'] ) : '',
 				);
 
-				$fail = [];
-				$fail[] = $bot_fingerprint["timezone"] != '' ? 1 : "timezone";
-				$fail[] = $bot_fingerprint["platform"] != '' ? 1 : "platform";
-				$fail[] = $bot_fingerprint["hardware_concurrency"] == 4 ? 1 : "hardware_concurrency";
-				$fail[] = $bot_fingerprint["screens"] != '' ? 1 : "screens";
-				$fail[] = $bot_fingerprint["memory"] > 4 ? 1 : "memory";
-				$fail[] = $bot_fingerprint["user_agent"] != '' ? 1 : "user_agent";
-				$fail[] = $bot_fingerprint["app_version"] != '' ? 1 : "app_version";
-				$fail[] = $bot_fingerprint["webdriver"] != '' ? 1 : "webdriver";
-				$fail[] = $bot_fingerprint["session_storage"] != '' ? 1 : "session_storage";
-				$fail[] = $bot_fingerprint["plugins"] !== 0 ? 1 : "plugins";
-				$fail[] = strlen($bot_fingerprint["fingerprint"]) == 5 ? 1 : "fingerprint";
+				$fails = array();
+				if (!$bot_fingerprint["timezone"] != '') $fails[] = "timezone";
+				if (!$bot_fingerprint["platform"] != '') $fails[] = "platform";
+				if (!$bot_fingerprint["hardware_concurrency"] == 4) $fails[] = "hardware_concurrency";
+				if (!$bot_fingerprint["screens"] != '') $fails[] = "screens";
+				if (!$bot_fingerprint["memory"] > 4)  $fails[] = "memory";
+				if (!$bot_fingerprint["user_agent"] != '') $fails[] = "user_agent";
+				if (!$bot_fingerprint["app_version"] != '') $fails[] = "app_version";
+				if (!$bot_fingerprint["webdriver"] != '') $fails[] = "webdriver";
+				if (!$bot_fingerprint["session_storage"] != '') $fails[] = "session_storage";
+				if (!$bot_fingerprint["plugins"] > 0) $fails[] = "plugins";
+				if (!strlen($bot_fingerprint["fingerprint"]) == 5) $fails[] = "fingerprint";
 
 				if ( count($fail) < $bot_fp_tolerance ) {
 
@@ -449,20 +449,19 @@ class CF7_AntiSpam_filters {
 			 */
 			if ( $options['check_bot_fingerprint_extras'] ) {
 				$bot_fingerprint = array(
-					"extras"             => esc_html( $_POST['_wpcf7a_bot_fingerprint_extras'] ),
-					"activity"           => intval( $_POST['_wpcf7a_activity'] ),
-					"mousemove_activity" => isset( $_POST['_wpcf7a_mousemove_activity'] ) && esc_html( $_POST['_wpcf7a_mousemove_activity'] ) === 'passed' ? 'passed' : 0,
-					"webgl"              => esc_html( $_POST['_wpcf7a_webgl'] ) === 'passed' ? 'passed' : 0,
-					"webgl_render"       => esc_html( $_POST['_wpcf7a_webgl_render'] ) === 'passed' ? 'passed' : 0,
+					"activity"           => isset( $_POST['_wpcf7a_activity']) ? intval( $_POST['_wpcf7a_activity'] ) : '',
+					"mousemove_activity" => isset( $_POST['_wpcf7a_mousemove_activity'] ) && sanitize_text_field( $_POST['_wpcf7a_mousemove_activity'] ) === 'passed' ? 'passed' : 0,
+					"webgl"              => isset( $_POST['_wpcf7a_mousemove_activity'] ) && sanitize_text_field( $_POST['_wpcf7a_webgl'] ) === 'passed' ? 'passed' : 0,
+					"webgl_render"       => isset( $_POST['_wpcf7a_mousemove_activity'] ) && sanitize_text_field( $_POST['_wpcf7a_webgl_render'] ) === 'passed' ? 'passed' : 0,
+					"extras"             => isset( $_POST['_wpcf7a_bot_fingerprint_extras']) ? sanitize_text_field( $_POST['_wpcf7a_bot_fingerprint_extras'] ) : '',
 				);
 
-				$fail = [];
-
-				$fail[] = $bot_fingerprint["extras"] == "" ? 1 : "extras";
-				$fail[] = $bot_fingerprint["activity"] > 2 ? 1 : "activity";
-				$fail[] = $bot_fingerprint["mousemove_activity"] == true ? 1 : "mousemove_activity";
-				$fail[] = $bot_fingerprint["webgl"] == "passed" ? 1 : "webgl";
-				$fail[] = $bot_fingerprint["webgl_render"] == "passed" ? 1 : "webgl_render";
+				$fails = array();
+				if (!$bot_fingerprint["activity"] > 2) $fails[] = "activity";
+				if (!$bot_fingerprint["mousemove_activity"] == true) $fails[] = "mousemove_activity";
+				if (!$bot_fingerprint["webgl"] == "passed") $fails[] = "webgl";
+				if (!$bot_fingerprint["webgl_render"] == "passed") $fails[] = "webgl_render";
+				if (!empty($bot_fingerprint["extras"])) $fails[] = "extras";
 
 				if ( count($fail) < $bot_fp_tolerance ) {
 
