@@ -13,9 +13,10 @@ if ( ! defined( 'WPINC' ) ) {die;}
 
 
 // CONSTANTS
-if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', true);
-if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);
+if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
+if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);
 if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
+if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
 
 define( 'CF7ANTISPAM_VERSION', '0.0.1' );
 
