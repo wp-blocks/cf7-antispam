@@ -97,40 +97,6 @@ class CF7_AntiSpam_Frontend {
 		return $html->saveHTML();
 	}
 
-	public function cf7_honeypot_verify_response($spam) {
-		if ( $spam ) return $spam;
-
-		$submission = WPCF7_Submission::get_instance();
-		$contact_form = $submission->get_contact_form();
-		$mail_tags=$contact_form->scan_form_tags();
-
-		// we need only the text tags
-		foreach ($mail_tags as $mail_tag) {
-			if ( $mail_tag['type'] == 'text' || $mail_tag['type'] == 'text*' ) $mail_tag_text[] = $mail_tag['name'];
-		}
-
-		$count = 0;
-		$input_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
-
-		for ($i = 0; $i < count($mail_tag_text); $i++) {
-
-			$_POST[$input_names[$i]] = isset($_POST[$input_names[$i]]) ? 1 : false;
-
-			if ( !$_POST[$input_names[$i]] ) {
-				$spam = true;
-				$count++;
-			}
-			unset($_POST[$input_names[$i]]);
-
-			$submission->add_spam_log( array(
-				'agent' => 'honeypot',
-				'reason' => "the bot has filled $count honeypot input",
-			) );
-		}
-
-		return $spam;
-	}
-
 	public function cf7a_add_hidden_fields( $fields ) {
 
 		$timestamp = time();

@@ -74,6 +74,7 @@ class CF7_AntiSpam_Activator {
 				"check_bad_email_strings" => true,
 				"check_bad_user_agent" => true,
 				"check_dnsbl" => true,
+				"check_honeypot" => true,
 				"enable_b8" => true,
 				"b8_threshold" => 0.95,
 				"bad_words_list" => array(
@@ -108,6 +109,20 @@ class CF7_AntiSpam_Activator {
 					"bogons.cymru.com",
 					"bl.ipv6.spameatingmonkey.net",
 				),
+				"honeypot_input_names" => array(
+					'name',
+					'email',
+					'address',
+					'zip',
+					'town',
+					'phone',
+					'credit-card',
+					'ship-address',
+					'billing_company',
+					'billing_city',
+					'billing_country',
+					'email-address'
+				)
 			) );
 		}
 

@@ -299,6 +299,10 @@ class CF7_AntiSpam_filters {
 		// Get the contact form additional data
 		$contact_form = $submission->get_contact_form();
 
+		// get the tag used in the form
+		$mail_tags=$contact_form->scan_form_tags();
+
+		// the the email and the message from the email
 		$email_tag   = substr($contact_form->pref( 'flamingo_email' ), 2, -2);
 		$message_tag = substr($contact_form->pref( 'flamingo_message' ), 2, -2);
 
@@ -659,6 +663,49 @@ class CF7_AntiSpam_filters {
 					) );
 				}
 			}
+
+
+			/**
+			 * Checks Honeypots input if they are filled
+			 */
+			if ( $options['check_honeypot'] ) {
+
+				// we need only the text tags of the form
+				foreach ( $mail_tags as $mail_tag ) {
+					if ( $mail_tag['type'] == 'text' || $mail_tag['type'] == 'text*' ) {
+						$mail_tag_text[] = $mail_tag['name'];
+					}
+				}
+
+				if (isset($mail_tag_text)) {
+
+					// faked input name used into honeypots
+					$input_names = $options['honeypot_input_names'];
+
+					for ( $i = 0; $i < count( $mail_tag_text ); $i ++ ) {
+
+						// check only if it's set and if it is different from ""
+						if ( isset( $_POST[ $input_names[ $i ] ] ) && $_POST[ $input_names[ $i ]] != '' ) {
+
+							$spam_score += 3;
+							$reason['honeypot'][] = $input_names[ $i ];
+
+							if (CF7ANTISPAM_DEBUG) error_log( "Detected a honeypot filled ({$input_names[ $i ]})" );
+						}
+
+					}
+
+					if ( isset( $reason['honeypot']) ) {
+						$reason['honeypot'] = implode( ", ", $reason['honeypot'] );
+
+						$submission->add_spam_log( array(
+							'agent' => 'honeypot',
+							'reason' => "the bot has filled honeypot input ({$reason['honeypot']})",
+						) );
+					}
+				}
+			}
+
 		}
 
 
