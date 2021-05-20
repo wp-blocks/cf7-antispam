@@ -15,10 +15,12 @@ function cf7a_get_real_ip() {
 }
 
 function cf7a_crypt( $value , $cipher = "aes-256-cbc" ) {
+	if(!extension_loaded('openssl')) return $value;
 	return openssl_encrypt( $value , $cipher, wp_salt('nonce'), $options=0, substr(wp_salt('nonce'), 0, 16) );
 }
 
 function cf7a_decrypt( $value , $cipher = "aes-256-cbc" ) {
+	if(!extension_loaded('openssl')) return $value;
 	return openssl_decrypt( $value , $cipher, wp_salt('nonce'), $options=0, substr(wp_salt('nonce'), 0, 16) );
 }
 

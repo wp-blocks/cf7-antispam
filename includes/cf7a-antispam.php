@@ -48,10 +48,10 @@ class CF7_AntiSpam_filters {
 		);
 
 		// We use the default lexer settings
-		$config_lexer = [];
+		$config_lexer = array();
 
 		// We use the default degenerator configuration
-		$config_degenerator = [];
+		$config_degenerator = array();
 
 		// Include the b8 code
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8/b8.php';
@@ -285,6 +285,7 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
+
 	public function cf7a_spam_filter( $spam ) {
 
 		// Get the submitted data
@@ -299,18 +300,22 @@ class CF7_AntiSpam_filters {
 		// Get the contact form additional data
 		$contact_form = $submission->get_contact_form();
 
+		// get the tag used in the form
+		$mail_tags=$contact_form->scan_form_tags();
+
+		// the the email and the message from the email
 		$email_tag   = substr($contact_form->pref( 'flamingo_email' ), 2, -2);
 		$message_tag = substr($contact_form->pref( 'flamingo_message' ), 2, -2);
 
 		$email = isset($posted_data[$email_tag]) ? $posted_data[$email_tag] : false;
 		$message = isset($posted_data[$message_tag]) ? $posted_data[$message_tag] : false;
 
-		// used to search strings into message
-		$message_compressed = str_replace( " ", "", strtolower( $message ) );
+		// let developers hack the message
+		apply_filters('cf7a_message_before_processing', $message, $posted_data);
 
 
 		// the sender data
-		$real_remote_ip = cf7a_decrypt( esc_html($_POST['_wpcf7a_real_sender_ip']) );
+		$real_remote_ip = cf7a_decrypt( sanitize_text_field($_POST['_wpcf7a_real_sender_ip']) );
 		$remote_ip = filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) ? $real_remote_ip : '';
 
 		$user_agent = $submission->get_meta( 'user_agent' );
@@ -319,7 +324,7 @@ class CF7_AntiSpam_filters {
 		$options = get_option( 'cf7a_options', array() );
 
 		// check the timestamp
-		$timestamp                       = isset($_POST['_wpcf7a_form_creation_timestamp']) ? intval( cf7a_decrypt( esc_html($_POST['_wpcf7a_form_creation_timestamp']) ) ) : 0;
+		$timestamp                       = isset($_POST['_wpcf7a_form_creation_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST['_wpcf7a_form_creation_timestamp']) ) ) : 0;
 		$timestamp_submitted             = $submission->get_meta( 'timestamp' );
 		$submission_minimum_time_elapsed = 3;
 		$submission_maximum_time_elapsed = 3600;
@@ -336,12 +341,6 @@ class CF7_AntiSpam_filters {
 		// Check sender mail has prohibited string
 		$bad_email_strings = $options['bad_email_strings_list'];
 
-		//dnsbl
-		$dnsbl_tolerance = floatval($options['dnsbl_tolerance']);
-
-		//fingerprints
-		$bot_fp_tolerance = floatval($options['bot_fingerprint_tolerance']);
-
 		// b8 threshold
 		$b8_threshold = floatval( $options['b8_threshold'] );
 		$b8_threshold = ( $b8_threshold > 0 && $b8_threshold < 1 ) ? $b8_threshold : 1;
@@ -354,7 +353,7 @@ class CF7_AntiSpam_filters {
 		 * Checks if the ip is already banned - no mercy :)
 		 */
 		$ip_data = self::cf7a_blacklist_get_ip($remote_ip);
-		if ( $ip_data && $ip_data->status != 0 ) {
+		if ( $ip_data && $ip_data->status != 0 && !CF7ANTISPAM_DEBUG_EXTENDED) {
 
 			$spam_score += 1;
 			$reason['blacklisted'] = "status " . ($ip_data->status + 1);
@@ -387,98 +386,102 @@ class CF7_AntiSpam_filters {
 						$bad_ip = filter_var($bad_ip, FILTER_VALIDATE_IP);
 
 						$spam_score += 1;
-						$reason['ip'][] = $remote_ip . '('.$bad_ip.')';
+						$reason['ip'] = $bad_ip;
 
 						if (CF7ANTISPAM_DEBUG) error_log( "The ip address is listed into bad ip list - $remote_ip contains $bad_ip" );
-
-						$submission->add_spam_log( array(
-							'agent'  => 'blacklisted_ip_address',
-							'reason' => "The sender ip address is blacklisted",
-						) );
 					}
-					if (!empty($reason['ip'])) $reason['ip'] = implode(",", $reason['ip']);
+				}
+
+				if (isset($reason['ip'])) {
+					$reason['ip'] = implode(", ", $reason['ip']);
+
+					$submission->add_spam_log( array(
+						'agent'  => 'blacklisted_ip_address',
+						'reason' => "The sender ip address contains prohibited address strings {$reason['ip']}",
+					) );
 				}
 			}
+
 
 			/**
 			 * if enabled fingerprints bots
 			 */
 			if ( $options['check_bot_fingerprint'] ) {
 				$bot_fingerprint = array(
-					"timezone" => esc_html($_POST['_wpcf7a_timezone']),
-					"platform" => esc_html($_POST['_wpcf7a_platform']),
-					"hardware_concurrency" => esc_html($_POST['_wpcf7a_hardware_concurrency']),
-					"screens" => esc_html($_POST['_wpcf7a_screens']),
-					"memory" => intval($_POST['_wpcf7a_memory']),
-					"user_agent" => esc_html($_POST['_wpcf7a_user_agent']),
-					"app_version" => esc_html($_POST['_wpcf7a_app_version']),
-					"webdriver" => esc_html($_POST['_wpcf7a_webdriver']),
-					"session_storage" => esc_html($_POST['_wpcf7a_session_storage']),
-					"plugins" => intval($_POST['_wpcf7a_plugins']),
-					"fingerprint" => esc_html($_POST['_wpcf7a_bot_fingerprint']),
+					"timezone"             => isset( $_POST['_wpcf7a_timezone'] ) ? sanitize_text_field( $_POST['_wpcf7a_timezone'] ) : '',
+					"platform"             => isset( $_POST['_wpcf7a_platform'] ) ? sanitize_text_field( $_POST['_wpcf7a_platform'] ) : '',
+					"hardware_concurrency" => isset( $_POST['_wpcf7a_hardware_concurrency'] ) ? intval( $_POST['_wpcf7a_hardware_concurrency'] ) : '',
+					"screens"              => isset( $_POST['_wpcf7a_screens'] ) ? sanitize_text_field( $_POST['_wpcf7a_screens'] ) : '',
+					"memory"               => isset( $_POST['_wpcf7a_memory'] ) ? intval( $_POST['_wpcf7a_memory'] ) : '',
+					"user_agent"           => isset( $_POST['_wpcf7a_user_agent'] ) ? sanitize_text_field( $_POST['_wpcf7a_user_agent'] ) : '',
+					"app_version"          => isset( $_POST['_wpcf7a_app_version'] ) ? sanitize_text_field( $_POST['_wpcf7a_app_version'] ) : '',
+					"webdriver"            => isset( $_POST['_wpcf7a_webdriver'] ) ? sanitize_text_field( $_POST['_wpcf7a_webdriver'] ) : '',
+					"session_storage"      => isset( $_POST['_wpcf7a_session_storage'] ) ? sanitize_text_field( $_POST['_wpcf7a_session_storage'] ) : '',
+					"plugins"              => isset( $_POST['_wpcf7a_plugins'] ) ? intval( $_POST['_wpcf7a_plugins'] ) : '',
+					"fingerprint"          => isset( $_POST['_wpcf7a_bot_fingerprint'] ) ? sanitize_text_field( $_POST['_wpcf7a_bot_fingerprint'] ) : '',
 				);
 
-				$fail = [];
-				$fail[] = $bot_fingerprint["timezone"] != '' ? 1 : "timezone";
-				$fail[] = $bot_fingerprint["platform"] != '' ? 1 : "platform";
-				$fail[] = $bot_fingerprint["hardware_concurrency"] == 4 ? 1 : "hardware_concurrency";
-				$fail[] = $bot_fingerprint["screens"] != '' ? 1 : "screens";
-				$fail[] = $bot_fingerprint["memory"] > 4 ? 1 : "memory";
-				$fail[] = $bot_fingerprint["user_agent"] != '' ? 1 : "user_agent";
-				$fail[] = $bot_fingerprint["app_version"] != '' ? 1 : "app_version";
-				$fail[] = $bot_fingerprint["webdriver"] != '' ? 1 : "webdriver";
-				$fail[] = $bot_fingerprint["session_storage"] != '' ? 1 : "session_storage";
-				$fail[] = $bot_fingerprint["plugins"] !== 0 ? 1 : "plugins";
-				$fail[] = strlen($bot_fingerprint["fingerprint"]) == 5 ? 1 : "fingerprint";
+				$fails = array();
+				if (!$bot_fingerprint["timezone"] != '') $fails[] = "timezone";
+				if (!$bot_fingerprint["platform"] != '') $fails[] = "platform";
+				if (!$bot_fingerprint["hardware_concurrency"] == 4) $fails[] = "hardware_concurrency";
+				if (!$bot_fingerprint["screens"] != '') $fails[] = "screens";
+				if (!$bot_fingerprint["memory"] > 4)  $fails[] = "memory";
+				if (!$bot_fingerprint["user_agent"] != '') $fails[] = "user_agent";
+				if (!$bot_fingerprint["app_version"] != '') $fails[] = "app_version";
+				if (!$bot_fingerprint["webdriver"] != '') $fails[] = "webdriver";
+				if (!$bot_fingerprint["session_storage"] != '') $fails[] = "session_storage";
+				if (!$bot_fingerprint["plugins"] > 0) $fails[] = "plugins";
+				if (!strlen($bot_fingerprint["fingerprint"]) == 5) $fails[] = "fingerprint";
 
-				if ( count($fail) < $bot_fp_tolerance ) {
+				if (!empty($fails)) {
+					$spam_score                += count( $fails ) * .5;
+					$reason['bot_fingerprint'] = implode( ",", $fails );
 
-					$spam_score += .7;
-					$reason['bot_fingerprint'] = implode(",",$fail);
-
-					if (CF7ANTISPAM_DEBUG) error_log( "CF7 Antispam - the submitter hasn't passed the bot fingerprint test" );
-					if (CF7ANTISPAM_DEBUG) error_log( print_r($fail, true) );
+					if ( CF7ANTISPAM_DEBUG ) {
+						error_log( "CF7 Antispam - the submitter hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint']})" );
+					}
 
 					$submission->add_spam_log( array(
 						'agent'  => 'fingerprint_test',
-						'reason' => "fingerprint test not passed (".count($fail)." failed / " . count( $bot_fingerprint ) . ")",
+						'reason' => "fingerprint test not passed (" . count( $fails ) . " failed / " . count( $bot_fingerprint ) . ")",
 					) );
 				}
+
 			}
+
 
 			/**
 			 * Bot fingerprints extras
 			 */
 			if ( $options['check_bot_fingerprint_extras'] ) {
 				$bot_fingerprint = array(
-					"extras"             => esc_html( $_POST['_wpcf7a_bot_fingerprint_extras'] ),
-					"activity"           => intval( $_POST['_wpcf7a_activity'] ),
-					"mousemove_activity" => isset( $_POST['_wpcf7a_mousemove_activity'] ) && esc_html( $_POST['_wpcf7a_mousemove_activity'] ) === 'passed' ? 'passed' : 0,
-					"webgl"              => esc_html( $_POST['_wpcf7a_webgl'] ) === 'passed' ? 'passed' : 0,
-					"webgl_render"       => esc_html( $_POST['_wpcf7a_webgl_render'] ) === 'passed' ? 'passed' : 0,
+					"activity"           => isset( $_POST['_wpcf7a_activity']) ? intval( $_POST['_wpcf7a_activity'] ) : '',
+					"mousemove_activity" => isset( $_POST['_wpcf7a_mousemove_activity'] ) && sanitize_text_field( $_POST['_wpcf7a_mousemove_activity'] ) === 'passed' ? 'passed' : 0,
+					"webgl"              => isset( $_POST['_wpcf7a_mousemove_activity'] ) && sanitize_text_field( $_POST['_wpcf7a_webgl'] ) === 'passed' ? 'passed' : 0,
+					"webgl_render"       => isset( $_POST['_wpcf7a_mousemove_activity'] ) && sanitize_text_field( $_POST['_wpcf7a_webgl_render'] ) === 'passed' ? 'passed' : 0,
+					"extras"             => isset( $_POST['_wpcf7a_bot_fingerprint_extras']) ? sanitize_text_field( $_POST['_wpcf7a_bot_fingerprint_extras'] ) : '',
 				);
 
-				$fail = [];
+				$fails = array();
+				if (!$bot_fingerprint["activity"] > 2) $fails[] = "activity";
+				if (!$bot_fingerprint["mousemove_activity"] == true) $fails[] = "mousemove_activity";
+				if (!$bot_fingerprint["webgl"] == "passed") $fails[] = "webgl";
+				if (!$bot_fingerprint["webgl_render"] == "passed") $fails[] = "webgl_render";
+				if (!empty($bot_fingerprint["extras"])) $fails[] = "extras";
 
-				$fail[] = $bot_fingerprint["extras"] == "" ? 1 : "extras";
-				$fail[] = $bot_fingerprint["activity"] > 2 ? 1 : "activity";
-				$fail[] = $bot_fingerprint["mousemove_activity"] == true ? 1 : "mousemove_activity";
-				$fail[] = $bot_fingerprint["webgl"] == "passed" ? 1 : "webgl";
-				$fail[] = $bot_fingerprint["webgl_render"] == "passed" ? 1 : "webgl_render";
+				if (!empty($fails)) {
+					$spam_score += count($fails) * .5;
+					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
 
-				if ( count($fail) < $bot_fp_tolerance ) {
-
-					$spam_score += .7;
-					$reason['bot_fingerprint_extras'] = implode(",",$fail);
-
-					if (CF7ANTISPAM_DEBUG) error_log( "CF7 Antispam - the submitter hasn't passed the bot fingerprint extra test" );
-					if (CF7ANTISPAM_DEBUG) error_log( print_r($fail, true) );
+					if (CF7ANTISPAM_DEBUG) error_log( "CF7 Antispam - the submitter hasn't passed ".count($fails)." / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})" );
 
 					$submission->add_spam_log( array(
 						'agent'  => 'fingerprint_extra tests',
-						'reason' => "fingerprint extra tests not passed (".count($fail)." failed / " . count( $bot_fingerprint ) . ")",
+						'reason' => "fingerprint extra tests not passed (".count($fails)." failed / " . count( $bot_fingerprint ) . ")",
 					) );
 				}
+
 			}
 
 
@@ -534,6 +537,7 @@ class CF7_AntiSpam_filters {
 				}
 			}
 
+
 			/**
 			 * Checks if the emails contains prohibited words
 			 * for example it check if the sender mail is the same than the website domain because it is an attempt to bypass controls,
@@ -550,14 +554,18 @@ class CF7_AntiSpam_filters {
 
 						if (CF7ANTISPAM_DEBUG) error_log( "The sender mail domain is the same of the website - {$email} contains $bad_email_string" );
 
-						$submission->add_spam_log( array(
-							'agent'  => 'bad_email_strings',
-							'reason' => "The sender email was listed into denied strings",
-						) );
 					}
 				}
-				if (!empty($reason['email_blackilisted'])) $reason['email_blackilisted'] = implode(",", $reason['email_blackilisted']);
+				if (isset($reason['email_blackilisted'])) {
+					$reason['email_blackilisted'] = implode(",", $reason['email_blackilisted']);
+
+					$submission->add_spam_log( array(
+						'agent'  => 'bad_email_strings',
+						'reason' => "The sender email was listed into denied strings ({$reason['email_blackilisted']})",
+					) );
+				}
 			}
+
 
 			/**
 			 * Checks if the emails user agent is denied
@@ -584,21 +592,29 @@ class CF7_AntiSpam_filters {
 						$spam_score += 1;
 						$reason['user_agent_blacklisted'][] = $user_agent;
 
-						if (CF7ANTISPAM_DEBUG) error_log( "The email user agent is listed into bad user agent list - $user_agent contains $bad_user_agent" );
+						if (CF7ANTISPAM_DEBUG) error_log( "The email user agent was listed into bad user agent list - $user_agent contains $bad_user_agent" );
+					}
+
+					if (isset($reason['user_agent_blacklisted'])) {
+						$reason['user_agent_blacklisted'] = implode(", ", $reason['user_agent_blacklisted']);
 
 						$submission->add_spam_log( array(
 							'agent'  => 'bad_user_agent',
-							'reason' => "The email user agent is listed into bad user agent list",
+							'reason' => "The email user agent was listed into bad user agent list ({$reason['user_agent_blacklisted']})",
 						) );
 					}
-					if (!empty($reason['user_agent_blacklisted'])) $reason['user_agent_blacklisted'] = implode(",", $reason['user_agent_blacklisted']);
 				}
 			}
+
 
 			/**
 			 * Search for prohibited words
 			 */
-			if ( $options['check_bad_words'] && $message_compressed != '' ) {
+			if ( $options['check_bad_words'] && $message != '' ) {
+
+				// to search strings into message without space and case unsensitive
+				$message_compressed = str_replace( " ", "", strtolower( $message ) );
+
 				foreach ( $bad_words as $bad_word ) {
 					if ( false !== stripos( $message_compressed, str_replace( " ", "", strtolower( $bad_word ) ) ) ) {
 
@@ -606,14 +622,17 @@ class CF7_AntiSpam_filters {
 						$reason['bad_word'][] = $bad_word;
 
 						if (CF7ANTISPAM_DEBUG) error_log( "Detected a bad word ($bad_word)" );
-
-						$submission->add_spam_log( array(
-							'agent'  => 'bad_words',
-							'reason' => "Detected a bad word ($bad_word)",
-						) );
 					}
 				}
-				if (!empty($reason['bad_word'])) $reason['bad_word'] = implode(",", $reason['bad_word']);
+
+				if (isset($reason['bad_word'])) {
+					$reason['bad_word'] = implode(",", $reason['bad_word']);
+
+					$submission->add_spam_log( array(
+						'agent'  => 'bad_words',
+						'reason' => "Detected a bad word ({$reason['bad_word']})",
+					) );
+				}
 			}
 
 
@@ -624,10 +643,9 @@ class CF7_AntiSpam_filters {
 			 *
 			 * TODO: enhance the performance using curl or threading. break after threshold reached
 			 */
-			$performance_test = [];
 			if ( $options['check_dnsbl'] && $remote_ip ) {
 
-				$dsnbl_listed = [];
+				$dsnbl_listed = array();
 				$reverse_ip = '';
 
 				if ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
@@ -639,11 +657,12 @@ class CF7_AntiSpam_filters {
 					$reverse_ip = $this->cf7a_reverse_ipv6( $remote_ip );
 				}
 
+				$performance_test = array();
 				foreach ($options['dnsbl_list'] as $dnsbl) {
 					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 						$dsnbl_listed[] = $listed;
-						$spam_score += 1 / $dnsbl_tolerance;
+						$spam_score += 0.5;
 					}
 					$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
 					$performance_test[$dnsbl] = $time_taken;
@@ -654,17 +673,60 @@ class CF7_AntiSpam_filters {
 					error_log( print_r($performance_test, true) );
 				}
 
-				if (!empty($dsnbl_listed)) {
+				if (isset($dsnbl_listed)) {
 					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( "The $remote_ip has tried to send an email but is listed ".count($dsnbl_listed)." times in the Domain Name System Blacklists ("  . implode(", ", $dsnbl_listed) .")" );
 
 					$reason['dsnbl'] = implode(", ",$dsnbl_listed);
 
 					$submission->add_spam_log( array(
 						'agent'  => 'dnsbl_listed',
-						'reason' => "$remote_ip listed in the dnsbl ("  . implode(", ", $dsnbl_listed) .")",
+						'reason' => "$remote_ip listed in the dnsbl ({$reason['dsnbl']})",
 					) );
 				}
 			}
+
+
+			/**
+			 * Checks Honeypots input if they are filled
+			 */
+			if ( $options['check_honeypot'] ) {
+
+				// we need only the text tags of the form
+				foreach ( $mail_tags as $mail_tag ) {
+					if ( $mail_tag['type'] == 'text' || $mail_tag['type'] == 'text*' ) {
+						$mail_tag_text[] = $mail_tag['name'];
+					}
+				}
+
+				if (isset($mail_tag_text)) {
+
+					// faked input name used into honeypots
+					$input_names = $options['honeypot_input_names'];
+
+					for ( $i = 0; $i < count( $mail_tag_text ); $i ++ ) {
+
+						// check only if it's set and if it is different from ""
+						if ( isset( $_POST[ $input_names[ $i ] ] ) && $_POST[ $input_names[ $i ]] != '' ) {
+
+							$spam_score += 3;
+							$reason['honeypot'][] = $input_names[ $i ];
+
+							if (CF7ANTISPAM_DEBUG) error_log( "Detected a honeypot filled ({$input_names[ $i ]})" );
+						}
+
+					}
+
+					if ( isset( $reason['honeypot']) ) {
+						$reason['honeypot'] = implode( ", ", $reason['honeypot'] );
+
+						$submission->add_spam_log( array(
+							'agent' => 'honeypot',
+							'reason' => "the bot has filled honeypot input ({$reason['honeypot']})",
+						) );
+					}
+				}
+			}
+
 		}
 
 
