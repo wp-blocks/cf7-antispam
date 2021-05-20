@@ -49,13 +49,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bot_fingerprint' // Section
 		);
 
-		// Settings bot_fingerprint
-		add_settings_field( 'bot_fingerprint_tolerance', // ID
-			__('How many checks can fail', 'cf7-antispam'), // Title
-			array( $this, 'cf7a_bot_fingerprint_tolerance_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bot_fingerprint' // Section
-		);
 
 
 
@@ -215,14 +208,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_dnsbl' // Section
 		);
 
-		// DNS Blacklist list tolerance
-		add_settings_field( 'dnsbl_tolerance', // ID
-			__('How many times ip has to be blacklisted by DNSBL to become spam', 'cf7-antispam'), // Title
-			array( $this, 'cf7a_dnsbl_tolerance_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_dnsbl' // Section
-		);
-
 		// DNS Blacklist server list
 		add_settings_field( 'dnsbl_list', // ID
 			__('DNS blocklist servers', 'cf7-antispam'), // Title
@@ -324,8 +309,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_bot_fingerprint'] =  isset( $input['check_bot_fingerprint'] ) ? 1 : 0 ;
 		$new_input['check_bot_fingerprint_extras'] =  isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0 ;
 
-		$new_input['bot_fingerprint_tolerance'] =  isset( $input['bot_fingerprint_tolerance'] ) ? intval( $input['bot_fingerprint_tolerance'] ) : 2 ;
-
 
 		// elapsed time
 		$new_input['check_time'] =  isset( $input['check_time'] ) ? 1 : 0 ;
@@ -374,15 +357,17 @@ class CF7_AntiSpam_Admin_Customizations {
 		// dnsbl
 		$new_input['check_dnsbl'] =  isset( $input['check_dnsbl'] ) ? 1 : 0 ;
 
-		$new_input['dnsbl_tolerance'] =  isset( $input['dnsbl_tolerance'] ) ? intval( $input['dnsbl_tolerance'] ) : 2 ;
-
 		if ( isset( $input['dnsbl_list'] ) ) {
 			$new_input['dnsbl_list'] = explode("\r\n",sanitize_textarea_field( $input['dnsbl_list'] ));
 		}
 
 
 		// honeypot
-		$new_input['enable_honeypot'] =  isset( $input['enable_honeypot'] ) ? 1 : 0 ;
+		$new_input['check_honeypot'] =  isset( $input['check_honeypot'] ) ? 1 : 0 ;
+
+		if ( isset( $input['honeypot_input_names'] ) ) {
+			$new_input['honeypot_input_names'] = explode("\r\n",sanitize_textarea_field( $input['honeypot_input_names'] ));
+		}
 
 
 
@@ -390,7 +375,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['enable_b8'] =  isset( $input['enable_b8'] ) ? 1 : 0 ;
 
 		$threshold = floatval($input['b8_threshold']);
-		$new_input['b8_threshold'] = ($threshold > 0 && $threshold < 1) ? $threshold : 1;
+		$new_input['b8_threshold'] = ($threshold >= 0 && $threshold < 1) ? $threshold : 1;
 
 
 		// store the sanitized options
@@ -410,12 +395,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint_extras" name="cf7a_options[check_bot_fingerprint_extras]" %s />',
 			isset( $this->options['check_bot_fingerprint_extras'] ) && $this->options['check_bot_fingerprint_extras'] == 1 ? 'checked="true"' : ''
-		);
-	}
-	public function cf7a_bot_fingerprint_tolerance_callback() {
-		printf(
-			'<input type="number" id="bot_fingerprint_tolerance" name="cf7a_options[bot_fingerprint_tolerance]" value="%s" min="0" step="1" />',
-			isset( $this->options['bot_fingerprint_tolerance'] ) ? esc_attr( $this->options['bot_fingerprint_tolerance']) : 'none'
 		);
 	}
 
@@ -506,12 +485,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="check_dnsbl" name="cf7a_options[check_dnsbl]" %s />',
 			isset( $this->options['check_dnsbl'] ) && $this->options['check_dnsbl'] == 1 ? 'checked="true"' : ''
-		);
-	}
-	public function cf7a_dnsbl_tolerance_callback() {
-		printf(
-			'<input type="number" id="dnsbl_tolerance" name="cf7a_options[dnsbl_tolerance]" value="%s"  min="1" step="1" />',
-			isset( $this->options['dnsbl_tolerance'] ) ? esc_attr( $this->options['dnsbl_tolerance']) : 'none'
 		);
 	}
 	public function cf7a_dnsbl_list_callback() {

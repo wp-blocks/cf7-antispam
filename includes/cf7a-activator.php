@@ -65,7 +65,6 @@ class CF7_AntiSpam_Activator {
 			add_option( 'cf7a_options', array(
 				"check_bot_fingerprint" => true,
 				"check_bot_fingerprint_extras" => true,
-				"bot_fingerprint_tolerance" => 2,
 				"check_time" => true,
 				"check_time_min" => 6,
 				"check_time_max" => 3600,
@@ -76,7 +75,6 @@ class CF7_AntiSpam_Activator {
 				"check_bad_user_agent" => true,
 				"check_dnsbl" => true,
 				"enable_b8" => true,
-				"dnsbl_tolerance" => 2,
 				"b8_threshold" => 0.95,
 				"bad_words_list" => array(
 					'viagra',

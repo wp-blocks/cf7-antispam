@@ -336,12 +336,6 @@ class CF7_AntiSpam_filters {
 		// Check sender mail has prohibited string
 		$bad_email_strings = $options['bad_email_strings_list'];
 
-		//dnsbl
-		$dnsbl_tolerance = floatval($options['dnsbl_tolerance']);
-
-		//fingerprints
-		$bot_fp_tolerance = floatval($options['bot_fingerprint_tolerance']);
-
 		// b8 threshold
 		$b8_threshold = floatval( $options['b8_threshold'] );
 		$b8_threshold = ( $b8_threshold > 0 && $b8_threshold < 1 ) ? $b8_threshold : 1;
