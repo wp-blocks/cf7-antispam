@@ -226,9 +226,17 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		// Enable honeypot
-		add_settings_field( 'enable_honeypot', // ID
+		add_settings_field( 'check_honeypot', // ID
 			__('Add some fake input inside the form', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_enable_honeypot_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_honeypot' // Section
+		);
+
+		// DNS Blacklist server list
+		add_settings_field( 'honeypot_input_names', // ID
+			__('Name for the honeypots inputs (MUST differ from the cf7 tag names)', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_honeypot_input_names_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_honeypot' // Section
 		);
@@ -513,8 +521,14 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_enable_honeypot_callback() {
 		printf(
-			'<input type="checkbox" id="enable_honeypot" name="cf7a_options[enable_honeypot]" %s />',
-			isset( $this->options['enable_honeypot'] ) && $this->options['enable_honeypot'] == 1 ? 'checked="true"' : ''
+			'<input type="checkbox" id="check_honeypot" name="cf7a_options[check_honeypot]" %s />',
+			isset( $this->options['check_honeypot'] ) && $this->options['check_honeypot'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_honeypot_input_names_callback() {
+		printf(
+			'<textarea id="honeypot_input_names" name="cf7a_options[honeypot_input_names]" />%s</textarea>',
+			isset( $this->options['honeypot_input_names'] ) && is_array($this->options['honeypot_input_names']) ? implode("\r\n", $this->options['honeypot_input_names'] ) : ''
 		);
 	}
 }

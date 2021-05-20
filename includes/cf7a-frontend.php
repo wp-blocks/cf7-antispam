@@ -38,9 +38,8 @@ class CF7_AntiSpam_Frontend {
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
 
 		// TODO: change with honeypot
-		if ( isset( $this->options['enable_honeypot'] ) ) {
+		if ( isset( $this->options['check_honeypot'] ) ) {
 			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_honeypot_add'), 10, 1  );
-			add_filter( 'wpcf7_spam', array($this, 'cf7_honeypot_verify_response'), 5, 1 );
 		}
 
 		if ( isset( $this->options['check_bot_fingerprint'] ) ) {
@@ -58,15 +57,14 @@ class CF7_AntiSpam_Frontend {
 		$html->loadHTML( $form_elements, LIBXML_HTML_NODEFDTD );
 
 		$inputs  = $html->getelementsbytagname( 'input' );
-		$parents = [];
-		$clones  = [];
+		$parents = array();
+		$clones  = array();
 
-		// $input_names = $this->options['custom_input_names'];
-		$input_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
+		$input_names = $this->options['honeypot_input_names'];
 
 		//create the style
 		$style = $html->createElement('style');
-		$style->textContent = '.fit-the-fullspace {position:absolute;margin-left:-999em}';
+		$style->textContent = '.'.CF7ANTISPAM_HONEYPOT_CLASS.'{position:absolute;margin-left:-999em}';
 		$html->appendChild($style);
 
 		// get the inputs data
@@ -84,13 +82,16 @@ class CF7_AntiSpam_Frontend {
 			}
 		}
 
+		$honeypot_default_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
+
 		// duplicate the inputs into honeypots
 		foreach ( $parents as $k => $parent ) {
-			$name = isset($input_names[$k]) ? $input_names[$k] : $input_names[$k - count([$parent]) ];
-			$clones[$k]->setAttribute( 'name', $name );
+			// TODO: it needs an internal list if the user has inserted few names
+			$honeypot_names = isset($input_names[$k]) ? $input_names[$k] : $honeypot_default_names[$k - count($input_names)];
+			$clones[$k]->setAttribute( 'name', $honeypot_names );
 			$clones[$k]->setAttribute( 'autocomplete', 'fill' );
 			$clones[$k]->setAttribute( 'tabindex', '-1' );
-			$clones[$k]->setAttribute( 'class', $clones[$k]->getAttribute( 'class' ) . ' fit-the-fullspace autocomplete input' ); //TODO: leave the user able to set a new class
+			$clones[$k]->setAttribute( 'class', $clones[$k]->getAttribute( 'class' ) . ' '.CF7ANTISPAM_HONEYPOT_CLASS.' autocomplete input' );
 			$parent->appendChild( $clones[ $k ] );
 		}
 
