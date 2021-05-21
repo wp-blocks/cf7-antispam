@@ -31,23 +31,16 @@
 			</form>
 		</div>
 	</div>
-  <div class="card">
-    <h4><?php _e('IP Blacklist') ?></h4>
-    <p><?php CF7_AntiSpam_Admin_Tools::cf7a_get_blacklisted_table(); ?></p>
-  </div>
 
 
+  <?php
+    // prints the blacklisted ip, the rating and some informations
+    CF7_AntiSpam_Admin_Tools::cf7a_get_blacklisted_table();
+  ?>
 
-<?php
-$options = get_option( 'cf7a_options' );
-if (WP_DEBUG) {
-	echo '<div class="card">';
-	echo '<h3>'.__('Debug info').'</h3>';
-	echo '<p>'.__('If you see this box it is because wp_debug is active!').'</p>';
+	<?php
+    // returns the plugins debug informations
+    CF7_AntiSpam_Admin_Tools::cf7a_get_debug_info();
+  ?>
 
-	echo '<pre>' . htmlentities(print_r($options, true)) . '</pre>';
-	echo '</div>';
-}
-
-
-echo '</div>';
+</div>
