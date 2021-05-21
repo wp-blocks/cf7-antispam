@@ -4,7 +4,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * The options of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   public
 	 * @var      array    $options    options of this plugin.
 	 */
@@ -265,6 +265,31 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings', // Page
 			'cf7a_b8' // Section
 		);
+
+
+
+		// Section Personalization
+		add_settings_section( 'cf7a_customizations', // ID
+			__('Spam filter customizations', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_customizations' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Enable customizations
+		add_settings_field( 'cf7a_customizations_class', // ID
+			__('Your unique css class', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_customizations_class_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_customizations' // Section
+		);
+
+		// Enable customizations
+		add_settings_field( 'cf7a_customizations_prefix', // ID
+			__('Your unique fields prefix', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_customizations_prefix_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_customizations' // Section
+		);
 	}
 
 	public function cf7a_print_section_bot_fingerprint() {
@@ -300,6 +325,10 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_b8() {
 		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-amntispam') . '</p>' );
+	}
+
+	public function cf7a_print_customizations() {
+		printf( '<p>' . esc_html__("You may want to create your own and unique css class and customized fields name", 'cf7-amntispam') . '</p>' );
 	}
 
 	/**
@@ -386,6 +415,15 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['b8_threshold'] = ($threshold >= 0 && $threshold < 1) ? $threshold : 1;
 
 
+
+		// Customizations
+		$input['cf7a_customizations_class'] = sanitize_html_class($input['cf7a_customizations_class']);
+		$new_input['cf7a_customizations_class'] =  isset( $input['cf7a_customizations_class']) && $input['cf7a_customizations_class'] != '' ? $input['cf7a_customizations_class'] : CF7ANTISPAM_PREFIX ;
+
+		$input['cf7a_customizations_prefix'] = sanitize_html_class($input['cf7a_customizations_prefix']);
+		$new_input['cf7a_customizations_prefix'] =  isset( $input['cf7a_customizations_prefix']) && $input['cf7a_customizations_prefix'] != '' ? $input['cf7a_customizations_prefix'] : CF7ANTISPAM_PREFIX ;
+
+
 		// store the sanitized options
 		return $new_input;
 	}
@@ -442,7 +480,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_ip_list_callback() {
 		printf(
 			'<textarea id="bad_ip_list" name="cf7a_options[bad_ip_list]" />%s</textarea>',
-			isset( $this->options['bad_ip_list'] ) && is_array($this->options['bad_ip_list']) ? implode("\r\n", $this->options['bad_ip_list'] ) : ''
+			isset( $this->options['bad_ip_list'] ) && is_array($this->options['bad_ip_list']) ? esc_textarea( implode("\r\n",$this->options['bad_ip_list']) ) : ''
 		);
 	}
 
@@ -456,7 +494,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_words_list_callback() {
 		printf(
 			'<textarea id="bad_words_list" name="cf7a_options[bad_words_list]" />%s</textarea>',
-			isset( $this->options['bad_words_list'] ) && is_array($this->options['bad_words_list']) ? implode("\r\n", $this->options['bad_words_list'] ) : ''
+			isset( $this->options['bad_words_list'] ) && is_array($this->options['bad_words_list']) ? esc_textarea(implode("\r\n", $this->options['bad_words_list']) ) : ''
 		);
 	}
 
@@ -470,7 +508,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_email_strings_list_callback() {
 		printf(
 			'<textarea id="bad_email_strings_list" name="cf7a_options[bad_email_strings_list]" />%s</textarea>',
-			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? implode("\r\n", $this->options['bad_email_strings_list'] ) : ''
+			isset( $this->options['bad_email_strings_list'] ) && is_array($this->options['bad_email_strings_list']) ? esc_textarea(implode("\r\n", $this->options['bad_email_strings_list']) ) : ''
 		);
 	}
 
@@ -484,7 +522,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_user_agent_list_callback() {
 		printf(
 			'<textarea id="bad_user_agent_list" name="cf7a_options[bad_user_agent_list]" />%s</textarea>',
-			isset( $this->options['bad_user_agent_list'] ) && is_array($this->options['bad_user_agent_list']) ? implode("\r\n", $this->options['bad_user_agent_list'] ) : ''
+			isset( $this->options['bad_user_agent_list'] ) && is_array($this->options['bad_user_agent_list']) ? esc_textarea(implode("\r\n", $this->options['bad_user_agent_list']) ) : ''
 		);
 	}
 
@@ -498,7 +536,22 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_dnsbl_list_callback() {
 		printf(
 			'<textarea id="dnsbl_list" name="cf7a_options[dnsbl_list]" />%s</textarea>',
-			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? implode("\r\n", $this->options['dnsbl_list'] ) : ''
+			isset( $this->options['dnsbl_list'] ) && is_array($this->options['dnsbl_list']) ? esc_textarea(implode("\r\n", $this->options['dnsbl_list']) ) : ''
+		);
+	}
+
+
+
+	public function cf7a_enable_honeypot_callback() {
+		printf(
+			'<input type="checkbox" id="check_honeypot" name="cf7a_options[check_honeypot]" %s />',
+			isset( $this->options['check_honeypot'] ) && $this->options['check_honeypot'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_honeypot_input_names_callback() {
+		printf(
+			'<textarea id="honeypot_input_names" name="cf7a_options[honeypot_input_names]" />%s</textarea>',
+			isset( $this->options['honeypot_input_names'] ) && is_array($this->options['honeypot_input_names']) ? esc_textarea( implode("\r\n", $this->options['honeypot_input_names']) ) : ''
 		);
 	}
 
@@ -519,16 +572,18 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
-	public function cf7a_enable_honeypot_callback() {
+
+	public function cf7a_customizations_class_callback() {
 		printf(
-			'<input type="checkbox" id="check_honeypot" name="cf7a_options[check_honeypot]" %s />',
-			isset( $this->options['check_honeypot'] ) && $this->options['check_honeypot'] == 1 ? 'checked="true"' : ''
+			'<input type="text" id="cf7a_customizations_class" name="cf7a_options[cf7a_customizations_class]" value="%s"/>',
+			isset( $this->options['cf7a_customizations_class'] ) && !empty($this->options['cf7a_customizations_class']) ? sanitize_html_class($this->options['cf7a_customizations_class']) : sanitize_html_class(CF7ANTISPAM_HONEYPOT_CLASS)
 		);
 	}
-	public function cf7a_honeypot_input_names_callback() {
+
+	public function cf7a_customizations_prefix_callback() {
 		printf(
-			'<textarea id="honeypot_input_names" name="cf7a_options[honeypot_input_names]" />%s</textarea>',
-			isset( $this->options['honeypot_input_names'] ) && is_array($this->options['honeypot_input_names']) ? implode("\r\n", $this->options['honeypot_input_names'] ) : ''
+			'<input type="text" id="cf7a_customizations_prefix" name="cf7a_options[cf7a_customizations_prefix]" value="%s"/>',
+			isset( $this->options['cf7a_customizations_prefix'] ) && !empty($this->options['cf7a_customizations_prefix']) ? sanitize_html_class($this->options['cf7a_customizations_prefix']) : sanitize_html_class(CF7ANTISPAM_PREFIX)
 		);
 	}
 }

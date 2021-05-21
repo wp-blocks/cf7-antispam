@@ -15,7 +15,7 @@ class CF7_AntiSpam_Activator {
 	 * Script that runs when the plugin is installed
 	 *
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public static function install() {
 		global $wpdb;
@@ -63,6 +63,8 @@ class CF7_AntiSpam_Activator {
 		if ( false == get_option( 'cf7a_options' ) ) {
 
 			add_option( 'cf7a_options', array(
+				"cf7a_customizations_class" => CF7ANTISPAM_PREFIX,
+				"cf7a_customizations_prefix" => CF7ANTISPAM_HONEYPOT_CLASS,
 				"check_bot_fingerprint" => true,
 				"check_bot_fingerprint_extras" => true,
 				"check_time" => true,

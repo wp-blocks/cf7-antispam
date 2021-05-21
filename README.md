@@ -26,3 +26,10 @@ Contributing to Contact Form 7 - Antispam
 -----------------------------------------
 
 You can contribute to the project of Contact Form 7 Antispam collaborating with we [to develop this plugin](https://github.com/erikyo/contact-form-7-antispam) or translating it.   
+
+
+Special Thanks
+--------------
+
+Tobias Leupold - b8 https://nasauber.de/opensource/b8/, https://gitlab.com/l3u/b8/
+Takayuki Miyoshi - [Contact Form 7](https://wordpress.org/plugins/contact-form-7/), [Flamingo](https://wordpress.org/plugins/flamingo/)  

@@ -2,6 +2,8 @@
 
   'use strict';
 
+  const cf7a_prefix = cf7a_settings.prefix;
+
   function browserFingerprint() {
     let tests;
 
@@ -15,7 +17,7 @@
       "app_version" : navigator.appVersion,
       "webdriver" : window.navigator.webdriver,
       "plugins" : navigator.plugins.length,
-      "session_storage" : sessionStorage !== void 0
+      "session_storage" : sessionStorage !== void 1
     };
 
     return tests;
@@ -33,10 +35,10 @@
 
   const wpcf7Forms = document.querySelectorAll( '.wpcf7' );
 
-  function createCF7Afield(key, value) {
+  function createCF7Afield(key, value, prefix = cf7a_prefix) {
     let e = document.createElement('input');
     e.setAttribute("type", "hidden");
-    e.setAttribute("name", '_wpcf7a_' + key );
+    e.setAttribute("name", prefix + key );
     e.setAttribute("value", value );
     return e;
   }
@@ -54,13 +56,13 @@
       }
 
       // hijack the value of the bot_fingerprint
-      let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name=_wpcf7a_bot_fingerprint]');
+      let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name='+cf7a_prefix+'bot_fingerprint]');
       let fingerprint_key = bot_fingerprint_key.getAttribute("value");
       bot_fingerprint_key.setAttribute("value", fingerprint_key.slice(0,5) );
 
 
       // II) bot_fingerprint extra checks
-      let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name=_wpcf7a_bot_fingerprint_extras]');
+      let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name='+cf7a_prefix+'bot_fingerprint_extras]');
       if (bot_fingerprint_extra) {
         // load the extras
         const tests_extras = browserFingerprintExtras();
@@ -70,7 +72,7 @@
         }
 
         // check for mouse clicks
-        let activity = $(wpcf7Form)[0].querySelector('form > div input[name=_wpcf7a_activity]');
+        let activity = $(wpcf7Form)[0].querySelector('form > div input[name='+cf7a_prefix+'activity]');
         let activity_value = 0;
         document.body.addEventListener('mouseup', function (e) {
           activity.setAttribute("value", activity_value++ );
@@ -156,6 +158,7 @@
           $(wpcf7Form).find('form > div').append(createCF7Afield("webgl_render", "failed"));
         }
 
+        // TODO: change the canvas name
         let testCanvas = [];
         let testCanvasIframe = [];
         testCanvas[1] = document.createElement('div');
