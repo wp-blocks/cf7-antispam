@@ -4,7 +4,7 @@ class CF7_AntiSpam_Frontend {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 * @var      string $plugin_name The ID of this plugin.
 	 */
@@ -13,7 +13,7 @@ class CF7_AntiSpam_Frontend {
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 * @var      string $version The current version of this plugin.
 	 */
@@ -22,7 +22,7 @@ class CF7_AntiSpam_Frontend {
 	/**
 	 * The options of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   public
 	 * @var      array    $options    options of this plugin.
 	 */
@@ -38,19 +38,24 @@ class CF7_AntiSpam_Frontend {
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
 
 		// TODO: change with honeypot
-		if ( isset( $this->options['check_honeypot'] ) ) {
+		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) == 1  ) {
 			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_honeypot_add'), 10, 1  );
 		}
 
-		if ( isset( $this->options['check_bot_fingerprint'] ) ) {
+		if ( isset( $this->options['check_bot_fingerprint'] ) && intval($this->options['check_bot_fingerprint']) == 1  ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100, 1 );
 		}
 
-		if ( isset( $this->options['check_bot_fingerprint_extras'] ) ) {
+		if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval($this->options['check_bot_fingerprint_extras']) == 1  ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100, 1 );
 		}
 	}
 
+	/**
+	 * @param $form_elements
+	 *
+	 * @return string
+	 */
 	public function cf7a_honeypot_add( $form_elements ) {
 
 		$html = new DOMDocument();
@@ -60,15 +65,17 @@ class CF7_AntiSpam_Frontend {
 		$parents = array();
 		$clones  = array();
 
-		$input_names = $this->options['honeypot_input_names'];
+		$input_names = sanitize_html_class($this->options['honeypot_input_names']);
+		$input_class = sanitize_html_class($this->options['cf7a_customizations_class']);
 
 		//create the style
 		$style = $html->createElement('style');
-		$style->textContent = '.'.CF7ANTISPAM_HONEYPOT_CLASS.'{position:absolute;margin-left:-999em}';
+		$style->textContent = '.'.$input_class.'{position:absolute;margin-left:-999em}';
 		$html->appendChild($style);
 
 		// get the inputs data
 		if ( $inputs && $inputs->length > 0 ) {
+			// to be on the save side it can be a good idea to store the name of the input (to avoid duplicates)
 			for ( $i = 0; $i < count( $inputs ); $i ++ ) {
 				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
 
@@ -91,7 +98,7 @@ class CF7_AntiSpam_Frontend {
 			$clones[$k]->setAttribute( 'name', $honeypot_names );
 			$clones[$k]->setAttribute( 'autocomplete', 'fill' );
 			$clones[$k]->setAttribute( 'tabindex', '-1' );
-			$clones[$k]->setAttribute( 'class', $clones[$k]->getAttribute( 'class' ) . ' '.CF7ANTISPAM_HONEYPOT_CLASS.' autocomplete input' );
+			$clones[$k]->setAttribute( 'class', $clones[$k]->getAttribute( 'class' ) . ' '.$input_class.' autocomplete input' );
 			$parent->appendChild( $clones[ $k ] );
 		}
 
@@ -104,29 +111,37 @@ class CF7_AntiSpam_Frontend {
 
 		$ip = cf7a_get_real_ip();
 
+		$class = sanitize_html_class($this->options['cf7a_customizations_prefix']);
+
 		return array_merge( $fields, array(
-			'_wpcf7a_version' => $this->version,
-			'_wpcf7a_real_sender_ip' => cf7a_crypt($ip),
-			'_wpcf7a_form_creation_timestamp' => cf7a_crypt($timestamp),
+			$class.'version' => cf7a_crypt($this->version),
+			$class.'real_sender_ip' => cf7a_crypt($ip),
+			$class.'form_creation_timestamp' => cf7a_crypt($timestamp),
 		));
 	}
 
 	public function cf7a_add_bot_fingerprinting( $fields ) {
+
+		$class = sanitize_html_class($this->options['cf7a_customizations_prefix']);
+
 		return array_merge( $fields, array(
-			'_wpcf7a_bot_fingerprint' => wp_hash_password(time())
+			$class.'bot_fingerprint' => wp_hash_password(time())
 		));
 	}
 
 	public function cf7a_add_bot_fingerprinting_extras( $fields ) {
+
+		$class = sanitize_html_class($this->options['cf7a_customizations_prefix']);
+
 		return array_merge( $fields, array(
-			'_wpcf7a_bot_fingerprint_extras' => false
+			$class.'bot_fingerprint_extras' => false
 		));
 	}
 
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function enqueue_scripts() {
 
@@ -141,6 +156,11 @@ class CF7_AntiSpam_Frontend {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/script.js', array( 'jquery' ), $this->version, true );
+		wp_register_script($this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/script.js', array( 'jquery' ), $this->version, true );
+		wp_enqueue_script($this->plugin_name);
+
+		wp_localize_script($this->plugin_name, "cf7a_settings", array(
+			"prefix" => $this->options['cf7a_customizations_prefix']
+		));
 	}
 }

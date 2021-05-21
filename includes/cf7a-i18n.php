@@ -16,7 +16,7 @@ class CF7_AntiSpam_i18n {
 	/**
 	 * Load the plugin text domain for translation.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function load_plugin_textdomain() {
 

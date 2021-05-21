@@ -18,7 +18,7 @@ class CF7_AntiSpam {
 	/**
 	 * The ID of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 * @var      string $plugin_name The ID of this plugin.
 	 */
@@ -27,7 +27,7 @@ class CF7_AntiSpam {
 	/**
 	 * The version of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 * @var      string $version The current version of this plugin.
 	 */
@@ -36,7 +36,7 @@ class CF7_AntiSpam {
 	/**
 	 * The options of this plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   public
 	 * @var      array    $options    options of this plugin.
 	 */
@@ -46,7 +46,7 @@ class CF7_AntiSpam {
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   protected
 	 * @var      CF7_AntiSpam_Loader   $loader    Maintains and registers all hooks for the plugin.
 	 */
@@ -115,7 +115,7 @@ class CF7_AntiSpam {
 	 * Uses the CF7_AntiSpam_i18n class in order to set the domain and to register the hook
 	 * with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 */
 	private function set_locale() {
@@ -130,7 +130,7 @@ class CF7_AntiSpam {
 	 * Register all of the hooks related to the admin area functionality
 	 * of the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 */
 	private function load_admin() {
@@ -165,15 +165,17 @@ class CF7_AntiSpam {
 	 * Register all of the hooks related to the frontend area functionality
 	 * of the plugin.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 * @access   private
 	 */
 	private function load_frontend() {
 		if (!is_admin()) {
 			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
-			if (isset($this->options['check_bot_fingerprint'])) {
-				$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'enqueue_scripts' );
+			if (isset($this->options['check_bot_fingerprint']) || isset($this->options['check_bot_fingerprint_extras']) &&
+                intval($this->options['check_bot_fingerprint']) == 1 || intval($this->options['check_bot_fingerprint_extras']) == 1) {
+
+				$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );
 			}
 
 		}
@@ -182,7 +184,7 @@ class CF7_AntiSpam {
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since    0.1.0
 	 */
 	public function run() {
 		if ( defined( 'WPCF7_VERSION' ) ) {
