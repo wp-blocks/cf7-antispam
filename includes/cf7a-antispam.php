@@ -60,7 +60,7 @@ class CF7_AntiSpam_filters {
 		try {
 			return new b8\b8( $config_b8, $config_storage, $config_lexer, $config_degenerator );
 		} catch ( Exception $e ) {
-			error_log( 'CF7 Antispam error message: ' . $e->getMessage() );
+			error_log( CF7ANTISPAM_LOG_PREFIX . 'error message: ' . $e->getMessage() );
 			exit();
 		}
 	}
@@ -71,13 +71,13 @@ class CF7_AntiSpam_filters {
 		$rating = $this->b8->classify( $message );
 
 		if ( $verbose || CF7ANTISPAM_DEBUG ) {
-			error_log( 'CF7 Antispam - Classification: ' . $rating );
+			error_log( CF7ANTISPAM_LOG_PREFIX .'email classification: ' . $rating );
 
 			$mem_used      = round( memory_get_usage() / 1048576, 5 );
 			$peak_mem_used = round( memory_get_peak_usage() / 1048576, 5 );
 			$time_taken    = round( cf7a_microtimeFloat() - $time_elapsed, 5 );
 
-			error_log( "CF7 Antispam stats : Memory: $mem_used - Peak memory: $peak_mem_used - Time Elapsed: $time_taken" );
+			error_log( CF7ANTISPAM_LOG_PREFIX . "stats : Memory: $mem_used - Peak memory: $peak_mem_used - Time Elapsed: $time_taken" );
 		}
 
 		return $rating;
@@ -130,7 +130,7 @@ class CF7_AntiSpam_filters {
 
 		);
 
-		return $r ? true : error_log(printf(__("AntiSpam for Contact Form 7 - unable to blacklist %s", "cf7-antispam" ), $ip ));
+		return $r ? true : error_log(printf(__( "% unable to blacklist %s", "cf7-antispam" ), CF7ANTISPAM_LOG_PREFIX, $ip ));
 	}
 
 	public function cf7a_unban_ip($ip, $status_remove = 1) {
@@ -157,14 +157,14 @@ class CF7_AntiSpam_filters {
 			)
 		);
 
-		return $r ? true : error_log(printf(__("AntiSpam for Contact Form 7 - unable to unban %s", "cf7-antispam" ), $ip ));
+		return $r ? true : error_log(printf(__( "% unable to unban %s", "cf7-antispam" ), CF7ANTISPAM_LOG_PREFIX, $ip ));
 	}
 
 
 	public function cf7a_d8_flamingo_message($before, $after) {
 		echo sprintf(
 			'<div id="message" class="notice notice-success is-dismissible"><p>%s</p></div>',
-			esc_html( sprintf( __( "I learned this was spam - score before/after: %s/%s", 'cf7-antispam'), $before, $after) )
+			esc_html( sprintf( __( CF7ANTISPAM_LOG_PREFIX . "d8 has learned this was spam - score before/after: %s/%s", 'cf7-antispam'), $before, $after) )
 		);
 	}
 
@@ -245,7 +245,14 @@ class CF7_AntiSpam_filters {
 
 				update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', $rating_after );
 
-				if (CF7ANTISPAM_DEBUG) error_log( sprintf( __( "I learned {$flamingo_post->id()} {$flamingo_post->from_email} was $action - score before/after: %f/%f", 'cf7-antispam'), $rating, $rating_after) );
+				if (CF7ANTISPAM_DEBUG) error_log( sprintf( __( "%sD8 learned %s %s was %s - score before/after: %f/%f", 'cf7-antispam'),
+					CF7ANTISPAM_LOG_PREFIX,
+					$flamingo_post->id(),
+					$flamingo_post->from_email,
+					$action,
+					$rating,
+					$rating_after)
+				);
 			}
 
 			$this->cf7a_d8_flamingo_message($rating,$rating_after);
@@ -290,7 +297,6 @@ class CF7_AntiSpam_filters {
 
 		// Get the submitted data
 		$submission = WPCF7_Submission::get_instance();
-		// error_log( print_r($submission, true) );
 
 		if ( ! $submission
 		     or ! $posted_data = $submission->get_posted_data() ) {
@@ -322,6 +328,7 @@ class CF7_AntiSpam_filters {
 		// IP
 		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'address' ] ) ) : null;
 		$remote_ip = filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) ? $real_remote_ip : null;
+		$cf7_remote_ip = isset( $_POST[ 'remote_ip' ] ) ? filter_var( sanitize_text_field($_POST[ $prefix . 'address' ]), FILTER_VALIDATE_IP) : null;
 
 		// CF7A version
 		$cf7a_version = isset( $_POST[ $prefix . '_version' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_version' ] ) ) : null;
@@ -364,7 +371,7 @@ class CF7_AntiSpam_filters {
 			$spam_score += 1;
 			$reason['no_ip'] = "ip address field not available, this means it has been modified, removed or hacked!";
 
-			if (CF7ANTISPAM_DEBUG) error_log( "The ip address field not available, modified or hacked" );
+			if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The ip address $remote_ip field not available, modified or hacked" );
 
 		} else {
 
@@ -376,7 +383,7 @@ class CF7_AntiSpam_filters {
 				$spam_score += 1;
 				$reason['blacklisted'] = "status " . ($ip_data_status + 1);
 
-				if (CF7ANTISPAM_DEBUG) error_log( "The ip is already blacklisted, status $ip_data_status" );
+				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip is already blacklisted, status $ip_data_status" );
 
 			}
 
@@ -391,7 +398,7 @@ class CF7_AntiSpam_filters {
 			$spam_score += 1;
 			$reason['data_mismatch'] = "cf7a version mismatch";
 
-			if (CF7ANTISPAM_DEBUG) error_log( "Incorrect data in hidden CF7 AntiSpam field _version, may have been modified, removed or hacked" );
+			if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "Incorrect data submitted by $remote_ip in the hidden field _version, may have been modified, removed or hacked" );
 
 		}
 
@@ -410,14 +417,14 @@ class CF7_AntiSpam_filters {
 				foreach ( $bad_ip_list as $bad_ip ) {
 
 					if ( false !== stripos( $remote_ip , $bad_ip ) ) {
-						error_log(print_r("$remote_ip contains $bad_ip", true));
+						error_log( print_r( CF7ANTISPAM_LOG_PREFIX . "$remote_ip contains $bad_ip", true) );
 
 						$bad_ip = filter_var($bad_ip, FILTER_VALIDATE_IP);
 
 						$spam_score += 1;
 						$reason['ip'] = $bad_ip;
 
-						if (CF7ANTISPAM_DEBUG) error_log( "The ip address is listed into bad ip list - $remote_ip contains $bad_ip" );
+						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The ip address $remote_ip is listed into bad ip list (contains $bad_ip)" );
 					}
 				}
 
@@ -468,7 +475,7 @@ class CF7_AntiSpam_filters {
 					$reason['bot_fingerprint'] = implode( ",", $fails );
 
 					if ( CF7ANTISPAM_DEBUG ) {
-						error_log( "CF7 Antispam - the submitter hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint']})" );
+						error_log( CF7ANTISPAM_LOG_PREFIX . "the submitter hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint']})" );
 					}
 
 					$submission->add_spam_log( array(
@@ -503,7 +510,7 @@ class CF7_AntiSpam_filters {
 					$spam_score += count($fails) * .5;
 					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
 
-					if (CF7ANTISPAM_DEBUG) error_log( "CF7 Antispam - the submitter hasn't passed ".count($fails)." / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})" );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "the submitter hasn't passed ".count($fails)." / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})" );
 
 					$submission->add_spam_log( array(
 						'agent'  => 'fingerprint_extra tests',
@@ -524,7 +531,7 @@ class CF7_AntiSpam_filters {
 					$spam_score += 5;
 					$reason['timestamp'] = 'undefined';
 
-					if (CF7ANTISPAM_DEBUG) error_log( "_wpcf7a_timestamp field is missing, probable form hacking attempt" );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "_wpcf7a_timestamp field is missing, probable form hacking attempt" );
 
 					$submission->add_spam_log( array(
 						'agent'  => 'timestamp_issue',
@@ -539,7 +546,7 @@ class CF7_AntiSpam_filters {
 					$spam_score += 5;
 					$reason['min_time_elapsed'] = $time_elapsed;
 
-					if (CF7ANTISPAM_DEBUG) error_log( "It took too little time to fill in the form - ($time_elapsed)" );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "It took too little time to fill in the form - ($time_elapsed)" );
 
 					$submission->add_spam_log( array(
 						'agent'  => 'timestamp_issue',
@@ -557,7 +564,7 @@ class CF7_AntiSpam_filters {
 					$spam_score += 5;
 					$reason['max_time_elapsed'] = $time_elapsed;
 
-					if (CF7ANTISPAM_DEBUG) error_log( "It took too much time to fill in the form - ($time_elapsed)" );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "It took too much time to fill in the form - ($time_elapsed)" );
 
 					$submission->add_spam_log( array(
 						'agent'  => 'timestamp_issue',
@@ -581,7 +588,7 @@ class CF7_AntiSpam_filters {
 						$spam_score += 1;
 						$reason['email_blackilisted'][] = $email;
 
-						if (CF7ANTISPAM_DEBUG) error_log( "The sender mail domain is the same of the website - {$email} contains $bad_email_string" );
+						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The sender mail domain is the same of the website - {$email} contains $bad_email_string" );
 
 					}
 				}
@@ -606,7 +613,7 @@ class CF7_AntiSpam_filters {
 					$spam_score += 5;
 					$reason['user_agent_empty'] = "undefined";
 
-					if (CF7ANTISPAM_DEBUG) error_log( "The email user agent is empty, look like a spambot");
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The email user agent is empty, look like a spambot");
 
 					$submission->add_spam_log( array(
 						'agent'  => 'no_user_agent',
@@ -621,7 +628,7 @@ class CF7_AntiSpam_filters {
 						$spam_score += 1;
 						$reason['user_agent_blacklisted'][] = $user_agent;
 
-						if (CF7ANTISPAM_DEBUG) error_log( "The email user agent was listed into bad user agent list - $user_agent contains $bad_user_agent" );
+						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The email user agent was listed into bad user agent list - $user_agent contains $bad_user_agent" );
 					}
 
 					if (isset($reason['user_agent_blacklisted'])) {
@@ -650,7 +657,7 @@ class CF7_AntiSpam_filters {
 						$spam_score += 3;
 						$reason['bad_word'][] = $bad_word;
 
-						if (CF7ANTISPAM_DEBUG) error_log( "Detected a bad word ($bad_word)" );
+						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "Detected a bad word ($bad_word)" );
 					}
 				}
 
@@ -698,12 +705,12 @@ class CF7_AntiSpam_filters {
 				}
 
 				if (CF7ANTISPAM_DEBUG_EXTENDED) {
-					error_log( "DNSBL performance test" );
+					error_log( CF7ANTISPAM_LOG_PREFIX . "DNSBL performance test" );
 					error_log( print_r($performance_test, true) );
 				}
 
 				if (isset($dsnbl_listed)) {
-					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( "The $remote_ip has tried to send an email but is listed ".count($dsnbl_listed)." times in the Domain Name System Blacklists ("  . implode(", ", $dsnbl_listed) .")" );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip has tried to send an email but is listed ".count($dsnbl_listed)." times in the Domain Name System Blacklists ("  . implode(", ", $dsnbl_listed) .")" );
 
 					$reason['dsnbl'] = implode(", ",$dsnbl_listed);
 
@@ -740,7 +747,7 @@ class CF7_AntiSpam_filters {
 							$spam_score += 3;
 							$reason['honeypot'][] = $input_names[ $i ];
 
-							if (CF7ANTISPAM_DEBUG) error_log( "Detected a honeypot filled ({$input_names[ $i ]})" );
+							if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "Detected a honeypot filled ({$input_names[ $i ]})" );
 						}
 
 					}
@@ -776,7 +783,7 @@ class CF7_AntiSpam_filters {
 			if ( $spam_score >= 1 || $rating >= $b8_threshold ) {
 
 				$spam = true;
-				error_log( "Antispam for Contact Form 7: $remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
+				error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
 
 				if (!defined( 'FLAMINGO_VERSION' )) $this->cf7a_b8_learn_spam($text);
 
@@ -784,7 +791,7 @@ class CF7_AntiSpam_filters {
 
 					$reason['b8'] = $rating;
 
-					if (CF7ANTISPAM_DEBUG) error_log( "CF7 Antispam - D8 detect spamminess of $rating while the minimum is > $b8_threshold so this mail will be marked as spam" );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "D8 detect spamminess of $rating while the minimum is > $b8_threshold so this mail will be marked as spam" );
 
 					$submission->add_spam_log( array(
 						'agent'  => 'd8_spam_detected',
@@ -797,14 +804,14 @@ class CF7_AntiSpam_filters {
 				// the mail was classified as ham so we let learn to d8 what is considered (a probable) ham
 				if (!defined( 'FLAMINGO_VERSION' )) $this->cf7a_b8_learn_ham($text);
 
-				if (CF7ANTISPAM_DEBUG) error_log( "CF7 Antispam - D8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so this mail will be marked as ham" );
+				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "D8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so this mail will be marked as ham" );
 			}
 
 
 		} else if ($spam = $spam_score >= 1 ? true : $spam) {
 
 			// if d8 isn't enabled we only need to mark as spam and leave a log
-			error_log( "Antispam for Contact Form 7: $remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
+			if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
 
 			$submission->add_spam_log( array(
 				'agent'  => 'd8_spam_detected',
@@ -817,7 +824,7 @@ class CF7_AntiSpam_filters {
 
 		if ($options['autostore_bad_ip'] && $spam) {
 			if (false == $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) && CF7ANTISPAM_DEBUG)
-				error_log( "Antispam for Contact Form 7: unable to ban $remote_ip" );
+				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip" );
 		}
 
 		return $spam; // case closed
