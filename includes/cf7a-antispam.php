@@ -332,8 +332,8 @@ class CF7_AntiSpam_filters {
 		// Timestamp checks
 		$timestamp                       = isset($_POST[$prefix.'_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST[$prefix.'_timestamp']) ) ) : 0;
 		$timestamp_submitted             = $submission->get_meta( 'timestamp' );
-		$submission_minimum_time_elapsed = $options['check_time_min'];
-		$submission_maximum_time_elapsed = $options['check_time_max'];
+		$submission_minimum_time_elapsed = intval($options['check_time_min']);
+		$submission_maximum_time_elapsed = intval($options['check_time_max']);
 
 		// Checks sender has a blacklisted ip address
 		$bad_ip_list = isset($options['bad_ip_list']) ? $options['bad_ip_list'] : array();
@@ -396,15 +396,16 @@ class CF7_AntiSpam_filters {
 		}
 
 		/**
-		 * if the mail was yet marked as spam no more checks needed.
+		 * if the mail was marked as spam no more checks are needed.
 		 * This will save server computing power, this ip has already been banned so there's no need to push it.
 		 */
-		if ($spam_score >= 1) {
+		if ($spam_score < 1) {
+
 
 			/**
 			 * Checks if the emails IP is filtered by user
 			 */
-			if ( $options['check_bad_ip'] ) {
+			if ( intval( $options['check_bad_ip'] ) ) {
 
 				foreach ( $bad_ip_list as $bad_ip ) {
 
@@ -434,7 +435,7 @@ class CF7_AntiSpam_filters {
 			/**
 			 * if enabled fingerprints bots
 			 */
-			if ( $options['check_bot_fingerprint'] ) {
+			if ( intval( $options['check_bot_fingerprint'] ) ) {
 				$bot_fingerprint = array(
 					"timezone"             => isset( $_POST[$prefix.'timezone'] ) ? sanitize_text_field( $_POST[$prefix.'timezone'] ) : 0,
 					"platform"             => isset( $_POST[$prefix.'platform'] ) ? sanitize_text_field( $_POST[$prefix.'platform'] ) : 0,
@@ -482,7 +483,7 @@ class CF7_AntiSpam_filters {
 			/**
 			 * Bot fingerprints extras
 			 */
-			if ( $options['check_bot_fingerprint_extras'] ) {
+			if ( intval( $options['check_bot_fingerprint_extras'] ) ) {
 				$bot_fingerprint = array(
 					"activity"           => isset( $_POST[$prefix.'activity']) ? intval( $_POST[$prefix.'activity'] ) : 0,
 					"mousemove_activity" => isset( $_POST[$prefix.'mousemove_activity'] ) && sanitize_text_field( $_POST[$prefix.'mousemove_activity'] ) === 'passed' ? 'passed' : 0,
@@ -516,7 +517,7 @@ class CF7_AntiSpam_filters {
 			/**
 			 * Check if the time to submit the email il lower than expected
 			 */
-			if ( $options['check_time'] ) {
+			if ( intval( $options['check_time'] ) ) {
 
 				if ($timestamp == 0) {
 
@@ -571,7 +572,7 @@ class CF7_AntiSpam_filters {
 			 * for example it check if the sender mail is the same than the website domain because it is an attempt to bypass controls,
 			 * because emails client can't blacklists the email itself, we must prevent it
 			 */
-			if ( $options['check_bad_email_strings'] && $email ) {
+			if ( intval( $options['check_bad_email_strings'] ) && $email ) {
 
 				foreach ( $bad_email_strings as $bad_email_string ) {
 
@@ -598,7 +599,7 @@ class CF7_AntiSpam_filters {
 			/**
 			 * Checks if the emails user agent is denied
 			 */
-			if ( $options['check_bad_user_agent'] ) {
+			if ( intval( $options['check_bad_user_agent'] ) ) {
 
 				if ($user_agent == '') {
 
@@ -638,7 +639,7 @@ class CF7_AntiSpam_filters {
 			/**
 			 * Search for prohibited words
 			 */
-			if ( $options['check_bad_words'] && $message != '' ) {
+			if ( intval( $options['check_bad_words'] ) && $message != '' ) {
 
 				// to search strings into message without space and case unsensitive
 				$message_compressed = str_replace( " ", "", strtolower( $message ) );
@@ -671,7 +672,7 @@ class CF7_AntiSpam_filters {
 			 *
 			 * TODO: enhance the performance using curl or threading. break after threshold reached
 			 */
-			if ( $options['check_dnsbl'] && $remote_ip ) {
+			if ( intval( $options['check_dnsbl'] ) && $remote_ip ) {
 
 				$dsnbl_listed = array();
 				$reverse_ip = '';
