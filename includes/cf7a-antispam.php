@@ -100,7 +100,7 @@ class CF7_AntiSpam_filters {
 	}
 
 	public function cf7a_blacklist_get_ip($ip) {
-		if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) return false;
+		if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP) || CF7ANTISPAM_DEBUG_EXTENDED) return false;
 
 		global $wpdb;
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %s", $ip ) );
@@ -318,31 +318,34 @@ class CF7_AntiSpam_filters {
 		$prefix = sanitize_html_class($options['cf7a_customizations_prefix']);
 
 
-		// the sender data
-		$real_remote_ip = cf7a_decrypt( sanitize_text_field($_POST[ $prefix . 'real_sender_ip'] ) );
-		$remote_ip = filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) ? $real_remote_ip : '';
+		// the data of the user who sent this email
+		// IP
+		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'address' ] ) ) : null;
+		$remote_ip = filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) ? $real_remote_ip : null;
 
-		$cf7a_version = cf7a_decrypt( sanitize_text_field($_POST[ $prefix . 'version'] ) );
+		// CF7A version
+		$cf7a_version = isset( $_POST[ $prefix . '_version' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_version' ] ) ) : null;
 
+		// CF7 user agent
 		$user_agent = $submission->get_meta( 'user_agent' );
 
-		// check the timestamp
-		$timestamp                       = isset($_POST[$prefix.'form_creation_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST[$prefix.'form_creation_timestamp']) ) ) : 0;
+		// Timestamp checks
+		$timestamp                       = isset($_POST[$prefix.'_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST[$prefix.'_timestamp']) ) ) : 0;
 		$timestamp_submitted             = $submission->get_meta( 'timestamp' );
-		$submission_minimum_time_elapsed = 3;
-		$submission_maximum_time_elapsed = 3600;
+		$submission_minimum_time_elapsed = $options['check_time_min'];
+		$submission_maximum_time_elapsed = $options['check_time_max'];
 
 		// Checks sender has a blacklisted ip address
-		$bad_ip_list = $options['bad_ip_list'];
+		$bad_ip_list = isset($options['bad_ip_list']) ? $options['bad_ip_list'] : array();
 
 		// Checks if the mail contains bad words
-		$bad_words = $options['bad_words_list'];
+		$bad_words = isset($options['bad_words_list']) ? $options['bad_words_list'] : array();
 
 		// Checks if the mail contains bad user agent
-		$bad_user_agent_list = $options['bad_user_agent_list'];
+		$bad_user_agent_list = isset($options['bad_user_agent_list']) ? $options['bad_user_agent_list'] : array();
 
 		// Check sender mail has prohibited string
-		$bad_email_strings = $options['bad_email_strings_list'];
+		$bad_email_strings = isset($options['bad_email_strings_list']) ? $options['bad_email_strings_list'] : array();
 
 		// b8 threshold
 		$b8_threshold = floatval( $options['b8_threshold'] );
@@ -354,32 +357,54 @@ class CF7_AntiSpam_filters {
 
 		/**
 		 * Checks if the ip is already banned - no mercy :)
+		 * TODO: add also all the ip of the ip strings (that are valid ip)
 		 */
-		$ip_data = self::cf7a_blacklist_get_ip($remote_ip);
-		if ( $ip_data && $ip_data->status != 0 && !CF7ANTISPAM_DEBUG_EXTENDED) {
+		if ( !$remote_ip ) {
 
 			$spam_score += 1;
-			$reason['blacklisted'] = "status " . ($ip_data->status + 1);
+			$reason['no_ip'] = "ip address field not available, this means it has been modified, removed or hacked!";
+
+			if (CF7ANTISPAM_DEBUG) error_log( "The ip address field not available, modified or hacked" );
 
 		} else {
+
+			$ip_data = self::cf7a_blacklist_get_ip($remote_ip);
+			$ip_data_status = isset($ip_data->status) ? intval($ip_data->status) : 0;
+
+			if ($ip_data_status != 0) {
+
+				$spam_score += 1;
+				$reason['blacklisted'] = "status " . ($ip_data_status + 1);
+
+				if (CF7ANTISPAM_DEBUG) error_log( "The ip is already blacklisted, status $ip_data_status" );
+
+			}
+
+		}
+
+
+		/**
+		 * Check the CF7 AntiSpam version field
+		 */
+		if ( !$cf7a_version || $cf7a_version != CF7ANTISPAM_VERSION ) {
+
+			$spam_score += 1;
+			$reason['data_mismatch'] = "cf7a version mismatch";
+
+			if (CF7ANTISPAM_DEBUG) error_log( "Incorrect data in hidden CF7 AntiSpam field _version, may have been modified, removed or hacked" );
+
+		}
+
+		/**
+		 * if the mail was yet marked as spam no more checks needed.
+		 * This will save server computing power, this ip has already been banned so there's no need to push it.
+		 */
+		if ($spam_score >= 1) {
 
 			/**
 			 * Checks if the emails IP is filtered by user
 			 */
 			if ( $options['check_bad_ip'] ) {
-
-				if ($remote_ip == '') {
-
-					$spam_score += 1;
-					$reason['ip'] = $remote_ip;
-
-					if (CF7ANTISPAM_DEBUG) error_log( "The ip is empty, look like a spambot" );
-
-					$submission->add_spam_log( array(
-						'agent'  => 'no_ip_address',
-						'reason' => "The sender has no ip address set, look like a spambot",
-					) );
-				}
 
 				foreach ( $bad_ip_list as $bad_ip ) {
 
@@ -746,6 +771,7 @@ class CF7_AntiSpam_filters {
 
 			$rating = $this->cf7a_b8_classify($text);
 
+
 			if ( $spam_score >= 1 || $rating >= $b8_threshold ) {
 
 				$spam = true;
@@ -761,7 +787,7 @@ class CF7_AntiSpam_filters {
 
 					$submission->add_spam_log( array(
 						'agent'  => 'd8_spam_detected',
-						'reason' => "d8 spam detected with ration of $rating",
+						'reason' => "d8 spam detected with rating of $rating",
 					) );
 				}
 
@@ -772,6 +798,17 @@ class CF7_AntiSpam_filters {
 
 				if (CF7ANTISPAM_DEBUG) error_log( "CF7 Antispam - D8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so this mail will be marked as ham" );
 			}
+
+
+		} else if ($spam = $spam_score >= 1 ? true : $spam) {
+
+			// if d8 isn't enabled we only need to mark as spam and leave a log
+			error_log( "Antispam for Contact Form 7: $remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
+
+			$submission->add_spam_log( array(
+				'agent'  => 'd8_spam_detected',
+				'reason' => "d8 spam detected with spam score of $spam_score",
+			) );
 		}
 
 		// hook to add some filters after d8
