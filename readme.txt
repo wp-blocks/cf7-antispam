@@ -37,11 +37,14 @@ What does the spam-bot detection sequence:
 - if the spam score is above 1 the mail is proposed to d8 as spam, then d8 ranks it and learns the spam words.
 - if the spam score is below 1 the mail is read and d8 decides if it is spam or not (you can decide the tolerance so until it is familiar with the "right" words it should be kept high e.g. 0.95)
 
-By the way nothing is perfect so if you don't want to loose any submitted mail you may want to install also [flamingo](https://wordpress.org/plugins/flamingo/)
+Will I finally be 100% protected from spam?
+No, nobody can guarantee that, and anyone who tells you that is lying.
+Scammers know very well how we defend our forms (they can even see the source code of the various plugins) and this is the reason why it is important for the community to cooperate in identifying words to exclude or to inform me if someone is managing to bypass the spam filters.
 
-Flamingo in addition can be used as manager for the antispam system and when you mark an email as spam (or ham) the intelligent algorithm learns again!
-On plugin activation if you have flamingo the plugin will parse all the collected mail and teach to d8 what is spam or not so you will start with a good pre-trained algorithm.
-Note: if you unban an email in the flamingo inbound page the related ip will be unbanned.
+My advice is to enable also [flamingo](https://wordpress.org/plugins/flamingo/)
+Flamingo in addition can be used as manager for the antispam system and when you mark an email as spam (or ham) this preference will be submitted also to the d8 dictionary!
+If you already use flamingo on this plugin activation all the collected mail will be parsed and d8 will learn what is spam or not. So in this way you will start with a pre-trained algorithm.
+Note: if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. if you mark as spam a mail the ip will be blacklisted.
 
 == Privacy Notices ==
 AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
@@ -68,7 +71,7 @@ Unban ip after x hours
 == Changelog ==
 
 = 0.1.0 =
-* Contact Form 7 AntiSpam published into WordPress Plugin Directory
+* AntiSpam for Contact Form 7 published into WordPress Plugin Directory
 * Compared to the very early version, I've added honeypot, fingerprint bots and automated ip bans (but I need to provide a way to unban even without flamingo).
 * Documentation
 
