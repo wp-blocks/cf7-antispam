@@ -1,4 +1,4 @@
-( function( $ ) {
+(function ($) {
 
   'use strict';
 
@@ -8,16 +8,16 @@
     let tests;
 
     tests = {
-      "timezone" : window.Intl.DateTimeFormat().resolvedOptions().timeZone,
-      "platform" : navigator.platform,
-      "hardware_concurrency" : navigator.hardwareConcurrency,
-      "screens" : [window.screen.width, window.screen.height],
-      "memory" : navigator.deviceMemory,
-      "user_agent" : navigator.userAgent,
-      "app_version" : navigator.appVersion,
-      "webdriver" : window.navigator.webdriver,
-      "plugins" : navigator.plugins.length,
-      "session_storage" : sessionStorage !== void 1
+      "timezone": window.Intl.DateTimeFormat().resolvedOptions().timeZone,
+      "platform": navigator.platform,
+      "hardware_concurrency": navigator.hardwareConcurrency,
+      "screens": [window.screen.width, window.screen.height],
+      "memory": navigator.deviceMemory,
+      "user_agent": navigator.userAgent,
+      "app_version": navigator.appVersion,
+      "webdriver": window.navigator.webdriver,
+      "plugins": navigator.plugins.length,
+      "session_storage": sessionStorage !== void 1
     };
 
     return tests;
@@ -27,44 +27,51 @@
     let tests;
 
     tests = {
-      "activity" : 0
+      "activity": 0
     };
 
     return tests;
   }
 
-  const wpcf7Forms = document.querySelectorAll( '.wpcf7' );
+  const wpcf7Forms = document.querySelectorAll('.wpcf7');
 
   function createCF7Afield(key, value, prefix = cf7a_prefix) {
     let e = document.createElement('input');
     e.setAttribute("type", "hidden");
-    e.setAttribute("name", prefix + key );
-    e.setAttribute("value", value );
+    e.setAttribute("name", prefix + key);
+    e.setAttribute("value", value);
     return e;
   }
 
-  let oldy = 0, moved = 0;
-
   if (wpcf7Forms.length) {
+
+    let oldy = 0, moved = 0;
+
     for (const wpcf7Form of wpcf7Forms) {
 
-      // I) bot_fingerprint checks
-      const tests = browserFingerprint();
 
-      for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
-        $(wpcf7Form).find('form > div').append(createCF7Afield(key, value));
+
+      // I) Standard bot checks
+      let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint]');
+      if (bot_fingerprint_key) {
+          let fingerprint_key = bot_fingerprint_key.getAttribute("value");
+          // hijack the value of the bot_fingerprint
+          bot_fingerprint_key.setAttribute("value", fingerprint_key.slice(0, 5));
+
+          // bot_fingerprint checks enabled
+          const tests = browserFingerprint();
+
+          for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
+            $(wpcf7Form).find('form > div').append(createCF7Afield(key, value));
+          }
       }
 
-      // hijack the value of the bot_fingerprint
-      let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name='+cf7a_prefix+'bot_fingerprint]');
-      let fingerprint_key = bot_fingerprint_key.getAttribute("value");
-      bot_fingerprint_key.setAttribute("value", fingerprint_key.slice(0,5) );
 
-
-      // II) bot_fingerprint extra checks
-      let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name='+cf7a_prefix+'bot_fingerprint_extras]');
+      // II) Bot fingerprint extra checks
+      let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
       if (bot_fingerprint_extra) {
-        // load the extras
+
+        // load the extra tests
         const tests_extras = browserFingerprintExtras();
 
         for (const [key, value] of Object.entries(tests_extras).sort(() => Math.random() - 0.5)) {
@@ -72,18 +79,20 @@
         }
 
         // check for mouse clicks
-        let activity = $(wpcf7Form)[0].querySelector('form > div input[name='+cf7a_prefix+'activity]');
-        let activity_value = 0;
-        document.body.addEventListener('mouseup', function (e) {
-          activity.setAttribute("value", activity_value++ );
-        }, true);
-        document.body.addEventListener('touchend', function (e) {
-          activity.setAttribute("value", activity_value++ );
-          if (activity_value == 3) $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
-        }, true);
+        let activity = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'activity]');
+        if (activity.length) {
+          let activity_value = 0;
+          document.body.addEventListener('mouseup', function (e) {
+            activity.setAttribute("value", activity_value++);
+          }, true);
+          document.body.addEventListener('touchend', function (e) {
+            activity.setAttribute("value", activity_value++);
+            if (activity_value == 3) $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
+          }, true);
+        }
 
         // detect the mouse/touch direction change OR touchscreen iterations
-        const mouseMove= function (e) {
+        const mouseMove = function (e) {
           if (e.pageY > oldy) {
             moved += 1;
           }
@@ -94,7 +103,7 @@
             $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
-        document.addEventListener('mousemove', mouseMove );
+        document.addEventListener('mousemove', mouseMove);
 
         let wpcf7box = document.createElement('div');
         wpcf7box.id = 'hidden';
@@ -108,7 +117,7 @@
           if (this.length === 0) return hash;
           for (i = 0; i < this.length; i++) {
             chr = this.charCodeAt(i);
-            hash = ( ( hash << 5 ) - hash ) + chr;
+            hash = ((hash << 5) - hash) + chr;
             hash |= 0; // Convert to 32bit integer
           }
           return hash;
@@ -172,7 +181,7 @@
         testCanvasIframe[3] = document.createElement('iframe');
         testCanvasIframe[3].id = 'canvas3-iframe';
         testCanvasIframe[3].class = 'canvased';
-        testCanvasIframe[3].setAttribute("sandbox", "allow-same-origin" );
+        testCanvasIframe[3].setAttribute("sandbox", "allow-same-origin");
         testCanvas[3].append(testCanvasIframe[3]);
 
         testCanvas[4] = document.createElement('div');
@@ -180,7 +189,7 @@
         testCanvasIframe[4] = document.createElement('iframe');
         testCanvasIframe[4].id = 'canvas4-iframe';
         testCanvasIframe[4].class = 'canvased';
-        testCanvasIframe[4].setAttribute("sandbox", "allow-same-origin" );
+        testCanvasIframe[4].setAttribute("sandbox", "allow-same-origin");
         testCanvas[4].append(testCanvasIframe[4]);
 
         testCanvas[5] = document.createElement('div');
@@ -254,7 +263,7 @@
             if (isOkCanvas && "function" == typeof canvasElement.toDataURL) {
               var datUrl = canvasElement.toDataURL("image/png");
               try {
-                if ("boolean" == typeof ( datUrl ) || void 0 === datUrl) {
+                if ("boolean" == typeof (datUrl) || void 0 === datUrl) {
                   throw e;
                 }
               } catch (a) {
@@ -300,9 +309,10 @@
 
         // then remove the useless div
         wpcf7box.remove();
-
       }
+
+
     }
   }
 
-} )( jQuery );
+})(jQuery);
