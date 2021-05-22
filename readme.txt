@@ -68,7 +68,7 @@ Unban ip after x hours
 == Changelog ==
 
 = 0.1.0 =
-* ContactForm 7 AntiSpam published into WordPress Plugin Directory
+* Contact Form 7 AntiSpam published into WordPress Plugin Directory
 * Compared to the very early version, I've added honeypot, fingerprint bots and automated ip bans (but I need to provide a way to unban even without flamingo).
 * Documentation
 

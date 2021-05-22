@@ -2,7 +2,7 @@
 A trustworthy antispam plugin for Contact Form 7 a WordPress, simple but effective!
 Contact Form 7 Antispam without boring you with configurations, filters out spam-bots with an auto-learning ai mechanism. 
 
-A copy of the plugin package is downloadable from the [WordPress.org Plugin Directory](https://wordpress.org/plugins/contact-form-7-antispam/).
+A copy of the plugin package is downloadable from the [WordPress.org Plugin Directory](https://wordpress.org/plugins/cf7-antispam/).
 
 License
 -------
@@ -25,11 +25,12 @@ Support for this plugin is primarily provided within the volunteer-based WordPre
 Contributing to Contact Form 7 - Antispam
 -----------------------------------------
 
-You can contribute to the project of Contact Form 7 Antispam collaborating with we [to develop this plugin](https://github.com/erikyo/contact-form-7-antispam) or translating it.   
+You can contribute to the project of Contact Form 7 Antispam collaborating with we to develop this plugin or translating it.   
 
 
 Special Thanks
 --------------
 
 Tobias Leupold - b8 https://nasauber.de/opensource/b8/, https://gitlab.com/l3u/b8/
+
 Takayuki Miyoshi - [Contact Form 7](https://wordpress.org/plugins/contact-form-7/), [Flamingo](https://wordpress.org/plugins/flamingo/)  
