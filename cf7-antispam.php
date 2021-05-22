@@ -13,12 +13,7 @@ if ( ! defined( 'WPINC' ) ) {die;}
 
 
 // CONSTANTS
-if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
-if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);
-if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
-if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
-
-define( 'CF7ANTISPAM_VERSION', '0.0.1' );
+define( 'CF7ANTISPAM_VERSION', '0.1.0' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
@@ -26,11 +21,11 @@ define( 'CF7ANTISPAM_PLUGIN_BASENAME', plugin_basename( CF7ANTISPAM_PLUGIN ) );
 
 define( 'CF7ANTISPAM_PLUGIN_DIR', untrailingslashit( dirname( CF7ANTISPAM_PLUGIN ) ) );
 
+if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
+if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);
+if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
+if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
 
-// OPTIONS
-if ( ! defined( 'CF7ANTISPAM_security_level' ) ) {
-	define( 'CF7ANTISPAM_security_level', "standard" );
-}
 
 // PLUGIN
 

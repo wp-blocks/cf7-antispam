@@ -107,22 +107,18 @@ class CF7_AntiSpam_Frontend {
 
 	public function cf7a_add_hidden_fields( $fields ) {
 
-		$timestamp = time();
-
-		$ip = cf7a_get_real_ip();
-
 		// the base hidden field prefix
 		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
 
 		// add the timestamp id required
 		$fields = intval($this->options['check_time']) ?
-			array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt($timestamp) ) ) :
+			array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt(time()) ) ) :
 			$fields;
 
 		// add the default hidden fields
 		return array_merge( $fields, array(
-			$prefix.'_version' => cf7a_crypt($this->version),
-			$prefix.'address' => cf7a_crypt($ip)
+			$prefix.'_version' => cf7a_crypt(CF7ANTISPAM_VERSION),
+			$prefix.'address' => cf7a_crypt(cf7a_get_real_ip())
 		));
 	}
 
