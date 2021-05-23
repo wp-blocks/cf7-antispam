@@ -38,7 +38,7 @@ class CF7_AntiSpam_Activator {
 		  `ip` varchar(255) character set utf8 collate utf8_bin NOT NULL,
 		  `status` int unsigned default NULL,
 		  `reason` longtext default NULL,
-		  PRIMARY KEY (`id`)
+		  PRIMARY KEY (`ip`)
 		) $charset_collate;";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
