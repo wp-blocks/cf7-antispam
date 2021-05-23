@@ -7,30 +7,18 @@
   function browserFingerprint() {
     let tests;
 
-    tests = {
-      "timezone": window.Intl.DateTimeFormat().resolvedOptions().timeZone,
-      "platform": navigator.platform,
-      "hardware_concurrency": navigator.hardwareConcurrency,
-      "screens": [window.screen.width, window.screen.height],
-      "memory": navigator.deviceMemory,
-      "user_agent": navigator.userAgent,
-      "app_version": navigator.appVersion,
-      "webdriver": window.navigator.webdriver,
-      "plugins": navigator.plugins.length,
-      "session_storage": sessionStorage !== void 1
+    return tests = {
+      "timezone": window.Intl.DateTimeFormat().resolvedOptions().timeZone ?? 0,
+      "platform": navigator.platform ?? 0,
+      "hardware_concurrency": navigator.hardwareConcurrency  ?? 0,
+      "screens": [window.screen.width, window.screen.height] ?? 0,
+      "memory": navigator.deviceMemory ?? 0,
+      "user_agent": navigator.userAgent ?? 0,
+      "app_version": navigator.appVersion ?? 0,
+      "webdriver": window.navigator.webdriver ?? 0,
+      "plugins": navigator.plugins.length ?? 0,
+      "session_storage": sessionStorage ?? 0
     };
-
-    return tests;
-  }
-
-  function browserFingerprintExtras() {
-    let tests;
-
-    tests = {
-      "activity": 0
-    };
-
-    return tests;
   }
 
   const wpcf7Forms = document.querySelectorAll('.wpcf7');
@@ -45,11 +33,11 @@
 
   if (wpcf7Forms.length) {
 
-    let oldy = 0, moved = 0;
+    let oldy = 0,
+        mouseMove_value = 0,
+        mouseActivity_value = 0;
 
     for (const wpcf7Form of wpcf7Forms) {
-
-
 
       // I) Standard bot checks
       let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint]');
@@ -71,39 +59,37 @@
       let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
       if (bot_fingerprint_extra) {
 
-        // load the extra tests
-        const tests_extras = browserFingerprintExtras();
-
-        for (const [key, value] of Object.entries(tests_extras).sort(() => Math.random() - 0.5)) {
-          $(wpcf7Form).find('form > div').append(createCF7Afield(key, value));
-        }
-
         // check for mouse clicks
-        let activity = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'activity]');
-        if (activity.length) {
-          let activity_value = 0;
-          document.body.addEventListener('mouseup', function (e) {
-            activity.setAttribute("value", activity_value++);
-          }, true);
-          document.body.addEventListener('touchend', function (e) {
-            activity.setAttribute("value", activity_value++);
-            if (activity_value == 3) $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
-          }, true);
-        }
+        const activity = function (e) {
+          $(wpcf7Form).find('form > div input[name=' + cf7a_prefix + 'activity]').remove();
+          $(wpcf7Form).find('form > div').append(createCF7Afield("activity", mouseActivity_value++));
+
+          if (mouseActivity_value > 3) {
+            document.body.removeEventListener('mouseup', activity);
+            document.body.removeEventListener('touchend', activity);
+            $(wpcf7Form).find('form > div').append(createCF7Afield("mouseclick_activity", "passed"));
+          }
+        };
+        document.body.addEventListener( 'mouseup', activity);
+        document.body.addEventListener( 'touchend', activity);
+
+
 
         // detect the mouse/touch direction change OR touchscreen iterations
         const mouseMove = function (e) {
           if (e.pageY > oldy) {
-            moved += 1;
+            mouseMove_value += 1;
           }
           oldy = e.pageY;
 
-          if (moved > 3) {
+          if (mouseMove_value > 3) {
             document.removeEventListener('mousemove', mouseMove);
             $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
         document.addEventListener('mousemove', mouseMove);
+
+
 
         let wpcf7box = document.createElement('div');
         wpcf7box.id = 'hidden';
