@@ -29,17 +29,11 @@
 
 namespace b8;
 
-spl_autoload_register(
-	function ($class) {
-		$parts = explode('\\', $class);
-		if (isset($parts[1]) && isset($parts[2]) ) {
-			$file = CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8' . DIRECTORY_SEPARATOR . $parts[1] . DIRECTORY_SEPARATOR . $parts[2] . '.php';
-			if (file_exists($file) ) {
-				require_once $file;
-			}
-		}
-	}
-);
+require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8/degenerator/standard.php';
+require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8/lexer/standard.php';
+require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8/storage/storage_base.php';
+require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/b8/storage/mysql.php';
+
 
 class b8
 {
