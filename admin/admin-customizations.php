@@ -25,6 +25,21 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_sanitize' ) // Sanitize
 		);
 
+		// Section Bot Fingerprint
+		add_settings_section( 'cf7a_auto_blacklist', // ID
+			__('Ban automatically spammers', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_section_auto_blacklist' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings autostore_bad_ip
+		add_settings_field( 'autostore_bad_ip', // ID
+			__('Automatic spammer IP Blacklist', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_autostore_bad_ip_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_auto_blacklist' // Section
+		);
+
 
 		// Section Bot Fingerprint
 		add_settings_section( 'cf7a_bot_fingerprint', // ID
@@ -96,14 +111,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		add_settings_field( 'check_bad_ip', // ID
 			__('Check the sender IP Address', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_bad_ip_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_ip' // Section
-		);
-
-		// Settings autostore_bad_ip
-		add_settings_field( 'autostore_bad_ip', // ID
-			__('automatically blacklists spammers IP Address', 'cf7-antispam'), // Title
-			array( $this, 'cf7a_autostore_bad_ip_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_bad_ip' // Section
 		);
@@ -235,7 +242,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// DNS Blacklist server list
 		add_settings_field( 'honeypot_input_names', // ID
-			__('Name for the honeypots inputs (MUST differ from the cf7 tag names)', 'cf7-antispam'), // Title
+			__('Name for the honeypots inputs (MUST differ from the cf7 tag class names)', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_honeypot_input_names_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_honeypot' // Section
@@ -292,43 +299,46 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	public function cf7a_print_section_auto_blacklist() {
+		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted", 'cf7-antispam') . '</p>' );
+	}
 	public function cf7a_print_section_bot_fingerprint() {
-		printf( '<p>' . esc_html__("Enable some extra check to detect bot activity", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Enable some extra check to detect bot activity", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_section_check_time() {
-		printf( '<p>' . esc_html__("This test the submission time", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("This test the submission time", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_section_bad_ip() {
-		printf( '<p>' . esc_html__("Filter the sender IP Address", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Filter the sender IP Address", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_section_bad_words() {
-		printf( '<p>' . esc_html__("Check if the mail message contains bad words", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Check if the mail message contains bad words", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_section_bad_email_strings() {
-		printf( '<p>' . esc_html__("Check if the sender mail contains a prohibited text", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Check if the sender mail contains a prohibited text", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_user_agent() {
-		printf( '<p>' . esc_html__("Check the User Agent if is listed into blacklist", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Check the User Agent if is listed into blacklist", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_dnsbl() {
-		printf( '<p>' . esc_html__("Check sender ip on DNS Blacklists", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Check sender ip on DNS Blacklists", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_honeypot() {
-		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_b8() {
-		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-antispam') . '</p>' );
 	}
 
 	public function cf7a_print_customizations() {
-		printf( '<p>' . esc_html__("You may want to create your own and unique css class and customized fields name", 'cf7-amntispam') . '</p>' );
+		printf( '<p>' . esc_html__("You may want to create your own and unique css class and customized fields name", 'cf7-antispam') . '</p>' );
 	}
 
 	/**
@@ -418,7 +428,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Customizations
 		$input['cf7a_customizations_class'] = sanitize_html_class($input['cf7a_customizations_class']);
-		$new_input['cf7a_customizations_class'] =  isset( $input['cf7a_customizations_class']) && $input['cf7a_customizations_class'] != '' ? $input['cf7a_customizations_class'] : CF7ANTISPAM_PREFIX ;
+		$new_input['cf7a_customizations_class'] =  isset( $input['cf7a_customizations_class']) && $input['cf7a_customizations_class'] != '' ? $input['cf7a_customizations_class'] : CF7ANTISPAM_HONEYPOT_CLASS ;
 
 		$input['cf7a_customizations_prefix'] = sanitize_html_class($input['cf7a_customizations_prefix']);
 		$new_input['cf7a_customizations_prefix'] =  isset( $input['cf7a_customizations_prefix']) && $input['cf7a_customizations_prefix'] != '' ? $input['cf7a_customizations_prefix'] : CF7ANTISPAM_PREFIX ;
@@ -431,6 +441,13 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * Get the settings option array and print one of its values
 	 */
+	public function cf7a_autostore_bad_ip_callback() {
+		printf(
+			'<input type="checkbox" id="autostore_bad_ip" name="cf7a_options[autostore_bad_ip]" %s />',
+			isset( $this->options['autostore_bad_ip'] ) && $this->options['autostore_bad_ip'] == 1 ? 'checked="true"' : ''
+		);
+	}
+
 	public function cf7a_check_bot_fingerprint_callback() {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint" name="cf7a_options[check_bot_fingerprint]" %s />',
@@ -469,12 +486,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />',
 			isset( $this->options['check_bad_ip'] ) && $this->options['check_bad_ip'] == 1 ? 'checked="true"' : ''
-		);
-	}
-	public function cf7a_autostore_bad_ip_callback() {
-		printf(
-			'<input type="checkbox" id="autostore_bad_ip" name="cf7a_options[autostore_bad_ip]" %s />',
-			isset( $this->options['autostore_bad_ip'] ) && $this->options['autostore_bad_ip'] == 1 ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_bad_ip_list_callback() {

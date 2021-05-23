@@ -38,15 +38,15 @@ class CF7_AntiSpam_Frontend {
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
 
 		// TODO: change with honeypot
-		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) == 1  ) {
+		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) {
 			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_honeypot_add'), 10, 1  );
 		}
 
-		if ( isset( $this->options['check_bot_fingerprint'] ) && intval($this->options['check_bot_fingerprint']) == 1  ) {
+		if ( isset( $this->options['check_bot_fingerprint'] ) && intval($this->options['check_bot_fingerprint']) === 1 ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100, 1 );
 		}
 
-		if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval($this->options['check_bot_fingerprint_extras']) == 1  ) {
+		if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval($this->options['check_bot_fingerprint_extras']) === 1 ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100, 1 );
 		}
 	}
@@ -107,16 +107,18 @@ class CF7_AntiSpam_Frontend {
 
 	public function cf7a_add_hidden_fields( $fields ) {
 
-		$timestamp = time();
+		// the base hidden field prefix
+		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
 
-		$ip = cf7a_get_real_ip();
+		// add the timestamp id required
+		$fields = intval($this->options['check_time']) ?
+			array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt(time()) ) ) :
+			$fields;
 
-		$class = sanitize_html_class($this->options['cf7a_customizations_prefix']);
-
+		// add the default hidden fields
 		return array_merge( $fields, array(
-			$class.'version' => cf7a_crypt($this->version),
-			$class.'real_sender_ip' => cf7a_crypt($ip),
-			$class.'form_creation_timestamp' => cf7a_crypt($timestamp),
+			$prefix.'_version' => cf7a_crypt(CF7ANTISPAM_VERSION),
+			$prefix.'address' => cf7a_crypt(cf7a_get_real_ip())
 		));
 	}
 

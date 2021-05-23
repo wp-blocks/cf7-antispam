@@ -12,7 +12,7 @@ A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
 Antispam for Contact Form 7 is an anti-bot plugin for your contact form, that without boring you with configurations, remove the spam from your mail.
-We have serveral method to detect fake users and an auto-learning mechanism based on a statistical "Bayesian" spam filter.
+We have several methods to detect fake users and an auto-learning mechanism based on a statistical "Bayesian" spam filter.
 So as your site receives spam and real emails, learn to distinguish between them!
 
 Basic Spam Filters:
@@ -27,21 +27,14 @@ The "degeneration" method Paul Graham proposed in "Better Bayesian Filtering" ha
 b8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words.
 For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far.
 
-What does the spam-bot detection sequence:
-- Checks the sender IP address and if it has already been blacklisted, marks the e-mail as spam immediately.
-- It checks if the ip is valid and looks through the list of forbidden strings for ip's, to check if match the one of the mail sender. You can ban an ip (ipv4 or ipv6) by typing its entire address or if you want to ban all addresses that contain "192.168.1" you can just type in part of it.
-- The fingerprinting bot is a way to check if the sender of the mail is using a real browser, we have two sets of tests: the first "passive" one where the keyboard, the time zone, the computer hardware, the browser extensions are checked. the second is an "active" test that uses the computer hardware to make a short test of the graphic card or stuff like this
-- We test the time to fill the form, which has to be more than a few seconds (the amount of time it usually takes a bot).
-- Then (in order) we check the message, the user agent or the email if it contains any forbidden words/strings. It is useful to ban your own domain from the forms for example (unless you want to write your own) because a scammer's trick is get your domain and use it as an email (info@yourdomain)in order to bypass the classic anti-spam checks and those of your mail client
-- Check on dnsbl to see if the ip has already been reported
-- if the spam score is above 1 the mail is proposed to d8 as spam, then d8 ranks it and learns the spam words.
-- if the spam score is below 1 the mail is read and d8 decides if it is spam or not (you can decide the tolerance so until it is familiar with the "right" words it should be kept high e.g. 0.95)
+Will I finally be 100% protected from spam?
+No, nobody can guarantee that, and anyone who tells you that is lying.
+Scammers know very well how we defend our forms (they can even see the source code of the various plugins) and this is the reason why it is important for the community to cooperate in identifying words to exclude or to inform me if someone is managing to bypass the spam filters.
 
-By the way nothing is perfect so if you don't want to loose any submitted mail you may want to install also [flamingo](https://wordpress.org/plugins/flamingo/)
-
-Flamingo in addition can be used as manager for the antispam system and when you mark an email as spam (or ham) the intelligent algorithm learns again!
-On plugin activation if you have flamingo the plugin will parse all the collected mail and teach to d8 what is spam or not so you will start with a good pre-trained algorithm.
-Note: if you unban an email in the flamingo inbound page the related ip will be unbanned.
+My advice is to enable also [flamingo](https://wordpress.org/plugins/flamingo/)
+Flamingo in addition can be used as manager for the antispam system and when you mark an email as spam (or ham) this preference will be submitted also to the d8 dictionary!
+If you already use flamingo on this plugin activation all the collected mail will be parsed and d8 will learn what is spam or not. So in this way you will start with a pre-trained algorithm.
+Note: if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. if you mark as spam a mail the ip will be blacklisted.
 
 == Privacy Notices ==
 AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
@@ -60,15 +53,33 @@ Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 also advice, reports, suggestions. Everyone can contribute, my intent is to keep it to be forever free but I ask for your support!
 
 == How it Work ==
+What does the spam-bot detection sequence:
+- Checks the sender IP address and if it has already been blacklisted, marks the e-mail as spam immediately.
+- It checks if the ip is valid and looks through the list of forbidden strings for ip's, to check if match the one of the mail sender. You can ban an ip (ipv4 or ipv6) by typing its entire address or if you want to ban all addresses that contain "192.168.1" you can just type in part of it.
+- The fingerprinting bot is a way to check if the sender of the mail is using a real browser, we have two sets of tests: the first "passive" one where the keyboard, the time zone, the computer hardware, the browser extensions are checked. the second is an "active" test that uses the computer hardware to make a short test of the graphic card or stuff like this
+- We test the time to fill the form, which has to be more than a few seconds (the amount of time it usually takes a bot).
+- Then (in order) we check the message, the user agent or the email if it contains any forbidden words/strings. It is useful to ban your own domain from the forms for example (unless you want to write your own) because a scammer's trick is get your domain and use it as an email (info@yourdomain)in order to bypass the classic anti-spam checks and those of your mail client
+- Check on dnsbl to see if the ip has already been reported
+- if the spam score is above 1 the mail is proposed to d8 as spam, then d8 ranks it and learns the spam words.
+- if the spam score is below 1 the mail is read and d8 decides if it is spam or not (you can decide the tolerance so until it is familiar with the "right" words it should be kept high e.g. 0.95)
+
+== Constants ==
+Enable debug mode
+`define( 'CF7ANTISPAM_DEBUG', false);`
+
+Enable extended debug mode (disable-autoban, prints dnsbl benchmark)
+`* define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);`
 
 == TO DOs ==
-Ban by geolocation
-Unban ip after x hours
+* Ban by geolocation
+* Unban ip after x hours
+* Configuration error detector (parse stored form ad return if the message field isn't found)
+* Export/import
 
 == Changelog ==
 
 = 0.1.0 =
-* ContactForm 7 AntiSpam published into WordPress Plugin Directory
+* AntiSpam for Contact Form 7 published into WordPress Plugin Directory
 * Compared to the very early version, I've added honeypot, fingerprint bots and automated ip bans (but I need to provide a way to unban even without flamingo).
 * Documentation
 

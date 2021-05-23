@@ -34,6 +34,7 @@ class CF7_AntiSpam_Activator {
 		$cf7a_wordlist_texts = "INSERT INTO " . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
 
 		$cf7a_database = "CREATE TABLE " . $wpdb->prefix . "cf7a_blacklist (
+		  `id` int unsigned NOT NULL AUTO_INCREMENT,
 		  `ip` varchar(255) character set utf8 collate utf8_bin NOT NULL,
 		  `status` int unsigned default NULL,
 		  `reason` longtext default NULL,
@@ -51,6 +52,8 @@ class CF7_AntiSpam_Activator {
 
  	public static function activate() {
 
+	    if (CF7ANTISPAM_DEBUG) error_log(print_r(CF7ANTISPAM_LOG_PREFIX.'plugin enabled',true));
+
 		// https://codex.wordpress.org/Creating_Tables_with_Plugins
 		$installed_ver = get_option( "cf7a_db_version" );
 
@@ -63,13 +66,13 @@ class CF7_AntiSpam_Activator {
 		if ( false == get_option( 'cf7a_options' ) ) {
 
 			add_option( 'cf7a_options', array(
-				"cf7a_customizations_class" => CF7ANTISPAM_PREFIX,
-				"cf7a_customizations_prefix" => CF7ANTISPAM_HONEYPOT_CLASS,
+				"cf7a_customizations_class" => CF7ANTISPAM_HONEYPOT_CLASS,
+				"cf7a_customizations_prefix" => CF7ANTISPAM_PREFIX,
 				"check_bot_fingerprint" => true,
 				"check_bot_fingerprint_extras" => true,
 				"check_time" => true,
 				"check_time_min" => 6,
-				"check_time_max" => 3600,
+				"check_time_max" => 3660,
 				"check_bad_ip" => true,
 				"autostore_bad_ip" => true,
 				"check_bad_words" => true,

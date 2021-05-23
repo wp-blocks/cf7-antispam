@@ -5,7 +5,7 @@ Description: A trustworthy antispam plugin for Contact Form 7. Simple but effect
 Author: Codekraft
 Text Domain: cf7-antispam
 Domain Path: /languages/
-Version: 0.0.1
+Version: 0.1.0
 */
 
 // If this file is called directly, abort.
@@ -13,12 +13,7 @@ if ( ! defined( 'WPINC' ) ) {die;}
 
 
 // CONSTANTS
-if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
-if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);
-if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
-if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
-
-define( 'CF7ANTISPAM_VERSION', '0.0.1' );
+define( 'CF7ANTISPAM_VERSION', '0.1.0' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
@@ -26,11 +21,13 @@ define( 'CF7ANTISPAM_PLUGIN_BASENAME', plugin_basename( CF7ANTISPAM_PLUGIN ) );
 
 define( 'CF7ANTISPAM_PLUGIN_DIR', untrailingslashit( dirname( CF7ANTISPAM_PLUGIN ) ) );
 
+define( 'CF7ANTISPAM_LOG_PREFIX', 'CF7A - ' );
 
-// OPTIONS
-if ( ! defined( 'CF7ANTISPAM_security_level' ) ) {
-	define( 'CF7ANTISPAM_security_level', "standard" );
-}
+if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
+if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);
+if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
+if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
+
 
 // PLUGIN
 
@@ -56,6 +53,15 @@ function deactivate_cf7_antispam() {
 	CF7_AntiSpam_Deactivator::deactivate();
 }
 register_deactivation_hook( CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
+
+/**
+ * The code that runs during plugin un-installation.
+ */
+function uninstall_cf7_antispam() {
+	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
+	CF7_AntiSpam_Deactivator::uninstall();
+}
+register_uninstall_hook(  CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
 
 
 /**

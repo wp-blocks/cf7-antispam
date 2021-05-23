@@ -31,7 +31,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 	public static function cf7a_get_debug_info() {
 
-		if (WP_DEBUG) {
+		if (CF7ANTISPAM_DEBUG) {
 			$options = CF7_AntiSpam::get_options();
 
 			echo '<div class="card"><h3>'.__('Debug info').'</h3>';
