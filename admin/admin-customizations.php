@@ -428,7 +428,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Customizations
 		$input['cf7a_customizations_class'] = sanitize_html_class($input['cf7a_customizations_class']);
-		$new_input['cf7a_customizations_class'] =  isset( $input['cf7a_customizations_class']) && $input['cf7a_customizations_class'] != '' ? $input['cf7a_customizations_class'] : CF7ANTISPAM_PREFIX ;
+		$new_input['cf7a_customizations_class'] =  isset( $input['cf7a_customizations_class']) && $input['cf7a_customizations_class'] != '' ? $input['cf7a_customizations_class'] : CF7ANTISPAM_HONEYPOT_CLASS ;
 
 		$input['cf7a_customizations_prefix'] = sanitize_html_class($input['cf7a_customizations_prefix']);
 		$new_input['cf7a_customizations_prefix'] =  isset( $input['cf7a_customizations_prefix']) && $input['cf7a_customizations_prefix'] != '' ? $input['cf7a_customizations_prefix'] : CF7ANTISPAM_PREFIX ;
