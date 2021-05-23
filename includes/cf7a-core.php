@@ -191,7 +191,7 @@ class CF7_AntiSpam {
 			$this->loader->run();
 		} else {
 			add_action('admin_notices', function () {
-				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __("CF7 AntiSpam needs Contact Form 7 Activated in order to work", "cf7-antispam" ) );
+				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( "CF7 AntiSpam needs Contact Form 7 Activated in order to work", "cf7-antispam" ) );
 			});
 		}
 	}

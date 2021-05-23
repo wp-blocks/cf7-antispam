@@ -63,10 +63,18 @@ What does the spam-bot detection sequence:
 - if the spam score is above 1 the mail is proposed to d8 as spam, then d8 ranks it and learns the spam words.
 - if the spam score is below 1 the mail is read and d8 decides if it is spam or not (you can decide the tolerance so until it is familiar with the "right" words it should be kept high e.g. 0.95)
 
+== Constants ==
+Enable debug mode
+`define( 'CF7ANTISPAM_DEBUG', false);`
+
+Enable extended debug mode (disable-autoban, prints dnsbl benchmark)
+`* define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);`
+
 == TO DOs ==
 * Ban by geolocation
 * Unban ip after x hours
 * Configuration error detector (parse stored form ad return if the message field isn't found)
+* Export/import
 
 == Changelog ==
 
