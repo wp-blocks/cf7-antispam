@@ -54,6 +54,15 @@ function deactivate_cf7_antispam() {
 }
 register_deactivation_hook( CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
 
+/**
+ * The code that runs during plugin un-installation.
+ */
+function uninstall_cf7_antispam() {
+	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
+	CF7_AntiSpam_Deactivator::uninstall();
+}
+register_uninstall_hook(  CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
+
 
 /**
  * The core plugin class that is used to define internationalization,
