@@ -172,8 +172,7 @@ class CF7_AntiSpam {
 		if (!is_admin()) {
 			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
-			if (isset($this->options['check_bot_fingerprint']) || isset($this->options['check_bot_fingerprint_extras']) &&
-                intval($this->options['check_bot_fingerprint']) == 1 || intval($this->options['check_bot_fingerprint_extras']) == 1) {
+			if (!empty($this->options['check_bot_fingerprint']) || !empty($this->options['check_bot_fingerprint_extras'])) {
 
 				$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );
 			}

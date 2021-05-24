@@ -40,7 +40,7 @@ function cf7a_formatRating($rating) {
 }
 
 // compress arrays into "key:value; " pair
-function cf7_compress_array($array= array()) {
+function cf7a_compress_array($array= array()) {
 
 	if (!is_array($array)) return false;
 

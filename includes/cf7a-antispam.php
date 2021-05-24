@@ -807,7 +807,7 @@ class CF7_AntiSpam_filters {
 
 			$submission->add_spam_log( array(
 				'agent'  => 'CF7-AntiSpam',
-				'reason' => $reason,
+				'reason' => cf7a_compress_array($reason),
 			) );
 
 		}

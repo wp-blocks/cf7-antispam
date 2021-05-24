@@ -59,7 +59,11 @@ class CF7_AntiSpam_Admin {
 		// the menu item
 		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
 
+		$tools = new CF7_AntiSpam_Admin_Tools();
+
 		new CF7_AntiSpam_Admin_Customizations();
+
+		add_action( 'admin_init', array( $tools, 'cf7a_handle_blacklist' ));
 	}
 
 

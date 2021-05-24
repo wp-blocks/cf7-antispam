@@ -2,12 +2,12 @@
 // this is the plugin configuration page
 $cf7a_nonce = CF7_AntiSpam_Admin::cf7a_get_nonce();
 
-$classes = 'welcome-panel';
+$dismissable_banner_class = 'welcome-panel banner dismissable';
 
 $vers = (array) get_user_meta( get_current_user_id(),
 	'cf7a_hide_welcome_panel_on', true );
 
-if ( $vers  ) {	$classes .= ' hidden'; }
+if ( $vers  ) {	$dismissable_banner_class .= ' hidden'; }
 
 ?>
 <div class="wrap">
@@ -15,7 +15,7 @@ if ( $vers  ) {	$classes .= ' hidden'; }
     <h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 - AntiSpam</h1>
     <div class="inside">
       <form method="post" action="<?php echo esc_url( menu_page_url( 'cf7-antispam', false ) ); ?>" id="cf7a_settings">
-        <div class="<?php echo $classes ?> banner dismissable" style="background-color: #f3f3f3; border: 1px solid #ddd; padding: 10px; margin: 10px 0">
+        <div class="<?php echo $dismissable_banner_class ?>" style="background-color: #f3f3f3; border: 1px solid #ddd; padding: 10px; margin: 10px 0">
           <a class="welcome-panel-close" href="<?php echo esc_url( menu_page_url( 'cf7-antispam', false ) ); ?>&dismiss-banner=1"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
           <h3><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo esc_html( __( "Before you cry over spilt mail&#8230;", 'contact-form-7' ) ); ?></h3>
           <p><?php echo esc_html( __( "Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.", 'contact-form-7' ) ); ?></p>
