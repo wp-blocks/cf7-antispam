@@ -42,6 +42,7 @@ class CF7_AntiSpam {
 	 */
 	private $options;
 
+
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
@@ -63,7 +64,10 @@ class CF7_AntiSpam {
 
 		$this->options = $this->get_options(); // the plugin options
 
+		// the php files
 		$this->load_dependencies();
+
+		// the i18n
 		$this->set_locale();
 
 		// the admin area
@@ -103,6 +107,7 @@ class CF7_AntiSpam {
 		 * The class responsible for defining admin backend functionality
 		 * of the plugin.
 		 */
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin.php';
 
@@ -145,9 +150,8 @@ class CF7_AntiSpam {
 		}
 
 		if (is_admin()) {
-			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
-			new CF7_AntiSpam_Admin_Tools();
+			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );

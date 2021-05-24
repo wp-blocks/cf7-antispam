@@ -470,7 +470,7 @@ class CF7_AntiSpam_filters {
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
 				if (!empty($fails)) {
-					$spam_score                += count( $fails ) * .5;
+					$spam_score                += count( $fails ) * .4;
 					$reason['bot_fingerprint'] = implode( ", ", $fails );
 
 					if ( CF7ANTISPAM_DEBUG)
@@ -501,8 +501,8 @@ class CF7_AntiSpam_filters {
 				if ($bot_fingerprint_extras["webgl_render"] !== "passed" ) $fails[] = "webgl_render";
 				if (!empty($bot_fingerprint_extras["bot_fingerprint_extras"]) ) $fails[] = "bot_fingerprint_extras";
 
-				if (isset($fails)) {
-					$spam_score += count($fails) * .5;
+				if (!empty($fails)) {
+					$spam_score += count($fails) * .4;
 					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
 
 					if (CF7ANTISPAM_DEBUG)
@@ -696,7 +696,7 @@ class CF7_AntiSpam_filters {
 					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 						$dsnbl_listed[] = $listed;
-						$spam_score += 0.5;
+						$spam_score += 0.4;
 					}
 					$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
 					$performance_test[$dnsbl] = $time_taken;

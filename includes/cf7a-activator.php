@@ -145,6 +145,7 @@ class CF7_AntiSpam_Activator {
 
 			$cf7a_antispam_filters = new CF7_AntiSpam_filters();
 
+			//todo: this fn need to be doubled because for first we need to learn then classify
 			while ( $query->have_posts() ) : $query->the_post();
 				$post_id = get_the_ID();
 				$post_status = get_post_status();
