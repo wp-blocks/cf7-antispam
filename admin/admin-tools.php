@@ -87,17 +87,48 @@ class CF7_AntiSpam_Admin_Tools {
 		}
 	}
 
-	public static function cf7a_get_debug_info() {
+	public static function cf7a_get_debug_info($nonce) {
 
-		if (CF7ANTISPAM_DEBUG) {
+		if (WP_DEBUG || CF7ANTISPAM_DEBUG) {
+
 			$options = CF7_AntiSpam::get_options();
 
-			echo '<div class="card"><h3>'.__('Debug info').'</h3>';
-			echo '<p>'.__('If you see this box it is because wp_debug is active!').'</p>';
+			$url = admin_url().'admin.php?page=cf7-antispam&action=clean-blacklist&cf7a-nonce='. $nonce;
 
-			echo '<pre>' . htmlentities(print_r($options, true)) . '</pre>';
-			echo '</div>';
+			$html = printf('<div>');
+
+			// the header
+			$html .= printf('<div class="card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
+				__('Debug info', 'cf7-antispam'),
+				__('(...If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true)', 'cf7-antispam')
+			);
+
+			if (CF7ANTISPAM_DEBUG) $html .= printf('<p class="debug">%s</p>',
+				'<code>CF7ANTISPAM_DEBUG</code> ' . esc_html(__('is enabled', 'cf7-antispam'))
+			);
+			if (CF7ANTISPAM_DEBUG_EXTENDED) $html .= printf('<p class="debug">%s</p>',
+				'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html(__('is enabled', 'cf7-antispam'))
+			);
+
+			// output the button to remove all the entries in the blacklist database
+			$html .= printf('<hr/><h3>%s</h3><p>%s</p>',
+				__('Blacklist Reset', 'cf7-antispam'),
+				__('If you need to remove or reset the whole blacklist data on your server', 'cf7-antispam')
+			);
+
+			// output the button to remove all the entries in the blacklist database
+			$html .= printf('<pre><a class="button" href="%s">%s</a></pre>', $url, __('Remove all blacklisted IP from database', 'cf7-antispam') );
+
+			// output the options
+			$html .= printf('<hr/><h3>%s</h3>', __('Options debug', 'cf7-antispam') );
+			$html .= printf('<p>%s</p><pre>%s</pre>',
+				__('Those are the options of this plugin', 'cf7-antispam'),
+				htmlentities(print_r($options, true))
+			);
+
+			$html .= printf('</div>');
+
+			return $html;
 		}
-
 	}
 }
