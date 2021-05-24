@@ -39,13 +39,15 @@ function cf7a_formatRating($rating) {
 	return '<span class="flamingo-rating-label" style="background-color:'.$color.'" ><b>' . round( $rating * 100) . "% </b></span>";
 }
 
-function compress_reasons_array($reason) {
+// compress arrays into "key:value; " pair
+function cf7_compress_array($array= array()) {
 
-	if (!is_array($reason)) return;
+	if (!is_array($array)) return false;
 
-	foreach($reason as $k => $v){
-		$reasons[] = $k.": ".$v;
-	}
+	return $output = implode(', ', array_map(
+		function ($v, $k) { return sprintf("<b>%s</b>: %s", $k, $v); },
+		$array,
+		array_keys($array)
+	));
 
-	return implode(", ",$reasons);
 }
