@@ -33,6 +33,15 @@ class CF7_AntiSpam_Admin {
 	private $version;
 
 	/**
+	 * The version of this plugin.
+	 *
+	 * @since    0.1.0
+	 * @access   private
+	 * @var      string $version The current version of this plugin.
+	 */
+	private $nonce;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    0.1.0
@@ -44,6 +53,8 @@ class CF7_AntiSpam_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		$this->nonce     = wp_create_nonce('cf7a-nonce');
+
 
 		// the menu item
 		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
@@ -60,6 +71,10 @@ class CF7_AntiSpam_Admin {
 
 	public function cf7a_admin_dashboard() {
 		require CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
+	}
+
+	public function cf7a_get_nonce() {
+		return $this->nonce;
 	}
 
 	/**

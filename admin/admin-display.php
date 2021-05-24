@@ -37,15 +37,12 @@ if ( $vers  ) {	$classes .= ' hidden'; }
   </div>
 </div>
 
+<?php
+// prints the blacklisted ip, the rating and some informations
+CF7_AntiSpam_Admin_Tools::cf7a_get_blacklisted_table( $cf7a_nonce );
 
-  <?php
-    // prints the blacklisted ip, the rating and some informations
-    CF7_AntiSpam_Admin_Tools::cf7a_get_blacklisted_table();
-  ?>
-
-	<?php
-    // returns the plugins debug informations
-    CF7_AntiSpam_Admin_Tools::cf7a_get_debug_info();
-  ?>
+// returns the plugins debug informations
+CF7_AntiSpam_Admin_Tools::cf7a_get_debug_info( $cf7a_nonce );
+?>
 
 </div>
