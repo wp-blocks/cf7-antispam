@@ -394,10 +394,10 @@ class CF7_AntiSpam_filters {
 			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
 
 			$spam_score += 1;
-			$reason['no_ip'] = "ip address field of $remote_ip is empty, this means it has been modified, removed or hacked! (used php data to get the real ip)";
+			$reason['no_ip'] = "Address field empty";
 
 			if (CF7ANTISPAM_DEBUG)
-				error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip address remote_ip field not available, modified or hacked" );
+				error_log( CF7ANTISPAM_LOG_PREFIX . "ip address field of $remote_ip is empty, this means it has been modified, removed or hacked! (used php data to get the real ip)" );
 		}
 
 
@@ -409,13 +409,12 @@ class CF7_AntiSpam_filters {
 			if ($ip_data_status != 0) {
 
 				$spam_score += 1;
-				$reason['blacklisted'] = "$remote_ip Autoblocked (score" . ($ip_data_status + 1).")";
+				$reason['blacklisted'] = "Score: " . ($ip_data_status + 1);
 
 				if (CF7ANTISPAM_DEBUG)
 					error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip is already blacklisted, status $ip_data_status" );
 			}
 		}
-
 
 		/**
 		 * Check the CF7 AntiSpam version field
@@ -423,7 +422,7 @@ class CF7_AntiSpam_filters {
 		if ( !$cf7a_version || $cf7a_version != CF7ANTISPAM_VERSION ) {
 
 			$spam_score += 1;
-			$reason['data_mismatch'] = "$remote_ip version mismatch $cf7a_version / " . CF7ANTISPAM_VERSION;
+			$reason['data_mismatch'] = "Version mismatch $cf7a_version/".CF7ANTISPAM_VERSION;
 
 			if (CF7ANTISPAM_DEBUG)
 				error_log( CF7ANTISPAM_LOG_PREFIX . "Incorrect data submitted by $remote_ip in the hidden field _version, may have been modified, removed or hacked" );
@@ -455,12 +454,14 @@ class CF7_AntiSpam_filters {
 					"bot_fingerprint"      => !empty( $_POST[$prefix.'bot_fingerprint'] ) ? sanitize_text_field( $_POST[$prefix.'bot_fingerprint'] ) : null,
 				);
 
+				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint, true) );
+
 				$fails = array();
 				if (!$bot_fingerprint["timezone"]) $fails[] = "timezone";
 				if (!$bot_fingerprint["platform"]) $fails[] = "platform";
 				if (!$bot_fingerprint["hardware_concurrency"] >= 2) $fails[] = "hardware_concurrency";
 				if (!$bot_fingerprint["screens"]) $fails[] = "screens";
-				if (!$bot_fingerprint["memory"] >= 4)  $fails[] = "memory";
+				if (!$bot_fingerprint["memory"] || $bot_fingerprint["memory"] == 1)  $fails[] = "memory";
 				if (!$bot_fingerprint["user_agent"]) $fails[] = "user_agent";
 				if (!$bot_fingerprint["app_version"]) $fails[] = "app_version";
 				if (!$bot_fingerprint["webdriver"]) $fails[] = "webdriver";
@@ -468,12 +469,12 @@ class CF7_AntiSpam_filters {
 				if (!$bot_fingerprint["plugins"]) $fails[] = "plugins";
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
-				if (!empty($fails) && count($fails)) {
+				if (!empty($fails)) {
 					$spam_score                += count( $fails ) * .5;
 					$reason['bot_fingerprint'] = implode( ", ", $fails );
 
 					if ( CF7ANTISPAM_DEBUG)
-						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint']})" );
+						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint test ({$reason['bot_fingerprint']})" );
 				}
 
 			}
@@ -500,7 +501,7 @@ class CF7_AntiSpam_filters {
 				if ($bot_fingerprint_extras["webgl_render"] !== "passed" ) $fails[] = "webgl_render";
 				if (!empty($bot_fingerprint_extras["bot_fingerprint_extras"]) ) $fails[] = "bot_fingerprint_extras";
 
-				if (isset($fails) && count($fails)) {
+				if (isset($fails)) {
 					$spam_score += count($fails) * .5;
 					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
 
@@ -799,7 +800,7 @@ class CF7_AntiSpam_filters {
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
 		if ($options['autostore_bad_ip'] && $spam) {
-			if ( false == $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) && CF7ANTISPAM_DEBUG_EXTENDED )
+			if ( false === $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) || CF7ANTISPAM_DEBUG_EXTENDED )
 				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip / CF7ANTISPAM_LOG_PREFIX enabled" );
 		}
 
