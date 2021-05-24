@@ -58,17 +58,6 @@ class CF7_AntiSpam_Admin_Tools {
 
 		}
 
-		// admin notices
-		if ($action === 'success') {
-			add_action( 'admin_notices', function () {
-				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice(__('Success', 'cf7-antispam'), 'success' );
-			} );
-		} else if ($action === 'fail') {
-			add_action( 'admin_notices', function () {
-				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice(__('Error', 'cf7-antispam'), 'error' );
-			} );
-		}
-
 	}
 
 	public static function cf7a_get_blacklisted_table() {
