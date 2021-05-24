@@ -90,7 +90,7 @@ class CF7_AntiSpam_Admin_Tools {
 				$html .= '<div class="row">';
 				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status ) );
 				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">[unban ip]</a></small></p>', $row->ip, $url );
-				$html .= sprintf( "<span class='data ellipsis'>%s</span></div>", cf7a_compress_array($meta['reason'])  );
+				$html .= sprintf( "<span class='data ellipsis'>%s</span></div>", cf7a_compress_array($meta['reason'], 1)  );
 				//$html .= sprintf( print_r($meta, true)  );
 				$html .= "</div>";
 			}
