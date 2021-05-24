@@ -9,8 +9,7 @@ Version: 0.1.0
 */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {die;}
-
+if ( ! defined( 'WPINC' ) ) die;
 
 // CONSTANTS
 define( 'CF7ANTISPAM_VERSION', '0.1.0' );
