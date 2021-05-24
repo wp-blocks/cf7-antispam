@@ -101,15 +101,26 @@ class CF7_AntiSpam_filters {
 
 	public function cf7a_blacklist_get_ip($ip) {
 
-		if (false == ($ip = filter_var($ip, FILTER_VALIDATE_IP))) return false;
+		if (false === ($ip = filter_var($ip, FILTER_VALIDATE_IP))) return false;
 
 		global $wpdb;
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %s", $ip ) );
 	}
 
-	public function cf7a_ban_ip($ip, $reason = "", $spam_score = 1) {
 
-		if (CF7ANTISPAM_DEBUG_EXTENDED || false == ($ip = filter_var($ip, FILTER_VALIDATE_IP) )) return false;
+	public function cf7a_blacklist_get_id($id) {
+
+		if ( ! is_int( $id ) ) return false;
+
+		global $wpdb;
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE id = %s", $id ) );
+	}
+
+
+	public function cf7a_ban_ip($ip, $reason = array(), $spam_score = 1) {
+
+
+		if (false === ($ip = filter_var($ip, FILTER_VALIDATE_IP) )) return false;
 
 		$ip_row = self::cf7a_blacklist_get_ip($ip);
 
@@ -120,46 +131,58 @@ class CF7_AntiSpam_filters {
 			array(
 				'ip' => $ip,
 				'status' => isset($ip_row->status) ? intval($ip_row->status) + intval($spam_score) : 1,
-				'reason' => is_array($reason) ? compress_reasons_array($reason) : $reason,
+				'meta' => serialize(array('reason'=> $reason, 'meta'=> null ))
 			),
 			array( '%s', '%d', '%s' )
 		);
 
-		if (is_error($r)) {
-			error_log( print_r( CF7ANTISPAM_LOG_PREFIX . "unable update blacklist for $ip", true ) );
-			error_log( print_r( $wpdb->last_error, true) );
-			return false;
-		}
+		return true;
 	}
 
-	public function cf7a_unban_ip($ip, $status_remove = 1) {
+	public function cf7a_unban_by_ip($ip) {
 
 		if (false == ($ip = filter_var($ip, FILTER_VALIDATE_IP) ) ) return false;
 
-		$status_remove = intval($status_remove);
-
-		// get ip data (if any)
-		$ip_row = self::cf7a_blacklist_get_ip($ip);
-
-		// calc the new rating
-		$new_status = isset($ip_row->status) ? $ip_row->status - $status_remove : 0;
-
 		global $wpdb;
-		$r = $wpdb->replace(
+
+		$r = $wpdb->delete(
 			$wpdb->prefix . "cf7a_blacklist",
 			array(
-				'ip' => $ip,
-				'status' => $new_status < 0 ? 0 : $new_status
+				'ip' => $ip
 			),
 			array(
-				'%s',
+				'%s'
+			)
+		);
+
+		return (!is_wp_error($r)) ? $r : $wpdb->last_error;
+	}
+
+	public function cf7a_unban_by_id($id) {
+
+		$id = intval($id);
+
+		global $wpdb;
+
+		$r = $wpdb->delete(
+			$wpdb->prefix . "cf7a_blacklist",
+			array(
+				'id' => $id
+			),
+			array(
 				'%d'
 			)
 		);
 
-		return $r ? true : error_log(printf(__( "% unable to unban %s", "cf7-antispam" ), CF7ANTISPAM_LOG_PREFIX, $ip ));
+		return (!is_wp_error($r)) ? $r : $wpdb->last_error;
+
 	}
 
+	public function cf7a_clean_blacklist() {
+		global $wpdb;
+		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_blacklist" );
+		return !is_wp_error($r) ? true : false;
+	}
 
 	public function cf7a_d8_flamingo_message($before, $after) {
 		echo sprintf(
@@ -235,7 +258,7 @@ class CF7_AntiSpam_filters {
 					$this->cf7a_b8_learn_ham($text);
 
 					//TODO: this ip and the one gathered by plugin can change
-					$this->cf7a_unban_ip($flamingo_post->meta['remote_ip'], 9999 );
+					$this->cf7a_unban_by_ip($flamingo_post->meta['remote_ip'] );
 
 				} else {
 					return;
