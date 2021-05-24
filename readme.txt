@@ -87,7 +87,9 @@ Enable extended debug mode (disable-autoban, prints dnsbl benchmark)
 * This is the first release
 
 == Screenshot ==
-1. the plugin options
+1. the plugin options (1/3)
+2. the plugin options (2/3)
+3. the plugin options (3/3)
 
 == Copyright ==
 Modul R, Copyright 2021 Codekraft Studio

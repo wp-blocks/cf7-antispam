@@ -101,15 +101,26 @@ class CF7_AntiSpam_filters {
 
 	public function cf7a_blacklist_get_ip($ip) {
 
-		if (false == ($ip = filter_var($ip, FILTER_VALIDATE_IP))) return false;
+		if (false === ($ip = filter_var($ip, FILTER_VALIDATE_IP))) return false;
 
 		global $wpdb;
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %s", $ip ) );
 	}
 
-	public function cf7a_ban_ip($ip, $reason = "", $spam_score = 1) {
 
-		if (CF7ANTISPAM_DEBUG_EXTENDED || false == ($ip = filter_var($ip, FILTER_VALIDATE_IP) )) return false;
+	public function cf7a_blacklist_get_id($id) {
+
+		if ( ! is_int( $id ) ) return false;
+
+		global $wpdb;
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE id = %s", $id ) );
+	}
+
+
+	public function cf7a_ban_ip($ip, $reason = array(), $spam_score = 1) {
+
+
+		if (false === ($ip = filter_var($ip, FILTER_VALIDATE_IP) )) return false;
 
 		$ip_row = self::cf7a_blacklist_get_ip($ip);
 
@@ -120,46 +131,58 @@ class CF7_AntiSpam_filters {
 			array(
 				'ip' => $ip,
 				'status' => isset($ip_row->status) ? intval($ip_row->status) + intval($spam_score) : 1,
-				'reason' => is_array($reason) ? compress_reasons_array($reason) : $reason,
+				'meta' => serialize(array('reason'=> $reason, 'meta'=> null ))
 			),
 			array( '%s', '%d', '%s' )
 		);
 
-		if (is_error($r)) {
-			error_log( print_r( CF7ANTISPAM_LOG_PREFIX . "unable update blacklist for $ip", true ) );
-			error_log( print_r( $wpdb->last_error, true) );
-			return false;
-		}
+		return true;
 	}
 
-	public function cf7a_unban_ip($ip, $status_remove = 1) {
+	public function cf7a_unban_by_ip($ip) {
 
 		if (false == ($ip = filter_var($ip, FILTER_VALIDATE_IP) ) ) return false;
 
-		$status_remove = intval($status_remove);
-
-		// get ip data (if any)
-		$ip_row = self::cf7a_blacklist_get_ip($ip);
-
-		// calc the new rating
-		$new_status = isset($ip_row->status) ? $ip_row->status - $status_remove : 0;
-
 		global $wpdb;
-		$r = $wpdb->replace(
+
+		$r = $wpdb->delete(
 			$wpdb->prefix . "cf7a_blacklist",
 			array(
-				'ip' => $ip,
-				'status' => $new_status < 0 ? 0 : $new_status
+				'ip' => $ip
 			),
 			array(
-				'%s',
+				'%s'
+			)
+		);
+
+		return (!is_wp_error($r)) ? $r : $wpdb->last_error;
+	}
+
+	public function cf7a_unban_by_id($id) {
+
+		$id = intval($id);
+
+		global $wpdb;
+
+		$r = $wpdb->delete(
+			$wpdb->prefix . "cf7a_blacklist",
+			array(
+				'id' => $id
+			),
+			array(
 				'%d'
 			)
 		);
 
-		return $r ? true : error_log(printf(__( "% unable to unban %s", "cf7-antispam" ), CF7ANTISPAM_LOG_PREFIX, $ip ));
+		return (!is_wp_error($r)) ? $r : $wpdb->last_error;
+
 	}
 
+	public function cf7a_clean_blacklist() {
+		global $wpdb;
+		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_blacklist" );
+		return !is_wp_error($r) ? true : false;
+	}
 
 	public function cf7a_d8_flamingo_message($before, $after) {
 		echo sprintf(
@@ -235,7 +258,7 @@ class CF7_AntiSpam_filters {
 					$this->cf7a_b8_learn_ham($text);
 
 					//TODO: this ip and the one gathered by plugin can change
-					$this->cf7a_unban_ip($flamingo_post->meta['remote_ip'], 9999 );
+					$this->cf7a_unban_by_ip($flamingo_post->meta['remote_ip'] );
 
 				} else {
 					return;
@@ -371,13 +394,12 @@ class CF7_AntiSpam_filters {
 			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
 
 			$spam_score += 1;
-			$reason['no_ip'] = "ip address field of $remote_ip not available, this means it has been modified, removed or hacked!";
+			$reason['no_ip'] = "Address field empty";
 
-
-			if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip address remote_ip field not available, modified or hacked" );
-
-
+			if (CF7ANTISPAM_DEBUG)
+				error_log( CF7ANTISPAM_LOG_PREFIX . "ip address field of $remote_ip is empty, this means it has been modified, removed or hacked! (used php data to get the real ip)" );
 		}
+
 
 		if ($remote_ip && $options['autostore_bad_ip']) {
 
@@ -387,12 +409,12 @@ class CF7_AntiSpam_filters {
 			if ($ip_data_status != 0) {
 
 				$spam_score += 1;
-				$reason['blacklisted'] = "ban for recidivism " . ($ip_data_status + 1);
+				$reason['blacklisted'] = "Score: " . ($ip_data_status + 1);
 
-				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip is already blacklisted, status $ip_data_status" );
+				if (CF7ANTISPAM_DEBUG)
+					error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip is already blacklisted, status $ip_data_status" );
 			}
 		}
-
 
 		/**
 		 * Check the CF7 AntiSpam version field
@@ -400,11 +422,12 @@ class CF7_AntiSpam_filters {
 		if ( !$cf7a_version || $cf7a_version != CF7ANTISPAM_VERSION ) {
 
 			$spam_score += 1;
-			$reason['data_mismatch'] = "cf7a version mismatch";
+			$reason['data_mismatch'] = "Version mismatch $cf7a_version/".CF7ANTISPAM_VERSION;
 
-			if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "Incorrect data submitted by $remote_ip in the hidden field _version, may have been modified, removed or hacked" );
-
+			if (CF7ANTISPAM_DEBUG)
+				error_log( CF7ANTISPAM_LOG_PREFIX . "Incorrect data submitted by $remote_ip in the hidden field _version, may have been modified, removed or hacked" );
 		}
+
 
 		/**
 		 * if the mail was marked as spam no more checks are needed.
@@ -431,12 +454,14 @@ class CF7_AntiSpam_filters {
 					"bot_fingerprint"      => !empty( $_POST[$prefix.'bot_fingerprint'] ) ? sanitize_text_field( $_POST[$prefix.'bot_fingerprint'] ) : null,
 				);
 
+				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint, true) );
+
 				$fails = array();
 				if (!$bot_fingerprint["timezone"]) $fails[] = "timezone";
 				if (!$bot_fingerprint["platform"]) $fails[] = "platform";
 				if (!$bot_fingerprint["hardware_concurrency"] >= 2) $fails[] = "hardware_concurrency";
 				if (!$bot_fingerprint["screens"]) $fails[] = "screens";
-				if (!$bot_fingerprint["memory"] >= 4)  $fails[] = "memory";
+				if (!$bot_fingerprint["memory"] || $bot_fingerprint["memory"] == 1)  $fails[] = "memory";
 				if (!$bot_fingerprint["user_agent"]) $fails[] = "user_agent";
 				if (!$bot_fingerprint["app_version"]) $fails[] = "app_version";
 				if (!$bot_fingerprint["webdriver"]) $fails[] = "webdriver";
@@ -445,17 +470,11 @@ class CF7_AntiSpam_filters {
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
 				if (!empty($fails)) {
-					$spam_score                += count( $fails ) * .5;
+					$spam_score                += count( $fails ) * .4;
 					$reason['bot_fingerprint'] = implode( ", ", $fails );
 
-					if ( CF7ANTISPAM_DEBUG ) {
-						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint']})" );
-					}
-
-					$submission->add_spam_log( array(
-						'agent'  => 'fingerprint_test',
-						'reason' => "fingerprint test not passed (" . count( $fails ) . " failed / " . count( $bot_fingerprint ) . ")",
-					) );
+					if ( CF7ANTISPAM_DEBUG)
+						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint test ({$reason['bot_fingerprint']})" );
 				}
 
 			}
@@ -483,15 +502,11 @@ class CF7_AntiSpam_filters {
 				if (!empty($bot_fingerprint_extras["bot_fingerprint_extras"]) ) $fails[] = "bot_fingerprint_extras";
 
 				if (!empty($fails)) {
-					$spam_score += count($fails) * .5;
+					$spam_score += count($fails) * .4;
 					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
 
-					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed ".count($fails)." / " . count( $bot_fingerprint_extras ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})" );
-
-					$submission->add_spam_log( array(
-						'agent'  => 'fingerprint_extra tests',
-						'reason' => "fingerprint extra tests not passed (".count($fails)." failed / " . count( $bot_fingerprint_extras ) . ")",
-					) );
+					if (CF7ANTISPAM_DEBUG)
+						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed ".count($fails)." / " . count( $bot_fingerprint_extras ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})" );
 				}
 
 			}
@@ -507,12 +522,8 @@ class CF7_AntiSpam_filters {
 					$spam_score += 5;
 					$reason['timestamp'] = 'undefined';
 
-					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "_timestamp field is missing, probable form hacking attempt from $remote_ip" );
-
-					$submission->add_spam_log( array(
-						'agent'  => 'timestamp_issue',
-						'reason' => "_wpcf7a_timestamp field is missing, probable form hacking attempt",
-					) );
+					if (CF7ANTISPAM_DEBUG)
+						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip _timestamp field is missing, probable form hacking attempt from $remote_ip" );
 
 				} else {
 
@@ -522,15 +533,11 @@ class CF7_AntiSpam_filters {
 
 					if ( $time_now <= ( $timestamp + $submission_minimum_time_elapsed ) ) {
 
-						$spam_score += 5;
+						$spam_score += 1;
 						$reason['min_time_elapsed'] = $time_elapsed;
 
-						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too little time to fill in the form - ($time_elapsed)" );
-
-						$submission->add_spam_log( array(
-							'agent'  => 'timestamp_issue',
-							'reason' => "Sender send the email in $time_elapsed. Too little to complete this form!",
-						) );
+						if (CF7ANTISPAM_DEBUG)
+							error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too little time to fill in the form - ($time_elapsed)" );
 					}
 
 					/**
@@ -538,19 +545,13 @@ class CF7_AntiSpam_filters {
 					 */
 					if ( $time_now >= ( $timestamp + $submission_maximum_time_elapsed ) ) {
 
-						$spam_score += 5;
+						$spam_score += 1;
 						$reason['max_time_elapsed'] = $time_elapsed;
 
-						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too much time to fill in the form - ($time_elapsed)" );
-
-						$submission->add_spam_log( array(
-							'agent'  => 'timestamp_issue',
-							'reason' => "Sender send the email in $time_elapsed. Too much time to complete this form or the timestamp was hacked!",
-						) );
+						if (CF7ANTISPAM_DEBUG)
+							error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too much time to fill in the form - ($time_elapsed)" );
 					}
 				}
-
-
 			}
 
 
@@ -568,18 +569,18 @@ class CF7_AntiSpam_filters {
 						$spam_score += 1;
 						$reason['ip'][] = $bad_ip;
 
-						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The ip address $remote_ip is listed into bad ip list (contains $bad_ip)" );
+
 					}
 				}
 
 				if (isset($reason['ip'])) {
 					$reason['ip'] = implode(", ", $reason['ip']);
 
-					$submission->add_spam_log( array(
-						'agent'  => 'blacklisted_ip_address',
-						'reason' => "The sender ip address contains prohibited address strings {$reason['ip']}",
-					) );
+					if (CF7ANTISPAM_DEBUG)
+						error_log( CF7ANTISPAM_LOG_PREFIX . "The ip address $remote_ip is listed into bad ip list (contains {$reason['ip']})" );
 				}
+
+
 			}
 
 
@@ -596,19 +597,18 @@ class CF7_AntiSpam_filters {
 
 						$spam_score += 1;
 						$reason['email_blackilisted'][] = $email;
-
-						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The ip address $remote_ip  sent a mail from {$email} but contains $bad_email_string (blacklisted email string)" );
-
 					}
 				}
+
 				if (isset($reason['email_blackilisted'])) {
+
 					$reason['email_blackilisted'] = implode(",", $reason['email_blackilisted']);
 
-					$submission->add_spam_log( array(
-						'agent'  => 'bad_email_strings',
-						'reason' => "listed into denied strings ({$reason['email_blackilisted']})",
-					) );
+					if (CF7ANTISPAM_DEBUG)
+						error_log( CF7ANTISPAM_LOG_PREFIX . "The ip address $remote_ip  sent a mail from {$email} but contains {$reason['email_blackilisted']} (blacklisted email string)" );
 				}
+
+
 			}
 
 
@@ -624,11 +624,6 @@ class CF7_AntiSpam_filters {
 
 					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip user agent is empty, look like a spambot");
 
-					$submission->add_spam_log( array(
-						'agent'  => 'no_user_agent',
-						'reason' => "The sender has no user agent set, look like a spambot",
-					) );
-
 				} else {
 
 					foreach ( $bad_user_agent_list as $bad_user_agent ) {
@@ -637,17 +632,12 @@ class CF7_AntiSpam_filters {
 
 							$spam_score += 1;
 							$reason['user_agent_blacklisted'][] = $user_agent;
-
-							if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip user agent was listed into bad user agent list - $user_agent contains $bad_user_agent" );
 						}
 
 						if (isset($reason['user_agent_blacklisted'])) {
 							$reason['user_agent_blacklisted'] = implode(", ", $reason['user_agent_blacklisted']);
 
-							$submission->add_spam_log( array(
-								'agent'  => 'user_agent',
-								'reason' => "The email user agent was listed into bad user agent list ({$reason['user_agent_blacklisted']})",
-							) );
+							if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip user agent was listed into bad user agent list - $user_agent contains {$reason['user_agent_blacklisted']}" );
 						}
 					}
 				}
@@ -667,20 +657,17 @@ class CF7_AntiSpam_filters {
 
 						$spam_score += 3;
 						$reason['bad_word'][] = $bad_word;
-
-						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip has bad word in message ($bad_word)" );
 					}
 				}
 
 				if (isset($reason['bad_word'])) {
 					$reason['bad_word'] = implode(",", $reason['bad_word']);
 
-					$submission->add_spam_log( array(
-						'agent'  => 'bad_words',
-						'reason' => "Detected a bad word ({$reason['bad_word']})",
-					) );
+					if (CF7ANTISPAM_DEBUG)
+						error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip has bad word in message ($bad_word)" );
 				}
 			}
+
 
 
 			/**
@@ -709,7 +696,7 @@ class CF7_AntiSpam_filters {
 					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 						$dsnbl_listed[] = $listed;
-						$spam_score += 0.5;
+						$spam_score += 0.4;
 					}
 					$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
 					$performance_test[$dnsbl] = $time_taken;
@@ -721,14 +708,10 @@ class CF7_AntiSpam_filters {
 				}
 
 				if (isset($dsnbl_listed)) {
-					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip has tried to send an email but is listed ".count($dsnbl_listed)." times in the Domain Name System Blacklists ("  . implode(", ", $dsnbl_listed) .")" );
 
 					$reason['dsnbl'] = implode(", ",$dsnbl_listed);
 
-					$submission->add_spam_log( array(
-						'agent'  => 'dnsbl_listed',
-						'reason' => "$remote_ip listed in the dnsbl ({$reason['dsnbl']})",
-					) );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip has tried to send an email but is listed ".count($dsnbl_listed)." times in the Domain Name System Blacklists ({$reason['dsnbl']})" );
 				}
 			}
 
@@ -763,11 +746,6 @@ class CF7_AntiSpam_filters {
 						$reason['honeypot'] = implode( ", ", $reason['honeypot'] );
 
 						if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip has filled the input honeypot {$reason['honeypot']}" );
-
-						$submission->add_spam_log( array(
-							'agent' => 'honeypot',
-							'reason' => "the bot has filled honeypot input ({$reason['honeypot']})",
-						) );
 					}
 				}
 			}
@@ -801,11 +779,6 @@ class CF7_AntiSpam_filters {
 					$reason['b8'] = $rating;
 
 					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "D8 detect spamminess of $rating while the minimum is > $b8_threshold so the mail from $remote_ip will be marked as spam" );
-
-					$submission->add_spam_log( array(
-						'agent'  => 'd8_spam_detected',
-						'reason' => "d8 spam detected with rating of $rating",
-					) );
 				}
 
 			} else if ( $rating < ( $b8_threshold * .5 ) ) {
@@ -821,19 +794,23 @@ class CF7_AntiSpam_filters {
 
 			// if d8 isn't enabled we only need to mark as spam and leave a log
 			if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
-
-			$submission->add_spam_log( array(
-				'agent'  => 'd8_spam_detected',
-				'reason' => "d8 spam detected with spam score of $spam_score",
-			) );
 		}
 
 		// hook to add some filters after d8
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
 		if ($options['autostore_bad_ip'] && $spam) {
-			if (false == $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) && CF7ANTISPAM_DEBUG)
-				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip" );
+			if ( false === $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) || CF7ANTISPAM_DEBUG_EXTENDED )
+				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip / CF7ANTISPAM_LOG_PREFIX enabled" );
+		}
+
+		if ($spam) {
+
+			$submission->add_spam_log( array(
+				'agent'  => 'CF7-AntiSpam',
+				'reason' => cf7a_compress_array($reason),
+			) );
+
 		}
 
 		return $spam; // case closed

@@ -23,7 +23,7 @@ class CF7_AntiSpam_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
 		// create the term database
-		$cf7a_wordlist = "CREATE TABLE " . $wpdb->prefix . "cf7a_wordlist (
+		$cf7a_wordlist = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "cf7a_wordlist (
 		  `token` varchar(255) character set utf8 collate utf8_bin NOT NULL,
 		  `count_ham` int unsigned default NULL,
 		  `count_spam` int unsigned default NULL,
@@ -33,12 +33,13 @@ class CF7_AntiSpam_Activator {
 		$cf7a_wordlist_version = "INSERT INTO " . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
 		$cf7a_wordlist_texts = "INSERT INTO " . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
 
-		$cf7a_database = "CREATE TABLE " . $wpdb->prefix . "cf7a_blacklist (
-		  `id` int unsigned NOT NULL AUTO_INCREMENT,
-		  `ip` varchar(255) character set utf8 collate utf8_bin NOT NULL,
-		  `status` int unsigned default NULL,
-		  `reason` longtext default NULL,
-		  PRIMARY KEY (`ip`)
+		$cf7a_database = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "cf7a_blacklist (
+			 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			 `ip` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+			 `status` int(10) unsigned DEFAULT NULL,
+			 `meta` longtext COLLATE utf8mb4_unicode_520_ci,
+			 PRIMARY KEY (`id`),
+             UNIQUE KEY `id` (`ip`)
 		) $charset_collate;";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -144,6 +145,7 @@ class CF7_AntiSpam_Activator {
 
 			$cf7a_antispam_filters = new CF7_AntiSpam_filters();
 
+			//todo: this fn need to be doubled because for first we need to learn then classify
 			while ( $query->have_posts() ) : $query->the_post();
 				$post_id = get_the_ID();
 				$post_status = get_post_status();

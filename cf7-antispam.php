@@ -9,8 +9,7 @@ Version: 0.1.0
 */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {die;}
-
+if ( ! defined( 'WPINC' ) ) die;
 
 // CONSTANTS
 define( 'CF7ANTISPAM_VERSION', '0.1.0' );
@@ -59,9 +58,9 @@ register_deactivation_hook( CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
  */
 function uninstall_cf7_antispam() {
 	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
-	CF7_AntiSpam_Deactivator::uninstall();
+	CF7_AntiSpam_Uninstaller::uninstall();
 }
-register_uninstall_hook(  CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
+register_uninstall_hook(  CF7ANTISPAM_PLUGIN, 'uninstall_cf7_antispam' );
 
 
 /**
