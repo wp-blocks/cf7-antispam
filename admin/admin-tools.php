@@ -77,9 +77,22 @@ class CF7_AntiSpam_Admin_Tools {
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
 
 		if ( $blacklisted ) {
-			$html = '  <div class="card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
+
+			$html = '<div class="card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
 			foreach ( $blacklisted as $row ) {
-				$html .= sprintf( "<div class='row'><div class='status'>%s</div><div><p class='ip'>%s</p><span class='ellipsis'>%s</span></div></div>", self::cf7a_format_status( $row->status ), $row->ip, $row->reason );
+
+				// the row url
+				$url  = admin_url() . 'admin.php?page=cf7-antispam&action=unban_' . $row->id . '&cf7a-nonce=' . $nonce;
+
+				$meta = unserialize($row->meta);
+
+				// the row
+				$html .= '<div class="row">';
+				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status ) );
+				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">[unban ip]</a></small></p>', $row->ip, $url );
+				$html .= sprintf( "<span class='data ellipsis'>%s</span></div>", cf7a_compress_array($meta['reason'])  );
+				//$html .= sprintf( print_r($meta, true)  );
+				$html .= "</div>";
 			}
 			$html .= '</div></div>';
 
