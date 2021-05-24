@@ -71,7 +71,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 	}
 
-	public static function cf7a_get_blacklisted_table($nonce) {
+	public static function cf7a_get_blacklisted_table() {
 
 		global $wpdb;
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
@@ -82,14 +82,14 @@ class CF7_AntiSpam_Admin_Tools {
 			foreach ( $blacklisted as $row ) {
 
 				// the row url
-				$url  = admin_url() . 'admin.php?page=cf7-antispam&action=unban_' . $row->id . '&cf7a-nonce=' . $nonce;
+				$url = wp_nonce_url( add_query_arg( "action", "unban_" . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
 
 				$meta = unserialize($row->meta);
 
 				// the row
 				$html .= '<div class="row">';
 				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status ) );
-				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">[unban ip]</a></small></p>', $row->ip, $url );
+				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">[unban ip]</a></small></p>', $row->ip, esc_url( $url ) );
 				$html .= sprintf( "<span class='data ellipsis'>%s</span></div>", cf7a_compress_array($meta['reason'], 1)  );
 				//$html .= sprintf( print_r($meta, true)  );
 				$html .= "</div>";
@@ -100,13 +100,13 @@ class CF7_AntiSpam_Admin_Tools {
 		}
 	}
 
-	public static function cf7a_get_debug_info($nonce) {
+	public static function cf7a_get_debug_info() {
 
 		if (WP_DEBUG || CF7ANTISPAM_DEBUG) {
 
 			$options = CF7_AntiSpam::get_options();
 
-			$url = admin_url().'admin.php?page=cf7-antispam&action=clean-blacklist&cf7a-nonce='. $nonce;
+			$url = wp_nonce_url( add_query_arg("action", "clean-blacklist", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
 
 			$html = printf('<div>');
 
@@ -130,7 +130,7 @@ class CF7_AntiSpam_Admin_Tools {
 			);
 
 			// output the button to remove all the entries in the blacklist database
-			$html .= printf('<pre><a class="button" href="%s">%s</a></pre>', $url, __('Remove all blacklisted IP from database', 'cf7-antispam') );
+			$html .= printf('<pre><a class="button" href="%s">%s</a></pre>', esc_url( $url ), __('Remove all blacklisted IP from database', 'cf7-antispam') );
 
 			// output the options
 			$html .= printf('<hr/><h3>%s</h3>', __('Options debug', 'cf7-antispam') );

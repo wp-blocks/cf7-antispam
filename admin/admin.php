@@ -33,15 +33,6 @@ class CF7_AntiSpam_Admin {
 	private $version;
 
 	/**
-	 * The version of this plugin.
-	 *
-	 * @since    0.1.0
-	 * @access   private
-	 * @var      string $version The current version of this plugin.
-	 */
-	private $nonce;
-
-	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    0.1.0
@@ -53,32 +44,33 @@ class CF7_AntiSpam_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-		$this->nonce     = wp_create_nonce('cf7a-nonce');
-
 
 		// the menu item
-		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
+		new CF7_AntiSpam_Admin_Customizations();
 
 		$tools = new CF7_AntiSpam_Admin_Tools();
 
-		new CF7_AntiSpam_Admin_Customizations();
+		add_action( 'admin_init', array( $tools, 'cf7a_handle_blacklist' ) );
 
-		add_action( 'admin_init', array( $tools, 'cf7a_handle_blacklist' ));
+		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
 	}
 
 
 	public function cf7a_admin_menu() {
-		$addnew = add_submenu_page( 'wpcf7', __( 'Antispam', 'cf7-antispam' ), __( 'Antispam', 'cf7-antispam' ), 'wpcf7_edit_contact_forms', 'cf7-antispam', array( $this, 'cf7a_admin_dashboard' ) );
-
-		add_action( 'load-' . $addnew, 'wpcf7_load_contact_form_admin', 10, 0 );
+		add_submenu_page( 'wpcf7',
+			__( 'Antispam', 'cf7-antispam' ),
+			__( 'Antispam', 'cf7-antispam' ),
+			'wpcf7_edit_contact_forms',
+			'cf7-antispam',
+			array( $this, 'cf7a_admin_dashboard' )
+		);
 	}
 
 	public function cf7a_admin_dashboard() {
-		require CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
-	}
 
-	public function cf7a_get_nonce() {
-		return $this->nonce;
+		$admin_display = new CF7_AntiSpam_Admin_Display();
+
+		$admin_display->display_dashboard();
 	}
 
 	/**
@@ -124,4 +116,5 @@ class CF7_AntiSpam_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/admin-script.js', array(), $this->version, true );
 
 	}
+
 }
