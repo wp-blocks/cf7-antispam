@@ -132,6 +132,46 @@ body.contact_page_cf7-antispam {
   
     }
   }
+  
+  // welcome panel
+  .welcome-panel {
+    
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 2.1em;
+      margin: 1em 0 1.2em;
+      
+      .dashicons {
+        position: relative;
+        top: -2px;
+        display: inline-block;
+        width: 60px;
+        color: #575757;
+        font-size: 40px;
+      }
+    }
+    
+    p a {
+      font-weight: bold;
+    }
+    
+    .welcome-panel-column,
+    .welcome-panel-column:first-child {
+      width: 48%;
+      padding: 0 2% 0 0;
+      margin: 0 0 1em 0;
+      @media screen and (max-width: 870px) {
+        display: block;
+        float: none;
+        width: 100%;
+      }
+    }
+    
+    .welcome-panel-close {
+      z-index: 2;
+    }
+  }
 }
 
 // Flamingo customization
@@ -174,43 +214,3 @@ body.flamingo_page_flamingo_inbound {
   }
 }
 
-
-// welcome panel
-.welcome-panel {
-  
-  h3 {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 2.1em;
-    margin: 1em 0 1.2em;
-    
-    .dashicons {
-      position: relative;
-      top: -2px;
-      display: inline-block;
-      width: 60px;
-      color: #575757;
-      font-size: 40px;
-    }
-  }
-  
-  p a {
-    font-weight: bold;
-  }
-  
-  .welcome-panel-column,
-  .welcome-panel-column:first-child {
-    width: 48%;
-    padding: 0 2% 0 0;
-    margin: 0 0 1em 0;
-    @media screen and (max-width: 870px) {
-      display: block;
-      float: none;
-      width: 100%;
-    }
-  }
-  
-  .welcome-panel-close {
-    z-index: 2;
-  }
-}

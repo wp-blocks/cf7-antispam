@@ -67,7 +67,7 @@ class CF7_AntiSpam_Admin_Display {
         <p><?php echo esc_html( __( "to your message to get the full functionality of this plugin", 'cf7-antispam' ) ); ?></p>
       </div>
 
-      <form method="post" action="<?php echo esc_url( menu_page_url( 'cf7-antispam', false ) ); ?>" id="cf7a_settings">
+      <form method="post" action="options.php" id="cf7a_settings">
           <?php
 
           // This prints out all hidden setting fields

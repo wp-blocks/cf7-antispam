@@ -16,8 +16,8 @@ class CF7_AntiSpam_Admin_Tools {
 
 	public static function cf7a_handle_blacklist() {
 
-		$req_nonce = isset($_GET['cf7a-nonce']) ? wp_verify_nonce( $_GET['cf7a-nonce'], 'cf7a-nonce' ) : null;
-		$action = isset($_GET['action']) ? sanitize_text_field($_GET['action']) : false;
+		$req_nonce = isset($_REQUEST['cf7a-nonce']) ? wp_verify_nonce( $_REQUEST['cf7a-nonce'], 'cf7a-nonce' ) : null;
+		$action = isset($_REQUEST['action']) ? sanitize_text_field($_REQUEST['action']) : false;
 
 		$url = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
@@ -64,7 +64,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 		global $wpdb;
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
-
+;
 		if ( $blacklisted ) {
 
 			$html = '<div class="card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
