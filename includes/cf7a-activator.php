@@ -35,9 +35,9 @@ class CF7_AntiSpam_Activator {
 
 		$cf7a_database = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "cf7a_blacklist (
 			 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			 `ip` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+			 `ip` varchar(255) NOT NULL,
 			 `status` int(10) unsigned DEFAULT NULL,
-			 `meta` longtext COLLATE utf8mb4_unicode_520_ci,
+			 `meta` longtext,
 			 PRIMARY KEY (`id`),
              UNIQUE KEY `id` (`ip`)
 		) $charset_collate;";
