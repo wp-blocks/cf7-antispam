@@ -1,5 +1,5 @@
 === AntiSpam for Contact Form 7 ===
-Contributors: Codekraft
+Contributors: codekraft
 Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, security
 Requires at least: 5.1
 Tested up to: 5.7.1

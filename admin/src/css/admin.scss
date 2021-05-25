@@ -17,15 +17,16 @@ $color__warn: $color__yellow;
 $color__success: $color__green;
 $color__info: $color__blue;
 
-// utils
-.ellipsis {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
 
 // Plugin Admin style
-body.contact_page_cf7-antispam {
+.cf7-antispam {
+  
+  // utils
+  .ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
   
   .dashicons.dashicons-shield-alt {
     font-weight: inherit;

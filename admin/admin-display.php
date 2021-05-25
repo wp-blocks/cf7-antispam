@@ -12,23 +12,22 @@ class CF7_AntiSpam_Admin_Display {
 	public $options;
 
   public function display_dashboard() {
-    add_action('cf7a_dashboard', array($this,'cf7a_display_header'), 10 );
-    add_action('cf7a_dashboard', array($this,'cf7a_display_notices'), 11 );
-	  add_action('cf7a_dashboard', array($this,'cf7a_display_content'), 12 );
-	  add_action('cf7a_dashboard', array($this,'cf7a_display_footer'), 13 );
+	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_header' ), 20 );
+	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_notices' ), 21 );
+	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
+	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_footer' ), 23 );
 
-	  add_action('cf7a_dashboard', array($this,'cf7a_display_debug'), 20 );
+	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_debug' ), 30 );
 
 	  do_action( 'cf7a_dashboard' );
   }
 
 
-	function cf7a_display_header() { ?>
-    <div class="wrap">
-      <div class="card">
-        <h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 - AntiSpam</h1>
-    <?php
-	}
+	function cf7a_display_header(){
+	  $html  = '<div class="wrap"><div class="cf7-antispam">';
+	  $html .= '<h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 - AntiSpam</h1>';
+	  echo $html;
+  }
 
 
 	function cf7a_display_notices() {
@@ -52,8 +51,7 @@ class CF7_AntiSpam_Admin_Display {
     if ( $vers  ) {	$dismissable_banner_class .= ' hidden'; }
 
     ?>
-
-    <div class="inside">
+    <div class="card main-options">
 
       <div class="<?php echo $dismissable_banner_class ?>" style="background-color: #f3f3f3; border: 1px solid #ddd; padding: 10px; margin: 10px 0">
         <a class="welcome-panel-close" href="<?php echo esc_url( menu_page_url( 'cf7-antispam', false ) ); ?>&dismiss-banner=1"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
@@ -67,6 +65,7 @@ class CF7_AntiSpam_Admin_Display {
         <p><?php echo esc_html( __( "to your message to get the full functionality of this plugin", 'cf7-antispam' ) ); ?></p>
       </div>
 
+      <h3>Options</h3>
       <form method="post" action="options.php" id="cf7a_settings">
           <?php
 
@@ -78,16 +77,10 @@ class CF7_AntiSpam_Admin_Display {
 
           ?>
       </form>
+
     </div>
     <?php
   }
-
-
-	function cf7a_display_footer() {
-    ?>
-    </div>
-    <?php
-	}
 
 
 	function cf7a_display_debug() {
@@ -101,6 +94,13 @@ class CF7_AntiSpam_Admin_Display {
 	  $tools->cf7a_get_debug_info();
 	}
 
+
+
+	function cf7a_display_footer() {
+		?>
+      </div></div>
+		<?php
+	}
 
 
 }

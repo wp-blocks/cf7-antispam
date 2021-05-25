@@ -59,18 +59,23 @@ class CF7_AntiSpam_Admin {
 	public function cf7a_admin_menu() {
 		add_submenu_page( 'wpcf7',
 			__( 'Antispam', 'cf7-antispam' ),
-			__( 'Antispam', 'cf7-antispam' ),
+			__( 'Antispam', 'cf7-antispam' )
+			. $this->cf7a_admin_notice(),
 			'wpcf7_edit_contact_forms',
 			'cf7-antispam',
 			array( $this, 'cf7a_admin_dashboard' )
 		);
 	}
 
+	function cf7a_admin_notice() {
+    	return '';
+	}
+
 	public function cf7a_admin_dashboard() {
 
 		$admin_display = new CF7_AntiSpam_Admin_Display();
-
 		$admin_display->display_dashboard();
+
 	}
 
 	/**

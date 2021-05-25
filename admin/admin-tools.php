@@ -64,10 +64,10 @@ class CF7_AntiSpam_Admin_Tools {
 
 		global $wpdb;
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
-;
+
 		if ( $blacklisted ) {
 
-			$html = '<div class="card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
+			$html = '<div class="cf7-antispam card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
 			foreach ( $blacklisted as $row ) {
 
 				// the row url
@@ -100,7 +100,7 @@ class CF7_AntiSpam_Admin_Tools {
 			$html = printf('<div>');
 
 			// the header
-			$html .= printf('<div class="card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
+			$html .= printf('<div class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
 				__('Debug info', 'cf7-antispam'),
 				__('(...If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true)', 'cf7-antispam')
 			);
