@@ -24,10 +24,8 @@ class CF7_AntiSpam_Admin_Tools {
 		if ( $action === 'dismiss-banner' ) {
 
 			update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1 );
-
 			wp_redirect( $url );
 			exit();
-
 		}
 
 		if ( $req_nonce ) {

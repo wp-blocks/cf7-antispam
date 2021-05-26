@@ -151,6 +151,8 @@ class CF7_AntiSpam {
 
 		if (is_admin()) {
 
+			add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ));
+
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
@@ -177,7 +179,6 @@ class CF7_AntiSpam {
 			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
 			if (!empty($this->options['check_bot_fingerprint']) || !empty($this->options['check_bot_fingerprint_extras'])) {
-
 				$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );
 			}
 
@@ -236,5 +237,11 @@ class CF7_AntiSpam {
 	 */
 	public static function get_options() {
 		return get_option( 'cf7a_options' );
+	}
+
+
+	public static function cf7a_body_class( $class ) {
+		$class .= 'cf7-antispam-admin';
+		return $class;
 	}
 }

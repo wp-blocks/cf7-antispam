@@ -463,6 +463,15 @@ class CF7_AntiSpam_filters {
 		$b8_threshold = floatval( $options['b8_threshold'] );
 		$b8_threshold = ( $b8_threshold > 0 && $b8_threshold < 1 ) ? $b8_threshold : 1;
 
+		// Scoring
+		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
+		$score_time = floatval( $options['score']['_time'] );
+		$score_bad_string = floatval( $options['score']['_bad_string'] );
+		$score_dnsbl = floatval( $options['score']['_dnsbl'] );
+		$score_honeypot = floatval( $options['score']['_honeypot'] );
+		$score_warn = floatval( $options['score']['_warn'] );
+		$score_detection = floatval( $options['score']['_detection'] );
+
 		// collect data
 		$reason  = array();
 		$spam_score  = 0;
@@ -475,7 +484,7 @@ class CF7_AntiSpam_filters {
 
 			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
 
-			$spam_score += 1;
+			$spam_score += $score_detection;
 			$reason['no_ip'] = "Address field empty";
 
 			if (CF7ANTISPAM_DEBUG)
@@ -490,8 +499,8 @@ class CF7_AntiSpam_filters {
 
 			if ($ip_data_status != 0) {
 
-				$spam_score += 1;
-				$reason['blacklisted'] = "Score: " . ($ip_data_status + 1);
+				$spam_score += $score_detection;
+				$reason['blacklisted'] = "Score: " . ($ip_data_status + $score_warn);
 
 				if (CF7ANTISPAM_DEBUG)
 					error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip is already blacklisted, status $ip_data_status" );
@@ -503,7 +512,7 @@ class CF7_AntiSpam_filters {
 		 */
 		if ( !$cf7a_version || $cf7a_version != CF7ANTISPAM_VERSION ) {
 
-			$spam_score += 1;
+			$spam_score += $score_warn;
 			$reason['data_mismatch'] = "Version mismatch $cf7a_version/".CF7ANTISPAM_VERSION;
 
 			if (CF7ANTISPAM_DEBUG)
@@ -552,7 +561,7 @@ class CF7_AntiSpam_filters {
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
 				if (!empty($fails)) {
-					$spam_score                += count( $fails ) * .4;
+					$spam_score                += count( $fails ) * $score_fingerprinting;
 					$reason['bot_fingerprint'] = implode( ", ", $fails );
 
 					if ( CF7ANTISPAM_DEBUG)
@@ -584,7 +593,7 @@ class CF7_AntiSpam_filters {
 				if (!empty($bot_fingerprint_extras["bot_fingerprint_extras"]) ) $fails[] = "bot_fingerprint_extras";
 
 				if (!empty($fails)) {
-					$spam_score += count($fails) * .4;
+					$spam_score += count($fails) * $score_fingerprinting;
 					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
 
 					if (CF7ANTISPAM_DEBUG)
@@ -601,7 +610,7 @@ class CF7_AntiSpam_filters {
 
 				if ( !$timestamp || $timestamp == 0 ) {
 
-					$spam_score += 5;
+					$spam_score += $score_detection;
 					$reason['timestamp'] = 'undefined';
 
 					if (CF7ANTISPAM_DEBUG)
@@ -615,7 +624,7 @@ class CF7_AntiSpam_filters {
 
 					if ( $time_now <= ( $timestamp + $submission_minimum_time_elapsed ) ) {
 
-						$spam_score += 1;
+						$spam_score += $score_time;
 						$reason['min_time_elapsed'] = $time_elapsed;
 
 						if (CF7ANTISPAM_DEBUG)
@@ -627,7 +636,7 @@ class CF7_AntiSpam_filters {
 					 */
 					if ( $time_now >= ( $timestamp + $submission_maximum_time_elapsed ) ) {
 
-						$spam_score += 1;
+						$spam_score += $score_time;
 						$reason['max_time_elapsed'] = $time_elapsed;
 
 						if (CF7ANTISPAM_DEBUG)
@@ -648,7 +657,7 @@ class CF7_AntiSpam_filters {
 
 						$bad_ip = filter_var($bad_ip, FILTER_VALIDATE_IP);
 
-						$spam_score += 1;
+						$spam_score += $score_bad_string;
 						$reason['ip'][] = $bad_ip;
 
 
@@ -677,7 +686,7 @@ class CF7_AntiSpam_filters {
 
 					if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
 
-						$spam_score += 1;
+						$spam_score += $score_bad_string;
 						$reason['email_blackilisted'][] = $email;
 					}
 				}
@@ -701,7 +710,7 @@ class CF7_AntiSpam_filters {
 
 				if (!$user_agent) {
 
-					$spam_score += 5;
+					$spam_score += $score_detection;
 					$reason['user_agent'] = "empty";
 
 					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip user agent is empty, look like a spambot");
@@ -712,7 +721,7 @@ class CF7_AntiSpam_filters {
 
 						if ( false !== stripos( strtolower( $user_agent ), strtolower( $bad_user_agent ) ) ) {
 
-							$spam_score += 1;
+							$spam_score += $score_bad_string;
 							$reason['user_agent_blacklisted'][] = $user_agent;
 						}
 
@@ -737,7 +746,7 @@ class CF7_AntiSpam_filters {
 				foreach ( $bad_words as $bad_word ) {
 					if ( false !== stripos( $message_compressed, str_replace( " ", "", strtolower( $bad_word ) ) ) ) {
 
-						$spam_score += 3;
+						$spam_score += $score_bad_string;
 						$reason['bad_word'][] = $bad_word;
 					}
 				}
@@ -778,7 +787,7 @@ class CF7_AntiSpam_filters {
 					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 						$dsnbl_listed[] = $listed;
-						$spam_score += 0.4;
+						$spam_score += $score_dnsbl;
 					}
 					$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
 					$performance_test[$dnsbl] = $time_taken;
@@ -819,7 +828,7 @@ class CF7_AntiSpam_filters {
 
 						// check only if it's set and if it is different from ""
 						if ( isset( $_POST[ $input_names[ $i ] ] ) && $_POST[ $input_names[ $i ]] != '' ) {
-							$spam_score += 3;
+							$spam_score += $score_honeypot;
 							$reason['honeypot'][] = $input_names[ $i ];
 						}
 					}

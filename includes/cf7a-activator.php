@@ -128,6 +128,14 @@ class CF7_AntiSpam_Activator {
 					'billing_city',
 					'billing_country',
 					'email-address'
+				),
+				"score" => array(
+                    '_fingerprinting' => 0.3,
+		            '_time' => 1,
+		            '_bad_string' => 1,
+		            '_dnsbl' => 0.4,
+		            '_honeypot' => 1,
+		            '_detection' => 5,
 				)
 			) );
 		}
