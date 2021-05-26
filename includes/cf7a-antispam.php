@@ -4,9 +4,20 @@ class CF7_AntiSpam_filters {
 
 	protected $b8;
 
+	/**
+	 * CF7_AntiSpam_filters constructor.
+	 */
 	public function __construct() {
+
 		$this->b8 = $this->cf7a_b8_init();
+
 	}
+
+
+
+	/**
+	 * CF7_AntiSpam_filters Tools
+	 */
 
 	// expand IPv6 address
 	public function cf7a_expand_ipv6( $ip ) {
@@ -34,6 +45,33 @@ class CF7_AntiSpam_filters {
 		return false;
 	}
 
+	public function cf7a_get_mail_additional_data($form_post_id) {
+
+		// get the additional setting of the form
+		$form_additional_settings = get_post_meta( $form_post_id, '_additional_settings', true) ;
+
+		if ($form_additional_settings !== '') {
+			$lines = explode( "\n", $form_additional_settings); // TODO: best practice is to explode using EOL (End Of Line).
+
+			$additional_settings = array();
+
+			// extract the flamingo_key = value;
+			foreach ($lines as $line) {
+				$matches = array();
+				preg_match('/flamingo_(.*)(?=:): "\[(.*)]"/', $line , $matches);
+				$additional_settings[$matches[1]] = $matches[2];
+			}
+
+			return $additional_settings;
+		}
+	}
+
+
+
+
+	/**
+	 * CF7_AntiSpam_filters b8
+	 */
 	private function cf7a_b8_init() {
 		// the database
 		global $wpdb;
@@ -99,6 +137,10 @@ class CF7_AntiSpam_filters {
 		$this->b8->unlearn( $message, b8\b8::HAM );
 	}
 
+
+	/**
+	 * CF7_AntiSpam_filters blacklists
+	 */
 	public function cf7a_blacklist_get_ip($ip) {
 
 		if (false === ($ip = filter_var($ip, FILTER_VALIDATE_IP))) return false;
@@ -191,7 +233,6 @@ class CF7_AntiSpam_filters {
 		);
 	}
 
-	public function cf7a_get_mail_additional_data($form_post_id) {
 
 	/**
 	 * CF7_AntiSpam_filters Flamingo
@@ -350,6 +391,13 @@ class CF7_AntiSpam_filters {
 	}
 
 
+	/**
+	 * CF7_AntiSpam_filters The antispam filter
+	 *
+	 * @param $spam bool - if is spam or not
+	 *
+	 * @return bool
+	 */
 	public function cf7a_spam_filter( $spam ) {
 
 		// Get the submitted data
