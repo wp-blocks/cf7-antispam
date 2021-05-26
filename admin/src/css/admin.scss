@@ -136,6 +136,8 @@ $color__info: $color__blue;
   
   // welcome panel
   .welcome-panel {
+    margin-top: 20px;
+    padding: 0.7em 2em 1em;
     
     h3 {
       font-size: 16px;
@@ -167,6 +169,12 @@ $color__info: $color__blue;
         float: none;
         width: 100%;
       }
+    }
+  
+    
+    &:hover {
+      h3.blink { animation: 5s blink }
+      code.blink { animation: 4s 1s blink }
     }
     
     .welcome-panel-close {
@@ -212,6 +220,18 @@ body.flamingo_page_flamingo_inbound {
   100% {
     color: $color__dark-grey;
     transform: rotateY(180deg);
+  }
+}
+
+@keyframes blink {
+  0% {
+    color: $color__dark-grey;
+  }
+  5% {
+    color: $color__primary;
+  }
+  20% {
+    color: $color__dark-grey;
   }
 }
 
