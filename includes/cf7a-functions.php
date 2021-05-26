@@ -49,9 +49,9 @@ function cf7a_compress_array($array, $is_html = 0 ) {
 	return $output = implode(', ', array_map(
 		function ($v, $k) use ($is_html) {
 			if ($is_html) {
-				return sprintf("<b>%s</b>: %s", $k, $v);
+				return sprintf("<b>%s</b>: %s; ", $k, $v);
 			} else {
-				return sprintf("%s: %s", $k, $v);
+				return sprintf("%s: %s; ", $k, $v);
 			}
 		},
 		$array,
