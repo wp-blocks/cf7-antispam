@@ -17,6 +17,13 @@ class CF7_AntiSpam_Uninstaller {
 
 		delete_option("cf7a_db_version");
 		delete_option("cf7a_options");
+
+		delete_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on');
+
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
+
+		CF7_AntiSpam_filters::cf7a_flamingo_on_uninstall();
+
 	}
 
 }

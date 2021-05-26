@@ -193,23 +193,57 @@ class CF7_AntiSpam_filters {
 
 	public function cf7a_get_mail_additional_data($form_post_id) {
 
-		// get the additional setting of the form
-		$form_additional_settings = get_post_meta( $form_post_id, '_additional_settings', true) ;
+	/**
+	 * CF7_AntiSpam_filters Flamingo
+	 */
 
-		if ($form_additional_settings !== '') {
-			$lines = explode( "\n", $form_additional_settings); // TODO: best practice is to explode using EOL (End Of Line).
+	public function cf7a_flamingo_on_install() {
+		// get all the flamingo inbound post and classify them
+		$args = array(
+			'post_type' => 'flamingo_inbound',
+			'posts_per_page' => -1
+		);
 
-			$additional_settings = array();
+		$query = new WP_Query($args);
+		if ($query->have_posts() ) :
 
-			// extract the flamingo_key = value;
-			foreach ($lines as $line) {
-				$matches = array();
-				preg_match('/flamingo_(.*)(?=:): "\[(.*)]"/', $line , $matches);
-				$additional_settings[$matches[1]] = $matches[2];
-			}
+			$post_storage = array();
 
-			return $additional_settings;
-		}
+			while ( $query->have_posts() ) : $query->the_post();
+				$post_id = get_the_ID();
+				$post_status = get_post_status();
+				$content = get_the_content();
+
+				if (get_post_status( $post_id ) == 'flamingo-spam') {
+					$this->cf7a_b8_learn_spam($content);
+				} else if ( $post_status == 'publish'){
+					$this->cf7a_b8_learn_ham($content);
+				};
+
+				$post_storage[$post_id] = $content;
+
+			endwhile;
+
+			foreach ($post_storage as $id => $post) {
+				update_post_meta( $id, '_cf7a_b8_classification', $this->cf7a_b8_classify($post) );
+			};
+
+		endif;
+	}
+
+	public static function cf7a_flamingo_on_uninstall() {
+		// get all the flamingo inbound post and delete the custom meta created with this plugin
+		$args = array(
+			'post_type' => 'flamingo_inbound',
+			'posts_per_page' => -1
+		);
+
+		$query = new WP_Query($args);
+		if ($query->have_posts() ) :
+			while ( $query->have_posts() ) : $query->the_post();
+				delete_post_meta( get_the_ID(), '_cf7a_b8_classification');
+			endwhile;
+		endif;
 	}
 
 	public function cf7a_d8_flamingo_classify() {
