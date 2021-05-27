@@ -34,29 +34,54 @@
   if (wpcf7Forms.length) {
 
     let oldy = 0,
-        mouseMove_value = 0,
-        mouseActivity_value = 0;
+      mouseMove_value = 0,
+      mouseActivity_value = 0;
 
     for (const wpcf7Form of wpcf7Forms) {
 
       // I) Standard bot checks
-      let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint]');
-      if (bot_fingerprint_key) {
-          let fingerprint_key = bot_fingerprint_key.getAttribute("value");
-          // hijack the value of the bot_fingerprint
-          bot_fingerprint_key.setAttribute("value", fingerprint_key.slice(0, 5));
+      let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint]')
 
-          // bot_fingerprint checks enabled
-          const tests = browserFingerprint();
+      // II) Bot fingerprint extra checks
+      let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
+
+      // III) how append bot fingerprint into hidden fields
+      let append_on_submit = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'append_on_submit]');
+
+      let tests = {};
+
+      if (bot_fingerprint_key) {
+        let fingerprint_key = bot_fingerprint_key.getAttribute("value");
+        // hijack the value of the bot_fingerprint
+        bot_fingerprint_key.setAttribute("value", fingerprint_key.slice(0, 5));
+
+        // bot_fingerprint checks enabled
+        tests = browserFingerprint();
+
+        // append the fields
+        if (!append_on_submit) {
 
           for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
             $(wpcf7Form).find('form > div').append(createCF7Afield(key, value));
           }
+
+        } else {
+
+          const formElem = $(wpcf7Form)[0].querySelector('form');
+          let formData = new FormData(formElem.formData);
+
+          formElem.addEventListener('formdata', (e) => {
+            for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
+              e.formData.append(cf7a_prefix + key, value);
+            }
+            formData = e.formData;
+          });
+
+        }
       }
 
 
       // II) Bot fingerprint extra checks
-      let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
       if (bot_fingerprint_extra) {
 
         // check for mouse clicks
@@ -296,9 +321,8 @@
         // then remove the useless div
         wpcf7box.remove();
       }
-
-
     }
   }
 
 })(jQuery);
+

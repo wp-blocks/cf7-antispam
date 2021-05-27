@@ -71,6 +71,7 @@ class CF7_AntiSpam_Activator {
 				"cf7a_customizations_prefix" => CF7ANTISPAM_PREFIX,
 				"check_bot_fingerprint" => true,
 				"check_bot_fingerprint_extras" => true,
+				"append_on_submit" => true,
 				"check_time" => true,
 				"check_time_min" => 6,
 				"check_time_max" => 3660,

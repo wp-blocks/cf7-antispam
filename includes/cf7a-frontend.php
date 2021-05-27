@@ -140,6 +140,15 @@ class CF7_AntiSpam_Frontend {
 		));
 	}
 
+	public function append_on_submit( $fields ) {
+
+		$class = sanitize_html_class($this->options['append_on_submit']);
+
+		return array_merge( $fields, array(
+			$class.'append_on_submit' => false
+		));
+	}
+
 	/**
 	 * Register the JavaScript for the admin area.
 	 *

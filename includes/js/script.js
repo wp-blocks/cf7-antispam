@@ -1,1 +1,612 @@
-!function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t,n){var r=n(2),o=n(3),i=n(4),a=n(6);e.exports=function(e,t){return r(e)||o(e,t)||i(e,t)||a()},e.exports.default=e.exports,e.exports.__esModule=!0},function(t,n,r){"use strict";r.r(n);var o=r(0),i=r.n(o);function a(e,t){var n="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(!n){if(Array.isArray(e)||(n=function(e,t){if(e){if("string"==typeof e)return l(e,void 0);var n=Object.prototype.toString.call(e).slice(8,-1);return"Object"===n&&e.constructor&&(n=e.constructor.name),"Map"===n||"Set"===n?Array.from(e):"Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)?l(e,void 0):void 0}}(e))||t&&e&&"number"==typeof e.length){n&&(e=n);var r=0,o=function(){};return{s:o,n:function(){return r>=e.length?{done:!0}:{done:!1,value:e[r++]}},e:function(e){function t(_x){return e.apply(this,arguments)}return t.toString=function(){return e.toString()},t}((function(e){throw e})),f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var i,a=!0,d=!1;return{s:function(){n=n.call(e)},n:function(){var e=n.next();return a=e.done,e},e:function(e){function t(t){return e.apply(this,arguments)}return t.toString=function(){return e.toString()},t}((function(e){d=!0,i=e})),f:function(){try{a||null==n.return||n.return()}finally{if(d)throw i}}}}function l(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,r=new Array(t);n<t;n++)r[n]=e[n];return r}!function(t){var n=cf7a_settings.prefix,r=document.querySelectorAll(".wpcf7");function o(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:n,o=document.createElement("input");return o.setAttribute("type","hidden"),o.setAttribute("name",r+e),o.setAttribute("value",t),o}r.length&&function(){var l,d=0,u=0,c=0,f=a(r);try{var s=function(){var r,f,s,v,p,m,g,y,b,h,x=l.value,w=t(x)[0].querySelector("form > div input[name="+n+"bot_fingerprint]");if(w){var E=w.getAttribute("value");w.setAttribute("value",E.slice(0,5));var _,S={timezone:null!==(r=window.Intl.DateTimeFormat().resolvedOptions().timeZone)&&void 0!==r?r:0,platform:null!==(f=navigator.platform)&&void 0!==f?f:0,hardware_concurrency:null!==(s=navigator.hardwareConcurrency)&&void 0!==s?s:0,screens:null!==(v=[window.screen.width,window.screen.height])&&void 0!==v?v:0,memory:null!==(p=navigator.deviceMemory)&&void 0!==p?p:0,user_agent:null!==(m=navigator.userAgent)&&void 0!==m?m:0,app_version:null!==(g=navigator.appVersion)&&void 0!==g?g:0,webdriver:null!==(y=window.navigator.webdriver)&&void 0!==y?y:0,plugins:null!==(b=navigator.plugins.length)&&void 0!==b?b:0,session_storage:null!==(h=sessionStorage)&&void 0!==h?h:0},A=a(Object.entries(S).sort((function(){return Math.random()-.5})));try{for(A.s();!(_=A.n()).done;){var M=i()(_.value,2),C=M[0],L=M[1];t(x).find("form > div").append(o(C,L))}}catch(e){A.e(e)}finally{A.f()}}if(t(x)[0].querySelector("form > div input[name="+n+"bot_fingerprint_extras]")){var O=function e(r){t(x).find("form > div input[name="+n+"activity]").remove(),t(x).find("form > div").append(o("activity",c++)),c>3&&(document.body.removeEventListener("mouseup",e),document.body.removeEventListener("touchend",e),t(x).find("form > div").append(o("mouseclick_activity","passed")))};document.body.addEventListener("mouseup",O),document.body.addEventListener("touchend",O),document.addEventListener("mousemove",(function e(n){n.pageY>d&&(u+=1),d=n.pageY,u>3&&(document.removeEventListener("mousemove",e),t(x).find("form > div").append(o("mousemove_activity","passed")))}));var T=document.createElement("div");T.id="hidden",t(x)[0].querySelector("form > div").append(T),String.prototype.hashCode=function(){var e,t=0;if(0===this.length)return t;for(e=0;e<this.length;e++)t=(t<<5)-t+this.charCodeAt(e),t|=0;return t};var j=document.createElement("div");j.id="webgl-vendor",T.append(j);var B=document.getElementById("webgl-vendor"),I=document.createElement("div");I.id="webgl-renderer",T.append(I);var D=document.getElementById("webgl-renderer"),P=document.createElement("canvas"),R=P.getContext("webgl")||P.getContext("webgl-experimental");if(R){var H=R.getExtension("WEBGL_debug_renderer_info");try{var U=R.getParameter(H.UNMASKED_VENDOR_WEBGL);B.innerHTML=U,"Brian Paul"===U||"Google Inc."===U?t(x).find("form > div").append(o("webgl","failed")):t(x).find("form > div").append(o("webgl","passed"))}catch(e){B.innerHTML="Error: "+e}try{var q=R.getParameter(H.UNMASKED_RENDERER_WEBGL);D.innerHTML=q,"Mesa OffScreen"===q||-1!==q.indexOf("Swift")?t(x).find("form > div").append(o("webgl_render","failed")):t(x).find("form > div").append(o("webgl_render","passed"))}catch(e){D.innerHTML="Error: "+e}}else t(x).find("form > div").append(o("webgl","failed")),t(x).find("form > div").append(o("webgl_render","failed"));var G=[],N=[];G[1]=document.createElement("div"),G[1].id="canvas1",G[2]=document.createElement("div"),G[2].id="canvas2",G[3]=document.createElement("div"),G[3].id="canvas3",N[3]=document.createElement("iframe"),N[3].id="canvas3-iframe",N[3].class="canvased",N[3].setAttribute("sandbox","allow-same-origin"),G[3].append(N[3]),G[4]=document.createElement("div"),G[4].id="canvas4",N[4]=document.createElement("iframe"),N[4].id="canvas4-iframe",N[4].class="canvased",N[4].setAttribute("sandbox","allow-same-origin"),G[4].append(N[4]),G[5]=document.createElement("div"),G[5].id="canvas5",N[5]=document.createElement("iframe"),N[5].id="canvas5-iframe",N[5].class="canvased",G[5].append(N[5]),G.forEach((function(e){T.appendChild(e)}));var W=function(t){var n,r=arguments.length>1&&void 0!==arguments[1]&&arguments[1],o=!0,i="Bot test <canvas> 1.1",a=document.getElementById("canvas"+t),l=document.getElementById("canvas"+t+"-iframe"),d=r?l.contentDocument.createElement("canvas"):document.createElement("canvas");if(d.getContext){n=d.getContext("2d");try{d.setAttribute("width",220),d.setAttribute("height",30),n.textBaseline="top",n.font="14px 'Arial'",n.textBaseline="alphabetic",n.fillStyle="#f60",n.fillRect(53,1,62,20),n.fillStyle="#069",n.fillText(i,2,15),n.fillStyle="rgba(102, 204, 0, 0.7)",n.fillText(i,4,17)}catch(e){void 0===(n=(d=document.createElement("canvas")).getContext("2d"))||"function"!=typeof d.getContext("2d").fillText?o=!1:(d.setAttribute("width",220),d.setAttribute("height",30),n.textBaseline="top",n.font="14px 'Arial'",n.textBaseline="alphabetic",n.fillStyle="#f60",n.fillRect(125,1,62,20),n.fillStyle="#069",n.fillText(i,2,15),n.fillStyle="rgba(102, 204, 0, 0.7)",n.fillText(i,4,17))}if(o&&"function"==typeof d.toDataURL){var u=d.toDataURL("image/png");try{if("boolean"==typeof u||void 0===u)throw e}catch(e){u=""}0===u.indexOf("data:image/png")||(o=!1)}else o=!1}else o=!1;if(o){var c=document.createElement("div");c.innerHTML="Hash: "+u.hashCode(),a.appendChild(d),a.appendChild(c)}else{var f=document.createElement("div");f.innerHTML="Canvas failed",a.appendChild(f)}};window.canvasCount=0,W("1"),W("2"),W("3",!0),W("4",!0),W("5",!0),T.remove()}};for(f.s();!(l=f.n()).done;)s()}catch(e){f.e(e)}finally{f.f()}}()}(jQuery)},function(e,t){e.exports=function(e){if(Array.isArray(e))return e},e.exports.default=e.exports,e.exports.__esModule=!0},function(e,t){e.exports=function(e,t){var n=e&&("undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"]);if(null!=n){var r,o,i=[],_n=!0,a=!1;try{for(n=n.call(e);!(_n=(r=n.next()).done)&&(i.push(r.value),!t||i.length!==t);_n=!0);}catch(e){a=!0,o=e}finally{try{_n||null==n.return||n.return()}finally{if(a)throw o}}return i}},e.exports.default=e.exports,e.exports.__esModule=!0},function(e,t,n){var r=n(5);e.exports=function(e,t){if(e){if("string"==typeof e)return r(e,t);var n=Object.prototype.toString.call(e).slice(8,-1);return"Object"===n&&e.constructor&&(n=e.constructor.name),"Map"===n||"Set"===n?Array.from(e):"Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)?r(e,t):void 0}},e.exports.default=e.exports,e.exports.__esModule=!0},function(e,t){e.exports=function(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,r=new Array(t);n<t;n++)r[n]=e[n];return r},e.exports.default=e.exports,e.exports.__esModule=!0},function(e,t){e.exports=function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")},e.exports.default=e.exports,e.exports.__esModule=!0}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./includes/src/script.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./includes/src/script.js":
+/*!********************************!*\
+  !*** ./includes/src/script.js ***!
+  \********************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ "./node_modules/@babel/runtime/helpers/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function (_e) { function e(_x) { return _e.apply(this, arguments); } e.toString = function () { return _e.toString(); }; return e; }(function (e) { throw e; }), f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function (_e2) { function e(_x2) { return _e2.apply(this, arguments); } e.toString = function () { return _e2.toString(); }; return e; }(function (e) { didErr = true; err = e; }), f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+(function ($) {
+  'use strict';
+
+  var cf7a_prefix = cf7a_settings.prefix;
+
+  function browserFingerprint() {
+    var _window$Intl$DateTime, _navigator$platform, _navigator$hardwareCo, _ref, _navigator$deviceMemo, _navigator$userAgent, _navigator$appVersion, _window$navigator$web, _navigator$plugins$le, _sessionStorage;
+
+    var tests;
+    return tests = {
+      "timezone": (_window$Intl$DateTime = window.Intl.DateTimeFormat().resolvedOptions().timeZone) !== null && _window$Intl$DateTime !== void 0 ? _window$Intl$DateTime : 0,
+      "platform": (_navigator$platform = navigator.platform) !== null && _navigator$platform !== void 0 ? _navigator$platform : 0,
+      "hardware_concurrency": (_navigator$hardwareCo = navigator.hardwareConcurrency) !== null && _navigator$hardwareCo !== void 0 ? _navigator$hardwareCo : 0,
+      "screens": (_ref = [window.screen.width, window.screen.height]) !== null && _ref !== void 0 ? _ref : 0,
+      "memory": (_navigator$deviceMemo = navigator.deviceMemory) !== null && _navigator$deviceMemo !== void 0 ? _navigator$deviceMemo : 0,
+      "user_agent": (_navigator$userAgent = navigator.userAgent) !== null && _navigator$userAgent !== void 0 ? _navigator$userAgent : 0,
+      "app_version": (_navigator$appVersion = navigator.appVersion) !== null && _navigator$appVersion !== void 0 ? _navigator$appVersion : 0,
+      "webdriver": (_window$navigator$web = window.navigator.webdriver) !== null && _window$navigator$web !== void 0 ? _window$navigator$web : 0,
+      "plugins": (_navigator$plugins$le = navigator.plugins.length) !== null && _navigator$plugins$le !== void 0 ? _navigator$plugins$le : 0,
+      "session_storage": (_sessionStorage = sessionStorage) !== null && _sessionStorage !== void 0 ? _sessionStorage : 0
+    };
+  }
+
+  var wpcf7Forms = document.querySelectorAll('.wpcf7');
+
+  function createCF7Afield(key, value) {
+    var prefix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : cf7a_prefix;
+    var e = document.createElement('input');
+    e.setAttribute("type", "hidden");
+    e.setAttribute("name", prefix + key);
+    e.setAttribute("value", value);
+    return e;
+  }
+
+  if (wpcf7Forms.length) {
+    (function () {
+      var oldy = 0,
+          mouseMove_value = 0,
+          mouseActivity_value = 0;
+
+      var _iterator = _createForOfIteratorHelper(wpcf7Forms),
+          _step;
+
+      try {
+        var _loop = function _loop() {
+          var wpcf7Form = _step.value;
+          // I) Standard bot checks
+          var bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint]'); // II) Bot fingerprint extra checks
+
+          var bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint_extras]'); // III) how append bot fingerprint into hidden fields
+
+          var append_on_submit = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'append_on_submit]');
+          var tests = {};
+
+          if (bot_fingerprint_key) {
+            var fingerprint_key = bot_fingerprint_key.getAttribute("value"); // hijack the value of the bot_fingerprint
+
+            bot_fingerprint_key.setAttribute("value", fingerprint_key.slice(0, 5)); // bot_fingerprint checks enabled
+
+            tests = browserFingerprint(); // append the fields
+
+            if (!append_on_submit) {
+              var _iterator2 = _createForOfIteratorHelper(Object.entries(tests).sort(function () {
+                return Math.random() - 0.5;
+              })),
+                  _step2;
+
+              try {
+                for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                  var _step2$value = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default()(_step2.value, 2),
+                      key = _step2$value[0],
+                      value = _step2$value[1];
+
+                  $(wpcf7Form).find('form > div').append(createCF7Afield(key, value));
+                }
+              } catch (err) {
+                _iterator2.e(err);
+              } finally {
+                _iterator2.f();
+              }
+            } else {
+              var formElem = $(wpcf7Form)[0].querySelector('form');
+              var formData = new FormData(formElem.formData);
+              formElem.addEventListener('formdata', function (e) {
+                var _iterator3 = _createForOfIteratorHelper(Object.entries(tests).sort(function () {
+                  return Math.random() - 0.5;
+                })),
+                    _step3;
+
+                try {
+                  for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+                    var _step3$value = _babel_runtime_helpers_slicedToArray__WEBPACK_IMPORTED_MODULE_0___default()(_step3.value, 2),
+                        _key = _step3$value[0],
+                        _value = _step3$value[1];
+
+                    e.formData.append(cf7a_prefix + _key, _value);
+                  }
+                } catch (err) {
+                  _iterator3.e(err);
+                } finally {
+                  _iterator3.f();
+                }
+
+                formData = e.formData;
+              });
+            }
+          } // II) Bot fingerprint extra checks
+
+
+          if (bot_fingerprint_extra) {
+            // check for mouse clicks
+            var activity = function activity(e) {
+              $(wpcf7Form).find('form > div input[name=' + cf7a_prefix + 'activity]').remove();
+              $(wpcf7Form).find('form > div').append(createCF7Afield("activity", mouseActivity_value++));
+
+              if (mouseActivity_value > 3) {
+                document.body.removeEventListener('mouseup', activity);
+                document.body.removeEventListener('touchend', activity);
+                $(wpcf7Form).find('form > div').append(createCF7Afield("mouseclick_activity", "passed"));
+              }
+            };
+
+            document.body.addEventListener('mouseup', activity);
+            document.body.addEventListener('touchend', activity); // detect the mouse/touch direction change OR touchscreen iterations
+
+            var mouseMove = function mouseMove(e) {
+              if (e.pageY > oldy) {
+                mouseMove_value += 1;
+              }
+
+              oldy = e.pageY;
+
+              if (mouseMove_value > 3) {
+                document.removeEventListener('mousemove', mouseMove);
+                $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
+              }
+            };
+
+            document.addEventListener('mousemove', mouseMove);
+            var wpcf7box = document.createElement('div');
+            wpcf7box.id = 'hidden';
+            var form_hidden_field = $(wpcf7Form)[0].querySelector('form > div');
+            form_hidden_field.append(wpcf7box); // credits //bot.sannysoft.com
+            // tools
+
+            String.prototype.hashCode = function () {
+              var hash = 0,
+                  i,
+                  chr;
+              if (this.length === 0) return hash;
+
+              for (i = 0; i < this.length; i++) {
+                chr = this.charCodeAt(i);
+                hash = (hash << 5) - hash + chr;
+                hash |= 0; // Convert to 32bit integer
+              }
+
+              return hash;
+            }; // WebGL Tests
+
+
+            var wglv = document.createElement('div');
+            wglv.id = 'webgl-vendor';
+            wpcf7box.append(wglv);
+            var webGLVendorElement = document.getElementById('webgl-vendor');
+            var wgle = document.createElement('div');
+            wgle.id = 'webgl-renderer';
+            wpcf7box.append(wgle);
+            var webGLRendererElement = document.getElementById('webgl-renderer');
+            var canvas = document.createElement('canvas');
+            var gl = canvas.getContext('webgl') || canvas.getContext('webgl-experimental');
+
+            if (gl) {
+              var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+
+              try {
+                // WebGL Vendor Test
+                var vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                webGLVendorElement.innerHTML = vendor;
+
+                if (vendor === 'Brian Paul' || vendor === "Google Inc.") {
+                  $(wpcf7Form).find('form > div').append(createCF7Afield("webgl", "failed"));
+                } else {
+                  $(wpcf7Form).find('form > div').append(createCF7Afield("webgl", "passed"));
+                }
+              } catch (e) {
+                webGLVendorElement.innerHTML = "Error: " + e;
+              }
+
+              try {
+                // WebGL Renderer Test
+                var renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                webGLRendererElement.innerHTML = renderer;
+
+                if (renderer === 'Mesa OffScreen' || renderer.indexOf("Swift") !== -1) {
+                  $(wpcf7Form).find('form > div').append(createCF7Afield("webgl_render", "failed"));
+                } else $(wpcf7Form).find('form > div').append(createCF7Afield("webgl_render", "passed"));
+              } catch (e) {
+                webGLRendererElement.innerHTML = "Error: " + e;
+              }
+            } else {
+              $(wpcf7Form).find('form > div').append(createCF7Afield("webgl", "failed"));
+              $(wpcf7Form).find('form > div').append(createCF7Afield("webgl_render", "failed"));
+            } // TODO: change the canvas name
+
+
+            var testCanvas = [];
+            var testCanvasIframe = [];
+            testCanvas[1] = document.createElement('div');
+            testCanvas[1].id = 'canvas1';
+            testCanvas[2] = document.createElement('div');
+            testCanvas[2].id = 'canvas2';
+            testCanvas[3] = document.createElement('div');
+            testCanvas[3].id = 'canvas3';
+            testCanvasIframe[3] = document.createElement('iframe');
+            testCanvasIframe[3].id = 'canvas3-iframe';
+            testCanvasIframe[3].class = 'canvased';
+            testCanvasIframe[3].setAttribute("sandbox", "allow-same-origin");
+            testCanvas[3].append(testCanvasIframe[3]);
+            testCanvas[4] = document.createElement('div');
+            testCanvas[4].id = 'canvas4';
+            testCanvasIframe[4] = document.createElement('iframe');
+            testCanvasIframe[4].id = 'canvas4-iframe';
+            testCanvasIframe[4].class = 'canvased';
+            testCanvasIframe[4].setAttribute("sandbox", "allow-same-origin");
+            testCanvas[4].append(testCanvasIframe[4]);
+            testCanvas[5] = document.createElement('div');
+            testCanvas[5].id = 'canvas5';
+            testCanvasIframe[5] = document.createElement('iframe');
+            testCanvasIframe[5].id = 'canvas5-iframe';
+            testCanvasIframe[5].class = 'canvased';
+            testCanvas[5].append(testCanvasIframe[5]);
+            testCanvas.forEach(function (e) {
+              wpcf7box.appendChild(e);
+            });
+
+            var drawCanvas2 = function drawCanvas2(num) {
+              var useIframe = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+              var canvas2d;
+              /** @type {boolean} */
+
+              var isOkCanvas = true;
+              /** @type {string} */
+
+              var canvasText = "Bot test <canvas> 1.1";
+              var canvasContainer = document.getElementById("canvas" + num);
+              var iframe = document.getElementById("canvas" + num + "-iframe");
+              var canvasElement = useIframe ? iframe.contentDocument.createElement("canvas") : document.createElement("canvas");
+
+              if (canvasElement.getContext) {
+                canvas2d = canvasElement.getContext("2d");
+
+                try {
+                  canvasElement.setAttribute("width", 220);
+                  canvasElement.setAttribute("height", 30);
+                  canvas2d.textBaseline = "top";
+                  canvas2d.font = "14px 'Arial'";
+                  canvas2d.textBaseline = "alphabetic";
+                  canvas2d.fillStyle = "#f60";
+                  canvas2d.fillRect(53, 1, 62, 20);
+                  canvas2d.fillStyle = "#069";
+                  canvas2d.fillText(canvasText, 2, 15);
+                  canvas2d.fillStyle = "rgba(102, 204, 0, 0.7)";
+                  canvas2d.fillText(canvasText, 4, 17);
+                } catch (b) {
+                  /** @type {!Element} */
+                  canvasElement = document.createElement("canvas");
+                  canvas2d = canvasElement.getContext("2d");
+
+                  if (void 0 === canvas2d || "function" != typeof canvasElement.getContext("2d").fillText) {
+                    isOkCanvas = false;
+                  } else {
+                    canvasElement.setAttribute("width", 220);
+                    canvasElement.setAttribute("height", 30);
+                    /** @type {string} */
+
+                    canvas2d.textBaseline = "top";
+                    /** @type {string} */
+
+                    canvas2d.font = "14px 'Arial'";
+                    /** @type {string} */
+
+                    canvas2d.textBaseline = "alphabetic";
+                    /** @type {string} */
+
+                    canvas2d.fillStyle = "#f60";
+                    canvas2d.fillRect(125, 1, 62, 20);
+                    /** @type {string} */
+
+                    canvas2d.fillStyle = "#069";
+                    canvas2d.fillText(canvasText, 2, 15);
+                    /** @type {string} */
+
+                    canvas2d.fillStyle = "rgba(102, 204, 0, 0.7)";
+                    canvas2d.fillText(canvasText, 4, 17);
+                  }
+                }
+
+                if (isOkCanvas && "function" == typeof canvasElement.toDataURL) {
+                  var datUrl = canvasElement.toDataURL("image/png");
+
+                  try {
+                    if ("boolean" == typeof datUrl || void 0 === datUrl) {
+                      throw e;
+                    }
+                  } catch (a) {
+                    /** @type {string} */
+                    datUrl = "";
+                  }
+
+                  if (0 === datUrl.indexOf("data:image/png")) {} else {
+                    /** @type {boolean} */
+                    isOkCanvas = false;
+                  }
+                } else {
+                  /** @type {boolean} */
+                  isOkCanvas = false;
+                }
+              } else {
+                /** @type {boolean} */
+                isOkCanvas = false;
+              }
+
+              if (isOkCanvas) {
+                var newDiv = document.createElement("div");
+                newDiv.innerHTML = "Hash: " + datUrl.hashCode();
+                canvasContainer.appendChild(canvasElement);
+                canvasContainer.appendChild(newDiv);
+              } else {
+                var _newDiv = document.createElement("div");
+
+                _newDiv.innerHTML = "Canvas failed";
+                canvasContainer.appendChild(_newDiv);
+              }
+            };
+
+            window.canvasCount = 0;
+            drawCanvas2("1");
+            drawCanvas2("2");
+            drawCanvas2("3", true);
+            drawCanvas2("4", true);
+            drawCanvas2("5", true); // then remove the useless div
+
+            wpcf7box.remove();
+          }
+        };
+
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          _loop();
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    })();
+  }
+})(jQuery);
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/arrayLikeToArray.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayLikeToArray.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+module.exports = _arrayLikeToArray;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/arrayWithHoles.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/arrayWithHoles.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+module.exports = _arrayWithHoles;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _iterableToArrayLimit(arr, i) {
+  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+
+  if (_i == null) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+
+  var _s, _e;
+
+  try {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+module.exports = _iterableToArrayLimit;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/nonIterableRest.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/nonIterableRest.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+module.exports = _nonIterableRest;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/slicedToArray.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/slicedToArray.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayWithHoles = __webpack_require__(/*! ./arrayWithHoles.js */ "./node_modules/@babel/runtime/helpers/arrayWithHoles.js");
+
+var iterableToArrayLimit = __webpack_require__(/*! ./iterableToArrayLimit.js */ "./node_modules/@babel/runtime/helpers/iterableToArrayLimit.js");
+
+var unsupportedIterableToArray = __webpack_require__(/*! ./unsupportedIterableToArray.js */ "./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js");
+
+var nonIterableRest = __webpack_require__(/*! ./nonIterableRest.js */ "./node_modules/@babel/runtime/helpers/nonIterableRest.js");
+
+function _slicedToArray(arr, i) {
+  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+}
+
+module.exports = _slicedToArray;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var arrayLikeToArray = __webpack_require__(/*! ./arrayLikeToArray.js */ "./node_modules/@babel/runtime/helpers/arrayLikeToArray.js");
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
+}
+
+module.exports = _unsupportedIterableToArray;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+
+/***/ })
+
+/******/ });

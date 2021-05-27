@@ -64,6 +64,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bot_fingerprint' // Section
 		);
 
+		// Settings bot_fingerprint
+		add_settings_field( 'append_on_submit', // ID
+			__('Append hidden field on submit', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_append_on_submit_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bot_fingerprint' // Section
+		);
+
 
 
 
@@ -418,6 +426,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// bot fingerprint
 		$new_input['check_bot_fingerprint'] =  isset( $input['check_bot_fingerprint'] ) ? 1 : 0 ;
 		$new_input['check_bot_fingerprint_extras'] =  isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0 ;
+		$new_input['append_on_submit'] =  isset( $input['append_on_submit'] ) ? 1 : 0 ;
 
 
 		// elapsed time
@@ -525,6 +534,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint_extras" name="cf7a_options[check_bot_fingerprint_extras]" %s />',
 			isset( $this->options['check_bot_fingerprint_extras'] ) && $this->options['check_bot_fingerprint_extras'] == 1 ? 'checked="true"' : ''
+		);
+	}
+	public function cf7a_append_on_submit_callback() {
+		printf(
+			'<input type="checkbox" id="append_on_submit" name="cf7a_options[append_on_submit]" %s />',
+			isset( $this->options['append_on_submit'] ) && $this->options['append_on_submit'] == 1 ? 'checked="true"' : ''
 		);
 	}
 

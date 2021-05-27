@@ -11,8 +11,8 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
-Antispam for Contact Form 7 is an anti-bot plugin for your contact form, that without boring you with configurations, remove the spam from your mail.
-We have several methods to detect fake users and an auto-learning mechanism based on a statistical "Bayesian" spam filter.
+Antispam for Contact Form 7 is an anti-bot plugin for your contact form, that without boring you with configurations, block bots from flood your email inbox.
+We use several methods to detect bots (always updated) and an auto-learning mechanism based on a statistical "Bayesian" spam filter.
 So as your site receives spam and real emails, learn to distinguish between them!
 
 Basic Spam Filters:
@@ -78,6 +78,10 @@ Enable extended debug mode (disable-autoban, prints dnsbl benchmark)
 
 == Changelog ==
 
+= 0.1.1 =
+* user customizable scoring options
+* fix some installation issues on mysql < 5.6
+
 = 0.1.0 =
 * AntiSpam for Contact Form 7 published into WordPress Plugin Directory
 * Compared to the very early version, I've added honeypot, fingerprint bots and automated ip bans (but I need to provide a way to unban even without flamingo).
@@ -109,6 +113,8 @@ See the LICENSE file for more details.
 * Contact Form 7, Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
 * b8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
 * Sudden Shower in the Summer, Public domain, Wikimedia Commons https://commons.wikimedia.org/wiki/File:Sudden_Shower_in_the_Summer_(5759500422).jpg
+
+== DNSBL SERVERS PRIVACY POLICIES ==
 dnsbl-1.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
 dnsbl-2.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
 dnsbl-3.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
@@ -124,6 +130,7 @@ bl.ipv6.spameatingmonkey.net [spameatingmonkey.net](https://spameatingmonkey.com
 == Inspirations ==
 Alexander Romanov [Bot detection page](bot.sannysoft.com)
 Nikolai Tschacher [incolumitas.com](https://incolumitas.com/pages/BotOrNot/)
+Niespodd [niespodd](https://github.com/niespodd/browser-fingerprinting)
 Thomas Breuss [tbreuss](https://gist.github.com/tbreuss/74da96ff5f976ce770e6628badbd7dfc)
 Domain Name System-based blackhole list [wiki](https://en.wikipedia.org/wiki/Domain_Name_System-based_blackhole_list)
 dnsbl list [wiki](https://en.wikipedia.org/wiki/Comparison_of_DNS_blacklists)
