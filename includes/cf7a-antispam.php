@@ -76,8 +76,12 @@ class CF7_AntiSpam_filters {
 		// the database
 		global $wpdb;
 
+		$db = explode( ":", DB_HOST );
+		$db_address = $db[0];
+		$db_port = !empty($db[1]) ? intval($db[1]) : 3306;
+
 		// B8 config
-		$mysql = new mysqli( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
+		$mysql = new mysqli( $db_address, DB_USER, DB_PASSWORD, DB_NAME, $db_port );
 
 		$config_b8      = array( 'storage' => 'mysql' );
 		$config_storage = array(
@@ -426,7 +430,6 @@ class CF7_AntiSpam_filters {
 		// this plugin options
 		$options = get_option( 'cf7a_options', array() );
 		$prefix = sanitize_html_class($options['cf7a_customizations_prefix']);
-
 
 		// the data of the user who sent this email
 		// IP
