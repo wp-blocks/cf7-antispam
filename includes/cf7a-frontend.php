@@ -51,12 +51,12 @@ class CF7_AntiSpam_Frontend {
 		}
 
 		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) {
-			add_filter( 'the_content', array( $this,'cf7a_honeyform'), 11, 1  );
+			if (!is_admin()) add_filter( 'after_body_open_tag', array( $this,'cf7a_honeyform'), 11, 1  );
 		}
 
 		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ||
 		     isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) {
-			add_filter( 'the_content', array( $this,'cf7a_add_honeypot_css'), 99, 1  );
+			if (!is_admin()) add_filter( 'after_body_open_tag', array( $this,'cf7a_add_honeypot_css'), 99, 1  );
 		}
 	}
 
