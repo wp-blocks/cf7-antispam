@@ -399,7 +399,6 @@ class CF7_AntiSpam_filters {
 	 * @return bool
 	 */
 	public function cf7a_spam_filter( $spam ) {
-
 		// Get the submitted data
 		$submission = WPCF7_Submission::get_instance();
 
@@ -469,6 +468,7 @@ class CF7_AntiSpam_filters {
 		$score_bad_string = floatval( $options['score']['_bad_string'] );
 		$score_dnsbl = floatval( $options['score']['_dnsbl'] );
 		$score_honeypot = floatval( $options['score']['_honeypot'] );
+		$score_honeyform = floatval( $options['score']['_honeyform'] );
 		$score_warn = floatval( $options['score']['_warn'] );
 		$score_detection = floatval( $options['score']['_detection'] );
 
@@ -492,7 +492,7 @@ class CF7_AntiSpam_filters {
 		}
 
 
-		if ($remote_ip && $options['autostore_bad_ip']) {
+		if ($remote_ip && $options['autostore_bad_ip'] && !CF7ANTISPAM_DEBUG_EXTENDED) {
 
 			$ip_data = self::cf7a_blacklist_get_ip($remote_ip);
 			$ip_data_status = isset($ip_data->status) ? intval($ip_data->status) : 0;
@@ -520,6 +520,18 @@ class CF7_AntiSpam_filters {
 		}
 
 
+		if ( intval( $options['check_honeyform'] ) !== 0 ) {
+
+			$form_class = sanitize_html_class( $options['cf7a_customizations_class'] );
+
+			// get the "marker" field
+			if ( isset( $_POST[ '_wpcf7_' . $form_class ] ) ) {
+				$spam_score                += $score_honeyform;
+				$reason['bot_fingerprint'] = "honeyform";
+			}
+		}
+
+
 		/**
 		 * if the mail was marked as spam no more checks are needed.
 		 * This will save server computing power, this ip has already been banned so there's no need to push it.
@@ -541,11 +553,8 @@ class CF7_AntiSpam_filters {
 					"app_version"          => !empty( $_POST[$prefix.'app_version'] ) ? sanitize_text_field( $_POST[$prefix.'app_version'] ) : null,
 					"webdriver"            => !empty( $_POST[$prefix.'webdriver'] ) ? sanitize_text_field( $_POST[$prefix.'webdriver'] ) : null,
 					"session_storage"      => !empty( $_POST[$prefix.'session_storage'] ) ? sanitize_text_field( $_POST[$prefix.'session_storage'] ) : null,
-					"plugins"              => !empty( $_POST[$prefix.'plugins'] ) ? intval( $_POST[$prefix.'plugins'] ) : null,
 					"bot_fingerprint"      => !empty( $_POST[$prefix.'bot_fingerprint'] ) ? sanitize_text_field( $_POST[$prefix.'bot_fingerprint'] ) : null,
 				);
-
-				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint, true) );
 
 				$fails = array();
 				if (!$bot_fingerprint["timezone"]) $fails[] = "timezone";
@@ -557,14 +566,15 @@ class CF7_AntiSpam_filters {
 				if (!$bot_fingerprint["app_version"]) $fails[] = "app_version";
 				if (!$bot_fingerprint["webdriver"]) $fails[] = "webdriver";
 				if (!$bot_fingerprint["session_storage"]) $fails[] = "session_storage";
-				if (!$bot_fingerprint["plugins"]) $fails[] = "plugins";
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
 				if (!empty($fails)) {
 					$spam_score                += count( $fails ) * $score_fingerprinting;
 					$reason['bot_fingerprint'] = implode( ", ", $fails );
 
-					if ( CF7ANTISPAM_DEBUG)
+					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint, true) );
+
+					if (CF7ANTISPAM_DEBUG)
 						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint test ({$reason['bot_fingerprint']})" );
 				}
 
@@ -593,8 +603,11 @@ class CF7_AntiSpam_filters {
 				if (!empty($bot_fingerprint_extras["bot_fingerprint_extras"]) ) $fails[] = "bot_fingerprint_extras";
 
 				if (!empty($fails)) {
+
 					$spam_score += count($fails) * $score_fingerprinting;
 					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
+
+					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint_extras, true) );
 
 					if (CF7ANTISPAM_DEBUG)
 						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed ".count($fails)." / " . count( $bot_fingerprint_extras ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})" );
@@ -891,7 +904,7 @@ class CF7_AntiSpam_filters {
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
 		if ($options['autostore_bad_ip'] && $spam) {
-			if ( false === $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) || CF7ANTISPAM_DEBUG_EXTENDED )
+			if ( CF7ANTISPAM_DEBUG_EXTENDED || false === $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) )
 				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip / CF7ANTISPAM_LOG_PREFIX enabled" );
 		}
 

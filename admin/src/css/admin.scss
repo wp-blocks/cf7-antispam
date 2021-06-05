@@ -28,6 +28,23 @@ $color__info: $color__blue;
     white-space: nowrap;
   }
   
+  // extra
+  .monospace {
+    font-family: monospace;
+  }
+  
+  .alert {
+    color: $color__alert;
+    
+    &.label {
+      font-size: 12px;
+    }
+  }
+  
+  .info {
+    color: $color__info;
+  }
+  
   .dashicons.dashicons-shield-alt {
     font-weight: inherit;
     font-size: 24px;

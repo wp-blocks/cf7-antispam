@@ -250,10 +250,27 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// DNS Blacklist server list
 		add_settings_field( 'honeypot_input_names', // ID
-			__('Name for the honeypots inputs (MUST differ from the cf7 tag class names)', 'cf7-antispam'), // Title
+			__('Name for the honeypots inputs[*]', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_honeypot_input_names_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_honeypot' // Section
+		);
+
+
+
+		// Section honeyform
+		add_settings_section( 'cf7a_honeyform', // ID
+			__('Honeyform <span class="label alert monospace">[experimental]</span>', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_honeyform' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Enable honeyform
+		add_settings_field( 'check_honeyform', // ID
+			__('Add a hidden form at the beginning of the content', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_enable_honeyform_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_honeyform' // Section
 		);
 
 
@@ -359,6 +376,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		// Settings check_time
+		add_settings_field( 'score_honeyform', // ID
+			__('Honeyform fill score', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_score_honeyform_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_scoring' // Section
+		);
+
+		// Settings check_time
 		add_settings_field( 'score_warn', // ID
 			__('Bot warn', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_score_warn_callback' ), // Callback
@@ -403,7 +428,10 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf( '<p>' . esc_html__("Check sender ip on DNS Blacklists", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_honeypot() {
-		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-antispam') . '</p>' );
+		printf( '<p>' . esc_html__("the honeypot is a \"trap\" field that is hidden with css or js from the user but remains visible to bots. Since this fields are automatically added and appended inside the forms with standard names.", 'cf7-antispam'). " <p class='info monospace'>[*] " . esc_html("Please check the list below because the name MUST differ from the cf7 tag class names", 'cf7-antispam') . '</p></p>' );
+	}
+	public function cf7a_print_honeyform() {
+		printf( '<p>' . esc_html__("I'm actually going to propose the honeyform for the first time! Instead of creating trap fields that even my grandfather knows about, I directly create a trap form (much less detectable for bots)", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_b8() {
 		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-antispam') . '</p>' );
@@ -484,6 +512,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 
 
+		// honeyform
+		$new_input['check_honeyform'] =  isset( $input['check_honeyform'] ) ? 1 : 0 ;
+
+
+
 		// b8
 		$new_input['enable_b8'] =  isset( $input['enable_b8'] ) ? 1 : 0 ;
 
@@ -497,6 +530,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['score']['_bad_string'] = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string']) : 1;
 		$new_input['score']['_dnsbl'] = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl']) : 0.4;
 		$new_input['score']['_honeypot'] = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot']) : 1;
+		$new_input['score']['_honeyform'] = isset( $input['score']['_honeyform'] ) ? floatval( $input['score']['_honeyform']) : 10;
 		$new_input['score']['_warn'] = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn']) : 1;
 		$new_input['score']['_detection'] = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection']) : 5;
 
@@ -650,6 +684,15 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
+	public function cf7a_enable_honeyform_callback() {
+		printf(
+			'<input type="checkbox" id="check_honeyform" name="cf7a_options[check_honeyform]" %s />',
+			isset( $this->options['check_honeyform'] ) && $this->options['check_honeyform'] == 1 ? 'checked="true"' : ''
+		);
+	}
+
+
+
 	public function cf7a_enable_b8_callback() {
 		printf(
 			'<input type="checkbox" id="enable_b8" name="cf7a_options[enable_b8]" %s />',
@@ -685,7 +728,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_score_fingerprinting_callback() {
 		printf(
 			'<input type="number" id="score_fingerprinting" name="cf7a_options[score][_fingerprinting]" value="%s" />',
-			isset( $this->options['score']['_fingerprinting'] ) ? floatval( $this->options['score']['_fingerprinting']) : 0.3
+			isset( $this->options['score']['_fingerprinting'] ) ? floatval( $this->options['score']['_fingerprinting']) : 0.25
 		);
 	}
 	public function cf7a_score_time_callback() {
@@ -703,13 +746,19 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_score_dnsbl_callback() {
 		printf(
 			'<input type="number" id="score_dnsbl" name="cf7a_options[score][_dnsbl]" value="%s" />',
-			isset( $this->options['score']['_dnsbl'] ) ? floatval( $this->options['score']['_dnsbl']) : 0.4
+			isset( $this->options['score']['_dnsbl'] ) ? floatval( $this->options['score']['_dnsbl']) : 0.25
 		);
 	}
 	public function cf7a_score_honeypot_callback() {
 		printf(
 			'<input type="number" id="score_honeypot" name="cf7a_options[score][_honeypot]" value="%s" />',
 			isset( $this->options['score']['_honeypot'] ) ? floatval( $this->options['score']['_honeypot']) : 1
+		);
+	}
+	public function cf7a_score_honeyform_callback() {
+		printf(
+			'<input type="number" id="score_honeyform" name="cf7a_options[score][_honeyform]" value="%s" />',
+			isset( $this->options['score']['_honeyform'] ) ? floatval( $this->options['score']['_honeyform']) : 10
 		);
 	}
 	public function cf7a_score_warn_callback() {

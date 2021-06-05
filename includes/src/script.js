@@ -16,7 +16,6 @@
       "user_agent": navigator.userAgent ?? 0,
       "app_version": navigator.appVersion ?? 0,
       "webdriver": window.navigator.webdriver ?? 0,
-      "plugins": navigator.plugins.length ?? 0,
       "session_storage": sessionStorage ?? 0
     };
   }
