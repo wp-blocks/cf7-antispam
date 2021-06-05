@@ -54,9 +54,9 @@ class CF7_AntiSpam_Frontend {
 			if (!is_admin()) add_filter( 'after_body_open_tag', array( $this,'cf7a_honeyform'), 11, 1  );
 		}
 
-		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ||
-		     isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) {
-			if (!is_admin()) add_filter( 'after_body_open_tag', array( $this,'cf7a_add_honeypot_css'), 99, 1  );
+		if ( (isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) ||
+		     (isset( $this->options['check_honeyform'] ) && intval($this->options['check_honeyform']) === 1) ) {
+			add_filter( 'print_footer_scripts', array( $this,'cf7a_add_honeypot_css'), 99, 1  );
 		}
 	}
 
@@ -198,11 +198,11 @@ class CF7_AntiSpam_Frontend {
 		return '<div><div class="' . $form_class . '"><div>' . $html . "</div></div></div>" . $content;
 	}
 
-	public function cf7a_add_honeypot_css( $content ) {
+	public function cf7a_add_honeypot_css() {
 		$form_class = sanitize_html_class($this->options['cf7a_customizations_class']);
 		$honeypot_style = '<style>.'.$form_class.'{position:absolute;margin-left:-999em}</style>';
 
-		return $content . $honeypot_style;
+		echo $honeypot_style;
 	}
 
 	public function cf7a_add_hidden_fields( $fields ) {
