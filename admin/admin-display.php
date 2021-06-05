@@ -54,7 +54,9 @@ class CF7_AntiSpam_Admin_Display {
 			  esc_html( __( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ) ), wpcf7_link( __( 'https://contactform7.com/save-submitted-messages-with-flamingo/', 'contact-form-7' ), __( 'Flamingo', 'contact-form-7' ) ) );
 		  ?></p>
 
-      <h3 class="blink"><?php echo esc_html( __( "And PLEASE don't forget to add ", 'cf7-antispam' ) ); ?></h3>
+        <hr />
+
+      <h3 class="blink"><span class="dashicons dashicons-megaphone" aria-hidden="true"></span> <?php echo esc_html( __( "And PLEASE don't forget to add ", 'cf7-antispam' ) ); ?></h3>
       <b><code class="blink"><?php echo esc_html( __( "flamingo_message: \"[your-message]\" ", 'cf7-antispam' ) ); ?></code></b>
       <p><?php echo esc_html( __( "[your-message] or the name of your message field as you do with flamingo. This is very important otherwise the you can't get the full antispam functionality", 'cf7-antispam' ) ); ?></p>
     </div></div>
