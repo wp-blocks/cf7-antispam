@@ -51,7 +51,7 @@ class CF7_AntiSpam_Frontend {
 		}
 
 		if ( isset( $this->options['check_honeyform'] ) && intval($this->options['check_honeyform']) === 1 ) {
-			add_filter( 'the_content', array( $this,'cf7a_honeyform')  );
+			if (!is_admin()) add_filter( 'the_content', array( $this,'cf7a_honeyform')  );
 		}
 
 		if ( (isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) ||
