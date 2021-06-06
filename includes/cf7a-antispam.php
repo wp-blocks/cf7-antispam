@@ -786,7 +786,6 @@ class CF7_AntiSpam_filters {
 			 */
 			if ( intval( $options['check_dnsbl'] ) == 1 && $remote_ip ) {
 
-				$dsnbl_listed = array();
 				$reverse_ip = '';
 
 				if ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
@@ -802,7 +801,7 @@ class CF7_AntiSpam_filters {
 				foreach ($options['dnsbl_list'] as $dnsbl) {
 					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
-						$dsnbl_listed[] = $listed;
+						$reason['dsnbl'][] = $listed;
 						$spam_score += $score_dnsbl;
 					}
 					$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
@@ -814,11 +813,12 @@ class CF7_AntiSpam_filters {
 					error_log( print_r($performance_test, true) );
 				}
 
-				if (isset($dsnbl_listed)) {
+				if (isset($reason['dsnbl'])) {
 
-					$reason['dsnbl'] = implode(", ",$dsnbl_listed);
+					$dsnbl_count = count($reason['dsnbl']);
+					$reason['dsnbl'] = implode(", ",$reason['dsnbl']);
 
-					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip has tried to send an email but is listed ".count($dsnbl_listed)." times in the Domain Name System Blacklists ({$reason['dsnbl']})" );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip has tried to send an email but is listed $dsnbl_count times in the Domain Name System Blacklists ({$reason['dsnbl']})" );
 				}
 			}
 
