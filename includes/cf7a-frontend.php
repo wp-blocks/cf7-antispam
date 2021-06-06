@@ -45,6 +45,9 @@ class CF7_AntiSpam_Frontend {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100, 1 );
 		}
 
+		if ( isset( $this->options['append_on_submit'] ) && intval($this->options['append_on_submit']) === 1 ) {
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_append_on_submit' ), 100, 1 );
+		}
 
 		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) {
 			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_honeypot_add'), 10, 1  );
@@ -238,9 +241,9 @@ class CF7_AntiSpam_Frontend {
 		));
 	}
 
-	public function append_on_submit( $fields ) {
+	public function cf7a_append_on_submit( $fields ) {
 
-		$prefix = sanitize_html_class($this->options['append_on_submit']);
+		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
 
 		return array_merge( $fields, array(
 			$prefix.'append_on_submit' => false
