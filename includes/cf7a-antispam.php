@@ -50,8 +50,8 @@ class CF7_AntiSpam_filters {
 		// get the additional setting of the form
 		$form_additional_settings = get_post_meta( $form_post_id, '_additional_settings', true) ;
 
-		if ($form_additional_settings !== '') {
-			$lines = explode( "\n", $form_additional_settings); // TODO: best practice is to explode using EOL (End Of Line).
+		if (!empty($form_additional_settings)) {
+			$lines = explode( "\n", $form_additional_settings);
 
 			$additional_settings = array();
 
@@ -343,7 +343,7 @@ class CF7_AntiSpam_filters {
 					return;
 				}
 
-				$rating_after = $text != '' ? $this->cf7a_b8_classify($text) : "none" ;
+				$rating_after = !empty($text) ? $this->cf7a_b8_classify($text) : "none";
 
 				update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', $rating_after );
 
