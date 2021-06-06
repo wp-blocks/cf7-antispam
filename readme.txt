@@ -4,7 +4,7 @@ Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, 
 Requires at least: 5.1
 Tested up to: 5.7.1
 Requires PHP: 5.6
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,12 @@ Enable **extended debug mode** (disable-autoban, prints fingerprinting results a
 * Export/import settings, banned ip
 
 == Changelog ==
+
+= 0.2.1 =
+* enhanced honeyform and honeypot style
+* fix dnsbl report message
+* enhanced hidden fields "append on submit" option
+* with the "extended debug option" on deactivate resets the b8 db
 
 = 0.2.0 =
 * adds HoneyForm to antispam checks
