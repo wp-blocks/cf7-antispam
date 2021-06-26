@@ -727,49 +727,49 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_score_fingerprinting_callback() {
 		printf(
-			'<input type="number" id="score_fingerprinting" name="cf7a_options[score][_fingerprinting]" value="%s" />',
+			'<input type="number" id="score_fingerprinting" name="cf7a_options[score][_fingerprinting]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_fingerprinting'] ) ? floatval( $this->options['score']['_fingerprinting']) : 0.25
 		);
 	}
 	public function cf7a_score_time_callback() {
 		printf(
-			'<input type="number" id="score_time" name="cf7a_options[score][_time]" value="%s" />',
+			'<input type="number" id="score_time" name="cf7a_options[score][_time]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_time'] ) ? floatval( $this->options['score']['_time']) : 1
 		);
 	}
 	public function cf7a_score_bad_string_callback() {
 		printf(
-			'<input type="number" id="score_bad_string" name="cf7a_options[score][_bad_string]" value="%s" />',
+			'<input type="number" id="score_bad_string" name="cf7a_options[score][_bad_string]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_bad_string'] ) ? floatval( $this->options['score']['_bad_string']) : 1
 		);
 	}
 	public function cf7a_score_dnsbl_callback() {
 		printf(
-			'<input type="number" id="score_dnsbl" name="cf7a_options[score][_dnsbl]" value="%s" />',
+			'<input type="number" id="score_dnsbl" name="cf7a_options[score][_dnsbl]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_dnsbl'] ) ? floatval( $this->options['score']['_dnsbl']) : 0.25
 		);
 	}
 	public function cf7a_score_honeypot_callback() {
 		printf(
-			'<input type="number" id="score_honeypot" name="cf7a_options[score][_honeypot]" value="%s" />',
+			'<input type="number" id="score_honeypot" name="cf7a_options[score][_honeypot]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_honeypot'] ) ? floatval( $this->options['score']['_honeypot']) : 1
 		);
 	}
 	public function cf7a_score_honeyform_callback() {
 		printf(
-			'<input type="number" id="score_honeyform" name="cf7a_options[score][_honeyform]" value="%s" />',
+			'<input type="number" id="score_honeyform" name="cf7a_options[score][_honeyform]" value="%s" min="0" max="100" step="0.01" />',
 			isset( $this->options['score']['_honeyform'] ) ? floatval( $this->options['score']['_honeyform']) : 10
 		);
 	}
 	public function cf7a_score_warn_callback() {
 		printf(
-			'<input type="number" id="score_warn" name="cf7a_options[score][_warn]" value="%s" />',
+			'<input type="number" id="score_warn" name="cf7a_options[score][_warn]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_warn'] ) ? floatval( $this->options['score']['_warn']) : 1
 		);
 	}
 	public function cf7a_score_detection_callback() {
 		printf(
-			'<input type="number" id="score_detection" name="cf7a_options[score][_detection]" value="%s" />',
+			'<input type="number" id="score_detection" name="cf7a_options[score][_detection]" value="%s" min="0" max="100" step="0.01" />',
 			isset( $this->options['score']['_detection'] ) ? floatval( $this->options['score']['_detection']) : 5
 		);
 	}
