@@ -638,7 +638,7 @@ class CF7_AntiSpam_filters {
 
 					$time_elapsed = $time_now - $timestamp;
 
-					if ( $time_now <= ( $timestamp + $submission_minimum_time_elapsed ) ) {
+					if ( $time_elapsed < $submission_minimum_time_elapsed ) {
 
 						$spam_score += $score_time;
 						$reason['min_time_elapsed'] = $time_elapsed;
@@ -650,7 +650,7 @@ class CF7_AntiSpam_filters {
 					/**
 					 * Check if the time to submit the email il higher than expected
 					 */
-					if ( $time_now >= ( $timestamp + $submission_maximum_time_elapsed ) ) {
+					if ( $time_elapsed > $submission_maximum_time_elapsed ) {
 
 						$spam_score += $score_time;
 						$reason['max_time_elapsed'] = $time_elapsed;
