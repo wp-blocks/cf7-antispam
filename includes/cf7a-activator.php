@@ -106,7 +106,6 @@ class CF7_AntiSpam_Activator {
 					"dnsbl-1.uceprotect.net",
 					"dnsbl-2.uceprotect.net",
 					"dnsbl-3.uceprotect.net",
-					"dnsbl.sorbs.net",
 					"zen.spamhaus.org",
 					"bl.spamcop.net",
 					"b.barracudacentral.org",
@@ -134,7 +133,7 @@ class CF7_AntiSpam_Activator {
                     '_fingerprinting' => 0.3,
 		            '_time' => 1,
 		            '_bad_string' => 1,
-		            '_dnsbl' => 0.4,
+		            '_dnsbl' => 0.3,
 		            '_honeypot' => 1,
 		            '_detection' => 5,
 				)
