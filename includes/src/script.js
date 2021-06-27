@@ -4,31 +4,33 @@
 
   const cf7a_prefix = cf7a_settings.prefix;
 
-  function browserFingerprint() {
-    let tests;
+  const browserFingerprint = () => {
+		const ua = navigator.userAgent;
 
-    return tests = {
-      "timezone": window.Intl.DateTimeFormat().resolvedOptions().timeZone ?? 0,
-      "platform": navigator.platform ?? 0,
-      "hardware_concurrency": navigator.hardwareConcurrency  ?? 0,
-      "screens": [window.screen.width, window.screen.height] ?? 0,
-      "memory": navigator.deviceMemory ?? 0,
-      "user_agent": navigator.userAgent ?? 0,
-      "app_version": navigator.appVersion ?? 0,
-      "webdriver": window.navigator.webdriver ?? 0,
-      "session_storage": sessionStorage ?? 0
-    };
-  }
+		return {
+			"timezone": window.Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
+			"platform": navigator.platform ?? null,
+			"hardware_concurrency": navigator.hardwareConcurrency  ?? null,
+			"screens": [window.screen.width, window.screen.height] ?? null,
+			"memory": navigator.deviceMemory ?? null,
+			"user_agent": ua ?? null,
+			"app_version": navigator.appVersion ?? null,
+			"webdriver": window.navigator.webdriver ?? null,
+			"session_storage": sessionStorage ?? null,
+			"isSafari": ua.toLowerCase().indexOf('safari') !== -1 && ua.toLowerCase().indexOf('chrome') === -1 ? true : null,
+			"isIOS": typeof navigator.standalone === 'boolean' ? true : null
+		};
+  };
 
   const wpcf7Forms = document.querySelectorAll('.wpcf7');
 
-  function createCF7Afield(key, value, prefix = cf7a_prefix) {
+  const createCF7Afield = (key, value, prefix = cf7a_prefix) => {
     let e = document.createElement('input');
     e.setAttribute("type", "hidden");
     e.setAttribute("name", prefix + key);
-    e.setAttribute("value", value);
+		e.setAttribute("value", typeof value === 'string' ? value : JSON.stringify(value));
     return e;
-  }
+  };
 
   if (wpcf7Forms.length) {
 

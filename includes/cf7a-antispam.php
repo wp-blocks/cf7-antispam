@@ -557,19 +557,22 @@ class CF7_AntiSpam_filters {
 					"webdriver"            => !empty( $_POST[$prefix.'webdriver'] ) ? sanitize_text_field( $_POST[$prefix.'webdriver'] ) : null,
 					"session_storage"      => !empty( $_POST[$prefix.'session_storage'] ) ? sanitize_text_field( $_POST[$prefix.'session_storage'] ) : null,
 					"bot_fingerprint"      => !empty( $_POST[$prefix.'bot_fingerprint'] ) ? sanitize_text_field( $_POST[$prefix.'bot_fingerprint'] ) : null,
+					"isSafari"             => !empty( $_POST[$prefix.'isSafari'] ) ? intval( $_POST[$prefix.'isSafari'] ) : null,
+					"isIOS"                => !empty( $_POST[$prefix.'isIOS'] ) ? intval( $_POST[$prefix.'isIOS'] ) : null,
 				);
 
 				$fails = array();
 				if (!$bot_fingerprint["timezone"]) $fails[] = "timezone";
 				if (!$bot_fingerprint["platform"]) $fails[] = "platform";
-				if (!$bot_fingerprint["hardware_concurrency"] >= 2) $fails[] = "hardware_concurrency";
+				if ($bot_fingerprint["isSafari"] && !$bot_fingerprint["hardware_concurrency"] >= 2) $fails[] = "hardware_concurrency";
 				if (!$bot_fingerprint["screens"]) $fails[] = "screens";
-				if (!$bot_fingerprint["memory"] || $bot_fingerprint["memory"] == 1)  $fails[] = "memory";
+				if ($bot_fingerprint["isSafari"] && (!$bot_fingerprint["memory"] || $bot_fingerprint["memory"] == 1))  $fails[] = "memory";
 				if (!$bot_fingerprint["user_agent"]) $fails[] = "user_agent";
 				if (!$bot_fingerprint["app_version"]) $fails[] = "app_version";
 				if (!$bot_fingerprint["webdriver"]) $fails[] = "webdriver";
 				if (!$bot_fingerprint["session_storage"]) $fails[] = "session_storage";
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
+				if ($bot_fingerprint["isIOS"] && !$bot_fingerprint["isSafari"]) $fails[] = "safari_not_ios";
 
 				if (!empty($fails)) {
 					$spam_score                += count( $fails ) * $score_fingerprinting;
