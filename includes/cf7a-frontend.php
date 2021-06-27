@@ -71,7 +71,8 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_honeypot_add( $form_elements ) {
 
 		$html = new DOMDocument();
-		$html->loadHTML( $form_elements, LIBXML_HTML_NODEFDTD );
+		$html->encoding = 'utf-8';
+		$html->loadHTML( mb_convert_encoding($form_elements, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NODEFDTD );
 
 		$inputs  = $html->getelementsbytagname( 'input' );
 		$parents = array();
@@ -197,6 +198,7 @@ class CF7_AntiSpam_Frontend {
         $html .= $WPCF7->replace_all_form_tags();
 		$html .= $WPCF7->form_response_output();
 		$html .= '</form></div>';
+		$html = html_entity_decode($html, ENT_COMPAT, 'UTF-8');
 
 		return '<div><div class="wpcf7-form"><div class="' . $form_class . '"><div>' . $html . "</div></div></div></div>" . $content;
 	}
