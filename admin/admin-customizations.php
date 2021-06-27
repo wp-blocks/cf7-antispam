@@ -461,7 +461,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_time'] =  isset( $input['check_time'] ) ? 1 : 0 ;
 
 		$new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min']) : 6;
-		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max']) : 3660;
+		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max']) : 60 * 60 * 24 * 7; // a week of timeframe (cache + submission)
 
 		// bad ip
 		$new_input['check_bad_ip'] =  isset( $input['check_bad_ip'] ) ? 1 : 0 ;

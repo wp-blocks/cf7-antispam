@@ -445,7 +445,7 @@ class CF7_AntiSpam_filters {
 
 		// Timestamp checks
 		$timestamp                       = isset($_POST[$prefix.'_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST[$prefix.'_timestamp']) ) ) : 0;
-		$timestamp_submitted             = $submission->get_meta( 'timestamp' );
+		$timestamp_submitted             = time(); // can be cached so isn't safe to use -> $submission->get_meta( 'timestamp' );
 		$submission_minimum_time_elapsed = intval($options['check_time_min']);
 		$submission_maximum_time_elapsed = intval($options['check_time_max']);
 
