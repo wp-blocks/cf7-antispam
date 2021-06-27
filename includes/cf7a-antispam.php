@@ -867,7 +867,7 @@ class CF7_AntiSpam_filters {
 		 * B8 is a statistical "Bayesian" spam filter
 		 * https://nasauber.de/opensource/b8/
 		 */
-		if ( $options['enable_b8'] && $message ) {
+		if ( $options['enable_b8'] && $message && !isset( $reason['blacklisted'] ) ) {
 
 			$text   = stripslashes( $message );
 
