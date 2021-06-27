@@ -17,8 +17,7 @@ So as your site receives spam and real emails, learn to distinguish between them
 
 == SETUP ==
 **Basic** - install & go! no action required to get the standard protection.
-**Advanced** - For each contact form (in the same way you do for flamingo) add 'flamingo_message: "[your-message]"' - [reference](https://contactform7.com/save-submitted-messages-with-flamingo/).
-Without this d8 cannot know what the message is and therefore is deactivated.
+**Advanced** - For each contact form (in the same way you do for flamingo) add 'flamingo_message: "[your-message]"' - [reference](https://contactform7.com/save-submitted-messages-with-flamingo/). Without this field b8 is disabled.
 
 **Standard Spam Filters:**
 We have several types of bot detection for many type of bots! Auto-blacklisting (in fail2ban style), HoneyPots, HoneyForms, Bot FingerPrinting, Elapsed time checks, IP address exclusion, prohibited strings in email and in user agent.
@@ -38,9 +37,9 @@ Scammers know very well how we defend our forms, they can even see the source co
 
 
 You can use [flamingo](https://wordpress.org/plugins/flamingo/) as spam manager and my personal advice to do it!
-Cf7a add some functionalities to Flamingo: it can be used as manager for the antispam system and when you mark an email as spam (or ham) this action will be submitted also to the d8 dictionary!
+Cf7a add some functionalities to Flamingo: it can be used as manager for the antispam system and when you mark an email as spam (or ham) this action will be submitted also to the b8 dictionary!
 And if you already use flamingo? Even better! But before the activation of "Antispam for Contact Form 7" remember to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other fields).
-in this way while activating this plugin activation all collected mail will be parsed and d8 will learn what is spam or not. So in this way you will start with a pre-trained algorithm. super cool!
+in this way while activating this plugin activation all collected mail will be parsed and b8 will learn what is spam or not. So in this way you will start with a pre-trained algorithm. super cool!
 - On the right side of the flamingo inbound table there is a new column that show the level of spamminess
 - if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
 
@@ -67,8 +66,8 @@ also advice, reports, suggestions. Everyone can contribute, my intent is to keep
 - Check the elapsed time to fill the form, which has to be more than a few seconds (the amount of time it usually takes a bot).
 - Then (in order) we check the message, the user agent or the email if it contains any forbidden words/strings. It is useful to ban your own domain from the forms (unless you want to write your own) because a scammer's trick is get your domain and use it as an email (info@yourdomain)in order to bypass the classic anti-spam checks (server and client side)
 - Check on dnsbl if the ip has already been reported
-- if the spam score is above 1 the mail is proposed to d8 as spam, then d8 ranks it and learns the spam words.
-- if the spam score is below 1 the mail will be passed to that d8 "decides" if it is spam or not. You have to wait until d8 has a good dictionary, usually 40-50 emails are a good starting point, until then it is better to keep the tolerance up (0.95 can be a good starting point)
+- if the spam score is above 1 the mail is proposed to b8 as spam, then b8 ranks it and learns the spam words.
+- if the spam score is below 1 the mail will be passed to that b8 "decides" if it is spam or not. You have to wait until b8 has a good dictionary, usually 40-50 emails are a good starting point, until then it is better to keep the tolerance up (0.95 can be a good starting point)
 
 == Constants ==
 Enable **debug mode**
