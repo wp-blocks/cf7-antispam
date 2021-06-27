@@ -144,6 +144,7 @@ See the LICENSE file for more details.
 * dnsbl-1.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
 * dnsbl-2.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
 * dnsbl-3.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
+* dnsbl.sorbs.net [sorbs.net license](http://www.sorbs.net/information/faq/)
 * zen.spamhaus.org [spamhaus.org license](https://www.spamhaus.org/organization/dnsblusage/)
 * bl.spamcop.net [spamcop.net license](https://www.spamcop.net/fom-serve/cache/297.html)
 * b.barracudacentral.org [barracudacentral.org privacy-policy](https://www.barracuda.com/company/legal/trust-center/data-privacy/privacy-policy)
