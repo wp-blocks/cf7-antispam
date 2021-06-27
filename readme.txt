@@ -4,7 +4,7 @@ Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, 
 Requires at least: 5.1
 Tested up to: 5.7.1
 Requires PHP: 5.6
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,13 @@ Enable **extended debug mode** (disable-autoban, prints fingerprinting results a
 
 == Changelog ==
 
+= 0.2.2 =
+* fix safari (macos/ios) detection (with a new custom check)
+* fix max time elepsed check
+* countermeasures to avoid bayesian poisoning
+* fix encoding with some languages for generated honeyform/honeypot
+* reviewed scoring for fingerprinting and dnsbl
+
 = 0.2.1 =
 * enhanced honeyform and honeypot style
 * fix dnsbl report message
@@ -137,7 +144,6 @@ See the LICENSE file for more details.
 * dnsbl-1.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
 * dnsbl-2.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
 * dnsbl-3.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
-* dnsbl.sorbs.net [sorbs.net license](http://www.sorbs.net/information/faq/)
 * zen.spamhaus.org [spamhaus.org license](https://www.spamhaus.org/organization/dnsblusage/)
 * bl.spamcop.net [spamcop.net license](https://www.spamcop.net/fom-serve/cache/297.html)
 * b.barracudacentral.org [barracudacentral.org privacy-policy](https://www.barracuda.com/company/legal/trust-center/data-privacy/privacy-policy)
