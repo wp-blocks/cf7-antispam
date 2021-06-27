@@ -21,6 +21,13 @@ class CF7_AntiSpam_Admin_Tools {
 
 		$url = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
+		if ( $action === 'dismiss-banner' ) {
+
+			update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1 );
+			wp_redirect( $url );
+			exit();
+		}
+
 		if ( $req_nonce ) {
 
 			$filter = new CF7_AntiSpam_filters();

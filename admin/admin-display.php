@@ -43,27 +43,25 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	function cf7a_display_content() {
-    $dismissable_banner_class = 'welcome-panel banner dismissable';
-
-    $vers = (array) get_user_meta( get_current_user_id(),
-      'cf7a_hide_welcome_panel_on', true );
-
-    if ( $vers  ) {	$dismissable_banner_class .= ' hidden'; }
-
+	  $dismissible_banner_class = ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ) ? ' hidden' : '';
     ?>
-    <div class="card main-options">
 
-      <div class="<?php echo $dismissable_banner_class ?>" style="background-color: #f3f3f3; border: 1px solid #ddd; padding: 10px; margin: 10px 0">
-        <a class="welcome-panel-close" href="<?php echo esc_url( menu_page_url( 'cf7-antispam', false ) ); ?>&dismiss-banner=1"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
-        <h3><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo esc_html( __( "Before you cry over spilt mail&#8230;", 'contact-form-7' ) ); ?></h3>
-        <p><?php echo esc_html( __( "Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.", 'contact-form-7' ) ); ?></p>
-        <p><?php echo sprintf( /* translators: %s: link labeled 'Flamingo' */
-            esc_html( __( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ) ), wpcf7_link( __( 'https://contactform7.com/save-submitted-messages-with-flamingo/', 'contact-form-7' ), __( 'Flamingo', 'contact-form-7' ) ) );
-          ?></p>
-        <p><?php echo esc_html( __( "And don't forget to add also ", 'cf7-antispam' ) ); ?></p>
-        <b><code><?php echo esc_html( __( "flamingo_message: \"[your-message]\" ", 'cf7-antispam' ) ); ?></code></b>
-        <p><?php echo esc_html( __( "to your message to get the full functionality of this plugin", 'cf7-antispam' ) ); ?></p>
-      </div>
+    <div class="card welcome-panel banner dismissible<?php echo $dismissible_banner_class ?>"><div class="inside">
+      <a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
+      <h3><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo esc_html( __( "Before you cry over spilt mail&#8230;", 'contact-form-7' ) ); ?></h3>
+      <p><?php echo esc_html( __( "Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.", 'contact-form-7' ) ); ?></p>
+      <p><?php echo sprintf( /* translators: %s: link labeled 'Flamingo' */
+			  esc_html( __( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ) ), wpcf7_link( __( 'https://contactform7.com/save-submitted-messages-with-flamingo/', 'contact-form-7' ), __( 'Flamingo', 'contact-form-7' ) ) );
+		  ?></p>
+
+        <hr />
+
+      <h3 class="blink"><span class="dashicons dashicons-megaphone" aria-hidden="true"></span> <?php echo esc_html( __( "And PLEASE don't forget to add ", 'cf7-antispam' ) ); ?></h3>
+      <b><code class="blink"><?php echo esc_html( __( "flamingo_message: \"[your-message]\" ", 'cf7-antispam' ) ); ?></code></b>
+      <p><?php echo esc_html( __( "[your-message] or the name of your message field as you do with flamingo. This is very important otherwise the you can't get the full antispam functionality", 'cf7-antispam' ) ); ?></p>
+    </div></div>
+
+    <div class="card main-options">
 
       <h3>Options</h3>
       <form method="post" action="options.php" id="cf7a_settings">

@@ -71,6 +71,7 @@ class CF7_AntiSpam_Activator {
 				"cf7a_customizations_prefix" => CF7ANTISPAM_PREFIX,
 				"check_bot_fingerprint" => true,
 				"check_bot_fingerprint_extras" => true,
+				"append_on_submit" => true,
 				"check_time" => true,
 				"check_time_min" => 6,
 				"check_time_max" => 3660,
@@ -128,38 +129,23 @@ class CF7_AntiSpam_Activator {
 					'billing_city',
 					'billing_country',
 					'email-address'
+				),
+				"score" => array(
+                    '_fingerprinting' => 0.3,
+		            '_time' => 1,
+		            '_bad_string' => 1,
+		            '_dnsbl' => 0.4,
+		            '_honeypot' => 1,
+		            '_detection' => 5,
 				)
 			) );
 		}
 
-		// get all the flamingo inbound post and classify them
-	    $args = array(
-		    'post_type' => 'flamingo_inbound',
-		    'posts_per_page' => -1
-	    );
+	    require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
 
-		$query = new WP_Query($args);
-		if ($query->have_posts() ) :
+	    $cf7a_antispam_filters = new CF7_AntiSpam_filters();
 
-			require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
-
-			$cf7a_antispam_filters = new CF7_AntiSpam_filters();
-
-			//todo: this fn need to be doubled because for first we need to learn then classify
-			while ( $query->have_posts() ) : $query->the_post();
-				$post_id = get_the_ID();
-				$post_status = get_post_status();
-
-				if (get_post_status( $post_id ) == 'flamingo-spam') {
-					$cf7a_antispam_filters->cf7a_b8_learn_spam(get_the_content());
-					update_post_meta( $post_id, '_cf7a_b8_classification', $cf7a_antispam_filters->cf7a_b8_classify(get_the_content()) );
-				} else if ( $post_status == 'publish'){
-					$cf7a_antispam_filters->cf7a_b8_learn_ham(get_the_content());
-					update_post_meta( $post_id, '_cf7a_b8_classification', $cf7a_antispam_filters->cf7a_b8_classify(get_the_content()) );
-				};
-
-			endwhile;
-		endif;
+	    $cf7a_antispam_filters->cf7a_flamingo_on_install();
 	}
 
 }
