@@ -879,7 +879,7 @@ class CF7_AntiSpam_filters {
 				$spam = true;
 				error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
 
-				if (!defined( 'FLAMINGO_VERSION' )) $this->cf7a_b8_learn_spam($text);
+				$this->cf7a_b8_learn_spam($text);
 
 				if ($rating > $b8_threshold) {
 
@@ -891,7 +891,7 @@ class CF7_AntiSpam_filters {
 			} else if ( $rating < ( $b8_threshold * .5 ) ) {
 
 				// the mail was classified as ham so we let learn to d8 what is considered (a probable) ham
-				if (!defined( 'FLAMINGO_VERSION' )) $this->cf7a_b8_learn_ham($text);
+				$this->cf7a_b8_learn_ham($text);
 
 				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . "D8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so the mail from $remote_ip will be marked as ham" );
 			}
@@ -906,8 +906,8 @@ class CF7_AntiSpam_filters {
 		// hook to add some filters after d8
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
-		if ($options['autostore_bad_ip'] && $spam) {
-			if ( CF7ANTISPAM_DEBUG_EXTENDED || false === $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) )
+		if ($options['autostore_bad_ip'] && $spam && !CF7ANTISPAM_DEBUG_EXTENDED) {
+			if ( false === ($this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) ) )
 				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip / CF7ANTISPAM_LOG_PREFIX enabled" );
 		}
 
