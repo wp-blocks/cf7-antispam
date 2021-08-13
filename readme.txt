@@ -2,9 +2,9 @@
 Contributors: codekraft
 Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, security
 Requires at least: 5.1
-Tested up to: 5.7.1
+Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 0.2.2
+Stable tag: 0.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,16 +13,15 @@ A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 == Description ==
 Antispam for Contact Form 7 is an anti-bot plugin for your contact form, that without boring you with configurations, block bots from flood your email inbox.
 We use several methods to detect bots (always updated) and an auto-learning mechanism based on a statistical "Bayesian" spam filter.
-So as your site receives spam and real emails, learn to distinguish between them!
 
 == SETUP ==
 **Basic** - install & go! no action required to get the standard protection.
 **Advanced** - For each contact form (in the same way you do for flamingo) add 'flamingo_message: "[your-message]"' - [reference](https://contactform7.com/save-submitted-messages-with-flamingo/). Without this field b8 is disabled.
 
 **Standard Spam Filters:**
-We have several types of bot detection for many type of bots! Auto-blacklisting (in fail2ban style), HoneyPots, HoneyForms, Bot FingerPrinting, Elapsed time checks, IP address exclusion, prohibited strings in email and in user agent.
-In Addition we will check on 10 preconfigured *DNS-based Blackhole server* to found ip delisted for spam!
-And besides the most famous Uceprotect, Spamhouse, Barracuda, Sorbs, Spamcop you can add or remove other servers as you like, there are [50 server around the world](https://en.wikipedia.org/wiki/Domain_Name_System-based_blackhole_list).
+In order to make the antispam more effective, we decided to set several types of tests instead of just one!
+You will find auto-blacklisting (in fail2ban style), HoneyPots, HoneyForms, Bot FingerPrinting, Elapsed time checks, IP address exclusion, prohibited strings in email and in user agent.
+10 preconfigured *DNS-based Blackhole server* to found ip delisted for spam (you can add or remove other servers as you like, there are 50 server available)!
 
 **B8:**
 In principle, b8 uses the math and technique described in Gary Robinson's articles "A Statistical Approach to the Spam Problem" and "Spam Detection".
@@ -35,9 +34,8 @@ Absolutely NO, nobody can guarantee that, and anyone who tells you that is lying
 But luckily, bots are limited by the fact that they don't use a real browser, they aren't stupid at all because the scammers who designed them aren't. Understanding how a bot "think" is the key to fool them!
 Scammers know very well how we defend our forms, they can even see the source code of the various plugins, so I ask you to report if they have found a way bypass this plugin filters on the WordPress forum.
 
-
-You can use [flamingo](https://wordpress.org/plugins/flamingo/) as spam manager and my personal advice to do it!
-Cf7a add some functionalities to Flamingo: it can be used as manager for the antispam system and when you mark an email as spam (or ham) this action will be submitted also to the b8 dictionary!
+Please install also [flamingo](https://wordpress.org/plugins/flamingo/) and it will turn into spam manager!
+Cf7A adds some functionalities to Flamingo: it can be used as manager for the antispam system and when you mark an email as spam (or ham) this action will be submitted also to the b8 dictionary!
 And if you already use flamingo? Even better! But before the activation of "Antispam for Contact Form 7" remember to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other fields).
 in this way while activating this plugin activation all collected mail will be parsed and b8 will learn what is spam or not. So in this way you will start with a pre-trained algorithm. super cool!
 - On the right side of the flamingo inbound table there is a new column that show the level of spamminess
@@ -71,19 +69,28 @@ also advice, reports, suggestions. Everyone can contribute, my intent is to keep
 
 == Constants ==
 Enable **debug mode**
-`define( 'CF7ANTISPAM_DEBUG', false);`
+`define( 'CF7ANTISPAM_DEBUG', true);`
 
-Enable **extended debug mode** (disable-autoban, prints fingerprinting results and dnsbl benchmark)
-`define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);`
+Enable **extended debug mode** (disable-autoban, prints fingerprinting results)
+`define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
+
+Dnsbl benchmark: if the mail takes so long to be sent, maybe it is a dnsbl that is taking so long to reply. with this option active, the time that each dns took to reply is printed in the log.
+`define( 'CF7ANTISPAM_DNSBL_BENCHMARK', true);`
 
 == TODOs ==
 * Ban by geolocation
-* Test based on device type (mobiles, desktops etc)
 * Unban ip after x hours
 * Configuration error detector (parse stored form ad return if the message field isn't found)
-* Export/import settings, banned ip
+* CSV Export/import settings, banned ip
+* Resend EMail if not were spam
+* Optimise the way the mail is analysed so that it is not a long script that runs sequentially but rather a series of filters
+* Selectable ciphers
 
 == Changelog ==
+
+= 0.2.3 =
+* enhanced fingerprint scripts performance
+* improving debugging output
 
 = 0.2.2 =
 * fix safari (macos/ios) detection (with a new custom check)
