@@ -1,3 +1,4 @@
+/* global cf7a_settings */
 (function ($) {
 
   'use strict';
@@ -16,7 +17,7 @@
 			"user_agent": ua ?? null,
 			"app_version": navigator.appVersion ?? null,
 			"webdriver": window.navigator.webdriver ?? null,
-			"session_storage": sessionStorage ?? null,
+			"session_storage": sessionStorage ? 1 : null,
 			"isSafari": ua.toLowerCase().indexOf('safari') !== -1 && ua.toLowerCase().indexOf('chrome') === -1 ? true : null,
 			"isIOS": typeof navigator.standalone === 'boolean' ? true : null
 		};
@@ -40,60 +41,64 @@
 
     for (const wpcf7Form of wpcf7Forms) {
 
-      // I) Standard bot checks
-      let bot_fingerprint_key = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint]')
+    	const hiddenInputsContainer = $(wpcf7Form)[0].querySelector('form > div');
 
-      // II) Bot fingerprint extra checks
-      let bot_fingerprint_extra = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
+      // 1) Standard bot checks
+			const bot_fingerprint_key = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint]');
 
-      // III) how append bot fingerprint into hidden fields
-      let append_on_submit = $(wpcf7Form)[0].querySelector('form > div input[name=' + cf7a_prefix + 'append_on_submit]');
+      // 2) Bot fingerprint extra checks
+			const bot_fingerprint_extra = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
+
+      // how append bot fingerprint into hidden fields
+			const append_on_submit = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
 
       let tests = {};
 
       if (bot_fingerprint_key) {
-        let fingerprint_key = bot_fingerprint_key.getAttribute("value");
-        // hijack the value of the bot_fingerprint
-        bot_fingerprint_key.setAttribute("value", fingerprint_key.slice(0, 5));
 
-        // bot_fingerprint checks enabled
+        // 1.0 hijack the value of the bot_fingerprint
+        bot_fingerprint_key.setAttribute("value", bot_fingerprint_key.getAttribute("value").slice(0, 5));
+
+        // 1.1) test browser fingerprint
         tests = browserFingerprint();
 
-        // append the fields
-        if (!append_on_submit) {
+        // then append the fields on submit
+				if (append_on_submit) {
 
-          for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
-            $(wpcf7Form).find('form > div').append(createCF7Afield(key, value));
-          }
+					const formElem = $(wpcf7Form)[0].querySelector('form');
+					let formData = new FormData(formElem.formData);
 
-        } else {
+					formElem.addEventListener('formdata', (e) => {
+						for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
+							e.formData.append(cf7a_prefix + key, value);
+						}
+						formData = e.formData;
+					});
 
-          const formElem = $(wpcf7Form)[0].querySelector('form');
-          let formData = new FormData(formElem.formData);
+				} else {
 
-          formElem.addEventListener('formdata', (e) => {
-            for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
-              e.formData.append(cf7a_prefix + key, value);
-            }
-            formData = e.formData;
-          });
+					// or add them directly to hidden input container
+					for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
+						$(hiddenInputsContainer)[0].append(createCF7Afield(key, value));
+					}
 
-        }
-      }
+				}
+			}
 
 
-      // II) Bot fingerprint extra checks
+      // 2) Bot fingerprint extra checks
       if (bot_fingerprint_extra) {
 
-        // check for mouse clicks
+        // 2.1) check for mouse clicks
         const activity = function (e) {
-          $(wpcf7Form).find('form > div input[name=' + cf7a_prefix + 'activity]').remove();
-          $(wpcf7Form).find('form > div').append(createCF7Afield("activity", mouseActivity_value++));
+					let bot_activity = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'activity]');
+					if (bot_activity) bot_activity.remove();
+					$(hiddenInputsContainer)[0].append(createCF7Afield("activity", mouseActivity_value++));
 
           if (mouseActivity_value > 3) {
             document.body.removeEventListener('mouseup', activity);
             document.body.removeEventListener('touchend', activity);
-            $(wpcf7Form).find('form > div').append(createCF7Afield("mouseclick_activity", "passed"));
+						$(hiddenInputsContainer)[0].append(createCF7Afield("mouseclick_activity", "passed"));
           }
         };
         document.body.addEventListener( 'mouseup', activity);
@@ -101,7 +106,7 @@
 
 
 
-        // detect the mouse/touch direction change OR touchscreen iterations
+        // 2.2) detect the mouse/touch direction change OR touchscreen iterations
         const mouseMove = function (e) {
           if (e.pageY > oldy) {
             mouseMove_value += 1;
@@ -110,20 +115,18 @@
 
           if (mouseMove_value > 3) {
             document.removeEventListener('mousemove', mouseMove);
-            $(wpcf7Form).find('form > div').append(createCF7Afield("mousemove_activity", "passed"));
+						$(hiddenInputsContainer)[0].append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
         document.addEventListener('mousemove', mouseMove);
 
-
-
+				// container user for hidden test
         let wpcf7box = document.createElement('div');
         wpcf7box.id = 'hidden';
-        let form_hidden_field = $(wpcf7Form)[0].querySelector('form > div');
-        form_hidden_field.append(wpcf7box);
+				hiddenInputsContainer.append(wpcf7box);
 
+				// 2.5) WebGL Tests
         // credits //bot.sannysoft.com
-        // tools
         String.prototype.hashCode = function () {
           var hash = 0, i, chr;
           if (this.length === 0) return hash;
@@ -135,7 +138,6 @@
           return hash;
         };
 
-        // WebGL Tests
         let wglv = document.createElement('div');
         wglv.id = 'webgl-vendor';
         wpcf7box.append(wglv);
@@ -155,9 +157,9 @@
             const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
             webGLVendorElement.innerHTML = vendor;
             if (vendor === 'Brian Paul' || vendor === "Google Inc.") {
-              $(wpcf7Form).find('form > div').append(createCF7Afield("webgl", "failed"));
+							$(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "failed"));
             } else {
-              $(wpcf7Form).find('form > div').append(createCF7Afield("webgl", "passed"));
+							$(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "passed"));
             }
           } catch (e) {
             webGLVendorElement.innerHTML = "Error: " + e;
@@ -168,15 +170,15 @@
             const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
             webGLRendererElement.innerHTML = renderer;
             if (renderer === 'Mesa OffScreen' || renderer.indexOf("Swift") !== -1) {
-              $(wpcf7Form).find('form > div').append(createCF7Afield("webgl_render", "failed"));
+              $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "failed"));
             } else
-              $(wpcf7Form).find('form > div').append(createCF7Afield("webgl_render", "passed"));
+              $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "passed"));
           } catch (e) {
             webGLRendererElement.innerHTML = "Error: " + e;
           }
         } else {
-          $(wpcf7Form).find('form > div').append(createCF7Afield("webgl", "failed"));
-          $(wpcf7Form).find('form > div').append(createCF7Afield("webgl_render", "failed"));
+          $(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "failed"));
+          $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "failed"));
         }
 
         // TODO: change the canvas name
@@ -326,4 +328,3 @@
   }
 
 })(jQuery);
-
