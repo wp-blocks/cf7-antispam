@@ -555,7 +555,7 @@ class CF7_AntiSpam_filters {
 					"user_agent"           => !empty( $_POST[$prefix.'user_agent'] ) ? sanitize_text_field( $_POST[$prefix.'user_agent'] ) : null,
 					"app_version"          => !empty( $_POST[$prefix.'app_version'] ) ? sanitize_text_field( $_POST[$prefix.'app_version'] ) : null,
 					"webdriver"            => !empty( $_POST[$prefix.'webdriver'] ) ? sanitize_text_field( $_POST[$prefix.'webdriver'] ) : null,
-					"session_storage"      => !empty( $_POST[$prefix.'session_storage'] ) ? sanitize_text_field( $_POST[$prefix.'session_storage'] ) : null,
+					"session_storage"      => !empty( $_POST[$prefix.'session_storage'] ) ? intval( $_POST[$prefix.'session_storage'] ) : null,
 					"bot_fingerprint"      => !empty( $_POST[$prefix.'bot_fingerprint'] ) ? sanitize_text_field( $_POST[$prefix.'bot_fingerprint'] ) : null,
 					"isSafari"             => !empty( $_POST[$prefix.'isSafari'] ) ? intval( $_POST[$prefix.'isSafari'] ) : null,
 					"isIOS"                => !empty( $_POST[$prefix.'isIOS'] ) ? intval( $_POST[$prefix.'isIOS'] ) : null,
