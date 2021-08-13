@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * get the real ip address
+ * @return mixed|string - the real ip address
+ */
 function cf7a_get_real_ip() {
 	if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && filter_var( $_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP ) ) {
 		return $_SERVER['HTTP_CLIENT_IP'];
@@ -29,6 +33,12 @@ function cf7a_microtimeFloat() {
 	return (float) $usec + (float) $sec;
 }
 
+/**
+ * Used to display formatted d8 rating into flamingo inbound
+ * @param $rating int - the raw rating
+ *
+ * @return string - html formatted rating
+ */
 function cf7a_formatRating($rating) {
 
 	if (!is_numeric($rating)) return '<span class="flamingo-rating-label" style="background-color:rgb(100,100,100)"><b>'.__('none').'</b></span>';
@@ -39,23 +49,26 @@ function cf7a_formatRating($rating) {
 	return '<span class="flamingo-rating-label" style="background-color:'.$color.'" ><b>' . round( $rating * 100) . "% </b></span>";
 }
 
-// compress arrays into "key:value; " pair
+/**
+ * @param $array - the array of reasons to ban
+ * @param int $is_html - true to return an html string
+ *
+ * @return false|string - Compress arrays into "key:value; " pair
+ */
 function cf7a_compress_array($array, $is_html = 0 ) {
 
 	if (!is_array($array)) return false;
 	$is_html= intval($is_html);
 
-
-	return $output = implode(', ', array_map(
+	return implode('; ', array_map(
 		function ($v, $k) use ($is_html) {
 			if ($is_html) {
-				return sprintf("<b>%s</b>: %s; ", $k, $v);
+				return sprintf("<b>%s</b>: %s", $k, $v);
 			} else {
-				return sprintf("%s: %s; ", $k, $v);
+				return sprintf("%s: %s", $k, $v);
 			}
 		},
 		$array,
 		array_keys($array)
 	));
-
 }
