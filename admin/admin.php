@@ -53,6 +53,8 @@ class CF7_AntiSpam_Admin {
 		add_action( 'admin_init', array( $tools, 'cf7a_handle_blacklist' ) );
 
 		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
+
+		add_action( 'plugin_action_links_'.CF7ANTISPAM_PLUGIN_BASENAME, array($this, 'cf7a_plugin_settings_link'), 10, 2 );
 	}
 
 
@@ -69,6 +71,22 @@ class CF7_AntiSpam_Admin {
 
 	function cf7a_admin_notice() {
     	return '';
+	}
+
+
+	/**
+	 * Add go to settings link on plugin page.
+	 *
+	 * @since 0.2.2
+	 *
+	 * @param  array $links Array of plugin action links.
+	 * @return array Modified array of plugin action links.
+	 */
+	public function cf7a_plugin_settings_link( array $links ) {
+		$settings_page_link = '<a href="' . admin_url( 'admin.php?page=cf7-antispam' ) . '">' . esc_attr__( 'Antispam Settings', 'cf7-antispam' ) . '</a>';
+		array_unshift( $links, $settings_page_link );
+
+		return $links;
 	}
 
 	public function cf7a_admin_dashboard() {
