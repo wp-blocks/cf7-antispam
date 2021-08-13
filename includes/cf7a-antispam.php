@@ -867,7 +867,6 @@ class CF7_AntiSpam_filters {
 
 		}
 
-
 		// hook to add some filters before d8
 		do_action('cf7a_before_b8', $message, $submission, $spam);
 
@@ -881,11 +880,10 @@ class CF7_AntiSpam_filters {
 
 			$rating = $this->cf7a_b8_classify($text);
 
-
 			if ( $spam_score >= 1 || $rating >= $b8_threshold ) {
 
 				$spam = true;
-				error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1)" );
+				error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1 - b8 rating $rating / 1)" );
 
 				$this->cf7a_b8_learn_spam($text);
 
@@ -914,21 +912,27 @@ class CF7_AntiSpam_filters {
 		// hook to add some filters after d8
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
+		// if the autostore ip is enabled (but not exteded debug)
 		if ($options['autostore_bad_ip'] && $spam && !CF7ANTISPAM_DEBUG_EXTENDED) {
 			if ( false === ($this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) ) )
-				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip / CF7ANTISPAM_LOG_PREFIX enabled" );
+				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip" );
 		}
 
-		if ($spam) {
+		// log the antispam result in extended debug mode
+		if (CF7ANTISPAM_DEBUG_EXTENDED) {
+			error_log( CF7ANTISPAM_LOG_PREFIX . "$remote_ip antispam results - " . cf7a_compress_array($reason) );
+		}
 
+		// combines all the reasons for banning in one string
+		if ($spam) {
 			$submission->add_spam_log( array(
 				'agent'  => 'CF7-AntiSpam',
 				'reason' => cf7a_compress_array($reason),
 			) );
-
 		}
 
-		return $spam; // case closed
+		// case closed
+		return $spam;
 	}
 
 }
