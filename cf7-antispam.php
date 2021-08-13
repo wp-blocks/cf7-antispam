@@ -20,7 +20,7 @@ define( 'CF7ANTISPAM_PLUGIN_BASENAME', plugin_basename( CF7ANTISPAM_PLUGIN ) );
 
 define( 'CF7ANTISPAM_PLUGIN_DIR', untrailingslashit( dirname( CF7ANTISPAM_PLUGIN ) ) );
 
-define( 'CF7ANTISPAM_LOG_PREFIX', 'CF7A - ' );
+define( 'CF7ANTISPAM_LOG_PREFIX', 'CF7A: ' );
 
 if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
 if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);

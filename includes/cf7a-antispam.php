@@ -13,8 +13,6 @@ class CF7_AntiSpam_filters {
 
 	}
 
-
-
 	/**
 	 * CF7_AntiSpam_filters Tools
 	 */

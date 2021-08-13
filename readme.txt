@@ -83,7 +83,7 @@ Dnsbl benchmark: if the mail takes so long to be sent, maybe it is a dnsbl that 
 * Configuration error detector (parse stored form ad return if the message field isn't found)
 * CSV Export/import settings, banned ip
 * Resend EMail if not were spam
-* Optimise the way the mail is analysed so that it is not a long script that runs sequentially but rather a series of filters
+* Optimise the the mail analysis (actually is a long script that execute sequentially checks, but rather a series of filters would be better)
 * Selectable ciphers
 
 == Changelog ==
@@ -91,6 +91,7 @@ Dnsbl benchmark: if the mail takes so long to be sent, maybe it is a dnsbl that 
 = 0.2.3 =
 * enhanced fingerprint scripts performance
 * improving debugging output
+* solved an issue with some plugins like conditional forms for cf7
 
 = 0.2.2 =
 * fix safari (macos/ios) detection (with a new custom check)
