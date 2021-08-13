@@ -24,6 +24,8 @@ define( 'CF7ANTISPAM_LOG_PREFIX', 'CF7A - ' );
 
 if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
 if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);
+if (!defined('CF7ANTISPAM_DNSBL_BENCHMARK')) define( 'CF7ANTISPAM_DNSBL_BENCHMARK', false);
+
 if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
 if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
 

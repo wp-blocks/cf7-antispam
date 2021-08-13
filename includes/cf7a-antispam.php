@@ -811,7 +811,7 @@ class CF7_AntiSpam_filters {
 					$performance_test[$dnsbl] = $time_taken;
 				}
 
-				if (CF7ANTISPAM_DEBUG_EXTENDED) {
+				if (CF7ANTISPAM_DNSBL_BENCHMARK) {
 					error_log( CF7ANTISPAM_LOG_PREFIX . "DNSBL performance test" );
 					error_log( print_r($performance_test, true) );
 				}
