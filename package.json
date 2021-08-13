@@ -35,6 +35,6 @@
   },
   "homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
   "devDependencies": {
-    "@wordpress/scripts": "^15.0.1"
+    "@wordpress/scripts": "^17.1.0"
   }
 }
