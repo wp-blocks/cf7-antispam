@@ -800,18 +800,23 @@ class CF7_AntiSpam_filters {
 					$reverse_ip = $this->cf7a_reverse_ipv6( $remote_ip );
 				}
 
-				$performance_test = array();
 				foreach ($options['dnsbl_list'] as $dnsbl) {
 					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 						$reason['dsnbl'][] = $listed;
 						$spam_score += $score_dnsbl;
 					}
-					$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
-					$performance_test[$dnsbl] = $time_taken;
 				}
 
 				if (CF7ANTISPAM_DNSBL_BENCHMARK) {
+					$performance_test = array();
+					foreach ($options['dnsbl_list'] as $dnsbl) {
+						$microtime = cf7a_microtimeFloat();
+						$r = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl );
+						$time_taken = round( cf7a_microtimeFloat() - $microtime, 5 );
+						$performance_test[$dnsbl] = $time_taken;
+					}
+
 					error_log( CF7ANTISPAM_LOG_PREFIX . "DNSBL performance test" );
 					error_log( print_r($performance_test, true) );
 				}
