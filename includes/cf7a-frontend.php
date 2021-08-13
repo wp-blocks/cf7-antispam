@@ -72,7 +72,7 @@ class CF7_AntiSpam_Frontend {
 
 		$html = new DOMDocument();
 		$html->encoding = 'utf-8';
-		$html->loadHTML( mb_convert_encoding($form_elements, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NODEFDTD );
+		$html->loadHTML( mb_convert_encoding( force_balance_tags($form_elements), 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NODEFDTD );
 
 		$inputs  = $html->getelementsbytagname( 'input' );
 		$parents = array();
