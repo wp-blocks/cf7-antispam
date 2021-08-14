@@ -53,8 +53,9 @@ class CF7_AntiSpam_Frontend {
 			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_honeypot_add'), 10, 1  );
 		}
 
+		$hook = $this->options['honeyform_position'];
 		if ( isset( $this->options['check_honeyform'] ) && intval($this->options['check_honeyform']) === 1 ) {
-			if (!is_admin()) add_filter( 'the_content', array( $this,'cf7a_honeyform')  );
+			if (!is_admin()) add_action( $hook, array( $this,'cf7a_honeyform')  );
 		}
 
 		if ( (isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) ||
@@ -200,7 +201,7 @@ class CF7_AntiSpam_Frontend {
 		$html .= '</form></div>';
 		$html = html_entity_decode($html, ENT_COMPAT, 'UTF-8');
 
-		return '<div><div class="wpcf7-form"><div class="' . $form_class . '"><div>' . $html . "</div></div></div></div>" . $content;
+		echo '<div><div class="wpcf7-form"><div class="' . $form_class . '"><div>' . $html . "</div></div></div></div>" . $content;
 	}
 
 	public function cf7a_add_honeypot_css() {

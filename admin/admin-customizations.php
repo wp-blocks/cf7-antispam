@@ -273,6 +273,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_honeyform' // Section
 		);
 
+		// Honeyform position
+		add_settings_field( 'honeyform_position', // ID
+			__('Select where the honeyform will be hidden', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_honeyform_position_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_honeyform' // Section
+		);
+
 
 
 		// Section b8
@@ -514,6 +522,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// honeyform
 		$new_input['check_honeyform'] =  isset( $input['check_honeyform'] ) ? 1 : 0 ;
+		$new_input['honeyform_position'] =  isset( $input['honeyform_position'] ) ? esc_attr__($input['honeyform_position']) : "wp_body_open" ;
 
 
 
@@ -546,6 +555,22 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// store the sanitized options
 		return $new_input;
+	}
+
+	/**
+	 * utility to generate option select items
+	 * @param $values array - the array of selection options
+	 * @param $selected - the name of the selected one (if any)
+	 *
+	 * @return string - the html needed inside the select
+	 */
+	private function cf7a_generate_options($values, $selected = '') {
+		$html = '';
+		foreach ($values as $value) {
+			$sel = ($value == $selected) ? 'selected' : '';
+			$html .= "<option value=\"$value\" $sel>$value</option>";
+		}
+		return $html;
 	}
 
 	/**
@@ -691,7 +716,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
+	public function cf7a_honeyform_position_callback() {
+		printf(
+			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
+			$this->cf7a_generate_options( array( 'wp_body_open', 'the_content', 'wp_footer' ) , isset( $this->options['honeyform_position'] ) ? esc_attr($this->options['honeyform_position']) : '' )
+		);
+	}
 
 	public function cf7a_enable_b8_callback() {
 		printf(
