@@ -16,7 +16,7 @@
 			"memory": navigator.deviceMemory ?? null,
 			"user_agent": ua ?? null,
 			"app_version": navigator.appVersion ?? null,
-			"webdriver": window.navigator.webdriver ?? null,
+			"webdriver": window.navigator.webdriver === false ?? null,
 			"session_storage": sessionStorage ? 1 : null,
 			"isSafari": ua.toLowerCase().indexOf('safari') !== -1 && ua.toLowerCase().indexOf('chrome') === -1 ? true : null,
 			"isIOS": typeof navigator.standalone === 'boolean' ? true : null
