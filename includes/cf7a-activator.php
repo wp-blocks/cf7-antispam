@@ -82,6 +82,8 @@ class CF7_AntiSpam_Activator {
 				"check_bad_user_agent" => true,
 				"check_dnsbl" => true,
 				"check_honeypot" => true,
+				"check_honeyform" => false,
+				"honeyform_position" => "wp_footer",
 				"enable_b8" => true,
 				"b8_threshold" => 0.95,
 				"bad_words_list" => array(
@@ -131,12 +133,14 @@ class CF7_AntiSpam_Activator {
 					'email-address'
 				),
 				"score" => array(
-                    '_fingerprinting' => 0.3,
+                    '_fingerprinting' => 0.25,
 		            '_time' => 1,
 		            '_bad_string' => 1,
-		            '_dnsbl' => 0.3,
+		            '_dnsbl' => 0.25,
 		            '_honeypot' => 1,
-		            '_detection' => 5,
+                    '_honeyform' => 10,
+                    '_detection' => 5,
+		            '_warn' => 1,
 				)
 			) );
 		}
