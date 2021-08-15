@@ -163,7 +163,6 @@ class CF7_AntiSpam_filters {
 
 	public function cf7a_ban_ip($ip, $reason = array(), $spam_score = 1) {
 
-
 		if (false === ($ip = filter_var($ip, FILTER_VALIDATE_IP) )) return false;
 
 		$ip_row = self::cf7a_blacklist_get_ip($ip);
@@ -328,7 +327,6 @@ class CF7_AntiSpam_filters {
 
 					$this->cf7a_ban_ip($flamingo_post->meta['remote_ip'], __("flamingo ban"));
 
-
 				} else if ( $action == 'ham' ) {
 
 					$this->cf7a_b8_unlearn_spam($text);
@@ -353,9 +351,9 @@ class CF7_AntiSpam_filters {
 					$rating,
 					$rating_after)
 				);
-			}
 
-			$this->cf7a_d8_flamingo_message($rating,$rating_after);
+				$this->cf7a_d8_flamingo_message($rating,$rating_after);
+			}
 		}
 	}
 
@@ -547,39 +545,59 @@ class CF7_AntiSpam_filters {
 				$bot_fingerprint = array(
 					"timezone"             => !empty( $_POST[$prefix.'timezone'] ) ? sanitize_text_field( $_POST[$prefix.'timezone'] ) : null,
 					"platform"             => !empty( $_POST[$prefix.'platform'] ) ? sanitize_text_field( $_POST[$prefix.'platform'] ) : null,
-					"hardware_concurrency" => !empty( $_POST[$prefix.'hardware_concurrency'] ) ? intval( $_POST[$prefix.'hardware_concurrency'] ) : null,
 					"screens"              => !empty( $_POST[$prefix.'screens'] ) ? sanitize_text_field( $_POST[$prefix.'screens'] ) : null,
-					"memory"               => !empty( $_POST[$prefix.'memory'] ) ? intval( $_POST[$prefix.'memory'] ) : null,
+					"hardware_concurrency" => !empty( $_POST[$prefix.'hardware_concurrency'] ) && is_numeric($_POST[$prefix.'hardware_concurrency']) ? intval( $_POST[$prefix.'hardware_concurrency'] ) : null,
+					"memory"               => !empty( $_POST[$prefix.'memory'] ) && is_numeric($_POST[$prefix.'memory']) ? floatval( $_POST[$prefix.'memory'] ) : null,
 					"user_agent"           => !empty( $_POST[$prefix.'user_agent'] ) ? sanitize_text_field( $_POST[$prefix.'user_agent'] ) : null,
 					"app_version"          => !empty( $_POST[$prefix.'app_version'] ) ? sanitize_text_field( $_POST[$prefix.'app_version'] ) : null,
 					"webdriver"            => !empty( $_POST[$prefix.'webdriver'] ) ? sanitize_text_field( $_POST[$prefix.'webdriver'] ) : null,
 					"session_storage"      => !empty( $_POST[$prefix.'session_storage'] ) ? intval( $_POST[$prefix.'session_storage'] ) : null,
+					"plugins"              => !empty( $_POST[$prefix.'plugins'] ) ? true : null,
 					"bot_fingerprint"      => !empty( $_POST[$prefix.'bot_fingerprint'] ) ? sanitize_text_field( $_POST[$prefix.'bot_fingerprint'] ) : null,
-					"isSafari"             => !empty( $_POST[$prefix.'isSafari'] ) ? intval( $_POST[$prefix.'isSafari'] ) : null,
-					"isIOS"                => !empty( $_POST[$prefix.'isIOS'] ) ? intval( $_POST[$prefix.'isIOS'] ) : null,
+					"isSafari"             => !empty( $_POST[$prefix.'isSafari'] ) ? true : null,
+					"isFFox"               => !empty( $_POST[$prefix.'isFFox'] ) ? true : null,
+					"isIos"                => !empty( $_POST[$prefix.'isIos'] ) ? true : null,
+					"isAndroid"            => !empty( $_POST[$prefix.'isAndroid'] ) ? true : null,
+					"touch"                => !empty( $_POST[$prefix.'touch'] ) ? true : null,
 				);
 
 				$fails = array();
 				if (!$bot_fingerprint["timezone"]) $fails[] = "timezone";
 				if (!$bot_fingerprint["platform"]) $fails[] = "platform";
-				if ($bot_fingerprint["isSafari"] && !$bot_fingerprint["hardware_concurrency"] >= 2) $fails[] = "hardware_concurrency";
 				if (!$bot_fingerprint["screens"]) $fails[] = "screens";
-				if ($bot_fingerprint["isSafari"] && (!$bot_fingerprint["memory"] || $bot_fingerprint["memory"] == 1))  $fails[] = "memory";
 				if (!$bot_fingerprint["user_agent"]) $fails[] = "user_agent";
 				if (!$bot_fingerprint["app_version"]) $fails[] = "app_version";
 				if (!$bot_fingerprint["webdriver"]) $fails[] = "webdriver";
 				if (!$bot_fingerprint["session_storage"]) $fails[] = "session_storage";
+				if (!$bot_fingerprint["plugins"]) $fails[] = "plugins";
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
-				if ($bot_fingerprint["isIOS"] && !$bot_fingerprint["isSafari"]) $fails[] = "safari_not_ios";
+
+				// navigator hardware_concurrency isn't available under Ios - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
+				if (!$bot_fingerprint["isSafari"] || !$bot_fingerprint["isIos"]) {
+					if ($bot_fingerprint["hardware_concurrency"] >= 1) $fails[] = "hardware_concurrency";
+				} else {
+					if ($bot_fingerprint["hardware_concurrency"] !== null) $fails[] = "hardware_concurrencyIos";
+				}
+
+				if ( $bot_fingerprint["isIos"] || $bot_fingerprint["isAndroid"] ) {
+					if (!$bot_fingerprint["touch"]) $fails[] = "touch";
+				}
+
+				// navigator deviceMemory isn't available with Ios and firexfox  - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory
+				if (!$bot_fingerprint["isSafari"] || !$bot_fingerprint["isIos"] || !$bot_fingerprint["isFFox"] ) {
+					if ( $bot_fingerprint["memory"] >= 0.25 )  $fails[] = "memory";
+				} else {
+					if ( $bot_fingerprint["memory"] !== null )  $fails[] = "memoryIos";
+				}
 
 				if (!empty($fails)) {
 					$spam_score                += count( $fails ) * $score_fingerprinting;
 					$reason['bot_fingerprint'] = implode( ", ", $fails );
 
-					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint, true) );
-
 					if (CF7ANTISPAM_DEBUG)
 						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed " . count( $fails ) . " / " . count( $bot_fingerprint ) . " of the bot fingerprint test ({$reason['bot_fingerprint']})" );
+
+					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint, true) );
 				}
 
 			}
@@ -611,10 +629,11 @@ class CF7_AntiSpam_filters {
 					$spam_score += count($fails) * $score_fingerprinting;
 					$reason['bot_fingerprint_extras'] = implode(", ", $fails);
 
-					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint_extras, true) );
-
 					if (CF7ANTISPAM_DEBUG)
 						error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip hasn't passed ".count($fails)." / " . count( $bot_fingerprint_extras ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})" );
+
+					if (CF7ANTISPAM_DEBUG_EXTENDED) error_log( CF7ANTISPAM_LOG_PREFIX . print_r($bot_fingerprint_extras, true) );
+
 				}
 
 			}
@@ -912,7 +931,7 @@ class CF7_AntiSpam_filters {
 
 		// if the autostore ip is enabled (but not exteded debug)
 		if ($options['autostore_bad_ip'] && $spam && !CF7ANTISPAM_DEBUG_EXTENDED) {
-			if ( false === ($this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) ) )
+			if ( false === $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) )
 				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip" );
 		}
 

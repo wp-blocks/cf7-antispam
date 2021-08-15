@@ -5,22 +5,63 @@
 
   const cf7a_prefix = cf7a_settings.prefix;
 
+  let testTouch = () => {
+		if ("maxTouchPoints" in navigator) {
+		testTouch = navigator.maxTouchPoints > 0;
+		} else if ("msMaxTouchPoints" in navigator) {
+		testTouch = navigator.msMaxTouchPoints > 0;
+		} else {
+			var mQ = window.matchMedia && matchMedia("(pointer:coarse)");
+			if (mQ && mQ.media === "(pointer:coarse)") {
+				testTouch = !!mQ.matches;
+			} else if ('orientation' in window) {
+				testTouch = true; // deprecated, but good fallback
+			} else {
+				// Only as a last resort, fall back to user agent sniffing
+				var UA = navigator.userAgent;
+				testTouch = (
+					/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+					/\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)
+				);
+			}
+		}
+		return testTouch;
+	}
+
   const browserFingerprint = () => {
+  	// as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
 		const ua = navigator.userAgent;
 
-		return {
-			"timezone": window.Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
+		let tests = {
+			"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
 			"platform": navigator.platform ?? null,
-			"hardware_concurrency": navigator.hardwareConcurrency  ?? null,
-			"screens": [window.screen.width, window.screen.height] ?? null,
+			"hardware_concurrency": navigator.hardwareConcurrency ?? null,
+			"screens": [screen.width, screen.height] ?? null,
 			"memory": navigator.deviceMemory ?? null,
 			"user_agent": ua ?? null,
 			"app_version": navigator.appVersion ?? null,
-			"webdriver": window.navigator.webdriver === false ?? null,
+			"webdriver": navigator.webdriver === false ?? null,
 			"session_storage": sessionStorage ? 1 : null,
-			"isSafari": ua.toLowerCase().indexOf('safari') !== -1 && ua.toLowerCase().indexOf('chrome') === -1 ? true : null,
-			"isIOS": typeof navigator.standalone === 'boolean' ? true : null
+			"plugins": typeof navigator.plugins ? 1 : null
 		};
+
+		// detect browser
+		if (ua.toLowerCase().indexOf('safari') !== -1 && ua.toLowerCase().indexOf('chrome') === -1) {
+			tests.isSafari = true;
+		} else if (ua.toLowerCase().indexOf('firefox') !== -1) {
+			tests.isFFox = true;
+		}
+
+		if (typeof navigator.standalone === 'boolean') {
+			// Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
+			tests.isIos = true;
+		} else if (ua.toLowerCase().indexOf('android') !== -1) {
+			tests.isAndroid = true;
+		}
+
+		if ( tests.isIos || tests.isAndroid || testTouch() ) tests.touch = true;
+
+		return tests;
   };
 
   const wpcf7Forms = document.querySelectorAll('.wpcf7');
@@ -104,8 +145,6 @@
         document.body.addEventListener( 'mouseup', activity);
         document.body.addEventListener( 'touchend', activity);
 
-
-
         // 2.2) detect the mouse/touch direction change OR touchscreen iterations
         const mouseMove = function (e) {
           if (e.pageY > oldy) {
@@ -120,13 +159,16 @@
         };
         document.addEventListener('mousemove', mouseMove);
 
-				// container user for hidden test
-        let wpcf7box = document.createElement('div');
-        wpcf7box.id = 'hidden';
-				hiddenInputsContainer.append(wpcf7box);
+        // set mousemove_activity true as fallback in mobile devices (we have already tested the ability to use the touchscreen)
+        if (typeof navigator.standalone === 'boolean' || ua.toLowerCase().indexOf('android') !== -1) {
+					$(hiddenInputsContainer)[0].append(createCF7Afield("mousemove_activity", "passed"));
+				}
 
-				// 2.5) WebGL Tests
-        // credits //bot.sannysoft.com
+				// 2.3) WebGL Tests
+				// credits //bot.sannysoft.com
+				let wpcf7box = document.createElement('div');
+				wpcf7box.id = 'hidden';
+				hiddenInputsContainer.append(wpcf7box);
         String.prototype.hashCode = function () {
           var hash = 0, i, chr;
           if (this.length === 0) return hash;
@@ -325,6 +367,7 @@
         wpcf7box.remove();
       }
     }
+
   }
 
 })(jQuery);
