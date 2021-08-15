@@ -71,7 +71,7 @@ also advice, reports, suggestions. Everyone can contribute, my intent is to keep
 Enable **debug mode**
 `define( 'CF7ANTISPAM_DEBUG', true);`
 
-Enable **extended debug mode** (disable-autoban, prints fingerprinting results)
+Enable **extended debug mode** (disable-autoban, prints fingerprinting results). in addition if you deactivate this plugin plugin options and d8 words database will not be deleted.
 `define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
 
 Dnsbl benchmark: if the mail takes so long to be sent, maybe it is a dnsbl that is taking so long to reply. with this option active, the time that each dns took to reply is printed in the log.
@@ -92,6 +92,7 @@ Dnsbl benchmark: if the mail takes so long to be sent, maybe it is a dnsbl that 
 * enhanced fingerprint scripts performance
 * improving debugging output
 * solved an issue with some plugins like conditional forms for cf7
+* improved mobile fingerprinting
 
 = 0.2.2 =
 * fix safari (macos/ios) detection (with a new custom check)

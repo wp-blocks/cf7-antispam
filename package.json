@@ -1,6 +1,6 @@
 {
   "name": "contact-form-7-antispam",
-  "version": "0.0.1",
+  "version": "0.2.3",
   "description": "AntiSpam for Contact Form 7",
   "private": true,
   "scripts": {
