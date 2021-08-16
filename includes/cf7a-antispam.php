@@ -105,10 +105,15 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
+	public function cf7a_sanitize_before_b8($string) {
+		$clear_string = preg_replace('/[\x{1F600}-\x{1F64F}]/', '', $string); // Match Emoticons
+		return sanitize_text_field($clear_string);
+	}
+
 	public function cf7a_b8_classify($message) {
 		$time_elapsed = cf7a_microtimeFloat();
 
-		$rating = $this->b8->classify( $message );
+		$rating = $this->b8->classify( $this->cf7a_sanitize_before_b8($message) );
 
 		if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
 			error_log( CF7ANTISPAM_LOG_PREFIX .'d8 email classification: ' . $rating );
@@ -124,19 +129,19 @@ class CF7_AntiSpam_filters {
 	}
 
 	public function cf7a_b8_learn_spam($message) {
-		$this->b8->learn( $message, b8\b8::SPAM );
+		if (!empty($message)) $this->b8->learn( $this->cf7a_sanitize_before_b8($message), b8\b8::SPAM );
 	}
 
 	public function cf7a_b8_unlearn_spam($message) {
-		$this->b8->unlearn( $message, b8\b8::SPAM );
+		if (!empty($message)) $this->b8->unlearn( $this->cf7a_sanitize_before_b8($message), b8\b8::SPAM );
 	}
 
 	public function cf7a_b8_learn_ham($message) {
-		$this->b8->learn( $message, b8\b8::HAM );
+		if (!empty($message)) $this->b8->learn( $this->cf7a_sanitize_before_b8($message), b8\b8::HAM );
 	}
 
 	public function cf7a_b8_unlearn_ham($message) {
-		$this->b8->unlearn( $message, b8\b8::HAM );
+		if (!empty($message)) $this->b8->unlearn( $this->cf7a_sanitize_before_b8($message), b8\b8::HAM );
 	}
 
 
