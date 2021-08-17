@@ -75,8 +75,6 @@ class CF7_AntiSpam_Admin_Tools {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
 					wp_redirect( $url );
 				}
-
-				exit();
 			}
 
 			// Rebuild Dictionary
@@ -117,13 +115,59 @@ class CF7_AntiSpam_Admin_Tools {
 				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status ) );
 				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">[unban ip]</a></small></p>', $row->ip, esc_url( $url ) );
 				$html .= sprintf( "<span class='data ellipsis'>%s</span></div>", cf7a_compress_array($meta['reason'], 1)  );
-				//$html .= sprintf( print_r($meta, true)  );
 				$html .= "</div>";
+
 			}
 			$html .= '</div></div>';
 
 			echo $html;
 		}
+	}
+
+	public static function cf7a_advanced_settings() {
+
+		// the header
+		$html = printf('<div class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
+			__('Advanced settings', 'cf7-antispam'),
+			__('Use them if you know what you are doing!', 'cf7-antispam')
+		);
+
+		// output the button to remove all the entries in the blacklist database
+		$html .= printf('<hr/><h3>%s</h3><p>%s</p>',
+			__('Blacklist Reset', 'cf7-antispam'),
+			__('If you need to remove or reset the whole blacklist data on your server.', 'cf7-antispam')
+		);
+		$url = wp_nonce_url( add_query_arg("action", "reset-blacklist", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
+		$html .= printf('<pre><button class="button" datahref="%s" onclick="confirmationAlert(this)">%s</button></pre>', esc_url( $url ), __('Remove all blacklisted IP from database', 'cf7-antispam') );
+
+
+		// output the button to remove all the words into dictionary
+		$html .= printf('<hr/><h3>%s</h3><p>%s</p>',
+			__('Dictionary Reset', 'cf7-antispam'),
+			__('Use only if you need to reset the whole b8 dictionary.', 'cf7-antispam')
+		);
+		$url = wp_nonce_url( add_query_arg("action", "reset-dictionary", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
+		$html .= printf('<pre><button class="button" datahref="%s" onclick="confirmationAlert(this)">%s</button></pre>', esc_url( $url ), __('Reset b8 dictionary', 'cf7-antispam') );
+
+		// output the button to rebuild b8 dictionary
+		$html .= printf('<hr/><h3>%s</h3><p>%s</p>',
+			__('Rebuid Dictionary', 'cf7-antispam'),
+			__('Reanalyze all the Flamingo inbound emails (you may need to reset dictionary before).', 'cf7-antispam')
+		);
+		$url = wp_nonce_url( add_query_arg("action", "rebuild-dictionary", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
+		$html .= printf('<pre><button class="button" datahref="%s" onclick="confirmationAlert(this)">%s</button></pre>', esc_url( $url ), __('Rebuild b8 dictionary', 'cf7-antispam') );
+
+
+		// the confirmation alert script
+		$html .= printf('<script>function confirmationAlert(e) { if (confirm("%s")) location.href = e.getAttribute("datahref"); }</script>', esc_html__('Are you sure?', 'cf7-antispam') );
+
+
+		$html .= printf('</div>');
+
+		return $html;
+
+
+
 	}
 
 	public static function cf7a_get_debug_info() {
@@ -132,12 +176,8 @@ class CF7_AntiSpam_Admin_Tools {
 
 			$options = CF7_AntiSpam::get_options();
 
-			$url = wp_nonce_url( add_query_arg("action", "clean-blacklist", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
-
-			$html = printf('<div>');
-
 			// the header
-			$html .= printf('<div class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
+			$html = printf('<div class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
 				__('Debug info', 'cf7-antispam'),
 				__('(...If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true)', 'cf7-antispam')
 			);
@@ -148,15 +188,6 @@ class CF7_AntiSpam_Admin_Tools {
 			if (CF7ANTISPAM_DEBUG_EXTENDED) $html .= printf('<p class="debug">%s</p>',
 				'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html(__('is enabled', 'cf7-antispam'))
 			);
-
-			// output the button to remove all the entries in the blacklist database
-			$html .= printf('<hr/><h3>%s</h3><p>%s</p>',
-				__('Blacklist Reset', 'cf7-antispam'),
-				__('If you need to remove or reset the whole blacklist data on your server', 'cf7-antispam')
-			);
-
-			// output the button to remove all the entries in the blacklist database
-			$html .= printf('<pre><a class="button" href="%s">%s</a></pre>', esc_url( $url ), __('Remove all blacklisted IP from database', 'cf7-antispam') );
 
 			// output the options
 			$html .= printf('<hr/><h3>%s</h3>', __('Options debug', 'cf7-antispam') );
