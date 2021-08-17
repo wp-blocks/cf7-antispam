@@ -8,9 +8,7 @@ class CF7_AntiSpam_filters {
 	 * CF7_AntiSpam_filters constructor.
 	 */
 	public function __construct() {
-
 		$this->b8 = $this->cf7a_b8_init();
-
 	}
 
 	/**
@@ -229,7 +227,23 @@ class CF7_AntiSpam_filters {
 	public function cf7a_clean_blacklist() {
 		global $wpdb;
 		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_blacklist" );
-		return !is_wp_error($r) ? true : false;
+		return !is_wp_error($r);
+	}
+
+	public function cf7a_reset_dictionary() {
+		global $wpdb;
+		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_wordlist" );
+
+		if (!is_wp_error($r)) {
+			$wpdb->query( "INSERT INTO " . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`) VALUES ('b8*dbversion', '3');" );
+			$wpdb->query( "INSERT INTO " . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');" );
+			return true;
+		}
+		return false;
+	}
+
+	public function cf7a_rebuild_dictionary() {
+		return $this->cf7a_analyze_all_flamingo_mails();
 	}
 
 	public function cf7a_d8_flamingo_message($before, $after) {
@@ -244,7 +258,8 @@ class CF7_AntiSpam_filters {
 	 * CF7_AntiSpam_filters Flamingo
 	 */
 
-	public function cf7a_flamingo_on_install() {
+	private function cf7a_analyze_all_flamingo_mails() {
+
 		// get all the flamingo inbound post and classify them
 		$args = array(
 			'post_type' => 'flamingo_inbound',
@@ -271,6 +286,7 @@ class CF7_AntiSpam_filters {
 
 			endwhile;
 
+			// we need to teach to b8 what is spam or not before classify mails
 			foreach ($post_storage as $id => $post) {
 				update_post_meta( $id, '_cf7a_b8_classification', $this->cf7a_b8_classify($post) );
 			};
@@ -278,7 +294,11 @@ class CF7_AntiSpam_filters {
 		endif;
 	}
 
-	public static function cf7a_flamingo_on_uninstall() {
+	public function cf7a_flamingo_on_install() {
+		// $this->cf7a_analyze_all_flamingo_mails();
+	}
+
+	private function cf7a_reset_b8_classification() {
 		// get all the flamingo inbound post and delete the custom meta created with this plugin
 		$args = array(
 			'post_type' => 'flamingo_inbound',
@@ -291,6 +311,10 @@ class CF7_AntiSpam_filters {
 				delete_post_meta( get_the_ID(), '_cf7a_b8_classification');
 			endwhile;
 		endif;
+	}
+
+	public function cf7a_flamingo_on_uninstall() {
+		$this->cf7a_reset_b8_classification();
 	}
 
 	public function cf7a_d8_flamingo_classify() {
@@ -362,7 +386,11 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
-	public function cf7a_d8_flamingo_classify_first( $result ) {
+	/**
+	 * Using the id of the newly stored flamingo email set the classification meta to that post
+	 * @param $result
+	 */
+	public function cf7a_store_b8_classification( $result ) {
 
 		$submission = WPCF7_Submission::get_instance();
 
@@ -381,6 +409,9 @@ class CF7_AntiSpam_filters {
 			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', $rating );
 		}
 	}
+
+
+	// FLAMINGO CUSTOMIZATION
 
 	public function flamingo_columns($columns) {
 		return array_merge( $columns, array(

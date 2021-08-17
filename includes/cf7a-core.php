@@ -145,8 +145,9 @@ class CF7_AntiSpam {
 		// the spam filter
 		add_filter( 'wpcf7_spam', array($plugin_antispam, 'cf7a_spam_filter'), 8, 1 );
 
+		// if flamingo is defined the mail will be analyzed after flamingo has stored
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
-			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_d8_flamingo_classify_first' ), 11, 1 );
+			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_store_b8_classification' ), 11, 1 );
 		}
 
 		if (is_admin()) {
@@ -195,7 +196,12 @@ class CF7_AntiSpam {
 			$this->loader->run();
 		} else {
 			add_action('admin_notices', function () {
-				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __("CF7 AntiSpam needs Contact Form 7 Activated in order to work", "cf7-antispam" ) );
+				printf( '<div class="notice notice-info"><p>%s<a href="%s">%s</a>%s</p></div>',
+					esc_html__('CF7 AntiSpam need ', 'cf7-antispam'),
+					esc_url( 'https://wordpress.org/plugins/contact-form-7/' ),
+					esc_html__('Contact Form 7', 'cf7-antispam'),
+					esc_html__(' installed and enabled in order to work.', 'cf7-antispam')
+				);
 			});
 		}
 	}
