@@ -50,29 +50,22 @@ class CF7_AntiSpam_Admin {
 
 		$tools = new CF7_AntiSpam_Admin_Tools();
 
-		add_action( 'admin_init', array( $tools, 'cf7a_handle_blacklist' ) );
+		add_action( 'admin_notices', array( $this, 'cf7a_display_notices' ) );
 
 		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
 
 		add_action( 'plugin_action_links_'.CF7ANTISPAM_PLUGIN_BASENAME, array($this, 'cf7a_plugin_settings_link'), 10, 2 );
 	}
 
-
 	public function cf7a_admin_menu() {
 		add_submenu_page( 'wpcf7',
-			__( 'Antispam', 'cf7-antispam' ),
-			__( 'Antispam', 'cf7-antispam' )
-			. $this->cf7a_admin_notice(),
+			__( 'Antispam', $this->plugin_name ),
+			__( 'Antispam', $this->plugin_name ),
 			'wpcf7_edit_contact_forms',
-			'cf7-antispam',
+			$this->plugin_name,
 			array( $this, 'cf7a_admin_dashboard' )
 		);
 	}
-
-	function cf7a_admin_notice() {
-    	return '';
-	}
-
 
 	/**
 	 * Add go to settings link on plugin page.
@@ -90,10 +83,24 @@ class CF7_AntiSpam_Admin {
 	}
 
 	public function cf7a_admin_dashboard() {
-
 		$admin_display = new CF7_AntiSpam_Admin_Display();
 		$admin_display->display_dashboard();
+	}
 
+	public function cf7a_display_notices() {
+
+		$admin_page = get_current_screen();
+		if (false === strpos($admin_page->base, $this->plugin_name )) return;
+
+		$settings_updated = isset( $_REQUEST['settings-updated'] ) ? sanitize_text_field( $_REQUEST['settings-updated'] ) : false;
+		if ( $settings_updated === 'true' ) {
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Antispam setting updated with success', 'cf7-antispam' ), "success" );
+		}
+
+		if ( false !== ( $notice = get_transient( 'cf7a_notice' )) ) {
+			echo $notice;
+			delete_transient( 'cf7a_notice' );
+		}
 	}
 
 	/**

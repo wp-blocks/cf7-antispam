@@ -12,8 +12,7 @@ class CF7_AntiSpam_Admin_Display {
 	public $options;
 
   public function display_dashboard() {
-	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_header' ), 20 );
-	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_notices' ), 21 );
+		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_header' ) );
 	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
 	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_footer' ), 23 );
 
@@ -29,23 +28,11 @@ class CF7_AntiSpam_Admin_Display {
 	  echo $html;
   }
 
-
-	function cf7a_display_notices() {
-
-    $action = isset($_GET['action']) ? sanitize_text_field($_GET['action']) : false;
-
-		// admin notices
-		if ($action === 'success') {
-				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice(__('Success', 'cf7-antispam'), 'success' );
-		} else if ($action === 'fail') {
-				echo CF7_AntiSpam_Admin_Tools::cf7a_push_notice(__('Error', 'cf7-antispam'), 'error' );
-		}
-	}
-
 	function cf7a_display_content() {
-	  $dismissible_banner_class = ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ) ? ' hidden' : '';
-    ?>
+		CF7_AntiSpam_Admin_Tools::cf7a_handle_actions();
 
+		$dismissible_banner_class = ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ) ? ' hidden' : '';
+    ?>
     <div class="card welcome-panel banner dismissible<?php echo $dismissible_banner_class ?>">
 			<div class="inside">
 				<a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
@@ -95,6 +82,9 @@ class CF7_AntiSpam_Admin_Display {
 
 	  // prints the blacklisted ip, the rating and some informations
 	  $tools->cf7a_get_blacklisted_table();
+
+	  // returns the plugins debug informations
+		$tools->cf7a_advanced_settings();
 
 	  // returns the plugins debug informations
 	  $tools->cf7a_get_debug_info();

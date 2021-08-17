@@ -5,7 +5,8 @@ class CF7_AntiSpam_Admin_Tools {
 	public static function cf7a_push_notice($message = "generic", $type = "error", $dismissible = true) {
 		$class = "notice notice-$type";
 		$class .= $dismissible ? ' is-dismissible' : '';
-		return sprintf( '<div class="%s"><p>%s</p></div>', esc_attr( $class ), esc_html( $message ) );
+		$notice = sprintf( '<div class="%s"><p>%s</p></div>', esc_attr( $class ), esc_html( $message ) );
+		set_transient( 'cf7a_notice', $notice );
 	}
 
 	public static function cf7a_format_status($rank) {
@@ -14,19 +15,18 @@ class CF7_AntiSpam_Admin_Tools {
 		return "<span class='ico' style='background-color: rgba(250,$color,0)'>$rank</span>";
 	}
 
-	public static function cf7a_handle_blacklist() {
+	public static function cf7a_handle_actions() {
 
-		$req_nonce = isset($_REQUEST['cf7a-nonce']) ? wp_verify_nonce( $_REQUEST['cf7a-nonce'], 'cf7a-nonce' ) : null;
-		$action = isset($_REQUEST['action']) ? sanitize_text_field($_REQUEST['action']) : false;
-
-		$url = esc_url( menu_page_url( 'cf7-antispam', false ) );
+		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : false;
+		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
 		if ( $action === 'dismiss-banner' ) {
-
 			update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1 );
 			wp_redirect( $url );
 			exit();
 		}
+
+		$req_nonce = isset($_REQUEST['cf7a-nonce']) ? wp_verify_nonce( $_REQUEST['cf7a-nonce'], 'cf7a-nonce' ) : null;
 
 		if ( $req_nonce ) {
 
@@ -40,27 +40,57 @@ class CF7_AntiSpam_Admin_Tools {
 				$r = $filter->cf7a_unban_by_id( $unban_id );
 
 				if (!is_wp_error($r)) {
-					wp_redirect( add_query_arg('action', 'success', $url ));
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( "Success: ip $unban_id unbanned", 'cf7-antispam' ), "success" );
+					wp_redirect( $url );
 				} else {
-					wp_redirect( add_query_arg('action', 'fail', $url ));
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( "Error: unable to unban $unban_id", 'cf7-antispam' ) );
+					wp_redirect( $url );
 				}
-
-				exit();
-
 			}
 
 			// Purge the blacklist
-			if ( $action === 'clean-blacklist' ) {
+			if ( $action === 'reset-blacklist' ) {
 
 				$r = $filter->cf7a_clean_blacklist();
 
 				if (!is_wp_error($r)) {
-					wp_redirect( add_query_arg('action', 'success', $url ));
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Success: ip blacklist cleaned', 'cf7-antispam' ), "success" );
+					wp_redirect( $url );
 				} else {
-					wp_redirect( add_query_arg('action', 'fail', $url ));
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' ) );
+					wp_redirect( $url );
+				}
+			}
+
+
+			// Reset Dictionary
+			if ( $action === 'reset-dictionary' ) {
+
+				$r = $filter->cf7a_reset_dictionary();
+
+				if (!is_wp_error($r)) {
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'b8 dictionary reset successful', 'cf7-antispam' ), "success" );
+					wp_redirect( $url );
+				} else {
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
+					wp_redirect( $url );
 				}
 
 				exit();
+			}
+
+			// Rebuild Dictionary
+			if ( $action === 'rebuild-dictionary' ) {
+
+				$r = $filter->cf7a_rebuild_dictionary();
+
+				if (!is_wp_error($r)) {
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'b8 dictionary rebuild successful', 'cf7-antispam' ), "success" );
+					wp_redirect( $url );
+				} else {
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Something goes wrong while rebuildomg b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
+					wp_redirect( $url );
+				}
 			}
 
 		}
