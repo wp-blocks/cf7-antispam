@@ -40,6 +40,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_auto_blacklist' // Section
 		);
 
+		// unban after
+		add_settings_field( 'unban_after', // ID
+			__('Automatic Unban', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_unban_after_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_auto_blacklist' // Section
+		);
+
 
 		// Section Bot Fingerprint
 		add_settings_section( 'cf7a_bot_fingerprint', // ID
@@ -66,7 +74,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Settings bot_fingerprint
 		add_settings_field( 'append_on_submit', // ID
-			__('Append hidden field on submit', 'cf7-antispam'), // Title
+			__('Append hidden fields on submit', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_append_on_submit_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_bot_fingerprint' // Section
@@ -84,7 +92,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Settings check_time
 		add_settings_field( 'check_time', // ID
-			__('Check the elapsed Time', 'cf7-antispam'), // Title
+			__('Check the elapsed time', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_time_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_time_elapsed' // Section
@@ -92,7 +100,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Settings check_time
 		add_settings_field( 'check_time_min', // ID
-			__('Minimum elapsed Time', 'cf7-antispam'), // Title
+			__('Minimum elapsed time', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_time_min_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_time_elapsed' // Section
@@ -100,7 +108,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Settings check_time
 		add_settings_field( 'check_time_max', // ID
-			__('Maximum Elapsed Time', 'cf7-antispam'), // Title
+			__('Maximum elapsed time', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_time_max_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_time_elapsed' // Section
@@ -428,7 +436,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_print_section_auto_blacklist() {
-		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted", 'cf7-antispam') . '</p>' );
+		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted. However you can decide to unban that IP after some time", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_section_bot_fingerprint() {
 		printf( '<p>' . esc_html__("Enable some extra check to detect bot activity", 'cf7-antispam') . '</p>' );
@@ -495,8 +503,16 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['bad_ip_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_ip_list'] ));
 		}
 
-		// autoban
-		$new_input['autostore_bad_ip'] =  isset( $input['autostore_bad_ip'] ) ? 1 : 0 ;
+		// auto-ban
+		$new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0 ;
+		// auto-unban
+		if ( isset( $input['unban_after'] ) && in_array( $input['unban_after'] , array( 'hourly', 'twicedaily', 'daily', 'weekly' )) ) {
+			$new_input['unban_after'] = $input['unban_after'];
+			wp_clear_scheduled_hook( 'cron_unban' );
+			wp_schedule_event( time(), $input['unban_after'], 'cron_unban' );
+		} else {
+			$new_input['unban_after'] = 'disabled';
+		}
 
 		// bad words
 		$new_input['check_bad_words'] =  isset( $input['check_bad_words'] ) ? 1 : 0 ;
@@ -592,6 +608,13 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	public function cf7a_unban_after_callback() {
+		printf(
+			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
+			$this->cf7a_generate_options( array( 'disabled', 'hourly', 'twicedaily', 'daily', 'weekly' ) , isset( $this->options['unban_after'] ) ? esc_attr($this->options['unban_after']) : 'disabled' )
+		);
+	}
+
 	public function cf7a_check_bot_fingerprint_callback() {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint" name="cf7a_options[check_bot_fingerprint]" %s />',
@@ -621,13 +644,13 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_time_min_callback() {
 		printf(
 			'<input type="number" id="check_time_min" name="cf7a_options[check_time_min]" value="%s" step="1" />',
-			isset( $this->options['check_time_min'] ) ? esc_attr( $this->options['check_time_min']) : 'none'
+			isset( $this->options['check_time_min'] ) ? esc_attr( $this->options['check_time_min']) : 6
 		);
 	}
 	public function cf7a_check_time_max_callback() {
 		printf(
 			'<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />',
-			isset( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max']) : 'none'
+			isset( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max']) : 3600
 		);
 	}
 

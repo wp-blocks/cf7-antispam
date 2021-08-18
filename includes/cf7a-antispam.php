@@ -79,7 +79,7 @@ class CF7_AntiSpam_filters {
 		$form_post = get_page_by_path($form->slug, '', 'wpcf7_contact_form');
 
 		// get the additional setting of the form
-		$additional_settings = isset($form_post->ID) ? $this->cf7a_get_mail_additional_data($form_post->ID) : false;
+		$additional_settings = isset($form_post->ID) ? $this->cf7a_get_mail_additional_data($form_post->ID) : null;
 
 		// if the message field was find return it
 		if ( isset($additional_settings) && isset( $flamingo_post->fields[$additional_settings['message']] ) ) {
@@ -245,6 +245,14 @@ class CF7_AntiSpam_filters {
 		return (!is_wp_error($r)) ? $r : $wpdb->last_error;
 
 	}
+
+	public function cron_unban() {
+		global $wpdb;
+		error_log( CF7ANTISPAM_LOG_PREFIX . "unban cron run for real" );
+		return $wpdb->get_row( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
+	}
+
+
 
 	// Database management Flamingo
 
@@ -442,7 +450,6 @@ class CF7_AntiSpam_filters {
 			echo cf7a_formatRating( $classification );
 		}
 	}
-
 
 	/**
 	 * CF7_AntiSpam_filters The antispam filter
