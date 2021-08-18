@@ -1,1 +1,466 @@
-!function(e){var t={};function n(a){if(t[a])return t[a].exports;var r=t[a]={i:a,l:!1,exports:{}};return e[a].call(r.exports,r,r.exports,n),r.l=!0,r.exports}n.m=e,n.c=t,n.d=function(e,t,a){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:a})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var a=Object.create(null);if(n.r(a),Object.defineProperty(a,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var r in e)n.d(a,r,function(t){return e[t]}.bind(null,r));return a},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(t,n){!function(t){"use strict";const n=cf7a_settings.prefix;let a=()=>{if("maxTouchPoints"in navigator)a=navigator.maxTouchPoints>0;else if("msMaxTouchPoints"in navigator)a=navigator.msMaxTouchPoints>0;else{var e=window.matchMedia&&matchMedia("(pointer:coarse)");if(e&&"(pointer:coarse)"===e.media)a=!!e.matches;else if("orientation"in window)a=!0;else{var t=navigator.userAgent;a=/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(t)||/\b(Android|Windows Phone|iPad|iPod)\b/i.test(t)}}return a};const r=()=>{var e,t,n,r,o,i,l;const d=navigator.userAgent;let c={timezone:null!==(e=Intl.DateTimeFormat().resolvedOptions().timeZone)&&void 0!==e?e:null,platform:null!==(t=navigator.platform)&&void 0!==t?t:null,hardware_concurrency:null!==(n=navigator.hardwareConcurrency)&&void 0!==n?n:null,screens:null!==(r=[screen.width,screen.height])&&void 0!==r?r:null,memory:null!==(o=navigator.deviceMemory)&&void 0!==o?o:null,user_agent:null!=d?d:null,app_version:null!==(i=navigator.appVersion)&&void 0!==i?i:null,webdriver:null!==(l=!1===navigator.webdriver)&&void 0!==l?l:null,session_storage:sessionStorage?1:null,plugins:(navigator.plugins,1)};return-1!==d.toLowerCase().indexOf("safari")&&-1===d.toLowerCase().indexOf("chrome")?c.isSafari=!0:-1!==d.toLowerCase().indexOf("firefox")&&(c.isFFox=!0),"boolean"==typeof navigator.standalone?c.isIos=!0:-1!==d.toLowerCase().indexOf("android")&&(c.isAndroid=!0),(c.isIos||c.isAndroid||a())&&(c.touch=!0),c},o=document.querySelectorAll(".wpcf7"),i=(e,t,a=n)=>{let r=document.createElement("input");return r.setAttribute("type","hidden"),r.setAttribute("name",a+e),r.setAttribute("value","string"==typeof t?t:JSON.stringify(t)),r};if(o.length){let a=0,l=0,d=0;for(const c of o){const o=t(c)[0].querySelector("form > div"),s=t(o)[0].querySelector("input[name="+n+"bot_fingerprint]"),u=t(o)[0].querySelector("input[name="+n+"bot_fingerprint_extras]"),f=t(o)[0].querySelector("input[name="+n+"append_on_submit]");let m={};if(s)if(s.setAttribute("value",s.getAttribute("value").slice(0,5)),m=r(),f){const e=t(c)[0].querySelector("form");let a=new FormData(e.formData);e.addEventListener("formdata",e=>{for(const[t,a]of Object.entries(m).sort(()=>Math.random()-.5))e.formData.append(n+t,a);a=e.formData})}else for(const[e,n]of Object.entries(m).sort(()=>Math.random()-.5))t(o)[0].append(i(e,n));if(u){const r=function(e){let a=t(o)[0].querySelector("input[name="+n+"activity]");a&&a.remove(),t(o)[0].append(i("activity",d++)),d>3&&(document.body.removeEventListener("mouseup",r),document.body.removeEventListener("touchend",r),t(o)[0].append(i("mouseclick_activity","passed")))};document.body.addEventListener("mouseup",r),document.body.addEventListener("touchend",r);const c=function(e){e.pageY>a&&(l+=1),a=e.pageY,l>3&&(document.removeEventListener("mousemove",c),t(o)[0].append(i("mousemove_activity","passed")))};document.addEventListener("mousemove",c);let s=document.createElement("div");s.id="hidden",o.append(s),String.prototype.hashCode=function(){var e,t=0;if(0===this.length)return t;for(e=0;e<this.length;e++)t=(t<<5)-t+this.charCodeAt(e),t|=0;return t};let u=document.createElement("div");u.id="webgl-vendor",s.append(u);const f=document.getElementById("webgl-vendor");let m=document.createElement("div");m.id="webgl-renderer",s.append(m);const p=document.getElementById("webgl-renderer"),v=document.createElement("canvas"),g=v.getContext("webgl")||v.getContext("webgl-experimental");if(g){const e=g.getExtension("WEBGL_debug_renderer_info");try{const n=g.getParameter(e.UNMASKED_VENDOR_WEBGL);f.innerHTML=n,"Brian Paul"===n||"Google Inc."===n?t(o)[0].append(i("webgl","failed")):t(o)[0].append(i("webgl","passed"))}catch(e){f.innerHTML="Error: "+e}try{const n=g.getParameter(e.UNMASKED_RENDERER_WEBGL);p.innerHTML=n,"Mesa OffScreen"===n||-1!==n.indexOf("Swift")?t(o)[0].append(i("webgl_render","failed")):t(o)[0].append(i("webgl_render","passed"))}catch(e){p.innerHTML="Error: "+e}}else t(o)[0].append(i("webgl","failed")),t(o)[0].append(i("webgl_render","failed"));let b=[],y=[];b[1]=document.createElement("div"),b[1].id="canvas1",b[2]=document.createElement("div"),b[2].id="canvas2",b[3]=document.createElement("div"),b[3].id="canvas3",y[3]=document.createElement("iframe"),y[3].id="canvas3-iframe",y[3].class="canvased",y[3].setAttribute("sandbox","allow-same-origin"),b[3].append(y[3]),b[4]=document.createElement("div"),b[4].id="canvas4",y[4]=document.createElement("iframe"),y[4].id="canvas4-iframe",y[4].class="canvased",y[4].setAttribute("sandbox","allow-same-origin"),b[4].append(y[4]),b[5]=document.createElement("div"),b[5].id="canvas5",y[5]=document.createElement("iframe"),y[5].id="canvas5-iframe",y[5].class="canvased",b[5].append(y[5]),b.forEach((function(e){s.appendChild(e)}));let h=function(t,n=!1){var a,r=!0,o="Bot test <canvas> 1.1";let i=document.getElementById("canvas"+t),l=document.getElementById("canvas"+t+"-iframe");var d=n?l.contentDocument.createElement("canvas"):document.createElement("canvas");if(d.getContext){a=d.getContext("2d");try{d.setAttribute("width",220),d.setAttribute("height",30),a.textBaseline="top",a.font="14px 'Arial'",a.textBaseline="alphabetic",a.fillStyle="#f60",a.fillRect(53,1,62,20),a.fillStyle="#069",a.fillText(o,2,15),a.fillStyle="rgba(102, 204, 0, 0.7)",a.fillText(o,4,17)}catch(e){void 0===(a=(d=document.createElement("canvas")).getContext("2d"))||"function"!=typeof d.getContext("2d").fillText?r=!1:(d.setAttribute("width",220),d.setAttribute("height",30),a.textBaseline="top",a.font="14px 'Arial'",a.textBaseline="alphabetic",a.fillStyle="#f60",a.fillRect(125,1,62,20),a.fillStyle="#069",a.fillText(o,2,15),a.fillStyle="rgba(102, 204, 0, 0.7)",a.fillText(o,4,17))}if(r&&"function"==typeof d.toDataURL){var c=d.toDataURL("image/png");try{if("boolean"==typeof c||void 0===c)throw e}catch(e){c=""}0===c.indexOf("data:image/png")||(r=!1)}else r=!1}else r=!1;if(r){let e=document.createElement("div");e.innerHTML="Hash: "+c.hashCode(),i.appendChild(d),i.appendChild(e)}else{let e=document.createElement("div");e.innerHTML="Canvas failed",i.appendChild(e)}};window.canvasCount=0,h("1"),h("2"),h("3",!0),h("4",!0),h("5",!0),s.remove()}}}}(jQuery)}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./includes/src/script.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./includes/src/script.js":
+/*!********************************!*\
+  !*** ./includes/src/script.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/* global cf7a_settings */
+(function ($) {
+  'use strict';
+
+  const cf7a_prefix = cf7a_settings.prefix;
+
+  let testTouch = () => {
+    if ("maxTouchPoints" in navigator) {
+      testTouch = navigator.maxTouchPoints > 0;
+    } else if ("msMaxTouchPoints" in navigator) {
+      testTouch = navigator.msMaxTouchPoints > 0;
+    } else {
+      var mQ = window.matchMedia && matchMedia("(pointer:coarse)");
+
+      if (mQ && mQ.media === "(pointer:coarse)") {
+        testTouch = !!mQ.matches;
+      } else if ('orientation' in window) {
+        testTouch = true; // deprecated, but good fallback
+      } else {
+        // Only as a last resort, fall back to user agent sniffing
+        var UA = navigator.userAgent;
+        testTouch = /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) || /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+      }
+    }
+
+    return testTouch;
+  };
+
+  const browserFingerprint = () => {
+    var _Intl$DateTimeFormat$, _navigator$platform, _navigator$hardwareCo, _ref, _navigator$deviceMemo, _navigator$appVersion, _ref2;
+
+    // as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
+    const ua = navigator.userAgent;
+    let tests = {
+      "timezone": (_Intl$DateTimeFormat$ = Intl.DateTimeFormat().resolvedOptions().timeZone) !== null && _Intl$DateTimeFormat$ !== void 0 ? _Intl$DateTimeFormat$ : null,
+      "platform": (_navigator$platform = navigator.platform) !== null && _navigator$platform !== void 0 ? _navigator$platform : null,
+      "hardware_concurrency": (_navigator$hardwareCo = navigator.hardwareConcurrency) !== null && _navigator$hardwareCo !== void 0 ? _navigator$hardwareCo : null,
+      "screens": (_ref = [screen.width, screen.height]) !== null && _ref !== void 0 ? _ref : null,
+      "memory": (_navigator$deviceMemo = navigator.deviceMemory) !== null && _navigator$deviceMemo !== void 0 ? _navigator$deviceMemo : null,
+      "user_agent": ua !== null && ua !== void 0 ? ua : null,
+      "app_version": (_navigator$appVersion = navigator.appVersion) !== null && _navigator$appVersion !== void 0 ? _navigator$appVersion : null,
+      "webdriver": (_ref2 = navigator.webdriver === false) !== null && _ref2 !== void 0 ? _ref2 : null,
+      "session_storage": sessionStorage ? 1 : null
+    }; // detect browser
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
+
+    if (ua.indexOf("Firefox") > -1) {
+      tests.isFFox = true;
+    } else if (ua.indexOf("SamsungBrowser") > -1) {
+      tests.isSamsung = true;
+    } else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) {
+      tests.isOpera = true;
+    } else if (ua.indexOf("Trident") > -1) {
+      tests.isIE = true;
+    } else if (ua.indexOf("Edge") > -1) {
+      tests.isIELegacy = true;
+    } else if (ua.indexOf("Edg") > -1) {
+      tests.isEdge = true;
+    } else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1) {
+      // crios stands for chrome for ios...
+      tests.isChrome = true;
+    } else if (ua.indexOf("Safari") > -1) {
+      tests.isSafari = true;
+    } else {
+      tests.isUnknown = true;
+    }
+
+    if (typeof navigator.standalone === 'boolean') {
+      // Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
+      tests.isIos = true;
+    } else if (ua.indexOf("Android") > -1) {
+      tests.isAndroid = true;
+    }
+
+    if (tests.isIos || tests.isAndroid || testTouch()) tests.touch = true;
+    return tests;
+  };
+
+  const wpcf7Forms = document.querySelectorAll('.wpcf7');
+
+  const createCF7Afield = (key, value, prefix = cf7a_prefix) => {
+    let e = document.createElement('input');
+    e.setAttribute("type", "hidden");
+    e.setAttribute("name", prefix + key);
+    e.setAttribute("value", typeof value === 'string' ? value : JSON.stringify(value));
+    return e;
+  };
+
+  if (wpcf7Forms.length) {
+    let oldy = 0,
+        mouseMove_value = 0,
+        mouseActivity_value = 0;
+
+    for (const wpcf7Form of wpcf7Forms) {
+      const hiddenInputsContainer = $(wpcf7Form)[0].querySelector('form > div'); // 1) Standard bot checks
+
+      const bot_fingerprint_key = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint]'); // 2) Bot fingerprint extra checks
+
+      const bot_fingerprint_extra = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint_extras]'); // how append bot fingerprint into hidden fields
+
+      const append_on_submit = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
+      let tests = {};
+
+      if (bot_fingerprint_key) {
+        // 1.0 hijack the value of the bot_fingerprint
+        bot_fingerprint_key.setAttribute("value", bot_fingerprint_key.getAttribute("value").slice(0, 5)); // 1.1) test browser fingerprint
+
+        tests = browserFingerprint(); // then append the fields on submit
+
+        if (append_on_submit) {
+          const formElem = $(wpcf7Form)[0].querySelector('form');
+          let formData = new FormData(formElem.formData);
+          formElem.addEventListener('formdata', e => {
+            for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
+              e.formData.append(cf7a_prefix + key, value);
+            }
+
+            formData = e.formData;
+          });
+        } else {
+          // or add them directly to hidden input container
+          for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
+            $(hiddenInputsContainer)[0].append(createCF7Afield(key, value));
+          }
+        }
+      } // 2) Bot fingerprint extra checks
+
+
+      if (bot_fingerprint_extra) {
+        // 2.1) check for mouse clicks
+        const activity = function (e) {
+          let bot_activity = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'activity]');
+          if (bot_activity) bot_activity.remove();
+          $(hiddenInputsContainer)[0].append(createCF7Afield("activity", mouseActivity_value++));
+
+          if (mouseActivity_value > 3) {
+            document.body.removeEventListener('mouseup', activity);
+            document.body.removeEventListener('touchend', activity);
+            $(hiddenInputsContainer)[0].append(createCF7Afield("mouseclick_activity", "passed"));
+          }
+        };
+
+        document.body.addEventListener('mouseup', activity);
+        document.body.addEventListener('touchend', activity); // 2.2) detect the mouse/touch direction change OR touchscreen iterations
+
+        const mouseMove = function (e) {
+          if (e.pageY > oldy) mouseMove_value += 1;
+          oldy = e.pageY;
+
+          if (mouseMove_value > 3) {
+            document.removeEventListener('mousemove', mouseMove);
+            $(hiddenInputsContainer)[0].append(createCF7Afield("mousemove_activity", "passed"));
+          }
+        };
+
+        document.addEventListener('mousemove', mouseMove); // set mousemove_activity true as fallback in mobile devices (we have already tested the ability to use the touchscreen)
+
+        if (tests.isIos || tests.isAndroid) {
+          $(hiddenInputsContainer)[0].append(createCF7Afield("mousemove_activity", "passed"));
+        } // 2.3) WebGL Tests
+        // credits //bot.sannysoft.com
+
+
+        let wpcf7box = document.createElement('div');
+        wpcf7box.id = 'hidden';
+        hiddenInputsContainer.append(wpcf7box);
+
+        String.prototype.hashCode = function () {
+          var hash = 0,
+              i,
+              chr;
+          if (this.length === 0) return hash;
+
+          for (i = 0; i < this.length; i++) {
+            chr = this.charCodeAt(i);
+            hash = (hash << 5) - hash + chr;
+            hash |= 0; // Convert to 32bit integer
+          }
+
+          return hash;
+        };
+
+        let wglv = document.createElement('div');
+        wglv.id = 'webgl-vendor';
+        wpcf7box.append(wglv);
+        const webGLVendorElement = document.getElementById('webgl-vendor');
+        let wgle = document.createElement('div');
+        wgle.id = 'webgl-renderer';
+        wpcf7box.append(wgle);
+        const webGLRendererElement = document.getElementById('webgl-renderer');
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('webgl-experimental');
+
+        if (gl) {
+          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+
+          try {
+            // WebGL Vendor Test
+            const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+            webGLVendorElement.innerHTML = vendor;
+
+            if (vendor === 'Brian Paul' || vendor === "Google Inc.") {
+              $(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "failed"));
+            } else {
+              $(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "passed"));
+            }
+          } catch (e) {
+            webGLVendorElement.innerHTML = "Error: " + e;
+          }
+
+          try {
+            // WebGL Renderer Test
+            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            webGLRendererElement.innerHTML = renderer;
+
+            if (renderer === 'Mesa OffScreen' || renderer.indexOf("Swift") !== -1) {
+              $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "failed"));
+            } else $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "passed"));
+          } catch (e) {
+            webGLRendererElement.innerHTML = "Error: " + e;
+          }
+        } else {
+          $(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "failed"));
+          $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "failed"));
+        } // TODO: change the canvas name
+
+
+        let testCanvas = [];
+        let testCanvasIframe = [];
+        testCanvas[1] = document.createElement('div');
+        testCanvas[1].id = 'canvas1';
+        testCanvas[2] = document.createElement('div');
+        testCanvas[2].id = 'canvas2';
+        testCanvas[3] = document.createElement('div');
+        testCanvas[3].id = 'canvas3';
+        testCanvasIframe[3] = document.createElement('iframe');
+        testCanvasIframe[3].id = 'canvas3-iframe';
+        testCanvasIframe[3].class = 'canvased';
+        testCanvasIframe[3].setAttribute("sandbox", "allow-same-origin");
+        testCanvas[3].append(testCanvasIframe[3]);
+        testCanvas[4] = document.createElement('div');
+        testCanvas[4].id = 'canvas4';
+        testCanvasIframe[4] = document.createElement('iframe');
+        testCanvasIframe[4].id = 'canvas4-iframe';
+        testCanvasIframe[4].class = 'canvased';
+        testCanvasIframe[4].setAttribute("sandbox", "allow-same-origin");
+        testCanvas[4].append(testCanvasIframe[4]);
+        testCanvas[5] = document.createElement('div');
+        testCanvas[5].id = 'canvas5';
+        testCanvasIframe[5] = document.createElement('iframe');
+        testCanvasIframe[5].id = 'canvas5-iframe';
+        testCanvasIframe[5].class = 'canvased';
+        testCanvas[5].append(testCanvasIframe[5]);
+        testCanvas.forEach(function (e) {
+          wpcf7box.appendChild(e);
+        });
+
+        let drawCanvas2 = function (num, useIframe = false) {
+          var canvas2d;
+          /** @type {boolean} */
+
+          var isOkCanvas = true;
+          /** @type {string} */
+
+          var canvasText = "Bot test <canvas> 1.1";
+          let canvasContainer = document.getElementById("canvas" + num);
+          let iframe = document.getElementById("canvas" + num + "-iframe");
+          var canvasElement = useIframe ? iframe.contentDocument.createElement("canvas") : document.createElement("canvas");
+
+          if (canvasElement.getContext) {
+            canvas2d = canvasElement.getContext("2d");
+
+            try {
+              canvasElement.setAttribute("width", 220);
+              canvasElement.setAttribute("height", 30);
+              canvas2d.textBaseline = "top";
+              canvas2d.font = "14px 'Arial'";
+              canvas2d.textBaseline = "alphabetic";
+              canvas2d.fillStyle = "#f60";
+              canvas2d.fillRect(53, 1, 62, 20);
+              canvas2d.fillStyle = "#069";
+              canvas2d.fillText(canvasText, 2, 15);
+              canvas2d.fillStyle = "rgba(102, 204, 0, 0.7)";
+              canvas2d.fillText(canvasText, 4, 17);
+            } catch (b) {
+              /** @type {!Element} */
+              canvasElement = document.createElement("canvas");
+              canvas2d = canvasElement.getContext("2d");
+
+              if (void 0 === canvas2d || "function" != typeof canvasElement.getContext("2d").fillText) {
+                isOkCanvas = false;
+              } else {
+                canvasElement.setAttribute("width", 220);
+                canvasElement.setAttribute("height", 30);
+                /** @type {string} */
+
+                canvas2d.textBaseline = "top";
+                /** @type {string} */
+
+                canvas2d.font = "14px 'Arial'";
+                /** @type {string} */
+
+                canvas2d.textBaseline = "alphabetic";
+                /** @type {string} */
+
+                canvas2d.fillStyle = "#f60";
+                canvas2d.fillRect(125, 1, 62, 20);
+                /** @type {string} */
+
+                canvas2d.fillStyle = "#069";
+                canvas2d.fillText(canvasText, 2, 15);
+                /** @type {string} */
+
+                canvas2d.fillStyle = "rgba(102, 204, 0, 0.7)";
+                canvas2d.fillText(canvasText, 4, 17);
+              }
+            }
+
+            if (isOkCanvas && "function" == typeof canvasElement.toDataURL) {
+              var datUrl = canvasElement.toDataURL("image/png");
+
+              try {
+                if ("boolean" == typeof datUrl || void 0 === datUrl) {
+                  throw e;
+                }
+              } catch (a) {
+                /** @type {string} */
+                datUrl = "";
+              }
+
+              if (0 === datUrl.indexOf("data:image/png")) {} else {
+                /** @type {boolean} */
+                isOkCanvas = false;
+              }
+            } else {
+              /** @type {boolean} */
+              isOkCanvas = false;
+            }
+          } else {
+            /** @type {boolean} */
+            isOkCanvas = false;
+          }
+
+          if (isOkCanvas) {
+            let newDiv = document.createElement("div");
+            newDiv.innerHTML = "Hash: " + datUrl.hashCode();
+            canvasContainer.appendChild(canvasElement);
+            canvasContainer.appendChild(newDiv);
+          } else {
+            let newDiv = document.createElement("div");
+            newDiv.innerHTML = "Canvas failed";
+            canvasContainer.appendChild(newDiv);
+          }
+        };
+
+        window.canvasCount = 0;
+        drawCanvas2("1");
+        drawCanvas2("2");
+        drawCanvas2("3", true);
+        drawCanvas2("4", true);
+        drawCanvas2("5", true); // then remove the useless div
+
+        wpcf7box.remove();
+      }
+    }
+  }
+})(jQuery);
+
+/***/ })
+
+/******/ });

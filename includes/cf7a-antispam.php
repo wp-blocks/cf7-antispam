@@ -612,12 +612,7 @@ class CF7_AntiSpam_filters {
 					"app_version"          => !empty( $_POST[$prefix.'app_version'] ) ? sanitize_text_field( $_POST[$prefix.'app_version'] ) : null,
 					"webdriver"            => !empty( $_POST[$prefix.'webdriver'] ) ? sanitize_text_field( $_POST[$prefix.'webdriver'] ) : null,
 					"session_storage"      => !empty( $_POST[$prefix.'session_storage'] ) ? intval( $_POST[$prefix.'session_storage'] ) : null,
-					"plugins"              => !empty( $_POST[$prefix.'plugins'] ) ? true : null,
 					"bot_fingerprint"      => !empty( $_POST[$prefix.'bot_fingerprint'] ) ? sanitize_text_field( $_POST[$prefix.'bot_fingerprint'] ) : null,
-					"isSafari"             => !empty( $_POST[$prefix.'isSafari'] ) ? true : null,
-					"isFFox"               => !empty( $_POST[$prefix.'isFFox'] ) ? true : null,
-					"isIos"                => !empty( $_POST[$prefix.'isIos'] ) ? true : null,
-					"isAndroid"            => !empty( $_POST[$prefix.'isAndroid'] ) ? true : null,
 					"touch"                => !empty( $_POST[$prefix.'touch'] ) ? true : null,
 				);
 
@@ -629,11 +624,10 @@ class CF7_AntiSpam_filters {
 				if (!$bot_fingerprint["app_version"]) $fails[] = "app_version";
 				if (!$bot_fingerprint["webdriver"]) $fails[] = "webdriver";
 				if (!$bot_fingerprint["session_storage"]) $fails[] = "session_storage";
-				if (!$bot_fingerprint["plugins"]) $fails[] = "plugins";
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
 				// navigator hardware_concurrency isn't available under Ios - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
-				if (!$bot_fingerprint["isSafari"] && !$bot_fingerprint["isIos"]) {
+				if ( ( !empty( $_POST[ $prefix . 'isAndroid'] ) || empty( $_POST[ $prefix . 'isSafari'] ) && empty( $_POST[ $prefix . 'isIos'] ) ) ) {
 					// hardware concurrency need to be a integer > 1 to be valid
 					if (!$bot_fingerprint["hardware_concurrency"] >= 1) $fails[] = "hardware_concurrency";
 				} else {
@@ -641,12 +635,12 @@ class CF7_AntiSpam_filters {
 					if ($bot_fingerprint["hardware_concurrency"] !== null) $fails[] = "hardware_concurrencyIos";
 				}
 
-				if ( $bot_fingerprint["isIos"] || $bot_fingerprint["isAndroid"] ) {
+				if ( !empty( $_POST[$prefix.'isIos'] ) || !empty( $_POST[$prefix.'isAndroid'] ) ) {
 					if (!$bot_fingerprint["touch"]) $fails[] = "touch";
 				}
 
 				// navigator deviceMemory isn't available with Ios and firexfox  - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory
-				if (!$bot_fingerprint["isSafari"] && !$bot_fingerprint["isIos"] && !$bot_fingerprint["isFFox"] ) {
+				if ( empty( $_POST[$prefix.'isSafari'] ) && empty( $_POST[$prefix.'isIos'] ) && empty( $_POST[$prefix.'isFFox'] ) ) {
 					// memory need to be a float > 0.25 to be valid
 					if ( !$bot_fingerprint["memory"] >= 0.25 )  $fails[] = "memory";
 				} else {
@@ -654,6 +648,7 @@ class CF7_AntiSpam_filters {
 					if ( $bot_fingerprint["memory"] !== null )  $fails[] = "memoryIos";
 				}
 
+				// increment the spam score if needed, then log the result
 				if (!empty($fails)) {
 					$spam_score                += count( $fails ) * $score_fingerprinting;
 					$reason['bot_fingerprint'] = implode( ", ", $fails );
@@ -671,6 +666,7 @@ class CF7_AntiSpam_filters {
 			 * Bot fingerprints extras
 			 */
 			if ( intval( $options['check_bot_fingerprint_extras'] ) == 1 ) {
+
 				$bot_fingerprint_extras = array(
 					"activity"            => !empty( $_POST[ $prefix . 'activity' ] ) ? intval( $_POST[ $prefix . 'activity' ] ) : 0,
 					"mouseclick_activity" => !empty( $_POST[ $prefix . 'mouseclick_activity' ] ) && sanitize_text_field( $_POST[ $prefix . 'mouseclick_activity' ] ) === 'passed' ? 'passed' : 0,

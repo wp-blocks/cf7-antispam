@@ -41,23 +41,38 @@
 			"user_agent": ua ?? null,
 			"app_version": navigator.appVersion ?? null,
 			"webdriver": navigator.webdriver === false ?? null,
-			"session_storage": sessionStorage ? 1 : null,
-			"plugins": typeof navigator.plugins ? 1 : null
+			"session_storage": sessionStorage ? 1 : null
 		};
 
 		// detect browser
-		if (ua.toLowerCase().indexOf('safari') !== -1 && ua.toLowerCase().indexOf('chrome') === -1) {
-			tests.isSafari = true;
-		} else if (ua.toLowerCase().indexOf('firefox') !== -1) {
+		// https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
+		if (ua.indexOf("Firefox") > -1) {
 			tests.isFFox = true;
+		} else if (ua.indexOf("SamsungBrowser") > -1) {
+			tests.isSamsung = true;
+		} else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) {
+			tests.isOpera = true;
+		} else if (ua.indexOf("Trident") > -1) {
+			tests.isIE = true;
+		} else if (ua.indexOf("Edge") > -1) {
+			tests.isIELegacy = true;
+		} else if (ua.indexOf("Edg") > -1) {
+			tests.isEdge = true;
+		} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1) { // crios stands for chrome for ios...
+			tests.isChrome = true;
+		} else if (ua.indexOf("Safari") > -1) {
+			tests.isSafari = true;
+		} else {
+			tests.isUnknown = true;
 		}
 
 		if (typeof navigator.standalone === 'boolean') {
 			// Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
 			tests.isIos = true;
-		} else if (ua.toLowerCase().indexOf('android') !== -1) {
+		} else if (ua.indexOf("Android") > -1) {
 			tests.isAndroid = true;
 		}
+
 
 		if ( tests.isIos || tests.isAndroid || testTouch() ) tests.touch = true;
 
@@ -147,10 +162,8 @@
 
         // 2.2) detect the mouse/touch direction change OR touchscreen iterations
         const mouseMove = function (e) {
-          if (e.pageY > oldy) {
-            mouseMove_value += 1;
-          }
-          oldy = e.pageY;
+          if (e.pageY > oldy) mouseMove_value += 1;
+					oldy = e.pageY;
 
           if (mouseMove_value > 3) {
             document.removeEventListener('mousemove', mouseMove);
@@ -160,7 +173,7 @@
         document.addEventListener('mousemove', mouseMove);
 
         // set mousemove_activity true as fallback in mobile devices (we have already tested the ability to use the touchscreen)
-        if (typeof navigator.standalone === 'boolean' || ua.toLowerCase().indexOf('android') !== -1) {
+        if ( tests.isIos || tests.isAndroid ) {
 					$(hiddenInputsContainer)[0].append(createCF7Afield("mousemove_activity", "passed"));
 				}
 
