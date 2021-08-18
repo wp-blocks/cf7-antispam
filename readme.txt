@@ -102,6 +102,8 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 = 0.2.4 =
 * Solves installation failure (in very rare conditions) if Flamingo is installed and, while running additional installation scripts, characters that cannot be stored in the database (such as emoji in UTF8 databases charset) are found in the emails content.
 * Documentation Update
+* Improved spam management with flamingo
+* A new section "Advanced Section" that can be unlocked at the end of cf7a options. I will put the more complex options there to make the interface easier.
 
 = 0.2.3 =
 * enhanced fingerprint scripts performance

@@ -2,7 +2,7 @@
 
 class CF7_AntiSpam_filters {
 
-	protected $b8;
+	private $b8;
 
 	/**
 	 * CF7_AntiSpam_filters constructor.
@@ -60,9 +60,36 @@ class CF7_AntiSpam_filters {
 
 			return $additional_settings;
 		}
+
+		return false;
 	}
 
+	/**
+	 * @param $id - a flamingo post object
+	 *
+	 * @return false|string
+	 */
+	private function cf7a_get_mail_content($flamingo_post_id) {
 
+		$flamingo_post = new Flamingo_Inbound_Message( $flamingo_post_id );
+
+		// get the form tax using the slug we find in the flamingo message
+		$form = get_term_by( 'slug', $flamingo_post->channel, 'flamingo_inbound_channel' );
+
+		// get the post where are stored the form data
+		$form_post = get_page_by_path($form->slug, '', 'wpcf7_contact_form');
+
+		// get the additional setting of the form
+		$additional_settings = isset($form_post->ID) ? $this->cf7a_get_mail_additional_data($form_post->ID) : false;
+
+		// if the message field was find return it
+		if ( isset($additional_settings) && isset( $flamingo_post->fields[$additional_settings['message']] ) ) {
+			return stripslashes( $flamingo_post->fields[ $additional_settings['message'] ] );
+		}
+
+		return false;
+
+	}
 
 
 	/**
@@ -103,15 +130,13 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
-	public function cf7a_sanitize_before_b8($string) {
-		$clear_string = preg_replace('/[\x{1F600}-\x{1F64F}]/', '', $string); // Match Emoticons
-		return sanitize_text_field($clear_string);
-	}
-
 	public function cf7a_b8_classify($message) {
+
+		if (empty($message)) return false;
+
 		$time_elapsed = cf7a_microtimeFloat();
 
-		$rating = $this->b8->classify( $this->cf7a_sanitize_before_b8($message) );
+		$rating = $this->b8->classify( $message );
 
 		if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
 			error_log( CF7ANTISPAM_LOG_PREFIX .'d8 email classification: ' . $rating );
@@ -127,19 +152,19 @@ class CF7_AntiSpam_filters {
 	}
 
 	public function cf7a_b8_learn_spam($message) {
-		if (!empty($message)) $this->b8->learn( $this->cf7a_sanitize_before_b8($message), b8\b8::SPAM );
+		if (!empty($message)) $this->b8->learn( $message, b8\b8::SPAM );
 	}
 
 	public function cf7a_b8_unlearn_spam($message) {
-		if (!empty($message)) $this->b8->unlearn( $this->cf7a_sanitize_before_b8($message), b8\b8::SPAM );
+		if (!empty($message)) $this->b8->unlearn( $message, b8\b8::SPAM );
 	}
 
 	public function cf7a_b8_learn_ham($message) {
-		if (!empty($message)) $this->b8->learn( $this->cf7a_sanitize_before_b8($message), b8\b8::HAM );
+		if (!empty($message)) $this->b8->learn( $message, b8\b8::HAM );
 	}
 
 	public function cf7a_b8_unlearn_ham($message) {
-		if (!empty($message)) $this->b8->unlearn( $this->cf7a_sanitize_before_b8($message), b8\b8::HAM );
+		if (!empty($message)) $this->b8->unlearn( $message, b8\b8::HAM );
 	}
 
 
@@ -164,7 +189,7 @@ class CF7_AntiSpam_filters {
 	}
 
 
-	public function cf7a_ban_ip($ip, $reason = array(), $spam_score = 1) {
+	public function cf7a_ban_by_ip($ip, $reason = array(), $spam_score = 1) {
 
 		if (false === ($ip = filter_var($ip, FILTER_VALIDATE_IP) )) return false;
 
@@ -224,6 +249,8 @@ class CF7_AntiSpam_filters {
 
 	}
 
+	// Database management Flamingo
+
 	public function cf7a_clean_blacklist() {
 		global $wpdb;
 		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_blacklist" );
@@ -242,79 +269,73 @@ class CF7_AntiSpam_filters {
 		return false;
 	}
 
+	private function cf7a_reset_b8_classification() {
+		global $wpdb;
+		$wpdb->query( "DELETE FROM `" . $wpdb->prefix . "postmeta` WHERE `meta_key` = '_cf7a_b8_classification'" );
+	}
+
 	public function cf7a_rebuild_dictionary() {
-		return $this->cf7a_analyze_all_flamingo_mails();
+		$this->cf7a_reset_dictionary();
+		$this->cf7a_reset_b8_classification();
+		return $this->cf7a_flamingo_analyze_stored_mails();
 	}
 
-	public function cf7a_d8_flamingo_message($before, $after) {
-		echo sprintf(
-			'<div id="message" class="notice notice-success is-dismissible"><p>%s</p></div>',
-			esc_html( sprintf( __( CF7ANTISPAM_LOG_PREFIX . "d8 has learned this was spam - score before/after: %s/%s", 'cf7-antispam'), $before, $after) )
-		);
+	// CF7_AntiSpam_filters Flamingo
+
+	public function cf7a_flamingo_on_install() {
+		$this->cf7a_flamingo_analyze_stored_mails();
 	}
 
+	public function cf7a_flamingo_on_uninstall() {
+		$this->cf7a_reset_b8_classification();
+	}
 
-	/**
-	 * CF7_AntiSpam_filters Flamingo
-	 */
-
-	private function cf7a_analyze_all_flamingo_mails() {
+	private function cf7a_flamingo_analyze_stored_mails() {
 
 		// get all the flamingo inbound post and classify them
 		$args = array(
 			'post_type' => 'flamingo_inbound',
-			'posts_per_page' => -1
+			'posts_per_page' => -1,
+			'post_status' => array('publish', 'flamingo-spam')
 		);
 
 		$query = new WP_Query($args);
+
 		if ($query->have_posts() ) :
 
 			$post_storage = array();
 
 			while ( $query->have_posts() ) : $query->the_post();
+
 				$post_id = get_the_ID();
 				$post_status = get_post_status();
-				$content = get_the_content();
 
-				if (get_post_status( $post_id ) == 'flamingo-spam') {
-					$this->cf7a_b8_learn_spam($content);
-				} else if ( $post_status == 'publish'){
-					$this->cf7a_b8_learn_ham($content);
-				};
+				$message = $this->cf7a_get_mail_content($post_id);
 
-				$post_storage[$post_id] = $content;
+				if (!empty($message)) {
+
+					if ( $post_status == 'flamingo-spam' ) {
+						$this->cf7a_b8_learn_spam( $message );
+					} else if ( $post_status == 'publish' ) {
+						$this->cf7a_b8_learn_ham( $message );
+					}
+
+					$post_storage[$post_id] = $message;
+
+				} else {
+					error_log( CF7ANTISPAM_LOG_PREFIX . "Flamingo post $post_id seems empty, so can't be analyzed" );
+				}
 
 			endwhile;
 
 			// we need to teach to b8 what is spam or not before classify mails
-			foreach ($post_storage as $id => $post) {
-				update_post_meta( $id, '_cf7a_b8_classification', $this->cf7a_b8_classify($post) );
+			foreach ($post_storage as $post_id => $message) {
+				update_post_meta( $post_id, '_cf7a_b8_classification', $this->cf7a_b8_classify($message) );
 			};
 
 		endif;
-	}
 
-	public function cf7a_flamingo_on_install() {
-		// $this->cf7a_analyze_all_flamingo_mails();
-	}
-
-	private function cf7a_reset_b8_classification() {
-		// get all the flamingo inbound post and delete the custom meta created with this plugin
-		$args = array(
-			'post_type' => 'flamingo_inbound',
-			'posts_per_page' => -1
-		);
-
-		$query = new WP_Query($args);
-		if ($query->have_posts() ) :
-			while ( $query->have_posts() ) : $query->the_post();
-				delete_post_meta( get_the_ID(), '_cf7a_b8_classification');
-			endwhile;
-		endif;
-	}
-
-	public function cf7a_flamingo_on_uninstall() {
-		$this->cf7a_reset_b8_classification();
+		return true;
 	}
 
 	public function cf7a_d8_flamingo_classify() {
@@ -325,63 +346,62 @@ class CF7_AntiSpam_filters {
 
 		if ( $_REQUEST['action'] === 'save' && $_REQUEST['save'] === 'Update' ) {
 			$action = $_REQUEST['inbound']['status'] == 'spam' ? 'spam' : 'ham'; // spam / ham
-		} else if ($_REQUEST['action'] === 'spam' ){
+		} else if ($_REQUEST['action'] === 'spam' ) {
 			$action = 'spam';
-		} else if ($_REQUEST['action'] === 'unspam' ){
+		} else if ($_REQUEST['action'] === 'unspam' ) {
 			$action = 'ham';
 		}
 
-		foreach ( (array) $_REQUEST['post'] as $post ) {
+		if (isset($action)) {
+			foreach ( (array) $_REQUEST['post'] as $post_id ) {
 
-			$flamingo_post = new Flamingo_Inbound_Message( $post );
+				// get the message from flamingo mail
+				$message = $this->cf7a_get_mail_content($post_id);
 
-			// get the form tax using the slug we find in the flamingo message
-			$form = get_term_by('slug', $flamingo_post->channel,'flamingo_inbound_channel');
+				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . $message );
 
-			// get the post where are stored the form data
-			$form_post = get_page_by_path($form->slug, '', 'wpcf7_contact_form');
+				$flamingo_post = new Flamingo_Inbound_Message( $post_id );
 
-			// get the additional setting of the form
-			$additional_settings = $this->cf7a_get_mail_additional_data($form_post->ID);
+				if (empty($message)) {
 
-			if ( isset($additional_settings) && isset( $flamingo_post->fields[$additional_settings['message']] ) ) {
+					update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', "none" );
 
-				$text = stripslashes($flamingo_post->fields[$additional_settings['message']]);
-				$rating = $text != '' ? $this->cf7a_b8_classify($text) : "none" ;
-
-				if ( $action == 'spam' ) {
-
-					$this->cf7a_b8_unlearn_ham($text);
-					$this->cf7a_b8_learn_spam($text);
-
-					$this->cf7a_ban_ip($flamingo_post->meta['remote_ip'], __("flamingo ban"));
-
-				} else if ( $action == 'ham' ) {
-
-					$this->cf7a_b8_unlearn_spam($text);
-					$this->cf7a_b8_learn_ham($text);
-
-					//TODO: this ip and the one gathered by plugin can change
-					$this->cf7a_unban_by_ip($flamingo_post->meta['remote_ip'] );
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . sprintf( __( "%s has no message text so can't be analyzed", 'cf7-antispam'), $post_id ) );
 
 				} else {
-					return;
+
+					$rating = $this->cf7a_b8_classify($message);
+
+					$options = get_option( 'cf7a_options' );
+
+					if ( $action == 'spam' ) {
+
+						$this->cf7a_b8_unlearn_ham($message);
+						$this->cf7a_b8_learn_spam($message);
+
+						if ($options['autostore_bad_ip']) $this->cf7a_ban_by_ip($flamingo_post->meta['remote_ip'], __("flamingo ban"));
+
+					} else if ( $action == 'ham' ) {
+
+						$this->cf7a_b8_unlearn_spam($message);
+						$this->cf7a_b8_learn_ham($message);
+
+						if ($options['autostore_bad_ip']) $this->cf7a_unban_by_ip($flamingo_post->meta['remote_ip'] );
+
+					}
+
+					$rating_after = $this->cf7a_b8_classify($message);
+
+					update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', $rating_after );
+
+					if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . sprintf( __( "b8 has learned this e-mail from %s was %s - score before/after: %f/%f", 'cf7-antispam'),
+							$flamingo_post->from_email,
+							$action,
+							$rating,
+							$rating_after)
+					);
+
 				}
-
-				$rating_after = !empty($text) ? $this->cf7a_b8_classify($text) : "none";
-
-				update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', $rating_after );
-
-				if (CF7ANTISPAM_DEBUG) error_log( sprintf( __( "%sD8 learned %s %s was %s - score before/after: %f/%f", 'cf7-antispam'),
-					CF7ANTISPAM_LOG_PREFIX,
-					$flamingo_post->id(),
-					$flamingo_post->from_email,
-					$action,
-					$rating,
-					$rating_after)
-				);
-
-				$this->cf7a_d8_flamingo_message($rating,$rating_after);
 			}
 		}
 	}
@@ -582,8 +602,8 @@ class CF7_AntiSpam_filters {
 					"timezone"             => !empty( $_POST[$prefix.'timezone'] ) ? sanitize_text_field( $_POST[$prefix.'timezone'] ) : null,
 					"platform"             => !empty( $_POST[$prefix.'platform'] ) ? sanitize_text_field( $_POST[$prefix.'platform'] ) : null,
 					"screens"              => !empty( $_POST[$prefix.'screens'] ) ? sanitize_text_field( $_POST[$prefix.'screens'] ) : null,
-					"hardware_concurrency" => !empty( $_POST[$prefix.'hardware_concurrency'] ) && is_numeric($_POST[$prefix.'hardware_concurrency']) ? intval( $_POST[$prefix.'hardware_concurrency'] ) : null,
-					"memory"               => !empty( $_POST[$prefix.'memory'] ) && is_numeric($_POST[$prefix.'memory']) ? floatval( $_POST[$prefix.'memory'] ) : null,
+					"hardware_concurrency" => !empty( $_POST[$prefix.'hardware_concurrency'] ) ? intval( $_POST[$prefix.'hardware_concurrency'] ) : null,
+					"memory"               => !empty( $_POST[$prefix.'memory'] ) ? floatval( $_POST[$prefix.'memory'] ) : null,
 					"user_agent"           => !empty( $_POST[$prefix.'user_agent'] ) ? sanitize_text_field( $_POST[$prefix.'user_agent'] ) : null,
 					"app_version"          => !empty( $_POST[$prefix.'app_version'] ) ? sanitize_text_field( $_POST[$prefix.'app_version'] ) : null,
 					"webdriver"            => !empty( $_POST[$prefix.'webdriver'] ) ? sanitize_text_field( $_POST[$prefix.'webdriver'] ) : null,
@@ -609,9 +629,11 @@ class CF7_AntiSpam_filters {
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
 				// navigator hardware_concurrency isn't available under Ios - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
-				if (!$bot_fingerprint["isSafari"] || !$bot_fingerprint["isIos"]) {
-					if ($bot_fingerprint["hardware_concurrency"] >= 1) $fails[] = "hardware_concurrency";
+				if (!$bot_fingerprint["isSafari"] && !$bot_fingerprint["isIos"]) {
+					// hardware concurrency need to be a integer > 1 to be valid
+					if (!$bot_fingerprint["hardware_concurrency"] >= 1) $fails[] = "hardware_concurrency";
 				} else {
+					// but in ios isn't provided so we expect a null value
 					if ($bot_fingerprint["hardware_concurrency"] !== null) $fails[] = "hardware_concurrencyIos";
 				}
 
@@ -620,9 +642,11 @@ class CF7_AntiSpam_filters {
 				}
 
 				// navigator deviceMemory isn't available with Ios and firexfox  - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory
-				if (!$bot_fingerprint["isSafari"] || !$bot_fingerprint["isIos"] || !$bot_fingerprint["isFFox"] ) {
-					if ( $bot_fingerprint["memory"] >= 0.25 )  $fails[] = "memory";
+				if (!$bot_fingerprint["isSafari"] && !$bot_fingerprint["isIos"] && !$bot_fingerprint["isFFox"] ) {
+					// memory need to be a float > 0.25 to be valid
+					if ( !$bot_fingerprint["memory"] >= 0.25 )  $fails[] = "memory";
 				} else {
+					// but in ios and firefox isn't provided so we expect a null value
 					if ( $bot_fingerprint["memory"] !== null )  $fails[] = "memoryIos";
 				}
 
@@ -967,7 +991,7 @@ class CF7_AntiSpam_filters {
 
 		// if the autostore ip is enabled (but not exteded debug)
 		if ($options['autostore_bad_ip'] && $spam && !CF7ANTISPAM_DEBUG_EXTENDED) {
-			if ( false === $this->cf7a_ban_ip($remote_ip, $reason, round($spam_score) ) )
+			if ( false === $this->cf7a_ban_by_ip($remote_ip, $reason, round($spam_score) ) )
 				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip" );
 		}
 
