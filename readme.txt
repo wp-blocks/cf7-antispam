@@ -19,7 +19,18 @@ We use several in-page and off-page bots traps and an auto-learning mechanism ba
 **Advanced** - For each contact form add 'flamingo_message: "[your-message]"' in the same way you do for [flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/) to set the field to be checked as a text message.
 This is required for advanced text statistical analysis, without this b8 will CANNOT be enabled.
 
-**Please install also Flamingo to unlock the spam manager!**
+==Antispam Available Test==
+- Browser Fingerprinting (check if is a real browser or a bot that camouflaging as such)
+- Time elapsed (a form is not filled out in a few seconds as bots do)
+- IP ban list (you can list ip's to be banned or parts thereof, ipv6 compatible)
+- Prohibited words in message/email
+- Prohibited user agent
+- DNS Blacklists
+- Honeypot
+- Honeyform
+- B8 statistical "Bayesian" spam filter
+
+==Install Flamingo to unlock the spam manager!==
 Cf7A adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system.
 And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation.
 So while activating CF7A all previous collected mail will be parsed and b8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
@@ -27,6 +38,7 @@ Notes:
 - On the right side of Flamingo inbound page i've added a new column that show the mail spamminess level
 - if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
 - Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the b8 algorithm will be auto-trained
+- Don't delete a spam message from ham if you receive it, rather put it in spam to teach b8 how to recognise spam from ham!
 
 == Privacy Notices ==
 AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
