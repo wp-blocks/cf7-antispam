@@ -20,31 +20,36 @@ $color__info: $color__blue;
 
 // Plugin Admin style
 .cf7-antispam {
-  
+
   // utils
   .ellipsis {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }
-  
+
+	.hidden,
+	&.hidden {
+		display: none;
+	}
+
   // extra
   .monospace {
     font-family: monospace;
   }
-  
+
   .alert {
     color: $color__alert;
-    
+
     &.label {
       font-size: 12px;
     }
   }
-  
+
   .info {
     color: $color__info;
   }
-  
+
   .dashicons.dashicons-shield-alt {
     font-weight: inherit;
     font-size: 24px;
@@ -53,60 +58,60 @@ $color__info: $color__blue;
     padding: 0;
     line-height: 1.3;
     color: $color__dark-grey;
-    
+
     position: relative;
     transform-style: preserve-3d;
     animation: spin 30s linear;
   }
-  
+
   form {
-    
+
     // input style
     h2 {
       padding-top: 24px;
       border-top: 1px solid #eee;
       margin-top: 32px;
       margin-bottom: 4px;
-      
+
       + p {
         margin-top: 0;
         color: #666
       }
     }
-    
+
     // remove the border for the first subtitle
     input[type="hidden"] + h2 {
       margin-top: 0;
       border: 0;
     }
-    
+
     // input style
     textarea {
       width: 100%;
       min-height: 100px;
     }
   }
-  
+
   .blacklist-table {
     display: block;
     max-width: 100%;
     width: 100%;
-    
+
     div.row {
       display: flex;
       font-size: 12px;
       margin-bottom: 8px;
       padding-bottom: 8px;
       border-bottom: 1px solid darken($color__white, 4%);
-  
+
       &:last-child {
         border: 0
       }
-  
+
       .status {
         width: 50px;
         margin-right: 8px;
-    
+
         .ico {
           font-family: monospace;
           border-radius: 50%;
@@ -122,22 +127,22 @@ $color__info: $color__blue;
           padding: 5px;
         }
       }
-      
+
       .ip {
         font-family: monospace;
         font-weight: bold;
         margin: 0;
-    
+
         .actions a {
           transition: .5s;
           color: $color__light-grey;
-      
+
           &:hover {
             color: $color__red;
           }
         }
       }
-  
+
       .data {
         display: block;
         max-width: 400px;
@@ -147,21 +152,21 @@ $color__info: $color__blue;
           color: $color__black;
         }
       }
-  
+
     }
   }
-  
+
   // welcome panel
   .welcome-panel {
     margin-top: 20px;
     padding: 0.7em 2em 1em;
-    
+
     h3 {
       font-size: 16px;
       font-weight: 600;
       line-height: 2.1em;
       margin: 1em 0 1.2em;
-      
+
       .dashicons {
         position: relative;
         top: -2px;
@@ -171,11 +176,11 @@ $color__info: $color__blue;
         font-size: 40px;
       }
     }
-    
+
     p a {
       font-weight: bold;
     }
-    
+
     .welcome-panel-column,
     .welcome-panel-column:first-child {
       width: 48%;
@@ -187,13 +192,13 @@ $color__info: $color__blue;
         width: 100%;
       }
     }
-  
-    
+
+
     &:hover {
       h3.blink { animation: 5s blink }
       code.blink { animation: 4s 1s blink }
     }
-    
+
     .welcome-panel-close {
       z-index: 2;
     }
@@ -210,7 +215,7 @@ body.flamingo_page_flamingo_inbound {
     text-align: center;
     border-radius: 15px;
     padding: 5px;
-    
+
     b {
       color: $color__white;
       font-size: 11px;
@@ -218,7 +223,7 @@ body.flamingo_page_flamingo_inbound {
       vertical-align: text-bottom;
     }
   }
-  
+
   .column-d8 {
     width: 120px;
     text-align: center;

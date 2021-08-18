@@ -127,7 +127,7 @@ class CF7_AntiSpam_Admin_Tools {
 	public static function cf7a_advanced_settings() {
 
 		// the header
-		$html = printf('<div class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
+		$html = printf('<div id="advanced-setting-card" class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
 			__('Advanced settings', 'cf7-antispam'),
 			__('Use them if you know what you are doing!', 'cf7-antispam')
 		);

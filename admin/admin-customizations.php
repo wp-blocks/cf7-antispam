@@ -336,6 +336,25 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
+
+		// Section advanced settings
+		add_settings_section( 'cf7a_advanced', // ID
+			__('Enable advanced settings', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_advanced_settings' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Enable advanced settings
+		add_settings_field( 'enable_advanced_settings', // ID
+			__('Enable advanced settings', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_enable_advanced_settings_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_advanced' // Section
+		);
+
+
+
+
 		// Section Personalization
 		add_settings_section( 'cf7a_scoring', // ID
 			__('Scoring Tweaks (1 = Ban)', 'cf7-antispam'), // Title
@@ -406,9 +425,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings', // Page
 			'cf7a_scoring' // Section
 		);
-
-
-
 	}
 
 	public function cf7a_print_section_auto_blacklist() {
@@ -447,6 +463,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_print_customizations() {
 		printf( '<p>' . esc_html__("You may want to create your own and unique css class and customized fields name", 'cf7-antispam') . '</p>' );
 	}
+	public function cf7a_print_advanced_settings() {
+		printf( '<p>' . esc_html__("In this section you will find some advanced settings to manage the database", 'cf7-antispam') . '</p>' );
+	}
 
 	/**
 	 * Sanitize each setting field as needed
@@ -464,7 +483,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_bot_fingerprint_extras'] =  isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0 ;
 		$new_input['append_on_submit'] =  isset( $input['append_on_submit'] ) ? 1 : 0 ;
 
-
 		// elapsed time
 		$new_input['check_time'] =  isset( $input['check_time'] ) ? 1 : 0 ;
 
@@ -473,62 +491,50 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// bad ip
 		$new_input['check_bad_ip'] =  isset( $input['check_bad_ip'] ) ? 1 : 0 ;
-		$new_input['autostore_bad_ip'] =  isset( $input['autostore_bad_ip'] ) ? 1 : 0 ;
-
 		if ( isset( $input['bad_ip_list'] ) ) {
 			$new_input['bad_ip_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_ip_list'] ));
 		}
 
+		// autoban
+		$new_input['autostore_bad_ip'] =  isset( $input['autostore_bad_ip'] ) ? 1 : 0 ;
 
 		// bad words
 		$new_input['check_bad_words'] =  isset( $input['check_bad_words'] ) ? 1 : 0 ;
-
 		if ( isset( $input['bad_words_list'] ) ) {
 			$new_input['bad_words_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_words_list'] ));
 		}
 
-
 		// email strings
 		$new_input['check_bad_email_strings'] =  isset( $input['check_bad_email_strings'] ) ? 1 : 0 ;
-
 		if ( isset( $input['bad_email_strings_list'] ) ) {
 			$new_input['bad_email_strings_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_email_strings_list'] ));
 		}
 
-
 		// user_agent
 		$new_input['check_bad_user_agent'] =  isset( $input['check_bad_user_agent'] ) ? 1 : 0 ;
-
 		if ( isset( $input['bad_user_agent_list'] ) ) {
 			$new_input['bad_user_agent_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_user_agent_list'] ));
 		}
 
-
 		// dnsbl
 		$new_input['check_dnsbl'] =  isset( $input['check_dnsbl'] ) ? 1 : 0 ;
-
 		if ( isset( $input['dnsbl_list'] ) ) {
 			$new_input['dnsbl_list'] = explode("\r\n",sanitize_textarea_field( $input['dnsbl_list'] ));
 		}
 
-
 		// honeypot
 		$new_input['check_honeypot'] =  isset( $input['check_honeypot'] ) ? 1 : 0 ;
-
 		if ( isset( $input['honeypot_input_names'] ) ) {
 			$new_input['honeypot_input_names'] = explode("\r\n",sanitize_textarea_field( $input['honeypot_input_names'] ));
 		}
-
 
 		// honeyform
 		$new_input['check_honeyform'] =  isset( $input['check_honeyform'] ) ? 1 : 0 ;
 		$new_input['honeyform_position'] =  isset( $input['honeyform_position'] ) ? esc_attr__($input['honeyform_position']) : "wp_body_open" ;
 
 
-
 		// b8
 		$new_input['enable_b8'] =  isset( $input['enable_b8'] ) ? 1 : 0 ;
-
 		$threshold = floatval($input['b8_threshold']);
 		$new_input['b8_threshold'] = ($threshold >= 0 && $threshold < 1) ? $threshold : 1;
 
@@ -543,6 +549,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['score']['_warn'] = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn']) : 1;
 		$new_input['score']['_detection'] = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection']) : 5;
 
+
+		// Advanced settings
+		$new_input['enable_advanced_settings'] =  isset( $input['enable_advanced_settings'] ) ? 1 : 0 ;
 
 
 		// Customizations
@@ -801,6 +810,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="number" id="score_detection" name="cf7a_options[score][_detection]" value="%s" min="0" max="100" step="0.01" />',
 			isset( $this->options['score']['_detection'] ) ? floatval( $this->options['score']['_detection']) : 5
+		);
+	}
+	public function cf7a_enable_advanced_settings_callback() {
+		printf(
+			'<input type="checkbox" id="enable_advanced_settings" name="cf7a_options[enable_advanced_settings]" %s />',
+			isset( $this->options['enable_advanced_settings'] ) && $this->options['enable_advanced_settings'] == 1 ? 'checked="true"' : ''
 		);
 	}
 }
