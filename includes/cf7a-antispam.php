@@ -11,11 +11,10 @@ class CF7_AntiSpam_filters {
 		$this->b8 = $this->cf7a_b8_init();
 	}
 
+
 	/**
 	 * CF7_AntiSpam_filters Tools
 	 */
-
-	// expand IPv6 address
 	public function cf7a_expand_ipv6( $ip ) {
 		$hex = unpack( "H*hex", inet_pton( $ip ) );
 		return substr( preg_replace( "/([A-f0-9]{4})/", "$1:", $hex['hex'] ), 0, - 1 );
@@ -136,7 +135,7 @@ class CF7_AntiSpam_filters {
 
 		$time_elapsed = cf7a_microtimeFloat();
 
-		$rating = $this->b8->classify( $message );
+		$rating = $this->b8->classify( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ) );
 
 		if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
 			error_log( CF7ANTISPAM_LOG_PREFIX .'d8 email classification: ' . $rating );
@@ -152,19 +151,19 @@ class CF7_AntiSpam_filters {
 	}
 
 	public function cf7a_b8_learn_spam($message) {
-		if (!empty($message)) $this->b8->learn( $message, b8\b8::SPAM );
+		if (!empty($message)) $this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::SPAM );
 	}
 
 	public function cf7a_b8_unlearn_spam($message) {
-		if (!empty($message)) $this->b8->unlearn( $message, b8\b8::SPAM );
+		if (!empty($message)) $this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::SPAM );
 	}
 
 	public function cf7a_b8_learn_ham($message) {
-		if (!empty($message)) $this->b8->learn( $message, b8\b8::HAM );
+		if (!empty($message)) $this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::HAM );
 	}
 
 	public function cf7a_b8_unlearn_ham($message) {
-		if (!empty($message)) $this->b8->unlearn( $message, b8\b8::HAM );
+		if (!empty($message)) $this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::HAM );
 	}
 
 
@@ -179,7 +178,6 @@ class CF7_AntiSpam_filters {
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %s", $ip ) );
 	}
 
-
 	public function cf7a_blacklist_get_id($id) {
 
 		if ( ! is_int( $id ) ) return false;
@@ -187,7 +185,6 @@ class CF7_AntiSpam_filters {
 		global $wpdb;
 		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE id = %s", $id ) );
 	}
-
 
 	public function cf7a_ban_by_ip($ip, $reason = array(), $spam_score = 1) {
 
