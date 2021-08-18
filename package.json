@@ -1,6 +1,6 @@
 {
   "name": "contact-form-7-antispam",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "AntiSpam for Contact Form 7",
   "private": true,
   "scripts": {
@@ -28,7 +28,7 @@
     "type": "git",
     "url": "git+https://github.com/erikyo/contact-form-7-antispam.git"
   },
-  "author": "erikyo",
+  "author": "Erik Golinelli",
   "license": "GPL-2.0-only",
   "bugs": {
     "url": "https://github.com/erikyo/contact-form-7-antispam/issues"

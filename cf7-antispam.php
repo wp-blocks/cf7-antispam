@@ -12,7 +12,7 @@ Version: 0.2.3
 if ( ! defined( 'WPINC' ) ) die;
 
 // CONSTANTS
-define( 'CF7ANTISPAM_VERSION', '0.2.3' );
+define( 'CF7ANTISPAM_VERSION', '0.2.4' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
