@@ -102,7 +102,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 		if ( $blacklisted ) {
 
-			$html = '<div class="cf7-antispam card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
+			$html = '<div id="blacklist-section"  class="cf7-antispam card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
 			foreach ( $blacklisted as $row ) {
 
 				// the row url
@@ -177,7 +177,7 @@ class CF7_AntiSpam_Admin_Tools {
 			$options = CF7_AntiSpam::get_options();
 
 			// the header
-			$html = printf('<div class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
+			$html = printf('<div id="debug-info" class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
 				__('Debug info', 'cf7-antispam'),
 				__('(...If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true)', 'cf7-antispam')
 			);

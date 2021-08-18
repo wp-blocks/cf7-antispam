@@ -28,6 +28,7 @@ if (!defined('CF7ANTISPAM_DNSBL_BENCHMARK')) define( 'CF7ANTISPAM_DNSBL_BENCHMAR
 
 if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
 if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
+if (!defined('CF7ANTISPAM_CYPHER')) define( 'CF7ANTISPAM_CYPHER', "aes-128-cbc");
 
 
 // PLUGIN

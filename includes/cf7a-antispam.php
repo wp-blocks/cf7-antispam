@@ -489,18 +489,18 @@ class CF7_AntiSpam_filters {
 
 		// the data of the user who sent this email
 		// IP
-		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'address' ] ) ) : null;
+		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'address' ] ), $options['cf7a_cipher'] ) : null;
 		$remote_ip = $real_remote_ip ? filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) : null;
 		$cf7_remote_ip = sanitize_text_field($submission->get_meta( 'remote_ip' ));
 
 		// CF7A version
-		$cf7a_version = isset( $_POST[ $prefix . '_version' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_version' ] ) ) : null;
+		$cf7a_version = isset( $_POST[ $prefix . '_version' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_version' ] ), $options['cf7a_cipher'] ) : null;
 
 		// CF7 user agent
 		$user_agent = sanitize_text_field($submission->get_meta( 'user_agent' ));
 
 		// Timestamp checks
-		$timestamp                       = isset($_POST[$prefix.'_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST[$prefix.'_timestamp']) ) ) : 0;
+		$timestamp                       = isset($_POST[$prefix.'_timestamp']) ? intval( cf7a_decrypt( sanitize_text_field($_POST[$prefix.'_timestamp']), $options['cf7a_cipher'] ) ) : 0;
 		$timestamp_submitted             = time(); // can be cached so isn't safe to use -> $submission->get_meta( 'timestamp' );
 		$submission_minimum_time_elapsed = intval($options['check_time_min']);
 		$submission_maximum_time_elapsed = intval($options['check_time_max']);

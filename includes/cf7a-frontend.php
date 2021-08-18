@@ -216,13 +216,13 @@ class CF7_AntiSpam_Frontend {
 
 		// add the timestamp id required
 		$fields = intval($this->options['check_time']) ?
-			array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt(time()) ) ) :
+			array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt(time(), $this->options['cf7a_cipher']) ) ) :
 			$fields;
 
 		// add the default hidden fields
 		return array_merge( $fields, array(
-			$prefix.'_version' => cf7a_crypt(CF7ANTISPAM_VERSION),
-			$prefix.'address' => cf7a_crypt(cf7a_get_real_ip())
+			$prefix.'_version' => cf7a_crypt(CF7ANTISPAM_VERSION, $this->options['cf7a_cipher']),
+			$prefix.'address' => cf7a_crypt(cf7a_get_real_ip(), $this->options['cf7a_cipher'])
 		));
 	}
 

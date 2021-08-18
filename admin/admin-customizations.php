@@ -572,10 +572,13 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Customizations
 		$input['cf7a_customizations_class'] = sanitize_html_class($input['cf7a_customizations_class']);
-		$new_input['cf7a_customizations_class'] =  isset( $input['cf7a_customizations_class']) && $input['cf7a_customizations_class'] != '' ? $input['cf7a_customizations_class'] : CF7ANTISPAM_HONEYPOT_CLASS ;
+		$new_input['cf7a_customizations_class'] =  !empty( $input['cf7a_customizations_class']) ? sanitize_html_class($input['cf7a_customizations_class']) : CF7ANTISPAM_HONEYPOT_CLASS ;
 
 		$input['cf7a_customizations_prefix'] = sanitize_html_class($input['cf7a_customizations_prefix']);
-		$new_input['cf7a_customizations_prefix'] =  isset( $input['cf7a_customizations_prefix']) && $input['cf7a_customizations_prefix'] != '' ? $input['cf7a_customizations_prefix'] : CF7ANTISPAM_PREFIX ;
+		$new_input['cf7a_customizations_prefix'] =  !empty( $input['cf7a_customizations_prefix']) ? sanitize_html_class($input['cf7a_customizations_prefix']) : CF7ANTISPAM_PREFIX ;
+
+		$input['cf7a_cipher'] = sanitize_html_class($input['cf7a_cipher']);
+		$new_input['cf7a_cipher'] =  !empty( $input['cf7a_cipher']) && in_array( $input['cf7a_cipher'], openssl_get_cipher_methods() ) ? $input['cf7a_cipher'] : CF7ANTISPAM_CYPHER;
 
 
 		// store the sanitized options
@@ -782,6 +785,13 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="text" id="cf7a_customizations_prefix" name="cf7a_options[cf7a_customizations_prefix]" value="%s"/>',
 			isset( $this->options['cf7a_customizations_prefix'] ) && !empty($this->options['cf7a_customizations_prefix']) ? sanitize_html_class($this->options['cf7a_customizations_prefix']) : sanitize_html_class(CF7ANTISPAM_PREFIX)
+		);
+	}
+
+	public function cf7a_customizations_cipher_callback() {
+		printf(
+			'<select id="unban_after" name="cf7a_options[cf7a_cipher]">%s</select>',
+			$this->cf7a_generate_options( openssl_get_cipher_methods() , isset( $this->options['cf7a_cipher'] ) ? esc_attr($this->options['cf7a_cipher']) : 'aes-128-cbc' )
 		);
 	}
 
