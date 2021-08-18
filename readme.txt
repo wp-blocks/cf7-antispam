@@ -20,9 +20,10 @@ We use several in-page and off-page bots traps and an auto-learning mechanism ba
 This is required for advanced text statistical analysis, without this b8 will CANNOT be enabled.
 
 ==Antispam Available Test==
+- it is verified that the mail is sent through the cf7 module protecting the form with a encrypted unique hash
 - Browser Fingerprinting (check if is a real browser or a bot that camouflaging as such)
 - Time elapsed (a form is not filled out in a few seconds as bots do)
-- IP ban list (you can list ip's to be banned or parts thereof, ipv6 compatible)
+- IP ban list (you can list IP's to be banned or parts thereof, ipv6 compatible)
 - Prohibited words in message/email
 - Prohibited user agent
 - DNS Blacklists
@@ -51,10 +52,14 @@ The purpose of this word collecting is to build a dictionary used for the spam d
 3. Setup advanced settings in Contact Form 7 in the same way you do for flamingo, but add also 'flamingo_message: "[your-message]"' - reference https://contactform7.com/save-submitted-messages-with-flamingo/
 4. The configuration page for this plugin is located in the submenu "Antispam" under the Contact Form 7 menu
 
-== Support==
+==Support==
 Community support via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
 Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 also advice, reports, suggestions. Everyone can contribute, my intent is to keep it to be forever free but I ask for your support!
+
+==Contributing==
+I am very happy if someone wants to contribute to the project. My mission is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
+if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antispam) is the right place ;)
 
 == Debug / Plugin PHP Constants ==
 
@@ -112,10 +117,12 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 == Changelog ==
 
 = 0.2.4 =
-* Solves installation failure (in very rare conditions) if Flamingo is installed and, while running additional installation scripts, characters that cannot be stored in the database (such as emoji in UTF8 databases charset) are found in the emails content.
-* Documentation Update
-* Improved spam management with flamingo
 * A new section "Advanced Section" that can be unlocked at the end of cf7a options. I will put the more complex options there to make the interface easier.
+* Improved spam management with flamingo
+* Selectable encryption cypher
+* Improved browser detection
+* Solves installation failure (in very rare conditions) if Flamingo is installed and, while running additional installation scripts, characters that cannot be stored in the database are found in the emails content (such as emojis before encoding conversion).
+* Documentation Update
 
 = 0.2.3 =
 * enhanced fingerprint scripts performance
@@ -175,11 +182,9 @@ See the LICENSE file for more details.
 
 == TODOs ==
 * Ban by geolocation
-* Unban ip after x hours
-* Configuration error detector (parse stored form ad return if the message field isn't found)
 * CSV Export/import settings, banned ip
 * Resend EMail if not were spam
-* Optimise the the mail analysis (actually is a long script that execute sequentially checks, but rather a series of filters would be better)
+* Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
 * Selectable ciphers
 
 == Resources ==

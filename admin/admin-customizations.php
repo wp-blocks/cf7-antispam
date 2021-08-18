@@ -445,8 +445,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted. However you can decide to unban that IP after some time", 'cf7-antispam') . '</p>' );
-		if (wp_next_scheduled ( 'cf7a_cron' )) {
-			printf( '<p>' . esc_html__("Next scheduled unban event: ", 'cf7-antispam') .  wp_date("Y-m-d H:i:s",wp_next_scheduled ( 'cf7a_cron' )) . ' <br/>server time ' .wp_date("Y-m-d H:i:s",time()). '</p>' );
+		if (wp_next_scheduled ( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG) {
+			printf( '<p class="monospace">' . esc_html__("Next scheduled unban event: ", 'cf7-antispam') .  wp_date("Y-m-d H:i:s",wp_next_scheduled ( 'cf7a_cron' )) . ' <br/>Server time ' .wp_date("Y-m-d H:i:s",time()). '</p>' );
 		}
 	}
 	public function cf7a_print_section_bot_fingerprint() {
@@ -521,8 +521,10 @@ class CF7_AntiSpam_Admin_Customizations {
 
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
+				// delete previous scheduled events
 				$timestamp = wp_next_scheduled( 'cf7a_cron' );
 				wp_unschedule_event( $timestamp, 'cf7a_cron' );
+				// add the new scheduled event
 				$filters = new CF7_AntiSpam_filters();
 				add_action( 'cf7a_cron', array($filters, 'cron_unban') );
 				wp_schedule_event( time(), $new_input['unban_after'], 'cf7a_cron' );
