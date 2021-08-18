@@ -57,12 +57,16 @@ class CF7_AntiSpam {
 		if ( defined( 'CF7ANTISPAM_VERSION' ) ) {
 			$this->version = CF7ANTISPAM_VERSION;
 		} else {
-			$this->version = '1.0.0';
+			$this->version = '0.0.1';
 		}
 
-		$this->plugin_name = 'cf7-antispam';
-
+		$this->plugin_name = CF7ANTISPAM_NAME;
 		$this->options = $this->get_options(); // the plugin options
+
+		if ( empty($this->options['version']) || $this->version !== $this->options['version'] ) {
+			// the php files
+			$this->update();
+		}
 
 		// the php files
 		$this->load_dependencies();
@@ -75,6 +79,24 @@ class CF7_AntiSpam {
 
 		// the frontend area
 		$this->load_frontend();
+	}
+
+	/**
+	 * Define the locale for this plugin for internationalization.
+	 *
+	 * Uses the CF7_AntiSpam_i18n class in order to set the domain and to register the hook
+	 * with WordPress.
+	 *
+	 * @since    0.2.4
+	 * @access   private
+	 */
+	private function update() {
+
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
+		do_action( 'cf7a_update' );
+		CF7_AntiSpam_Activator::update_options();
+		// $url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
+		// wp_redirect($url);
 	}
 
 	private function load_dependencies() {

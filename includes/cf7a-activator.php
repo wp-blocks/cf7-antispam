@@ -9,11 +9,106 @@
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
 class CF7_AntiSpam_Activator {
+
+	private static $default_cf7a_options = array();
+
+	private static $default_cf7a_options_bootstrap = array();
+
+	public static function init_vars() {
+
+		self::$default_cf7a_options = array(
+			"cf7a_version"                 => CF7ANTISPAM_VERSION,
+			"cf7a_customizations_class"    => CF7ANTISPAM_HONEYPOT_CLASS,
+			"cf7a_customizations_prefix"   => CF7ANTISPAM_PREFIX,
+			"check_bot_fingerprint"        => true,
+			"check_bot_fingerprint_extras" => true,
+			"append_on_submit"             => true,
+			"check_time"                   => true,
+			"check_time_min"               => 6,
+			"check_time_max"               => 3660,
+			"check_bad_ip"                 => true,
+			"autostore_bad_ip"             => true,
+			"check_bad_words"              => true,
+			"check_bad_email_strings"      => true,
+			"check_bad_user_agent"         => true,
+			"check_dnsbl"                  => true,
+			"check_honeypot"               => true,
+			"check_honeyform"              => false,
+			"honeyform_position"           => "wp_footer",
+			"enable_b8"                    => true,
+			"b8_threshold"                 => 0.95,
+			"bad_words_list"               => array(),
+			"bad_ip_list"                  => array(),
+			"bad_email_strings_list"       => array(),
+			"bad_user_agent_list"          => array(),
+			"dnsbl_list"                   => array(),
+			"honeypot_input_names"         => array(),
+			"score"                        => array(
+				'_fingerprinting' => 0.25,
+				'_time'           => 1,
+				'_bad_string'     => 1,
+				'_dnsbl'          => 0.25,
+				'_honeypot'       => 1,
+				'_honeyform'      => 10,
+				'_detection'      => 5,
+				'_warn'           => 1,
+			)
+		);
+
+		self::$default_cf7a_options_bootstrap = array(
+			"bad_words_list"         => array(
+				'viagra',
+				'Earn extra cash',
+				'MEET SINGLES'
+			),
+			"bad_email_strings_list" => array(
+				parse_url(get_site_url(), PHP_URL_HOST)
+			),
+			"bad_user_agent_list"    => array(
+				'bot',
+				'puppeteer',
+				'phantom',
+				'User-Agent',
+				'Java',
+				'PHP',
+			),
+			"dnsbl_list"             => array(
+				// ipv4 dnsbl
+				"dnsbl-1.uceprotect.net",
+				"dnsbl-2.uceprotect.net",
+				"dnsbl-3.uceprotect.net",
+				"dnsbl.sorbs.net",
+				"zen.spamhaus.org",
+				"bl.spamcop.net",
+				"b.barracudacentral.org",
+				"dnsbl.dronebl.org",
+				// ipv6 dnsbl
+				"dnsbl.spfbl.net",
+				"bogons.cymru.com",
+				"bl.ipv6.spameatingmonkey.net",
+			),
+			"honeypot_input_names"   => array(
+				'name',
+				'email',
+				'address',
+				'zip',
+				'town',
+				'phone',
+				'credit-card',
+				'ship-address',
+				'billing_company',
+				'billing_city',
+				'billing_country',
+				'email-address'
+			)
+		);
+	}
+
 
 	/**
 	 * Script that runs when the plugin is installed
-	 *
 	 *
 	 * @since    0.1.0
 	 */
@@ -51,105 +146,41 @@ class CF7_AntiSpam_Activator {
 		dbDelta( $cf7a_database );
 	}
 
- 	public static function activate() {
+	/**
+	 *  Create or Update the CF7 Antispam options
+	 */
+	public static function update_options() {
+		self::init_vars();
+		if ( false !== ($options = get_option( 'cf7a_options' )) ) {
+			// update the plugin options but add the new options automatically
+			unset($options['cf7a_version']);
+			update_option( "cf7a_options", array_merge( CF7_AntiSpam_Activator::$default_cf7a_options , $options ) );
+		} else {
+			// if the plugin options are missing Init the plugin with the default option + the default settings
+			update_option( "cf7a_options", array_merge( CF7_AntiSpam_Activator::$default_cf7a_options , CF7_AntiSpam_Activator::$default_cf7a_options_bootstrap )  );
+		}
+	}
 
-	    if (CF7ANTISPAM_DEBUG) error_log(print_r(CF7ANTISPAM_LOG_PREFIX.'plugin enabled',true));
+	/**
+	 *  Activate CF7 Antispam Plugin
+	 */
+	public static function activate() {
+
+		if (CF7ANTISPAM_DEBUG) error_log(print_r(CF7ANTISPAM_LOG_PREFIX.'plugin enabled',true));
 
 		// https://codex.wordpress.org/Creating_Tables_with_Plugins
-		$installed_ver = get_option( "cf7a_db_version" );
-
-		if ( !$installed_ver ) {
+		if ( !get_option( "cf7a_db_version" ) ) {
 			self::install();
 			update_option( "cf7a_db_version", '1' );
 		}
 
 		/* If the options do not exist then create them*/
-		if ( false == get_option( 'cf7a_options' ) ) {
+		if (!get_option( 'cf7a_options' )) self::update_options();
 
-			add_option( 'cf7a_options', array(
-				"cf7a_customizations_class" => CF7ANTISPAM_HONEYPOT_CLASS,
-				"cf7a_customizations_prefix" => CF7ANTISPAM_PREFIX,
-				"check_bot_fingerprint" => true,
-				"check_bot_fingerprint_extras" => true,
-				"append_on_submit" => true,
-				"check_time" => true,
-				"check_time_min" => 6,
-				"check_time_max" => 3660,
-				"check_bad_ip" => true,
-				"autostore_bad_ip" => true,
-				"check_bad_words" => true,
-				"check_bad_email_strings" => true,
-				"check_bad_user_agent" => true,
-				"check_dnsbl" => true,
-				"check_honeypot" => true,
-				"check_honeyform" => false,
-				"honeyform_position" => "wp_footer",
-				"enable_b8" => true,
-				"b8_threshold" => 0.95,
-				"bad_words_list" => array(
-					'viagra',
-					'Earn extra cash',
-					'MEET SINGLES'
-				),
-				"bad_ip_list" => array(),
-				"bad_email_strings_list" => array(
-					str_replace( array( 'http://', 'https://', 'www' ), "", get_site_url()) // check if the mail sender has the same domain of the website, in this case in this case it is an attempt to circumvent the defences
-				),
-				"bad_user_agent_list" => array(
-					'bot',
-					'puppeteer',
-					'phantom',
-					'User-Agent',
-					'Java',
-					'PHP',
-				),
-				"dnsbl_list" => array(
-					// ipv4 dnsbl
-					"dnsbl-1.uceprotect.net",
-					"dnsbl-2.uceprotect.net",
-					"dnsbl-3.uceprotect.net",
-					"dnsbl.sorbs.net",
-					"zen.spamhaus.org",
-					"bl.spamcop.net",
-					"b.barracudacentral.org",
-					"dnsbl.dronebl.org",
-					// ipv6 dnsbl
-					"dnsbl.spfbl.net",
-					"bogons.cymru.com",
-					"bl.ipv6.spameatingmonkey.net",
-				),
-				"honeypot_input_names" => array(
-					'name',
-					'email',
-					'address',
-					'zip',
-					'town',
-					'phone',
-					'credit-card',
-					'ship-address',
-					'billing_company',
-					'billing_city',
-					'billing_country',
-					'email-address'
-				),
-				"score" => array(
-                    '_fingerprinting' => 0.25,
-		            '_time' => 1,
-		            '_bad_string' => 1,
-		            '_dnsbl' => 0.25,
-		            '_honeypot' => 1,
-                    '_honeyform' => 10,
-                    '_detection' => 5,
-		            '_warn' => 1,
-				)
-			) );
-		}
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
 
-	    require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
-
-	    $cf7a_antispam_filters = new CF7_AntiSpam_filters();
-
-	    $cf7a_antispam_filters->cf7a_flamingo_on_install();
+		$cf7a_antispam_filters = new CF7_AntiSpam_filters();
+		$cf7a_antispam_filters->cf7a_flamingo_on_install();
 	}
 
 }
