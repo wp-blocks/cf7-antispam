@@ -341,6 +341,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_customizations' // Section
 		);
 
+		// Enable customizations
+		add_settings_field( 'cf7a_cipher', // ID
+			__('The encryption method', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_customizations_cipher_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_customizations' // Section
+		);
+
 
 
 
@@ -437,6 +445,9 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted. However you can decide to unban that IP after some time", 'cf7-antispam') . '</p>' );
+		if (wp_next_scheduled ( 'cf7a_cron' )) {
+			printf( '<p>' . esc_html__("Next scheduled unban event: ", 'cf7-antispam') .  wp_date("Y-m-d H:i:s",wp_next_scheduled ( 'cf7a_cron' )) . ' <br/>server time ' .wp_date("Y-m-d H:i:s",time()). '</p>' );
+		}
 	}
 	public function cf7a_print_section_bot_fingerprint() {
 		printf( '<p>' . esc_html__("Enable some extra check to detect bot activity", 'cf7-antispam') . '</p>' );
@@ -507,10 +518,20 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0 ;
 		// auto-unban
 		if ( isset( $input['unban_after'] ) && in_array( $input['unban_after'] , array( 'hourly', 'twicedaily', 'daily', 'weekly' )) ) {
-			$new_input['unban_after'] = $input['unban_after'];
-			wp_clear_scheduled_hook( 'cron_unban' );
-			wp_schedule_event( time(), $input['unban_after'], 'cron_unban' );
+
+			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
+				$new_input['unban_after'] = $input['unban_after'];
+				$timestamp = wp_next_scheduled( 'cf7a_cron' );
+				wp_unschedule_event( $timestamp, 'cf7a_cron' );
+				$filters = new CF7_AntiSpam_filters();
+				add_action( 'cf7a_cron', array($filters, 'cron_unban') );
+				wp_schedule_event( time(), $new_input['unban_after'], 'cf7a_cron' );
+			}
+
 		} else {
+			// Get the timestamp for the next event.
+			$timestamp = wp_next_scheduled( 'cf7a_cron' );
+			wp_unschedule_event( $timestamp, 'cf7a_cron' );
 			$new_input['unban_after'] = 'disabled';
 		}
 

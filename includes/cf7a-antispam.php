@@ -249,9 +249,9 @@ class CF7_AntiSpam_filters {
 	public function cron_unban() {
 		global $wpdb;
 		error_log( CF7ANTISPAM_LOG_PREFIX . "unban cron run for real" );
-		return $wpdb->get_row( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
+		$wpdb->query( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
+		return $wpdb->query( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0" );
 	}
-
 
 
 	// Database management Flamingo
