@@ -326,6 +326,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		// Enable customizations
+		add_settings_field( 'cf7a_disable_reload', // ID
+			__('Disable cf7 form reload if the page is cached', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_disable_reload_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_customizations' // Section
+		);
+
+		// Enable customizations
 		add_settings_field( 'cf7a_customizations_class', // ID
 			__('Your unique css class', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_customizations_class_callback' ), // Callback
@@ -595,6 +603,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 		// Customizations
+		$new_input['cf7a_disable_reload'] =  isset( $input['cf7a_disable_reload'] ) ? 1 : 0 ;
+
 		$input['cf7a_customizations_class'] = sanitize_html_class($input['cf7a_customizations_class']);
 		$new_input['cf7a_customizations_class'] =  !empty( $input['cf7a_customizations_class']) ? sanitize_html_class($input['cf7a_customizations_class']) : CF7ANTISPAM_HONEYPOT_CLASS ;
 
@@ -797,6 +807,13 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
+
+	public function cf7a_disable_reload_callback() {
+		printf(
+			'<input type="checkbox" id="cf7a_disable_reload" name="cf7a_options[cf7a_disable_reload]" %s />',
+			isset( $this->options['cf7a_disable_reload'] ) && $this->options['cf7a_disable_reload'] == 1 ? 'checked="true"' : ''
+		);
+	}
 
 	public function cf7a_customizations_class_callback() {
 		printf(

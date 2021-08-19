@@ -275,7 +275,8 @@ class CF7_AntiSpam_Frontend {
 		wp_enqueue_script($this->plugin_name);
 
 		wp_localize_script($this->plugin_name, "cf7a_settings", array(
-			"prefix" => $this->options['cf7a_customizations_prefix']
+			"prefix" => $this->options['cf7a_customizations_prefix'],
+			"disableReload" => $this->options['cf7a_disable_reload']
 		));
 	}
 }

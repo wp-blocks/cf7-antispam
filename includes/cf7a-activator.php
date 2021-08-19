@@ -23,6 +23,7 @@ class CF7_AntiSpam_Activator {
 			"cf7a_customizations_class"    => CF7ANTISPAM_HONEYPOT_CLASS,
 			"cf7a_customizations_prefix"   => CF7ANTISPAM_PREFIX,
 			"cf7a_cipher"                  => 'aes-128-cbc',
+			"cf7a_disable_reload"          => true,
 			"check_bot_fingerprint"        => true,
 			"check_bot_fingerprint_extras" => true,
 			"append_on_submit"             => true,

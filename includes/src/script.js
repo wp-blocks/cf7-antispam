@@ -1,9 +1,12 @@
-/* global cf7a_settings */
+/* global cf7a_settings, wpcf7 */
 (function ($) {
 
   'use strict';
 
-  const cf7a_prefix = cf7a_settings.prefix;
+	const cf7a_prefix = cf7a_settings.prefix;
+
+	// disable cf7 refill on load
+	wpcf7.cached = parseInt(cf7a_settings.disableReload) === 0 && wpcf7.cached; // if is cached disable reload
 
   let testTouch = () => {
 		if ("maxTouchPoints" in navigator) {
