@@ -52,9 +52,11 @@ class CF7_AntiSpam_filters {
 
 			// extract the flamingo_key = value;
 			foreach ($lines as $line) {
-				$matches = array();
-				preg_match('/flamingo_(.*)(?=:): "\[(.*)]"/', $line , $matches);
-				$additional_settings[$matches[1]] = $matches[2];
+				if (substr( trim($line), 0, 9 ) === "flamingo_") {
+					$matches = array();
+					preg_match('/flamingo_(.*)(?=:): "\[(.*)]"/', $line , $matches);
+					$additional_settings[$matches[1]] = $matches[2];
+				}
 			}
 
 			return $additional_settings;
@@ -358,8 +360,6 @@ class CF7_AntiSpam_filters {
 
 				// get the message from flamingo mail
 				$message = $this->cf7a_get_mail_content($post_id);
-
-				if (CF7ANTISPAM_DEBUG) error_log( CF7ANTISPAM_LOG_PREFIX . $message );
 
 				$flamingo_post = new Flamingo_Inbound_Message( $post_id );
 
