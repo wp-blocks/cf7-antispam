@@ -623,12 +623,12 @@ class CF7_AntiSpam_filters {
 				if (strlen($bot_fingerprint["bot_fingerprint"]) != 5) $fails[] = "bot_fingerprint";
 
 				// navigator hardware_concurrency isn't available under Ios - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
-				if ( ( !empty( $_POST[ $prefix . 'isAndroid'] ) || empty( $_POST[ $prefix . 'isSafari'] ) && empty( $_POST[ $prefix . 'isIos'] ) ) ) {
+				if (  empty( $_POST[ $prefix . 'isIos'] ) ) {
 					// hardware concurrency need to be a integer > 1 to be valid
 					if (!$bot_fingerprint["hardware_concurrency"] >= 1) $fails[] = "hardware_concurrency";
 				} else {
 					// but in ios isn't provided so we expect a null value
-					if ($bot_fingerprint["hardware_concurrency"] !== null) $fails[] = "hardware_concurrencyIos";
+					if ($bot_fingerprint["hardware_concurrency"] !== null) $fails[] = "hardware_concurrency_Ios";
 				}
 
 				if ( !empty( $_POST[$prefix.'isIos'] ) || !empty( $_POST[$prefix.'isAndroid'] ) ) {
@@ -636,12 +636,12 @@ class CF7_AntiSpam_filters {
 				}
 
 				// navigator deviceMemory isn't available with Ios and firexfox  - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory
-				if ( empty( $_POST[$prefix.'isSafari'] ) && empty( $_POST[$prefix.'isIos'] ) && empty( $_POST[$prefix.'isFFox'] ) ) {
+				if ( empty( $_POST[$prefix.'isIos'] ) && empty( $_POST[$prefix.'isFFox'] ) ) {
 					// memory need to be a float > 0.25 to be valid
 					if ( !$bot_fingerprint["memory"] >= 0.25 )  $fails[] = "memory";
 				} else {
 					// but in ios and firefox isn't provided so we expect a null value
-					if ( $bot_fingerprint["memory"] !== null )  $fails[] = "memoryIos";
+					if ( $bot_fingerprint["memory"] !== null )  $fails[] = "memory_Ios";
 				}
 
 				// increment the spam score if needed, then log the result

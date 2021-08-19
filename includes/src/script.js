@@ -58,7 +58,7 @@
 			tests.isIELegacy = true;
 		} else if (ua.indexOf("Edg") > -1) {
 			tests.isEdge = true;
-		} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1) { // crios stands for chrome for ios...
+		} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1 ) { // crios stands for chrome for ios...
 			tests.isChrome = true;
 		} else if (ua.indexOf("Safari") > -1) {
 			tests.isSafari = true;
@@ -73,8 +73,7 @@
 			tests.isAndroid = true;
 		}
 
-
-		if ( tests.isIos || tests.isAndroid || testTouch() ) tests.touch = true;
+		if ( tests.isIos || tests.isAndroid ) tests.touch = testTouch();
 
 		return tests;
   };
