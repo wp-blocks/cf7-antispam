@@ -63,16 +63,23 @@ class CF7_AntiSpam {
 		$this->plugin_name = CF7ANTISPAM_NAME;
 		$this->options = $this->get_options(); // the plugin options
 
-		if ( empty($this->options['version']) || $this->version !== $this->options['version'] ) {
-			// the php files
-			$this->update();
-		}
-
 		// the php files
 		$this->load_dependencies();
 
 		// the i18n
 		$this->set_locale();
+
+		if ( empty($this->options['version']) || $this->version !== $this->options['version'] ) {
+			// the php files
+			$this->update();
+
+			if ( get_transient( 'cf7a_activation' ) ) {
+				if ( defined( 'FLAMINGO_VERSION' ) ) {
+					$filters = new CF7_AntiSpam_filters();
+					$filters->cf7a_flamingo_on_install();
+				}
+			}
+		}
 
 		// the admin area
 		$this->load_admin();

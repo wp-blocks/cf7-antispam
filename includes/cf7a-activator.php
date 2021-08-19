@@ -180,10 +180,7 @@ class CF7_AntiSpam_Activator {
 		/* If the options do not exist then create them*/
 		if ( !get_option( 'cf7a_options' ) ) self::update_options();
 
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
-
-		$cf7a_antispam_filters = new CF7_AntiSpam_filters();
-		$cf7a_antispam_filters->cf7a_flamingo_on_install();
+		set_transient( 'cf7a_activation', true );
 	}
 
 }

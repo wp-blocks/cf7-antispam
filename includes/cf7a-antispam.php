@@ -274,9 +274,9 @@ class CF7_AntiSpam_filters {
 		return false;
 	}
 
-	private function cf7a_reset_b8_classification() {
+	public static function cf7a_reset_b8_classification() {
 		global $wpdb;
-		$wpdb->query( "DELETE FROM `" . $wpdb->prefix . "postmeta` WHERE `meta_key` = '_cf7a_b8_classification'" );
+		$wpdb->query( "DELETE FROM " . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
 	}
 
 	public function cf7a_rebuild_dictionary() {
@@ -289,10 +289,6 @@ class CF7_AntiSpam_filters {
 
 	public function cf7a_flamingo_on_install() {
 		$this->cf7a_flamingo_analyze_stored_mails();
-	}
-
-	public function cf7a_flamingo_on_uninstall() {
-		$this->cf7a_reset_b8_classification();
 	}
 
 	private function cf7a_flamingo_analyze_stored_mails() {

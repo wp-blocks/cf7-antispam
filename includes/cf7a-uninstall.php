@@ -8,7 +8,7 @@ class CF7_AntiSpam_Uninstaller {
 
 	public static function uninstall() {
 
-		if (CF7ANTISPAM_DEBUG || CF7ANTISPAM_DEBUG_EXTENDED) {
+		if (!CF7ANTISPAM_DEBUG_EXTENDED) {
 
 			global $wpdb;
 
@@ -20,14 +20,13 @@ class CF7_AntiSpam_Uninstaller {
 
 			delete_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on');
 
-			require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
-			CF7_AntiSpam_filters::cf7a_flamingo_on_uninstall();
+			$wpdb->query( "DELETE FROM " . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
 
 			error_log(print_r(CF7ANTISPAM_LOG_PREFIX.'plugin uninstalled',true));
 
 		} else {
 
-			error_log(print_r('CONTACT FORM 7 ANTISPAM - "CF7ANTISPAM_DEBUG_EXTENDED = true" so options and database will not be deleted.',true));
+			error_log(print_r('CONTACT FORM 7 ANTISPAM - "CF7ANTISPAM_DEBUG_EXTENDED = true" so options and database will NOT be deleted.',true));
 
 		}
 
