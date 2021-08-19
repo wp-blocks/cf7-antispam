@@ -22,6 +22,7 @@ class CF7_AntiSpam_Activator {
 			"cf7a_version"                 => CF7ANTISPAM_VERSION,
 			"cf7a_customizations_class"    => CF7ANTISPAM_HONEYPOT_CLASS,
 			"cf7a_customizations_prefix"   => CF7ANTISPAM_PREFIX,
+			"cf7a_cipher"                  => 'aes-128-cbc',
 			"check_bot_fingerprint"        => true,
 			"check_bot_fingerprint_extras" => true,
 			"append_on_submit"             => true,
@@ -30,6 +31,7 @@ class CF7_AntiSpam_Activator {
 			"check_time_max"               => 3660,
 			"check_bad_ip"                 => true,
 			"autostore_bad_ip"             => true,
+			"unban_after"                  => 'disabled',
 			"check_bad_words"              => true,
 			"check_bad_email_strings"      => true,
 			"check_bad_user_agent"         => true,
@@ -39,6 +41,7 @@ class CF7_AntiSpam_Activator {
 			"honeyform_position"           => "wp_footer",
 			"enable_b8"                    => true,
 			"b8_threshold"                 => 0.95,
+			"enable_advanced_settings"     => 0,
 			"bad_words_list"               => array(),
 			"bad_ip_list"                  => array(),
 			"bad_email_strings_list"       => array(),
@@ -175,7 +178,7 @@ class CF7_AntiSpam_Activator {
 		}
 
 		/* If the options do not exist then create them*/
-		if (!get_option( 'cf7a_options' )) self::update_options();
+		if ( !get_option( 'cf7a_options' ) ) self::update_options();
 
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
 

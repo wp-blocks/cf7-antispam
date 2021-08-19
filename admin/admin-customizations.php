@@ -446,7 +446,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted. However you can decide to unban that IP after some time", 'cf7-antispam') . '</p>' );
 		if (wp_next_scheduled ( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG) {
-			printf( '<p class="monospace">' . esc_html__("Next scheduled unban event: ", 'cf7-antispam') .  wp_date("Y-m-d H:i:s",wp_next_scheduled ( 'cf7a_cron' )) . ' <br/>Server time ' .wp_date("Y-m-d H:i:s",time()). '</p>' );
+			printf( '<small class="monospace">' . esc_html__("Next scheduled unban event: ", 'cf7-antispam') .  wp_date("Y-m-d H:i:s",wp_next_scheduled ( 'cf7a_cron' )) . ' <br/>Server time ' .wp_date("Y-m-d H:i:s",time()). '</small>' );
 		}
 	}
 	public function cf7a_print_section_bot_fingerprint() {
@@ -480,7 +480,8 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf( '<p>' . esc_html__("Tells you whether a text is spam or not, using statistical text analysis of the text message", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_customizations() {
-		printf( '<p>' . esc_html__("You may want to create your own and unique css class and customized fields name", 'cf7-antispam') . '</p>' );
+		printf( '<p>' . esc_html__("RECOMMENDED: create your own and unique css class and customized fields name", 'cf7-antispam') . '</p>' );
+		printf( '<p>' . esc_html__("You can also choose in encryption method. But, After changing cypher do a couple of tests because a small amount of them aren't compatible with the format of the form data.", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_advanced_settings() {
 		printf( '<p>' . esc_html__("In this section you will find some advanced settings to manage the database", 'cf7-antispam') . '</p>' );

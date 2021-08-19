@@ -95,8 +95,6 @@ class CF7_AntiSpam {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
 		do_action( 'cf7a_update' );
 		CF7_AntiSpam_Activator::update_options();
-		// $url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
-		// wp_redirect($url);
 	}
 
 	private function load_dependencies() {

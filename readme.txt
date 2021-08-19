@@ -39,7 +39,7 @@ Notes:
 - On the right side of Flamingo inbound page i've added a new column that show the mail spamminess level
 - if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
 - Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the b8 algorithm will be auto-trained
-- Don't delete a spam message from ham if you receive it, rather put it in spam to teach b8 how to recognise spam from ham!
+- Don't delete a spam message from ham if you receive it, rather put it in spam to teach b8 how to recognise the difference!
 
 == Privacy Notices ==
 AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
@@ -58,7 +58,7 @@ Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 also advice, reports, suggestions. Everyone can contribute, my intent is to keep it to be forever free but I ask for your support!
 
 ==Contributing==
-I am very happy if someone wants to contribute to the project. My mission is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
+I am very happy if someone wants to contribute to the project. My goal is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
 if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antispam) is the right place ;)
 
 == Debug / Plugin PHP Constants ==
@@ -113,15 +113,15 @@ After that the sender ip will be searched into *DNS-based Blackhole server* to f
 
 b8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. b8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
 
-
 == Changelog ==
 
 = 0.2.4 =
 * A new section "Advanced Section" that can be unlocked at the end of cf7a options. I will put the more complex options there to make the interface easier.
 * Improved spam management with flamingo
+* New automatic options update handler
 * Selectable encryption cypher
 * Improved browser detection
-* Solves installation failure (in very rare conditions) if Flamingo is installed and, while running additional installation scripts, characters that cannot be stored in the database are found in the emails content (such as emojis before encoding conversion).
+* Fix installation failure (in very rare conditions) when Flamingo is installed and in mail message there are some non-utf8 characters.
 * Documentation Update
 
 = 0.2.3 =
@@ -185,7 +185,6 @@ See the LICENSE file for more details.
 * CSV Export/import settings, banned ip
 * Resend EMail if not were spam
 * Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
-* Selectable ciphers
 
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
