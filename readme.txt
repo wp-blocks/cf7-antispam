@@ -118,7 +118,7 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 = 0.2.5 =
 * Bugfix the additional data in the email related to flamingo may not be parsed correctly
 * New option to disable cf7 reload (/refill) when caching is enabled
-* Wnhanced fingerprint support for chrome on ios
+* Enhanced fingerprint support for chrome on ios
 
 = 0.2.4 =
 * A new section "Advanced Section" that can be unlocked at the end of cf7a options. I will put the more complex options there to make the interface easier.

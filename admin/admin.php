@@ -50,6 +50,8 @@ class CF7_AntiSpam_Admin {
 
 		$tools = new CF7_AntiSpam_Admin_Tools();
 
+		add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ));
+
 		add_action( 'admin_notices', array( $this, 'cf7a_display_notices' ) );
 
 		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
@@ -147,4 +149,10 @@ class CF7_AntiSpam_Admin {
 
 	}
 
+	public function cf7a_body_class( $class ) {
+		$admin_page = get_current_screen();
+		if (false === strpos($admin_page->base, $this->plugin_name )) return;
+		$class .= 'cf7-antispam-admin';
+		return $class;
+	}
 }
