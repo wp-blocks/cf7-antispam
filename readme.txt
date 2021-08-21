@@ -4,7 +4,7 @@ Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, 
 Requires at least: 5.1
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 0.2.4
+Stable tag: 0.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,14 +84,14 @@ NO, nobody can guarantee that, and anyone who tells you that is lying. But lucki
 =Mail spam test sequence explained=
 
 Different checks are made to recognize different type of bots. This is a short list of the antispam tests
-- Get the IP address and if it has already been blacklisted
-- check if this mail was sent by a forbidden ip
-- The bot fingerprinting is a way to check the mail was sent with a real browser
-- Check the elapsed time to fill the form
-- Check the message, the user agent or the email if it contains any forbidden words/strings.
-- verify on dnsbl if the ip has already been reported
-- if the spam score is above 1 the mail is proposed to b8 as spam, then b8 ranks it and learns the spam words.
-- if the spam score is below 1 the mail will be passed to that b8 "decides" if it is spam or not.
+* Get the IP address and if it has already been blacklisted
+* check if this mail was sent by a forbidden ip
+* The bot fingerprinting is a way to check the mail was sent with a real browser
+* Check the elapsed time to fill the form
+* Check the message, the user agent or the email if it contains any forbidden words/strings.
+* verify on dnsbl if the ip has already been reported
+* if the spam score is above 1 the mail is proposed to b8 as spam, then b8 ranks it and learns the spam words.
+* if the spam score is below 1 the mail will be passed to that b8 "decides" if it is spam or not.
 
 =What do you mean by Standard Spam Filters=
 
@@ -114,6 +114,11 @@ After that the sender ip will be searched into *DNS-based Blackhole server* to f
 b8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. b8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
 
 == Changelog ==
+
+= 0.2.5 =
+* Bugfix the additional data in the email related to flamingo may not be parsed correctly
+* New option to disable cf7 reload (/refill) when caching is enabled
+* Wnhanced fingerprint support for chrome on ios
 
 = 0.2.4 =
 * A new section "Advanced Section" that can be unlocked at the end of cf7a options. I will put the more complex options there to make the interface easier.
