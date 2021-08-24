@@ -55,10 +55,19 @@ The purpose of this word collecting is to build a dictionary used for the spam d
 ==Support==
 Community support via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
 Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
-also advice, reports, suggestions. Everyone can contribute, my intent is to keep it to be forever free but I ask for your support!
 
-==Contributing==
-I am very happy if someone wants to contribute to the project. My goal is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
+= Contribute =
+We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
+
+* Reporting a bug
+* Discussing the current state of the code
+* Submitting a fix
+* Proposing new features
+
+We use github to host code, to track issues and feature requests, as well as accept pull requests.
+By contributing, you agree that your contributions will be licensed under its GPLv2 License.
+
+My goal is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
 if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antispam) is the right place ;)
 
 == Debug / Plugin PHP Constants ==
