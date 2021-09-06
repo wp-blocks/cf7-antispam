@@ -5,7 +5,7 @@ Description: A trustworthy antispam plugin for Contact Form 7. Simple but effect
 Author: Codekraft
 Text Domain: cf7-antispam
 Domain Path: /languages/
-Version: 0.2.5
+Version: 0.2.6
 */
 
 // If this file is called directly, abort.
@@ -14,7 +14,7 @@ if ( ! defined( 'WPINC' ) ) die;
 // CONSTANTS
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
-define( 'CF7ANTISPAM_VERSION', '0.2.5' );
+define( 'CF7ANTISPAM_VERSION', '0.2.6' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
