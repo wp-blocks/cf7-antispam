@@ -368,6 +368,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings' // Page
 		);
 
+		// Score Preset
+		add_settings_field( 'cf7a_score_preset', // ID
+			__('Severity of anti-spam control', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_score_preset_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_advanced' // Section
+		);
+
 		// Enable advanced settings
 		add_settings_field( 'enable_advanced_settings', // ID
 			__('Enable advanced settings', 'cf7-antispam'), // Title
@@ -378,7 +386,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
-
 		// Section Personalization
 		add_settings_section( 'cf7a_scoring', // ID
 			__('Scoring Tweaks (1 = Ban)', 'cf7-antispam'), // Title
@@ -386,7 +393,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings' // Page
 		);
 
-		// Settings check_time
+		// Settings score fingerprinting
 		add_settings_field( 'score_fingerprinting', // ID
 			__('Bot fingerprinting score <small>(for each failed test)</small>', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_score_fingerprinting_callback' ), // Callback
@@ -394,7 +401,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_scoring' // Section
 		);
 
-		// Settings check_time
+		// Settings score time
 		add_settings_field( 'score_time', // ID
 			__('Time checks score', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_score_time_callback' ), // Callback
@@ -402,7 +409,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_scoring' // Section
 		);
 
-		// Settings check_time
+		// Settings score bad_string
 		add_settings_field( 'score_bad_string', // ID
 			__('String found', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_score_bad_string_callback' ), // Callback
@@ -410,7 +417,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_scoring' // Section
 		);
 
-		// Settings check_time
+		// Settings score dnsbl
 		add_settings_field( 'score_dnsbl', // ID
 			__('DNSBL score <small>(for each server)</small>', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_score_dnsbl_callback' ), // Callback
@@ -418,7 +425,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_scoring' // Section
 		);
 
-		// Settings check_time
+		// Settings score honeypot
 		add_settings_field( 'score_honeypot', // ID
 			__('Honeypot fill score <small>(for each fail)</small>', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_score_honeypot_callback' ), // Callback
@@ -426,7 +433,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_scoring' // Section
 		);
 
-		// Settings check_time
+		// Settings score honeyform
 		add_settings_field( 'score_honeyform', // ID
 			__('Honeyform fill score', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_score_honeyform_callback' ), // Callback
@@ -434,18 +441,18 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_scoring' // Section
 		);
 
-		// Settings check_time
-		add_settings_field( 'score_warn', // ID
-			__('Bot warn', 'cf7-antispam'), // Title
-			array( $this, 'cf7a_score_warn_callback' ), // Callback
+		// Settings score detection
+		add_settings_field( 'score_detection', // ID
+			__('Bot detected', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_score_detection_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_scoring' // Section
 		);
 
-		// Settings check_time
-		add_settings_field( 'score_detection', // ID
-			__('Bot detected', 'cf7-antispam'), // Title
-			array( $this, 'cf7a_score_detection_callback' ), // Callback
+		// Settings score warn
+		add_settings_field( 'score_warn', // ID
+			__('Bot warn', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_score_warn_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_scoring' // Section
 		);
@@ -586,21 +593,65 @@ class CF7_AntiSpam_Admin_Customizations {
 		$threshold = floatval($input['b8_threshold']);
 		$new_input['b8_threshold'] = ($threshold >= 0 && $threshold < 1) ? $threshold : 1;
 
+		$score_preset = array(
+			"weak" =>  array(
+				'_fingerprinting' => 0.1,
+				'_time'           => 0.3,
+				'_bad_string'     => 0.5,
+				'_dnsbl'          => 0.1,
+				'_honeypot'       => 0.3,
+				'_honeyform'      => 1,
+				'_detection'      => 0.5,
+				'_warn'           => 0.25,
+			),
+			"standard" =>  array(
+				'_fingerprinting' => 0.15,
+				'_time'           => 0.5,
+				'_bad_string'     => 1,
+				'_dnsbl'          => 0.15,
+				'_honeypot'       => 0.5,
+				'_honeyform'      => 5,
+				'_detection'      => 1,
+				'_warn'           => 0.5,
+			),
+			"secure" => array(
+				'_fingerprinting' => 0.25,
+				'_time'           => 1,
+				'_bad_string'     => 1,
+				'_dnsbl'          => 0.2,
+				'_honeypot'       => 1,
+				'_honeyform'      => 10,
+				'_detection'      => 5,
+				'_warn'           => 1,
+			),
+			"custom" => $this->options['cf7a_score_preset']
+		);
 
 		// Scoring
-		$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting']) : 0.3;
-		$new_input['score']['_time'] = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time']) : 1;
-		$new_input['score']['_bad_string'] = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string']) : 1;
-		$new_input['score']['_dnsbl'] = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl']) : 0.4;
-		$new_input['score']['_honeypot'] = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot']) : 1;
-		$new_input['score']['_honeyform'] = isset( $input['score']['_honeyform'] ) ? floatval( $input['score']['_honeyform']) : 10;
-		$new_input['score']['_warn'] = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn']) : 1;
-		$new_input['score']['_detection'] = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection']) : 5;
-
+		// if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed)
+		if ( $input['cf7a_score_preset'] == 'weak' && ( $input['score'] == $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset']) ) {
+			$new_input['score'] = $score_preset['weak'];
+			$new_input['cf7a_score_preset'] = 'weak';
+		} else if ( $input['cf7a_score_preset'] == 'standard' && ( $input['score'] == $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset']) ) {
+			$new_input['score'] = $score_preset['standard'];
+			$new_input['cf7a_score_preset'] = 'standard';
+		} else if ( $input['cf7a_score_preset'] == 'secure' && ( $input['score'] == $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset']) ) {
+			$new_input['score'] = $score_preset['secure'];
+			$new_input['cf7a_score_preset'] = 'secure';
+		} else {
+			$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting']) : 0.25;
+			$new_input['score']['_time'] = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time']) : 1;
+			$new_input['score']['_bad_string'] = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string']) : 1;
+			$new_input['score']['_dnsbl'] = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl']) : 0.2;
+			$new_input['score']['_honeypot'] = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot']) : 1;
+			$new_input['score']['_honeyform'] = isset( $input['score']['_honeyform'] ) ? floatval( $input['score']['_honeyform']) : 10;
+			$new_input['score']['_detection'] = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection']) : 5;
+			$new_input['score']['_warn'] = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn']) : 1;
+			$new_input['cf7a_score_preset'] = 'custom';
+		}
 
 		// Advanced settings
 		$new_input['enable_advanced_settings'] =  isset( $input['enable_advanced_settings'] ) ? 1 : 0 ;
-
 
 		// Customizations
 		$new_input['cf7a_disable_reload'] =  isset( $input['cf7a_disable_reload'] ) ? 1 : 0 ;
@@ -890,6 +941,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="enable_advanced_settings" name="cf7a_options[enable_advanced_settings]" %s />',
 			isset( $this->options['enable_advanced_settings'] ) && $this->options['enable_advanced_settings'] == 1 ? 'checked="true"' : ''
+		);
+	}
+
+	public function cf7a_score_preset_callback() {
+		$options = ( $this->options['enable_advanced_settings'] === 1 || (!empty($this->options['cf7a_score_preset']) && $this->options['cf7a_score_preset'] === 'custom')  ) ? array( 'weak', 'standard', 'secure', 'custom' ) : array( 'weak', 'standard', 'secure' );
+		printf(
+			'<select id="cf7a_score_preset" name="cf7a_options[cf7a_score_preset]">%s</select>',
+			$this->cf7a_generate_options( $options , isset( $this->options['cf7a_score_preset'] ) ? esc_attr($this->options['cf7a_score_preset']) : 'custom' )
 		);
 	}
 }
