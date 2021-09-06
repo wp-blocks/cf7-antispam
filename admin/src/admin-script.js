@@ -4,9 +4,9 @@ if (document.body.classList.contains('cf7-antispam-admin')) {
 	const welcomePanel = document.getElementById('welcome-panel');
 	const welcomePanelCloseBtn = welcomePanel.querySelector('a.welcome-panel-close');
 
-	welcomePanelCloseBtn.click( function( event ) {
+	welcomePanelCloseBtn.addEventListener('click', event => {
 		event.preventDefault();
-		welcomePanel.classList.add( 'hidden' )
+		welcomePanel.classList.add( 'hidden' );
 	});
 
 	// saves on ctrl-s
