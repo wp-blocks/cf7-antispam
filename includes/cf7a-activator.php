@@ -123,7 +123,7 @@ class CF7_AntiSpam_Activator {
 
 		// create the term database
 		$cf7a_wordlist = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "cf7a_wordlist (
-		  `token` varchar(255) character set utf8 collate utf8_bin NOT NULL,
+		  `token` varchar(100) character set utf8 collate utf8_bin NOT NULL,
 		  `count_ham` int unsigned default NULL,
 		  `count_spam` int unsigned default NULL,
 		  PRIMARY KEY (`token`)
@@ -134,7 +134,7 @@ class CF7_AntiSpam_Activator {
 
 		$cf7a_database = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "cf7a_blacklist (
 			 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			 `ip` varchar(255) NOT NULL,
+			 `ip` varchar(45) NOT NULL,
 			 `status` int(10) unsigned DEFAULT NULL,
 			 `meta` longtext,
 			 PRIMARY KEY (`id`),
