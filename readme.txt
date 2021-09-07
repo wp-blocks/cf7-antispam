@@ -122,7 +122,18 @@ After that the sender ip will be searched into *DNS-based Blackhole server* to f
 
 b8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. b8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
 
+== Upgrade Notice ==
+
+= 0.2.6 =
+Please clean cache after update! thanks!
+
 == Changelog ==
+
+= 0.2.6 =
+* New option under "Enable advanced settings -> Severity of anti-spam control" with some prebuilt presets (weak, standard, secure)
+* Fix install script that in some edge case can fail
+* Backend script update
+* Improved Javascript support for older browsers and ios (support < 12)
 
 = 0.2.5 =
 * Bugfix the additional data in the email related to flamingo may not be parsed correctly

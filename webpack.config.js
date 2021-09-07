@@ -14,7 +14,7 @@ module.exports = {
   plugins: [
     ...defaultConfig.plugins.filter(
       plugin => plugin.constructor.name !== 'CleanWebpackPlugin'
-    ),
+    )
   ],
 };
 

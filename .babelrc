@@ -1,0 +1,9 @@
+{
+  "presets": [
+	"@wordpress/babel-preset-default"
+  ],
+  "plugins": [
+	"@babel/transform-arrow-functions",
+	"@babel/transform-modules-commonjs"
+  ]
+}
