@@ -1,9 +1,9 @@
 {
   "presets": [
-	"@wordpress/babel-preset-default"
+	"@wordpress/babel-preset-default",
+	"@babel/preset-env"
   ],
   "plugins": [
-	"@babel/transform-arrow-functions",
-	"@babel/transform-modules-commonjs"
+	"@babel/transform-async-to-generator"
   ]
 }
