@@ -133,7 +133,8 @@ Please clean cache after update! thanks!
 * New option under "Enable advanced settings -> Severity of anti-spam control" with some prebuilt presets (weak, standard, secure)
 * Fix install script that in some edge case can fail
 * Backend script update
-* Improved Javascript support for older browsers and ios (support < 12)
+* Improved Javascript support for older browsers and ios (safari > 9 and internet explorer)
+* jquery is no longer needed
 
 = 0.2.5 =
 * Bugfix the additional data in the email related to flamingo may not be parsed correctly

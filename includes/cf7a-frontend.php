@@ -215,9 +215,7 @@ class CF7_AntiSpam_Frontend {
 		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
 
 		// add the timestamp id required
-		$fields = intval($this->options['check_time']) ?
-			array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt(time(), $this->options['cf7a_cipher']) ) ) :
-			$fields;
+		if (intval($this->options['check_time'])) $fields = array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt(time(), $this->options['cf7a_cipher']) ) );
 
 		// add the default hidden fields
 		return array_merge( $fields, array(
