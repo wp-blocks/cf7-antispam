@@ -120,24 +120,26 @@ window.onload = function() {
         tests = browserFingerprint();
 
         // then append the fields on submit
-				if (append_on_submit) {
+				// not supported in safari https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
+				if (!append_on_submit || tests.isIos || tests.isIE ) {
 
-					const formElem = $(wpcf7Form)[0].querySelector('form');
-					let formData = new FormData(formElem.formData);
-
-					formElem.addEventListener('formdata', (e) => {
-						for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
-							e.formData.append(cf7a_prefix + key, value);
-						}
-						formData = e.formData;
-					});
+					// or add them directly to hidden input container
+					for (const key in tests) {
+						hiddenInputsContainer.appendChild(createCF7Afield(key, tests[key]));
+					}
 
 				} else {
 
-					// or add them directly to hidden input container
-					for (const [key, value] of Object.entries(tests).sort(() => Math.random() - 0.5)) {
-						$(hiddenInputsContainer)[0].append(createCF7Afield(key, value));
-					}
+					const formElem = wpcf7Form.querySelector('form');
+					let formData = new FormData(formElem.formData);
+
+					formElem.addEventListener('formdata', (e) => {
+						let data = e.formData;
+						for (const key in tests) {
+							data.append(cf7a_prefix + key, tests[key]);
+						}
+						formData = data;
+					});
 
 				}
 			}
