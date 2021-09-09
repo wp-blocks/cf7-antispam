@@ -129,6 +129,9 @@ Please clean cache after update! thanks!
 
 == Changelog ==
 
+= 0.2.7 =
+* avoid to parse multiple times the stored flamingo messages
+
 = 0.2.6 =
 * New option under "Enable advanced settings -> Severity of anti-spam control" with some prebuilt presets (weak, standard, secure)
 * Fix install script that in some edge case can fail

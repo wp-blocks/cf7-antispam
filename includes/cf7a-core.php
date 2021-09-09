@@ -78,6 +78,7 @@ class CF7_AntiSpam {
 					$filters = new CF7_AntiSpam_filters();
 					$filters->cf7a_flamingo_on_install();
 				}
+				delete_transient('cf7a_activation');
 			}
 		}
 
