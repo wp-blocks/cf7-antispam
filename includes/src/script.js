@@ -1,8 +1,7 @@
-/* global cf7a_settings, wpcf7 */
-(function ($) {
+/* global cf7a_settings, cf7a_settings.prefix, wpcf7 */
+'use strict';
 
-  'use strict';
-
+window.onload = function() {
 	const cf7a_prefix = cf7a_settings.prefix;
 
 	// disable cf7 refill on load
@@ -99,16 +98,16 @@
 
     for (const wpcf7Form of wpcf7Forms) {
 
-    	const hiddenInputsContainer = $(wpcf7Form)[0].querySelector('form > div');
+    	const hiddenInputsContainer = wpcf7Form.querySelector('form > div');
 
       // 1) Standard bot checks
-			const bot_fingerprint_key = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint]');
+			const bot_fingerprint_key = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint]');
 
       // 2) Bot fingerprint extra checks
-			const bot_fingerprint_extra = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
+			const bot_fingerprint_extra = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
 
       // how append bot fingerprint into hidden fields
-			const append_on_submit = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
+			const append_on_submit = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
 
       let tests = {};
 
@@ -149,14 +148,14 @@
 
         // 2.1) check for mouse clicks
         const activity = function (e) {
-					let bot_activity = $(hiddenInputsContainer)[0].querySelector('input[name=' + cf7a_prefix + 'activity]');
+					let bot_activity = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'activity]');
 					if (bot_activity) bot_activity.remove();
-					$(hiddenInputsContainer)[0].append(createCF7Afield("activity", mouseActivity_value++));
+					hiddenInputsContainer.append(createCF7Afield("activity", mouseActivity_value++));
 
           if (mouseActivity_value > 3) {
             document.body.removeEventListener('mouseup', activity);
             document.body.removeEventListener('touchend', activity);
-						$(hiddenInputsContainer)[0].append(createCF7Afield("mouseclick_activity", "passed"));
+						hiddenInputsContainer.append(createCF7Afield("mouseclick_activity", "passed"));
           }
         };
         document.body.addEventListener( 'mouseup', activity);
@@ -169,14 +168,14 @@
 
           if (mouseMove_value > 3) {
             document.removeEventListener('mousemove', mouseMove);
-						$(hiddenInputsContainer)[0].append(createCF7Afield("mousemove_activity", "passed"));
+						hiddenInputsContainer.append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
         document.addEventListener('mousemove', mouseMove);
 
         // set mousemove_activity true as fallback in mobile devices (we have already tested the ability to use the touchscreen)
         if ( tests.isIos || tests.isAndroid ) {
-					$(hiddenInputsContainer)[0].append(createCF7Afield("mousemove_activity", "passed"));
+					hiddenInputsContainer.append(createCF7Afield("mousemove_activity", "passed"));
 				}
 
 				// 2.3) WebGL Tests
@@ -214,9 +213,9 @@
             const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
             webGLVendorElement.innerHTML = vendor;
             if (vendor === 'Brian Paul' || vendor === "Google Inc.") {
-							$(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "failed"));
+							hiddenInputsContainer.append(createCF7Afield("webgl", "failed"));
             } else {
-							$(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "passed"));
+							hiddenInputsContainer.append(createCF7Afield("webgl", "passed"));
             }
           } catch (e) {
             webGLVendorElement.innerHTML = "Error: " + e;
@@ -227,15 +226,15 @@
             const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
             webGLRendererElement.innerHTML = renderer;
             if (renderer === 'Mesa OffScreen' || renderer.indexOf("Swift") !== -1) {
-              $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "failed"));
+              hiddenInputsContainer.append(createCF7Afield("webgl_render", "failed"));
             } else
-              $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "passed"));
+              hiddenInputsContainer.append(createCF7Afield("webgl_render", "passed"));
           } catch (e) {
             webGLRendererElement.innerHTML = "Error: " + e;
           }
         } else {
-          $(hiddenInputsContainer)[0].append(createCF7Afield("webgl", "failed"));
-          $(hiddenInputsContainer)[0].append(createCF7Afield("webgl_render", "failed"));
+          hiddenInputsContainer.append(createCF7Afield("webgl", "failed"));
+          hiddenInputsContainer.append(createCF7Afield("webgl_render", "failed"));
         }
 
         // TODO: change the canvas name
@@ -385,4 +384,4 @@
 
   }
 
-})(jQuery);
+};
