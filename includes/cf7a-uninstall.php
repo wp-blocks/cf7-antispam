@@ -6,9 +6,9 @@
  */
 class CF7_AntiSpam_Uninstaller {
 
-	public static function uninstall() {
+	public static function uninstall($force = false) {
 
-		if (!CF7ANTISPAM_DEBUG_EXTENDED) {
+		if (!CF7ANTISPAM_DEBUG_EXTENDED || $force) {
 
 			global $wpdb;
 
@@ -23,11 +23,12 @@ class CF7_AntiSpam_Uninstaller {
 			$wpdb->query( "DELETE FROM " . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
 
 			error_log(print_r(CF7ANTISPAM_LOG_PREFIX.'plugin uninstalled',true));
+			return true;
 
 		} else {
 
 			error_log(print_r('CONTACT FORM 7 ANTISPAM - "CF7ANTISPAM_DEBUG_EXTENDED = true" so options and database will NOT be deleted.',true));
-
+			return false;
 		}
 
 	}

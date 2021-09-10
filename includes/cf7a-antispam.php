@@ -287,6 +287,15 @@ class CF7_AntiSpam_filters {
 		return $this->cf7a_flamingo_analyze_stored_mails();
 	}
 
+	public function cf7a_full_reset() {
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
+		CF7_AntiSpam_Uninstaller::uninstall(true);
+
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
+		CF7_AntiSpam_Activator::install();
+		return true;
+	}
+
 	// CF7_AntiSpam_filters Flamingo
 
 	public function cf7a_flamingo_on_install() {
