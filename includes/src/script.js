@@ -109,15 +109,13 @@ window.onload = function() {
       // how append bot fingerprint into hidden fields
 			const append_on_submit = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
 
-      let tests = {};
+      // fingerprint browser data
+      let tests = browserFingerprint();
 
       if (bot_fingerprint_key) {
 
         // 1.0 hijack the value of the bot_fingerprint
         bot_fingerprint_key.setAttribute("value", bot_fingerprint_key.getAttribute("value").slice(0, 5));
-
-        // 1.1) test browser fingerprint
-        tests = browserFingerprint();
 
         // then append the fields on submit
 				// not supported in safari https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
