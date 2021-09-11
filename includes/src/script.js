@@ -30,10 +30,8 @@ window.onload = function() {
 		return testTouch;
 	}
 
-	const getLanguage = () => {
-		let lang = window.navigator.languages || window.navigator.language || window.navigator.browserLanguage || window.navigator.userLanguage;
-
-		return lang;
+	const getBrowserLanguage = () => {
+    return window.navigator.languages.join(",") || window.navigator.language || window.navigator.browserLanguage || window.navigator.userLanguage;
 	}
 
   const browserFingerprint = () => {
@@ -392,7 +390,7 @@ window.onload = function() {
 
       // 3) check the browser language
       if (language_checks_enabled) {
-        hiddenInputsContainer.append( createCF7Afield( 'browser_language', getLanguage() ) );
+        hiddenInputsContainer.append( createCF7Afield( 'browser_language', getBrowserLanguage() ) );
       }
 
     }
