@@ -30,6 +30,12 @@ window.onload = function() {
 		return testTouch;
 	}
 
+	const getLanguage = () => {
+		let lang = window.navigator.languages || window.navigator.language || window.navigator.browserLanguage || window.navigator.userLanguage;
+
+		return lang;
+	}
+
   const browserFingerprint = () => {
   	// as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
 		const ua = navigator.userAgent;
@@ -106,10 +112,13 @@ window.onload = function() {
       // 2) Bot fingerprint extra checks
 			const bot_fingerprint_extra = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
 
+      // 3) Language check
+      const language_checks_enabled = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + '_language]');
+
       // how append bot fingerprint into hidden fields
 			const append_on_submit = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
 
-      // fingerprint browser data
+			// fingerprint browser data
       let tests = browserFingerprint();
 
       if (bot_fingerprint_key) {
@@ -380,6 +389,12 @@ window.onload = function() {
         // then remove the useless div
         wpcf7box.remove();
       }
+
+      // 3) check the browser language
+      if (language_checks_enabled) {
+        hiddenInputsContainer.append( createCF7Afield( 'browser_language', getLanguage() ) );
+      }
+
     }
 
   }
