@@ -106,25 +106,56 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_time_elapsed' // Section
 		);
 
-		// Settings check_time
-		add_settings_field( 'check_time_max', // ID
-			__('Maximum elapsed time', 'cf7-antispam'), // Title
-			array( $this, 'cf7a_check_time_max_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_time_elapsed' // Section
-		);
+        // Settings check_time
+        add_settings_field( 'check_time_max', // ID
+            __( 'Maximum elapsed time', 'cf7-antispam' ), // Title
+            array( $this, 'cf7a_check_time_max_callback' ), // Callback
+            'cf7a-settings', // Page
+            'cf7a_time_elapsed' // Section
+        );
 
 
+        // Section Language
+        add_settings_section( 'cf7a_check_language', // ID
+            __( 'Language Checks', 'cf7-antispam' ), // Title
+            array( $this, 'cf7a_check_language' ), // Callback
+            'cf7a-settings' // Page
+        );
 
-		// Section Bad IP
-		add_settings_section( 'cf7a_bad_ip', // ID
-			__('Bad IP Address', 'cf7-antispam'), // Title
-			array( $this, 'cf7a_print_section_bad_ip' ), // Callback
-			'cf7a-settings' // Page
-		);
+        // Settings enable browser language check
+        add_settings_field( 'cf7a_language_check_enabled', // ID
+            __( 'Check Browser Language', 'cf7-antispam' ), // Title
+            array( $this, 'cf7a_check_browser_language_callback' ), // Callback
+            'cf7a-settings', // Page
+            'cf7a_check_language' // Section
+        );
 
-		// Settings check_bad_ip
-		add_settings_field( 'check_bad_ip', // ID
+        // Settings allowed languages
+        add_settings_field( 'cf7a_language_allowed', // ID
+            __( 'Allowed browser Languages', 'cf7-antispam' ), // Title
+            array( $this, 'cf7a_language_allowed' ), // Callback
+            'cf7a-settings', // Page
+            'cf7a_check_language' // Section
+        );
+
+        // Settings disallowed languages
+        add_settings_field( 'cf7a_language_disallowed', // ID
+            __( 'Disallowed browser Languages', 'cf7-antispam' ), // Title
+            array( $this, 'cf7a_language_disallowed' ), // Callback
+            'cf7a-settings', // Page
+            'cf7a_check_language' // Section
+        );
+
+
+        // Section Bad IP
+        add_settings_section( 'cf7a_bad_ip', // ID
+            __( 'Bad IP Address', 'cf7-antispam' ), // Title
+            array( $this, 'cf7a_print_section_bad_ip' ), // Callback
+            'cf7a-settings' // Page
+        );
+
+        // Settings check_bad_ip
+        add_settings_field( 'check_bad_ip', // ID
 			__('Check the sender IP Address', 'cf7-antispam'), // Title
 			array( $this, 'cf7a_check_bad_ip_callback' ), // Callback
 			'cf7a-settings', // Page
@@ -460,26 +491,36 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted. However you can decide to unban that IP after some time", 'cf7-antispam') . '</p>' );
-		if (wp_next_scheduled ( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG) {
-			printf( '<small class="monospace">' . esc_html__("Next scheduled unban event: ", 'cf7-antispam') .  wp_date("Y-m-d H:i:s",wp_next_scheduled ( 'cf7a_cron' )) . ' <br/>Server time ' .wp_date("Y-m-d H:i:s",time()). '</small>' );
-		}
-	}
-	public function cf7a_print_section_bot_fingerprint() {
-		printf( '<p>' . esc_html__("Enable some extra check to detect bot activity", 'cf7-antispam') . '</p>' );
-	}
-	public function cf7a_print_section_check_time() {
-		printf( '<p>' . esc_html__("This test the submission time", 'cf7-antispam') . '</p>' );
-	}
-	public function cf7a_print_section_bad_ip() {
-		printf( '<p>' . esc_html__("Filter the sender IP Address", 'cf7-antispam') . '</p>' );
-	}
-	public function cf7a_print_section_bad_words() {
-		printf( '<p>' . esc_html__("Check if the mail message contains bad words", 'cf7-antispam') . '</p>' );
-	}
-	public function cf7a_print_section_bad_email_strings() {
-		printf( '<p>' . esc_html__("Check if the sender mail contains a prohibited text", 'cf7-antispam') . '</p>' );
-	}
-	public function cf7a_print_user_agent() {
+        if ( wp_next_scheduled( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG ) {
+            printf( '<small class="monospace">' . esc_html__( "Next scheduled unban event: ", 'cf7-antispam' ) . wp_date( "Y-m-d H:i:s", wp_next_scheduled( 'cf7a_cron' ) ) . ' <br/>Server time ' . wp_date( "Y-m-d H:i:s", time() ) . '</small>' );
+        }
+    }
+
+    public function cf7a_print_section_bot_fingerprint() {
+        printf( '<p>' . esc_html__( "Enable some extra check to detect bot activity", 'cf7-antispam' ) . '</p>' );
+    }
+
+    public function cf7a_print_section_check_time() {
+        printf( '<p>' . esc_html__( "This test the submission time", 'cf7-antispam' ) . '</p>' );
+    }
+
+    public function cf7a_check_language() {
+        printf( '<p>' . esc_html__( "Check the user browser language", 'cf7-antispam' ) . '</p>' );
+    }
+
+    public function cf7a_print_section_bad_ip() {
+        printf( '<p>' . esc_html__( "Filter the sender IP Address", 'cf7-antispam' ) . '</p>' );
+    }
+
+    public function cf7a_print_section_bad_words() {
+        printf( '<p>' . esc_html__( "Check if the mail message contains bad words", 'cf7-antispam' ) . '</p>' );
+    }
+
+    public function cf7a_print_section_bad_email_strings() {
+        printf( '<p>' . esc_html__( "Check if the sender mail contains a prohibited text", 'cf7-antispam' ) . '</p>' );
+    }
+
+    public function cf7a_print_user_agent() {
 		printf( '<p>' . esc_html__("Check the User Agent if is listed into blacklist", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_dnsbl() {
@@ -514,25 +555,34 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input = $this->options;
 
 		// bot fingerprint
-		$new_input['check_bot_fingerprint'] =  isset( $input['check_bot_fingerprint'] ) ? 1 : 0 ;
-		$new_input['check_bot_fingerprint_extras'] =  isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0 ;
-		$new_input['append_on_submit'] =  isset( $input['append_on_submit'] ) ? 1 : 0 ;
+        $new_input['check_bot_fingerprint']        = isset( $input['check_bot_fingerprint'] ) ? 1 : 0;
+        $new_input['check_bot_fingerprint_extras'] = isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0;
+        $new_input['append_on_submit']             = isset( $input['append_on_submit'] ) ? 1 : 0;
 
-		// elapsed time
-		$new_input['check_time'] =  isset( $input['check_time'] ) ? 1 : 0 ;
+        // elapsed time
+        $new_input['check_time'] = isset( $input['check_time'] ) ? 1 : 0;
 
-		$new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min']) : 6;
-		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max']) : ( 60 * 60 * 25 ); // a day + 1 hour of timeframe to send the mail seem fine :)
+        $new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
+        $new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : ( 60 * 60 * 25 ); // a day + 1 hour of timeframe to send the mail seem fine :)
 
-		// bad ip
-		$new_input['check_bad_ip'] =  isset( $input['check_bad_ip'] ) ? 1 : 0 ;
-		if ( isset( $input['bad_ip_list'] ) ) {
-			$new_input['bad_ip_list'] = explode("\r\n",sanitize_textarea_field( $input['bad_ip_list'] ));
-		}
+        // browser language
+        $new_input['cf7a_language_check_enabled'] = isset( $input['cf7a_language_check_enabled'] ) ? 1 : 0;
+        if ( isset( $input['cf7a_language_allowed'] ) ) {
+            $new_input['cf7a_language_allowed'] = explode( "\r\n", sanitize_textarea_field( $input['cf7a_language_allowed'] ) );
+        }
+        if ( isset( $input['cf7a_language_disallowed'] ) ) {
+            $new_input['cf7a_language_disallowed'] = explode( "\r\n", sanitize_textarea_field( $input['cf7a_language_disallowed'] ) );
+        }
 
-		// auto-ban
-		$new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0 ;
-		// auto-unban
+        // bad ip
+        $new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
+        if ( isset( $input['bad_ip_list'] ) ) {
+            $new_input['bad_ip_list'] = explode( "\r\n", sanitize_textarea_field( $input['bad_ip_list'] ) );
+        }
+
+        // auto-ban
+        $new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
+        // auto-unban
 		if ( isset( $input['unban_after'] ) && in_array( $input['unban_after'] , array( 'hourly', 'twicedaily', 'daily', 'weekly' )) ) {
 
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
@@ -732,26 +782,33 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_time_min_callback() {
 		printf(
 			'<input type="number" id="check_time_min" name="cf7a_options[check_time_min]" value="%s" step="1" />',
-			isset( $this->options['check_time_min'] ) ? esc_attr( $this->options['check_time_min']) : 6
-		);
-	}
-	public function cf7a_check_time_max_callback() {
-		printf(
-			'<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />',
-			isset( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max']) : 3600
-		);
-	}
+			isset( $this->options['check_time_min'] ) ? esc_attr( $this->options['check_time_min']) : 6 );
+    }
+
+    public function cf7a_check_time_max_callback() {
+        printf( '<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />', isset( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : 3600 );
+    }
 
 
-	public function cf7a_check_bad_ip_callback() {
-		printf(
-			'<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />',
-			isset( $this->options['check_bad_ip'] ) && $this->options['check_bad_ip'] == 1 ? 'checked="true"' : ''
-		);
-	}
-	public function cf7a_bad_ip_list_callback() {
-		printf(
-			'<textarea id="bad_ip_list" name="cf7a_options[bad_ip_list]" />%s</textarea>',
+    public function cf7a_check_browser_language_callback() {
+        printf( '<input type="checkbox" id="cf7a_language_check_enabled" name="cf7a_options[cf7a_language_check_enabled]" %s />', isset( $this->options['cf7a_language_check_enabled'] ) && $this->options['cf7a_language_check_enabled'] == 1 ? 'checked="true"' : '' );
+    }
+
+    public function cf7a_language_allowed() {
+        printf( '<textarea id="cf7a_language_allowed" name="cf7a_options[cf7a_language_allowed]" />%s</textarea>', isset( $this->options['cf7a_language_allowed'] ) && is_array( $this->options['cf7a_language_allowed'] ) ? esc_textarea( implode( "\r\n", $this->options['cf7a_language_allowed'] ) ) : '' );
+    }
+
+    public function cf7a_language_disallowed() {
+        printf( '<textarea id="cf7a_language_disallowed" name="cf7a_options[cf7a_language_disallowed]" />%s</textarea>', isset( $this->options['cf7a_language_disallowed'] ) && is_array( $this->options['cf7a_language_disallowed'] ) ? esc_textarea( implode( "\r\n", $this->options['cf7a_language_disallowed'] ) ) : '' );
+    }
+
+
+    public function cf7a_check_bad_ip_callback() {
+        printf( '<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />', isset( $this->options['check_bad_ip'] ) && $this->options['check_bad_ip'] == 1 ? 'checked="true"' : '' );
+    }
+
+    public function cf7a_bad_ip_list_callback() {
+        printf( '<textarea id="bad_ip_list" name="cf7a_options[bad_ip_list]" />%s</textarea>',
 			isset( $this->options['bad_ip_list'] ) && is_array($this->options['bad_ip_list']) ? esc_textarea( implode("\r\n",$this->options['bad_ip_list']) ) : ''
 		);
 	}

@@ -211,18 +211,25 @@ class CF7_AntiSpam_Frontend {
 
 	public function cf7a_add_hidden_fields( $fields ) {
 
-		// the base hidden field prefix
-		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
+        // the base hidden field prefix
+        $prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
-		// add the timestamp id required
-		if (intval($this->options['check_time'])) $fields = array_merge( $fields, array( $prefix.'_timestamp' => cf7a_crypt(time(), $this->options['cf7a_cipher']) ) );
+        // add the language if required
+        if ( ! empty( $this->options['cf7a_language_check_enabled'] ) ) {
+            $fields = array_merge( $fields, array( $prefix . '_language' => cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) ) );
+        }
 
-		// add the default hidden fields
-		return array_merge( $fields, array(
-			$prefix.'_version' => cf7a_crypt(CF7ANTISPAM_VERSION, $this->options['cf7a_cipher']),
-			$prefix.'address' => cf7a_crypt(cf7a_get_real_ip(), $this->options['cf7a_cipher'])
-		));
-	}
+        // add the timestamp if required
+        if ( ! empty( $this->options['check_time'] ) ) {
+            $fields = array_merge( $fields, array( $prefix . '_timestamp' => cf7a_crypt( time(), $this->options['cf7a_cipher'] ) ) );
+        }
+
+        // add the default hidden fields
+        return array_merge( $fields, array(
+            $prefix . '_version' => cf7a_crypt( CF7ANTISPAM_VERSION, $this->options['cf7a_cipher'] ),
+            $prefix . 'address'  => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] )
+        ) );
+    }
 
 	public function cf7a_add_bot_fingerprinting( $fields ) {
 
