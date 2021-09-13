@@ -22,8 +22,8 @@ class CF7_AntiSpam_Activator {
 			"cf7a_version"                 => CF7ANTISPAM_VERSION,
 			"cf7a_customizations_class"    => CF7ANTISPAM_HONEYPOT_CLASS,
 			"cf7a_customizations_prefix"   => CF7ANTISPAM_PREFIX,
-			"cf7a_score_preset"            => 'secure',
 			"cf7a_cipher"                  => 'aes-128-cbc',
+            "cf7a_score_preset"            => 'standard',
 			"cf7a_disable_reload"          => true,
 			"check_bot_fingerprint"        => true,
 			"check_bot_fingerprint_extras" => true,
@@ -40,6 +40,7 @@ class CF7_AntiSpam_Activator {
 			"check_dnsbl"                  => true,
 			"check_honeypot"               => true,
 			"check_honeyform"              => false,
+			"check_language"               => true,
 			"honeyform_position"           => "wp_footer",
 			"enable_b8"                    => true,
 			"b8_threshold"                 => 0.95,
@@ -50,15 +51,19 @@ class CF7_AntiSpam_Activator {
 			"bad_user_agent_list"          => array(),
 			"dnsbl_list"                   => array(),
 			"honeypot_input_names"         => array(),
+            "languages" => array(
+                "allowed" => array(),
+                "disallowed" => array()
+            ),
 			"score"                        => array(
-				'_fingerprinting' => 0.25,
-				'_time'           => 1,
+				'_fingerprinting' => 0.15,
+				'_time'           => 0.5,
 				'_bad_string'     => 1,
-				'_dnsbl'          => 0.2,
-				'_honeypot'       => 1,
-				'_honeyform'      => 10,
-				'_detection'      => 5,
-				'_warn'           => 1,
+				'_dnsbl'          => 0.15,
+				'_honeypot'       => 0.5,
+				'_honeyform'      => 5,
+				'_detection'      => 1,
+				'_warn'           => 0.5,
 			)
 		);
 
