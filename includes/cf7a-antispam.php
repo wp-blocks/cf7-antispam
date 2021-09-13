@@ -496,13 +496,22 @@ class CF7_AntiSpam_filters {
         );
     }
 
-    public function cf7a_check_language( $languages, $disallowed, $allowed ) {
-        $languages = is_array($languages) ? $languages : array($languages);
+    public function cf7a_check_language( $languages, $disalloweds, $alloweds = array() ) {
 
-        foreach ($languages as $language) {
-            if ( in_array($language, $allowed) ) return true;
-            if ( in_array($language, $disallowed) ) return $language;
+	    if (!is_array($languages)) $languages = array($languages);
+
+        if ( ! empty( $alloweds ) ) {
+            foreach ( $alloweds as $allowed ) {
+                if ( in_array( $allowed, $languages ) ) return true;
+            }
         }
+
+        if ( ! empty( $disalloweds ) ) {
+            foreach ( $disalloweds as $k => $disallowed ) {
+                if ( in_array( $disallowed, $languages ) ) return $languages[ $k ];
+            }
+        }
+
         return true;
     }
 
@@ -623,8 +632,7 @@ class CF7_AntiSpam_filters {
 				$spam_score += $score_detection;
 				$reason['blacklisted'] = "Score: " . ($ip_data_status + $score_warn);
 
-				if (CF7ANTISPAM_DEBUG)
-					error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip is already blacklisted, status $ip_data_status" );
+                $this->cf7a_log("The $remote_ip is already blacklisted, status $ip_data_status", 1);
 			}
 		}
 
@@ -765,8 +773,8 @@ class CF7_AntiSpam_filters {
             if ( intval( $options['check_language'] ) == 1 ) {
 
                 // Checks sender has a blacklisted ip address
-                $languages_allowed = isset($options['languages']['allowed']) ? explode(",", sanitize_text_field($options['languages']['allowed'])) : array();
-                $languages_disallowed = isset($options['languages']['disallowed']) ? explode(",", sanitize_text_field($options['languages']['disallowed'])) : array();
+                $languages_allowed = isset($options['languages']['allowed']) ? $options['languages']['allowed'] : array();
+                $languages_disallowed = isset($options['languages']['disallowed']) ? $options['languages']['disallowed'] : array();
 
                 $languages = array();
                 $languages['browser_language'] = !empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( $_POST[ $prefix . 'browser_language' ] ) : null;
@@ -785,16 +793,21 @@ class CF7_AntiSpam_filters {
                 }
 
                 if ( !empty($languages['accept']) && !empty($languages['browser']) ) {
-                    if ( $language_disallowed = $this->cf7a_check_language( array_merge($languages['browser'], $languages['accept']), $languages_disallowed, $languages_allowed ) ) {
-                        $fails[] = "language disallowed ($language_disallowed)";
-                    }
 
                     if ( !array_intersect($languages['browser'], $languages['accept']) ) {
+                        // checks if php accept language is the same of javascript navigator.languages
                         $fails[] = 'languages detected not coherent';
+                    } else {
+                        if ( $language_disallowed = $this->cf7a_check_language( array_unique( array_merge($languages['browser'], $languages['accept'] ) ), $languages_disallowed, $languages_allowed ) ) {
+                            // check if the language is allowed, than if is disallowed
+                            $fails[] = "language disallowed ($language_disallowed)";
+                        }
+
                     }
+
                 }
 
-                if (!empty($fails)) {
+                if ( !empty( $fails ) ) {
                     $spam_score += $score_warn;
                     $reason['language'] = implode(", ", $fails);
 
