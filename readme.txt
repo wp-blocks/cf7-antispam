@@ -4,7 +4,7 @@ Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, 
 Requires at least: 5.1
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 0.2.6
+Stable tag: 0.2.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,9 +60,9 @@ Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
 
 * Reporting a bug
-* Discussing the current state of the code
-* Submitting a fix
-* Proposing new features
+* Testing the plugin with different user agent and report fingerprinting failures
+* Discussing the current state, features, improvements
+* Submitting a fix or a new feature
 
 We use github to host code, to track issues and feature requests, as well as accept pull requests.
 By contributing, you agree that your contributions will be licensed under its GPLv2 License.
@@ -124,13 +124,15 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 
 == Upgrade Notice ==
 
-= 0.2.6 =
+= 0.2.7 =
 Please clean cache after update! thanks!
 
 == Changelog ==
 
 = 0.2.7 =
 * avoid to parse multiple times the stored flamingo messages
+* added under "advanced options" a button to full reset cf7-antispam stored data
+* language check (allowed/disallowed) based on browser language
 
 = 0.2.6 =
 * New option under "Enable advanced settings -> Severity of anti-spam control" with some prebuilt presets (weak, standard, secure)
@@ -210,10 +212,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the LICENSE file for more details.
 
 == TODOs ==
-* Ban by geolocation
+* Geoip ban
 * CSV Export/import settings, banned ip
-* Resend EMail if not were spam
+* Resend emails if not were spam, remove mail duplicates if users sent multiple
 * Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
+* Cover with the antispam also the wordpress comment form and the login panel
 
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
