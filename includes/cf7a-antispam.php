@@ -456,6 +456,62 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
+    public function cf7a_get_accept_language_array( $languages ) {
+
+	    // a modified version of https://stackoverflow.com/a/33748742/5735847
+        return array_values(
+            array_reduce(
+                explode(',', str_replace(' ', '', $languages) ),
+                function ($res, $el) {
+                    if (strlen($el) === 5) {
+                        $l = explode('-', $el);
+                        $res[strtolower($l[0])] = $l[0];
+                        $res[strtolower($l[1])] = strtolower($l[1]);
+                    } else {
+                        $l = explode(';q=', $el);
+                        if (ctype_alnum($l[0])) $res[strtolower($l[0])] = $l[0];
+                    }
+                    return $res;
+                }, array()
+            )
+        );
+    }
+
+    public function cf7a_get_browser_language_array( $languages ) {
+        return array_values(
+                array_reduce(
+                explode(",", $languages),
+                function($res, $el) {
+                    if (strlen($el) === 5) {
+                        $l = explode('-', $el);
+                        $res[strtolower($l[0])] = $l[0];
+                        $res[strtolower($l[1])] = strtolower($l[1]);
+                    } else {
+                        $l = preg_split('/(\-|\_)/', $el);
+                        if (ctype_alnum($l[0])) $res[strtolower($l[0])] = $l[0];
+                    }
+                    return $res;
+                }, array()
+            )
+        );
+    }
+
+    public function cf7a_check_language( $languages, $disallowed, $allowed ) {
+        $languages = is_array($languages) ? $languages : array($languages);
+
+        foreach ($languages as $language) {
+            if ( in_array($language, $allowed) ) return true;
+            if ( in_array($language, $disallowed) ) return $language;
+        }
+        return true;
+    }
+
+    public function cf7a_log( $string, $log_level = 0 ) {
+	    if (empty($string)) return true;
+        if (is_array($string)) $string = implode(", " , $string);
+        if ($log_level === 0 || $log_level == 1 && CF7ANTISPAM_DEBUG || $log_level == 2 && CF7ANTISPAM_DEBUG_EXTENDED ) error_log( CF7ANTISPAM_LOG_PREFIX . " " . $string );
+    }
+
 	/**
 	 * CF7_AntiSpam_filters The antispam filter
 	 *
@@ -702,6 +758,50 @@ class CF7_AntiSpam_filters {
 				}
 
 			}
+
+            /**
+             * Bot fingerprints extras
+             */
+            if ( intval( $options['check_language'] ) == 1 ) {
+
+                // Checks sender has a blacklisted ip address
+                $languages_allowed = isset($options['languages']['allowed']) ? explode(",", sanitize_text_field($options['languages']['allowed'])) : array();
+                $languages_disallowed = isset($options['languages']['disallowed']) ? explode(",", sanitize_text_field($options['languages']['disallowed'])) : array();
+
+                $languages = array();
+                $languages['browser_language'] = !empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( $_POST[ $prefix . 'browser_language' ] ) : null;
+                $languages['accept_language'] = isset( $_POST[ $prefix . '_language' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_language' ] ), $options['cf7a_cipher'] ) : null;
+
+                if (empty($languages['browser_language'])) {
+                    $fails[] = "missing browser language";
+                } else {
+                    $languages['browser'] = $this->cf7a_get_browser_language_array($languages['browser_language']);
+                }
+
+                if (empty($languages['accept_language'])) {
+                    $fails[] = "missing language field";
+                } else {
+                    $languages['accept'] = $this->cf7a_get_accept_language_array($languages['accept_language']);
+                }
+
+                if ( !empty($languages['accept']) && !empty($languages['browser']) ) {
+                    if ( $language_disallowed = $this->cf7a_check_language( array_merge($languages['browser'], $languages['accept']), $languages_disallowed, $languages_allowed ) ) {
+                        $fails[] = "language disallowed ($language_disallowed)";
+                    }
+
+                    if ( !array_intersect($languages['browser'], $languages['accept']) ) {
+                        $fails[] = 'languages detected not coherent';
+                    }
+                }
+
+                if (!empty($fails)) {
+                    $spam_score += $score_warn;
+                    $reason['language'] = implode(", ", $fails);
+
+                    $this->cf7a_log("The $remote_ip fails the languages checks - (".$reason['language'].")", 1);
+                }
+
+            }
 
 
 			/**

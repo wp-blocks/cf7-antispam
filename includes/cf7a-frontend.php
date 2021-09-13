@@ -215,12 +215,12 @@ class CF7_AntiSpam_Frontend {
         $prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
         // add the language if required
-        if ( ! empty( $this->options['cf7a_language_check_enabled'] ) ) {
+        if ( intval( $this->options['check_language'] ) == 1 ) {
             $fields = array_merge( $fields, array( $prefix . '_language' => cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) ) );
         }
 
         // add the timestamp if required
-        if ( ! empty( $this->options['check_time'] ) ) {
+        if ( intval( $this->options['check_time'] ) == 1 ) {
             $fields = array_merge( $fields, array( $prefix . '_timestamp' => cf7a_crypt( time(), $this->options['cf7a_cipher'] ) ) );
         }
 
