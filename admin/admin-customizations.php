@@ -566,14 +566,15 @@ class CF7_AntiSpam_Admin_Customizations {
         $new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
         $new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : ( 60 * 60 * 25 ); // a day + 1 hour of timeframe to send the mail seem fine :)
 
-        // browser language
+        // browser languages
         $new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
-        if ( isset( $input['language']['allowed'] ) ) {
-            $new_input['language']['allowed'] = explode( "\r\n", sanitize_textarea_field( $input['language']['allowed'] ) );
-        }
-        if ( isset( $input['language']['disallowed'] ) ) {
-            $new_input['language']['disallowed'] = explode( "\r\n", sanitize_textarea_field( $input['language']['disallowed'] ) );
-        }
+        if ( !empty( $input['languages']['allowed'] ) ) {
+            $new_input['languages']['allowed'] = explode( "\r\n", sanitize_textarea_field( $input['languages']['allowed'] ) );
+        } else { $new_input['languages']['allowed'] = array();}
+
+        if ( !empty( $input['languages']['disallowed'] ) ) {
+            $new_input['languages']['disallowed'] = explode( "\r\n", sanitize_textarea_field( $input['languages']['disallowed'] ) );
+        } else { $new_input['languages']['disallowed'] = array();}
 
         // bad ip
         $new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
@@ -796,11 +797,11 @@ class CF7_AntiSpam_Admin_Customizations {
     }
 
     public function cf7a_language_allowed() {
-        printf( '<textarea id="language_allowed" name="cf7a_options[language][allowed]" />%s</textarea>', isset( $this->options['language']['allowed'] ) && is_array( $this->options['language']['allowed'] ) ? esc_textarea( implode( "\r\n", $this->options['language']['allowed'] ) ) : '' );
+        printf( '<textarea id="languages_allowed" name="cf7a_options[languages][allowed]" />%s</textarea>', isset( $this->options['languages']['allowed'] ) && is_array( $this->options['languages']['allowed'] ) ? esc_textarea( implode( "\r\n", $this->options['languages']['allowed'] ) ) : '' );
     }
 
     public function cf7a_language_disallowed() {
-        printf( '<textarea id="language_disallowed" name="cf7a_options[language][disallowed]" />%s</textarea>', isset( $this->options['language']['disallowed'] ) && is_array( $this->options['language']['disallowed'] ) ? esc_textarea( implode( "\r\n", $this->options['cf7a_language_disallowed'] ) ) : '' );
+        printf( '<textarea id="languages_disallowed" name="cf7a_options[languages][disallowed]" />%s</textarea>', isset( $this->options['languages']['disallowed'] ) && is_array( $this->options['languages']['disallowed'] ) ? esc_textarea( implode( "\r\n", $this->options['languages']['disallowed'] ) ) : '' );
     }
 
 
