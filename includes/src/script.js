@@ -2,6 +2,10 @@
 'use strict';
 
 window.onload = function() {
+
+  // disable cf7a script if contact form is not loaded in this page
+  if (!window.wpcf7) return;
+
 	const cf7a_prefix = cf7a_settings.prefix;
 
 	// disable cf7 refill on load
