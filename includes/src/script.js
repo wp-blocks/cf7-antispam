@@ -34,10 +34,6 @@ window.onload = function() {
 		return testTouch;
 	}
 
-	const getBrowserLanguage = () => {
-    return window.navigator.languages.join(",") || window.navigator.language || window.navigator.browserLanguage || window.navigator.userLanguage;
-	}
-
   const browserFingerprint = () => {
   	// as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
 		const ua = navigator.userAgent;
@@ -68,7 +64,7 @@ window.onload = function() {
 			tests.isIELegacy = true;
 		} else if (ua.indexOf("Edg") > -1) {
 			tests.isEdge = true;
-		} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1 ) { // crios stands for chrome for ios...
+		} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1 ) { // criOS stands for chrome for ios
 			tests.isChrome = true;
 		} else if (ua.indexOf("Safari") > -1) {
 			tests.isSafari = true;
@@ -88,7 +84,9 @@ window.onload = function() {
 		return tests;
   };
 
-  const wpcf7Forms = document.querySelectorAll('.wpcf7');
+  const getBrowserLanguage = () => {
+    return window.navigator.languages.join() || window.navigator.language || window.navigator.browserLanguage || window.navigator.userLanguage;
+  }
 
   const createCF7Afield = (key, value, prefix = cf7a_prefix) => {
     let e = document.createElement('input');
@@ -97,6 +95,9 @@ window.onload = function() {
 		e.setAttribute("value", typeof value === 'string' ? value : JSON.stringify(value));
     return e;
   };
+
+  // get all page forms
+  const wpcf7Forms = document.querySelectorAll('.wpcf7');
 
   if (wpcf7Forms.length) {
 

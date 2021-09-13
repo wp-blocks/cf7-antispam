@@ -343,9 +343,9 @@ class CF7_AntiSpam_filters {
 			// we need to teach to b8 what is spam or not before classify mails
 			foreach ($post_storage as $post_id => $message) {
 				update_post_meta( $post_id, '_cf7a_b8_classification', $this->cf7a_b8_classify($message) );
-			};
+			}
 
-		endif;
+        endif;
 
 		return true;
 	}
@@ -520,6 +520,7 @@ class CF7_AntiSpam_filters {
 	 * @return bool
 	 */
 	public function cf7a_spam_filter( $spam ) {
+
 		// Get the submitted data
 		$submission = WPCF7_Submission::get_instance();
 
@@ -598,11 +599,11 @@ class CF7_AntiSpam_filters {
 
 		/**
 		 * Checks if the ip is already banned - no mercy :)
-		 * TODO: add also all the ip of the ip strings (that are valid ip)
+		 * TODO: check coherence between $cf7_remote_ip and $remote_ip
 		 */
 		if ( !$remote_ip ) {
 
-			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
+			$remote_ip = $cf7_remote_ip ?: null;
 
 			$spam_score += $score_detection;
 			$reason['no_ip'] = "Address field empty";
@@ -657,7 +658,6 @@ class CF7_AntiSpam_filters {
 		 * This will save server computing power, this ip has already been banned so there's no need to push it.
 		 */
 		if ($spam_score < 1) {
-
 
 			/**
 			 * if enabled fingerprints bots

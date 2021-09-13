@@ -164,8 +164,8 @@ class CF7_AntiSpam_Frontend {
 
 		foreach ( $hidden_fields as $name => $value ) {
 			$hidden_fields_html .= sprintf(
-				            '<input type="hidden" name="%1$s" value="%2$s" />',
-				            esc_attr( $name ), esc_attr( $value ) ) . "\n";
+                '<input type="hidden" name="%1$s" value="%2$s" />',
+                esc_attr( $name ), esc_attr( $value ) ) . "\n";
 		}
 
 		$html = sprintf( '<div %s>',
