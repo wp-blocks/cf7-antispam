@@ -66,7 +66,7 @@ window.onload = function() {
 			tests.isEdge = true;
 		} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1 ) { // criOS stands for chrome for ios
 			tests.isChrome = true;
-		} else if (ua.indexOf("Safari") > -1) {
+		} else if (ua.indexOf("Safari") > -1 || ua.indexOf("GSA") > -1 ) { // GSA stand for Google Search Appliance
 			tests.isSafari = true;
 		} else {
 			tests.isUnknown = true;
