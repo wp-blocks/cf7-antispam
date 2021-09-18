@@ -149,10 +149,9 @@ class CF7_AntiSpam_Admin {
 
 	}
 
-	public function cf7a_body_class( $class ) {
+	public function cf7a_body_class( $classes ) {
 		$admin_page = get_current_screen();
-		if (false === strpos($admin_page->base, $this->plugin_name )) return;
-		$class .= 'cf7-antispam-admin';
-		return $class;
+		if (false === strpos($admin_page->base, $this->plugin_name )) return $classes;
+        return "$classes cf7-antispam-admin";
 	}
 }
