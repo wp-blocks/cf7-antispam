@@ -216,12 +216,14 @@ class CF7_AntiSpam_Frontend {
 
         // add the language if required
         if ( intval( $this->options['check_language'] ) == 1 ) {
-            $fields = array_merge( $fields, array( $prefix . '_language' => cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) ) );
+            $fields[$prefix . '_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?
+                cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) :
+                cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
         }
 
         // add the timestamp if required
         if ( intval( $this->options['check_time'] ) == 1 ) {
-            $fields = array_merge( $fields, array( $prefix . '_timestamp' => cf7a_crypt( time(), $this->options['cf7a_cipher'] ) ) );
+            $fields[$prefix . '_timestamp'] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
         }
 
         // add the default hidden fields
