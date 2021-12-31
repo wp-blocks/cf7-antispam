@@ -795,8 +795,10 @@ class CF7_AntiSpam_filters {
                 if ( !empty($languages['accept']) && !empty($languages['browser']) ) {
 
                     if ( !array_intersect($languages['browser'], $languages['accept']) ) {
-                        // checks if php accept language is the same of javascript navigator.languages
+
+                    	// checks if http accept language is the same of javascript navigator.languages
                         $fails[] = 'languages detected not coherent';
+
                     } else {
                         if ( $language_disallowed = $this->cf7a_check_language( array_unique( array_merge($languages['browser'], $languages['accept'] ) ), $languages_disallowed, $languages_allowed ) ) {
                             // check if the language is allowed, than if is disallowed
@@ -842,7 +844,7 @@ class CF7_AntiSpam_filters {
 						$reason['min_time_elapsed'] = $time_elapsed;
 
 						if (CF7ANTISPAM_DEBUG)
-							error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too little time to fill in the form - ($time_elapsed)" );
+							error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too little time to fill in the form - (now + timestamp = elapsed $time_now - $timestamp = $time_elapsed) < $submission_minimum_time_elapsed" );
 					}
 
 					/**
@@ -854,7 +856,7 @@ class CF7_AntiSpam_filters {
 						$reason['max_time_elapsed'] = $time_elapsed;
 
 						if (CF7ANTISPAM_DEBUG)
-							error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too much time to fill in the form - ($time_elapsed)" );
+							error_log( CF7ANTISPAM_LOG_PREFIX . "The $remote_ip ip took too much time to fill in the form - (now + timestamp = elapsed $time_now - $timestamp = $time_elapsed) > $submission_maximum_time_elapsed" );
 					}
 				}
 			}
