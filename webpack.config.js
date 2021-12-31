@@ -11,9 +11,7 @@ module.exports = {
 			{
 				test: /\.jsx?$/,
 				exclude: /(node_modules|bower_components)/,
-				use: [
-					require.resolve( 'thread-loader' ),
-					{
+				use: [{
 						loader: require.resolve('babel-loader'),
 						options: {
 							presets: [
