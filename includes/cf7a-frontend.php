@@ -238,7 +238,7 @@ class CF7_AntiSpam_Frontend {
 		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
 
 		return array_merge( $fields, array(
-			$prefix.'bot_fingerprint' => wp_hash_password(time())
+			$prefix.'bot_fingerprint' => cf7a_crypt( time(), $this->options['cf7a_cipher'] )
 		));
 	}
 
