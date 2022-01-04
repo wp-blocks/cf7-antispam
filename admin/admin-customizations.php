@@ -595,17 +595,16 @@ class CF7_AntiSpam_Admin_Customizations {
         $new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
 
         // auto-unban delay
-		if ( isset( $input['unban_after'] ) && in_array( $input['unban_after'] , array( '60sec', '5min', 'hourly', 'daily', 'twicedaily', 'weekly' )) ) {
+		if ( isset( $input['unban_after'] ) && in_array( $input['unban_after'] , array( '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' )) ) {
 
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
 				// delete previous scheduled events
-				$timestamp = wp_next_scheduled( 'cf7a_cron', array( false ) );
+				$timestamp = wp_next_scheduled( 'cf7a_cron' );
 				wp_unschedule_event( $timestamp, 'cf7a_cron' );
 				// add the new scheduled event
 				wp_schedule_event( time(), $new_input['unban_after'], 'cf7a_cron' );
 			}
-
 		} else {
 			// Get the timestamp for the next event.
 			$timestamp = wp_next_scheduled( 'cf7a_cron', array( false ) );
@@ -759,7 +758,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_unban_after_callback() {
 		printf(
 			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
-			$this->cf7a_generate_options( array( 'disabled', '60sec', '5min', 'hourly', 'daily', 'twicedaily', 'weekly'  ) , isset( $this->options['unban_after'] ) ? esc_attr($this->options['unban_after']) : 'disabled' )
+			$this->cf7a_generate_options( array( 'disabled', '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly'  ) , isset( $this->options['unban_after'] ) ? esc_attr($this->options['unban_after']) : 'disabled' )
 		);
 	}
 
@@ -953,7 +952,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_customizations_cipher_callback() {
 		printf(
-			'<select id="unban_after" name="cf7a_options[cf7a_cipher]">%s</select>',
+			'<select id="cipher" name="cf7a_options[cf7a_cipher]">%s</select>',
 			$this->cf7a_generate_options( openssl_get_cipher_methods() , isset( $this->options['cf7a_cipher'] ) ? esc_attr($this->options['cf7a_cipher']) : 'aes-128-cbc' )
 		);
 	}

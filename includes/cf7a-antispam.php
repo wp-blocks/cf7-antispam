@@ -517,7 +517,7 @@ class CF7_AntiSpam_filters {
 		$message = isset($posted_data[$message_tag]) ? $posted_data[$message_tag] : false;
 
 		// let developers hack the message
-		apply_filters('cf7a_message_before_processing', $message, $posted_data);
+		$message = apply_filters('cf7a_message_before_processing', $message, $posted_data);
 
 		// this plugin options
 		$options = get_option( 'cf7a_options', array() );
@@ -610,7 +610,7 @@ class CF7_AntiSpam_filters {
 		if ( !$cf7a_version || $cf7a_version != CF7ANTISPAM_VERSION ) {
 
 			$spam_score += $score_warn;
-			$reason['data_mismatch'] = "Version mismatch $cf7a_version/".CF7ANTISPAM_VERSION;
+			$reason['data_mismatch'] = "Version mismatch '$cf7a_version' != '". CF7ANTISPAM_VERSION . "'";
 
 			if (CF7ANTISPAM_DEBUG)
 				error_log( CF7ANTISPAM_LOG_PREFIX . "Incorrect data submitted by $remote_ip in the hidden field _version, may have been modified, removed or hacked" );
