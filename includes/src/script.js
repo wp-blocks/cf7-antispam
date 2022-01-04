@@ -7,15 +7,16 @@ window.onload = function() {
   if (!window.wpcf7) return;
 
 	const cf7a_prefix = cf7a_settings.prefix;
+	const cf7a_version = cf7a_settings.version;
 
 	// disable cf7 refill on load
 	wpcf7.cached = parseInt(cf7a_settings.disableReload) === 0 && wpcf7.cached; // if is cached disable reload
 
-  let testTouch = () => {
+	let testTouch = () => {
 		if ("maxTouchPoints" in navigator) {
-		testTouch = navigator.maxTouchPoints > 0;
+			testTouch = navigator.maxTouchPoints > 0;
 		} else if ("msMaxTouchPoints" in navigator) {
-		testTouch = navigator.msMaxTouchPoints > 0;
+			testTouch = navigator.msMaxTouchPoints > 0;
 		} else {
 			var mQ = window.matchMedia && matchMedia("(pointer:coarse)");
 			if (mQ && mQ.media === "(pointer:coarse)") {
@@ -36,52 +37,52 @@ window.onload = function() {
 
   const browserFingerprint = () => {
   	// as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
-		const ua = navigator.userAgent;
+	const ua = navigator.userAgent;
 
-		let tests = {
-			"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
-			"platform": navigator.platform ?? null,
-			"hardware_concurrency": navigator.hardwareConcurrency ?? null,
-			"screens": [screen.width, screen.height] ?? null,
-			"memory": navigator.deviceMemory ?? null,
-			"user_agent": ua ?? null,
-			"app_version": navigator.appVersion ?? null,
-			"webdriver": navigator.webdriver === false ?? null,
-			"session_storage": sessionStorage ? 1 : null
-		};
+	let tests = {
+		"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
+		"platform": navigator.platform ?? null,
+		"hardware_concurrency": navigator.hardwareConcurrency ?? null,
+		"screens": [screen.width, screen.height] ?? null,
+		"memory": navigator.deviceMemory ?? null,
+		"user_agent": ua ?? null,
+		"app_version": navigator.appVersion ?? null,
+		"webdriver": navigator.webdriver === false ?? null,
+		"session_storage": sessionStorage ? 1 : null
+	};
 
-		// detect browser
-		// https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
-		if (ua.indexOf("Firefox") > -1) {
-			tests.isFFox = true;
-		} else if (ua.indexOf("SamsungBrowser") > -1) {
-			tests.isSamsung = true;
-		} else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) {
-			tests.isOpera = true;
-		} else if (ua.indexOf("Trident") > -1) {
-			tests.isIE = true;
-		} else if (ua.indexOf("Edge") > -1) {
-			tests.isIELegacy = true;
-		} else if (ua.indexOf("Edg") > -1) {
-			tests.isEdge = true;
-		} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1 ) { // criOS stands for chrome for ios
-			tests.isChrome = true;
-		} else if (ua.indexOf("Safari") > -1 || ua.indexOf("GSA") > -1 ) { // GSA stand for Google Search Appliance
-			tests.isSafari = true;
-		} else {
-			tests.isUnknown = true;
-		}
+	// detect browser
+	// https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
+	if (ua.indexOf("Firefox") > -1) {
+		tests.isFFox = true;
+	} else if (ua.indexOf("SamsungBrowser") > -1) {
+		tests.isSamsung = true;
+	} else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) {
+		tests.isOpera = true;
+	} else if (ua.indexOf("Trident") > -1) {
+		tests.isIE = true;
+	} else if (ua.indexOf("Edge") > -1) {
+		tests.isIELegacy = true;
+	} else if (ua.indexOf("Edg") > -1) {
+		tests.isEdge = true;
+	} else if (ua.indexOf("Chrome") > -1 || ua.indexOf("CriOS") > -1 ) { // criOS stands for chrome for ios
+		tests.isChrome = true;
+	} else if (ua.indexOf("Safari") > -1 || ua.indexOf("GSA") > -1 ) { // GSA stand for Google Search Appliance
+		tests.isSafari = true;
+	} else {
+		tests.isUnknown = true;
+	}
 
-		if (typeof navigator.standalone === 'boolean') {
-			// Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
-			tests.isIos = true;
-		} else if (ua.indexOf("Android") > -1) {
-			tests.isAndroid = true;
-		}
+	if (typeof navigator.standalone === 'boolean') {
+		// Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
+		tests.isIos = true;
+	} else if (ua.indexOf("Android") > -1) {
+		tests.isAndroid = true;
+	}
 
-		if ( tests.isIos || tests.isAndroid ) tests.touch = testTouch();
+	if ( tests.isIos || tests.isAndroid ) tests.touch = testTouch();
 
-		return tests;
+	return tests;
   };
 
   const getBrowserLanguage = () => {
@@ -109,92 +110,92 @@ window.onload = function() {
 
     	const hiddenInputsContainer = wpcf7Form.querySelector('form > div');
 
-      // 1) Standard bot checks
-			const bot_fingerprint_key = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint]');
+		// 1) Standard bot checks
+		const bot_fingerprint_key = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint]');
 
-      // 2) Bot fingerprint extra checks
-			const bot_fingerprint_extra = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
+		// 2) Bot fingerprint extra checks
+		const bot_fingerprint_extra = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'bot_fingerprint_extras]');
 
-      // 3) Language check
-      const language_checks_enabled = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + '_language]');
+		// 3) Language check
+		const language_checks_enabled = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + '_language]');
 
-      // how append bot fingerprint into hidden fields
-			const append_on_submit = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
+		// how append bot fingerprint into hidden fields
+		const append_on_submit = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
 
-			// fingerprint browser data
-      let tests = browserFingerprint();
+		// fingerprint browser data
+		let tests = browserFingerprint();
 
-      if (bot_fingerprint_key) {
+		if (bot_fingerprint_key) {
 
-        // 1.0 hijack the value of the bot_fingerprint
-        bot_fingerprint_key.setAttribute("value", bot_fingerprint_key.getAttribute("value").slice(0, 5));
+			// 1.0 hijack the value of the bot_fingerprint
+			bot_fingerprint_key.setAttribute("value", bot_fingerprint_key.getAttribute("value").slice(0, 5));
 
-        // then append the fields on submit
-				// not supported in safari https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
-				if (!append_on_submit || tests.isIos || tests.isIE ) {
+			// then append the fields on submit
+			// not supported in safari https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
+			if ( !append_on_submit || tests.isIos || tests.isIE ) {
 
-					// or add them directly to hidden input container
-					for (const key in tests) {
-						hiddenInputsContainer.appendChild(createCF7Afield(key, tests[key]));
-					}
-
-				} else {
-
-					const formElem = wpcf7Form.querySelector('form');
-					let formData = new FormData(formElem.formData);
-
-					formElem.addEventListener('formdata', (e) => {
-						let data = e.formData;
-						for (const key in tests) {
-							data.append(cf7a_prefix + key, tests[key]);
-						}
-						formData = data;
-					});
-
+				// or add them directly to hidden input container
+				for (const key in tests) {
+					hiddenInputsContainer.appendChild(createCF7Afield(key, tests[key]));
 				}
+
+			} else {
+
+				const formElem = wpcf7Form.querySelector('form');
+				let formData = new FormData(formElem.formData);
+
+				formElem.addEventListener('formdata', (e) => {
+					let data = e.formData;
+					for (const key in tests) {
+						data.append(cf7a_prefix + key, tests[key]);
+					}
+					formData = data;
+				});
+
 			}
+		}
 
 
-      // 2) Bot fingerprint extra checks
-      if (bot_fingerprint_extra) {
+	// 2) Bot fingerprint extra checks
+	if (bot_fingerprint_extra) {
 
-        // 2.1) check for mouse clicks
-        const activity = function (e) {
-					let bot_activity = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'activity]');
-					if (bot_activity) bot_activity.remove();
-					hiddenInputsContainer.append(createCF7Afield("activity", mouseActivity_value++));
+		// 2.1) check for mouse clicks
+		const activity = function (e) {
+			let bot_activity = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'activity]');
+			if (bot_activity) bot_activity.remove();
+			hiddenInputsContainer.append(createCF7Afield("activity", mouseActivity_value++));
 
-          if (mouseActivity_value > 3) {
-            document.body.removeEventListener('mouseup', activity);
-            document.body.removeEventListener('touchend', activity);
-						hiddenInputsContainer.append(createCF7Afield("mouseclick_activity", "passed"));
-          }
-        };
-        document.body.addEventListener( 'mouseup', activity);
-        document.body.addEventListener( 'touchend', activity);
+			if (mouseActivity_value > 3) {
+				document.body.removeEventListener('mouseup', activity);
+				document.body.removeEventListener('touchend', activity);
+				hiddenInputsContainer.append(createCF7Afield("mouseclick_activity", "passed"));
+			}
+		};
+		document.body.addEventListener('mouseup', activity);
+		document.body.addEventListener('touchend', activity);
 
         // 2.2) detect the mouse/touch direction change OR touchscreen iterations
         const mouseMove = function (e) {
           if (e.pageY > oldy) mouseMove_value += 1;
-					oldy = e.pageY;
+			oldy = e.pageY;
 
           if (mouseMove_value > 3) {
             document.removeEventListener('mousemove', mouseMove);
-						hiddenInputsContainer.append(createCF7Afield("mousemove_activity", "passed"));
+			hiddenInputsContainer.append(createCF7Afield("mousemove_activity", "passed"));
           }
         };
         document.addEventListener('mousemove', mouseMove);
 
         // set mousemove_activity true as fallback in mobile devices (we have already tested the ability to use the touchscreen)
         if ( tests.isIos || tests.isAndroid ) {
-					hiddenInputsContainer.append(createCF7Afield("mousemove_activity", "passed"));
-				}
+			hiddenInputsContainer.append(createCF7Afield("mousemove_activity", "passed"));
+		}
 
-				// 2.3) WebGL Tests
-				// credits //bot.sannysoft.com
-				let wpcf7box = document.createElement('div');
-				wpcf7box.id = 'hidden';
-				hiddenInputsContainer.append(wpcf7box);
+		// 2.3) WebGL Tests
+		// credits //bot.sannysoft.com
+		let wpcf7box = document.createElement('div');
+		wpcf7box.id = 'hidden';
+		hiddenInputsContainer.append(wpcf7box);
         String.prototype.hashCode = function () {
           var hash = 0, i, chr;
           if (this.length === 0) return hash;
@@ -225,9 +226,9 @@ window.onload = function() {
             const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
             webGLVendorElement.innerHTML = vendor;
             if (vendor === 'Brian Paul' || vendor === "Google Inc.") {
-							hiddenInputsContainer.append(createCF7Afield("webgl", "failed"));
+				hiddenInputsContainer.append(createCF7Afield("webgl", "failed"));
             } else {
-							hiddenInputsContainer.append(createCF7Afield("webgl", "passed"));
+				hiddenInputsContainer.append(createCF7Afield("webgl", "passed"));
             }
           } catch (e) {
             webGLVendorElement.innerHTML = "Error: " + e;
@@ -397,6 +398,9 @@ window.onload = function() {
       if (language_checks_enabled) {
         hiddenInputsContainer.append( createCF7Afield( 'browser_language', getBrowserLanguage() ) );
       }
+
+	  // 4) set the cf7 antispam version field
+	  hiddenInputsContainer.append( createCF7Afield( 'version', cf7a_version ) );
 
     }
 
