@@ -217,6 +217,7 @@ See the LICENSE file for more details.
 * Resend emails if not were spam, remove mail duplicates if users sent multiple
 * Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
 * Cover with the antispam also the wordpress comment form and the login panel
+* Dashboard widget with flamingo stats
 
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
