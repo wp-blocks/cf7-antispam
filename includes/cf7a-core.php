@@ -69,7 +69,8 @@ class CF7_AntiSpam {
 		// the i18n
 		$this->set_locale();
 
-		if ( empty($this->options['version']) || $this->version !== $this->options['version'] ) {
+		if ( empty($this->options['cf7a_version']) || $this->version !== $this->options['cf7a_version'] ) {
+
 			// the php files
 			$this->update();
 
@@ -103,6 +104,7 @@ class CF7_AntiSpam {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
 		do_action( 'cf7a_update' );
 		CF7_AntiSpam_Activator::update_options();
+
 	}
 
 	private function load_dependencies() {

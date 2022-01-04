@@ -40,7 +40,7 @@ class CF7_AntiSpam_Activator {
 			"check_dnsbl"                  => true,
 			"check_honeypot"               => true,
 			"check_honeyform"              => false,
-			"check_language"               => true,
+			"check_language"               => false,
 			"honeyform_position"           => "wp_footer",
 			"enable_b8"                    => true,
 			"b8_threshold"                 => 0.95,
@@ -74,7 +74,7 @@ class CF7_AntiSpam_Activator {
 				'MEET SINGLES'
 			),
 			"bad_email_strings_list" => array(
-				parse_url(get_site_url(), PHP_URL_HOST)
+				parse_url( get_site_url(), PHP_URL_HOST )
 			),
 			"bad_user_agent_list"    => array(
 				'bot',
@@ -112,7 +112,11 @@ class CF7_AntiSpam_Activator {
 				'billing_city',
 				'billing_country',
 				'email-address'
-			)
+			),
+			"languages" => array(
+				"allowed" => cf7a_get_browser_language_array( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ),
+                "disallowed" => array()
+			),
 		);
 	}
 
@@ -159,16 +163,29 @@ class CF7_AntiSpam_Activator {
 	/**
 	 *  Create or Update the CF7 Antispam options
 	 */
-	public static function update_options() {
+	public static function update_options($reset_options = false) {
+
 		self::init_vars();
-		if ( false !== ($options = get_option( 'cf7a_options' )) ) {
+
+		if ( false !== ( $options = get_option( 'cf7a_options' ) ) && !$reset_options ) {
+
 			// update the plugin options but add the new options automatically
-			unset($options['cf7a_version']);
-			update_option( "cf7a_options", array_merge( CF7_AntiSpam_Activator::$default_cf7a_options , $options ) );
+			if (isset($options['cf7a_version'])) unset($options['cf7a_version']);
+
+			// merge previous options with the updated copy keeping the already selected option as default
+			$new_options = array_merge( CF7_AntiSpam_Activator::$default_cf7a_options , $options );
+
+			if ( CF7ANTISPAM_DEBUG ) {error_log( print_r( CF7ANTISPAM_LOG_PREFIX . ' plugin options updated', true ) );}
+
 		} else {
 			// if the plugin options are missing Init the plugin with the default option + the default settings
-			update_option( "cf7a_options", array_merge( CF7_AntiSpam_Activator::$default_cf7a_options , CF7_AntiSpam_Activator::$default_cf7a_options_bootstrap )  );
+			$new_options = array_merge( CF7_AntiSpam_Activator::$default_cf7a_options , CF7_AntiSpam_Activator::$default_cf7a_options_bootstrap );
 		}
+
+		update_option( "cf7a_options", $new_options );
+
+		if ( CF7ANTISPAM_DEBUG ) {error_log( print_r( $new_options , true ) );}
+
 	}
 
 	/**
@@ -176,7 +193,7 @@ class CF7_AntiSpam_Activator {
 	 */
 	public static function activate() {
 
-		if (CF7ANTISPAM_DEBUG) error_log(print_r(CF7ANTISPAM_LOG_PREFIX.'plugin enabled',true));
+		if (CF7ANTISPAM_DEBUG) error_log(print_r(CF7ANTISPAM_LOG_PREFIX.' plugin enabled',true));
 
 		// https://codex.wordpress.org/Creating_Tables_with_Plugins
 		if ( !get_option( "cf7a_db_version" ) ) {
@@ -185,7 +202,7 @@ class CF7_AntiSpam_Activator {
 		}
 
 		/* If the options do not exist then create them*/
-		if ( !get_option( 'cf7a_options' ) ) self::update_options();
+		self::update_options();
 
 		set_transient( 'cf7a_activation', true );
 	}
