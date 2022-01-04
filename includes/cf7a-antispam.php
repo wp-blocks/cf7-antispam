@@ -252,7 +252,6 @@ class CF7_AntiSpam_filters {
 
 	public function cron_unban() {
 		global $wpdb;
-		error_log( CF7ANTISPAM_LOG_PREFIX . "Cron unban routine" );
 		$rows_updated = $wpdb->query( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
 		$unbanned = $wpdb->query( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0" );
 		error_log( CF7ANTISPAM_LOG_PREFIX . "Unbanned $unbanned users (rows updated $rows_updated)" );
@@ -484,7 +483,7 @@ class CF7_AntiSpam_filters {
     public function cf7a_log( $string, $log_level = 0 ) {
 	    if (empty($string)) return true;
         if (is_array($string)) $string = implode(", " , $string);
-        if ($log_level === 0 || $log_level == 1 && CF7ANTISPAM_DEBUG || $log_level == 2 && CF7ANTISPAM_DEBUG_EXTENDED ) error_log( CF7ANTISPAM_LOG_PREFIX . " " . $string );
+        if ($log_level === 0 || $log_level == 1 && CF7ANTISPAM_DEBUG || $log_level == 2 && CF7ANTISPAM_DEBUG_EXTENDED ) error_log( CF7ANTISPAM_LOG_PREFIX . $string );
     }
 
 	/**

@@ -60,14 +60,15 @@ function cf7a_get_accept_language_array( $languages ) {
 
 add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 function cf7a_add_cron_steps( $schedules ) {
-	$schedules['5min'] = array(
-		'interval'  => 300,
-		'display'   => __( 'Every 5 Minutes', 'cf7-antispam' )
-	);
-
-	$schedules['60sec'] = array(
-		'interval'  => 60,
-		'display'   => __( 'Every 60 seconds', 'cf7-antispam' )
+	$schedules = array(
+		'5min' => array(
+			'interval' => 300,
+			'display'  => __( 'Every 5 Minutes', 'cf7-antispam' )
+		),
+		'60sec' => array(
+			'interval' => 60,
+			'display'  => __( 'Every 60 seconds', 'cf7-antispam' )
+		)
 	);
 
 	return $schedules;
