@@ -460,53 +460,15 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
-    public function cf7a_get_accept_language_array( $languages ) {
 
-	    // a modified version of https://stackoverflow.com/a/33748742/5735847
-        return array_values(
-            array_reduce(
-                explode(',', str_replace(' ', '', $languages) ),
-                function ($res, $el) {
-                    if (strlen($el) === 5) {
-                        $l = explode('-', $el);
-                        $res[strtolower($l[0])] = $l[0];
-                        $res[strtolower($l[1])] = strtolower($l[1]);
-                    } else {
-                        $l = explode(';q=', $el);
-                        if (ctype_alnum($l[0])) $res[strtolower($l[0])] = $l[0];
-                    }
-                    return $res;
-                }, array()
-            )
-        );
-    }
 
-    public function cf7a_get_browser_language_array( $languages ) {
-        return array_values(
-                array_reduce(
-                explode(",", $languages),
-                function($res, $el) {
-                    if (strlen($el) === 5) {
-                        $l = explode('-', $el);
-                        $res[strtolower($l[0])] = $l[0];
-                        $res[strtolower($l[1])] = strtolower($l[1]);
-                    } else {
-                        $l = preg_split('/(\-|\_)/', $el);
-                        if (ctype_alnum($l[0])) $res[strtolower($l[0])] = $l[0];
-                    }
-                    return $res;
-                }, array()
-            )
-        );
-    }
-
-    public function cf7a_check_language( $languages, $disalloweds, $alloweds = array() ) {
+    public function cf7a_check_language_disallowed( $languages, $disalloweds, $alloweds = array() ) {
 
 	    if (!is_array($languages)) $languages = array($languages);
 
         if ( ! empty( $alloweds ) ) {
             foreach ( $alloweds as $allowed ) {
-                if ( in_array( $allowed, $languages ) ) return true;
+                if ( in_array( $allowed, $languages ) ) return false;
             }
         }
 
@@ -516,7 +478,7 @@ class CF7_AntiSpam_filters {
             }
         }
 
-        return true;
+        return false;
     }
 
     public function cf7a_log( $string, $log_level = 0 ) {
@@ -787,13 +749,13 @@ class CF7_AntiSpam_filters {
                 if (empty($languages['browser_language'])) {
                     $fails[] = "missing browser language";
                 } else {
-                    $languages['browser'] = $this->cf7a_get_browser_language_array($languages['browser_language']);
+                    $languages['browser'] = cf7a_get_browser_language_array($languages['browser_language']);
                 }
 
                 if (empty($languages['accept_language'])) {
                     $fails[] = "missing language field";
                 } else {
-                    $languages['accept'] = $this->cf7a_get_accept_language_array($languages['accept_language']);
+                    $languages['accept'] = cf7a_get_accept_language_array($languages['accept_language']);
                 }
 
                 if ( !empty($languages['accept']) && !empty($languages['browser']) ) {
@@ -804,8 +766,10 @@ class CF7_AntiSpam_filters {
                         $fails[] = 'languages detected not coherent';
 
                     } else {
-                        if ( $language_disallowed = $this->cf7a_check_language( array_unique( array_merge($languages['browser'], $languages['accept'] ) ), $languages_disallowed, $languages_allowed ) ) {
-                            // check if the language is allowed, than if is disallowed
+
+	                    // check if the language is allowed and if is disallowed
+	                    $client_languages = array_unique( array_merge($languages['browser'], $languages['accept'] ) );
+                        if ( false !== ($language_disallowed = $this->cf7a_check_language_disallowed( $client_languages, $languages_disallowed, $languages_allowed ) ) ) {
                             $fails[] = "language disallowed ($language_disallowed)";
                         }
 
@@ -1002,7 +966,6 @@ class CF7_AntiSpam_filters {
 				}
 
 				foreach ($options['dnsbl_list'] as $dnsbl) {
-					$microtime = cf7a_microtimeFloat();
 					if ( false !== ( $listed = $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) ) {
 						$reason['dsnbl'][] = $listed;
 						$spam_score += $score_dnsbl;

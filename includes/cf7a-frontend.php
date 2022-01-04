@@ -216,7 +216,7 @@ class CF7_AntiSpam_Frontend {
 
         // add the language if required
         if ( intval( $this->options['check_language'] ) == 1 ) {
-            $fields[$prefix . '_language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?
+            $fields[$prefix . '_language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
                 cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) :
                 cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
         }

@@ -18,6 +18,61 @@ function cf7a_get_real_ip() {
 	}
 }
 
+function cf7a_get_browser_language_array( $languages ) {
+	return array_values(
+		array_reduce(
+			explode(",", $languages),
+			function($res, $el) {
+				if (strlen($el) === 5) {
+					$l = explode('-', $el);
+					$res[strtolower($l[0])] = $l[0];
+					$res[strtolower($l[1])] = strtolower($l[1]);
+				} else {
+					$l = preg_split('/(\-|\_)/', $el);
+					if (ctype_alnum($l[0])) $res[strtolower($l[0])] = $l[0];
+				}
+				return $res;
+			}, array()
+		)
+	);
+}
+
+function cf7a_get_accept_language_array( $languages ) {
+
+	// a modified version of https://stackoverflow.com/a/33748742/5735847
+	return array_values(
+		array_reduce(
+			explode(',', str_replace(' ', '', $languages) ),
+			function ($res, $el) {
+				if (strlen($el) === 5) {
+					$l = explode('-', $el);
+					$res[strtolower($l[0])] = $l[0];
+					$res[strtolower($l[1])] = strtolower($l[1]);
+				} else {
+					$l = explode(';q=', $el);
+					if (ctype_alnum($l[0])) $res[strtolower($l[0])] = $l[0];
+				}
+				return $res;
+			}, array()
+		)
+	);
+}
+
+add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
+function cf7a_add_cron_steps( $schedules ) {
+	$schedules['5min'] = array(
+		'interval'  => 300,
+		'display'   => __( 'Every 5 Minutes', 'cf7-antispam' )
+	);
+
+	$schedules['60sec'] = array(
+		'interval'  => 60,
+		'display'   => __( 'Every 60 seconds', 'cf7-antispam' )
+	);
+
+	return $schedules;
+}
+
 function cf7a_crypt( $value , $cipher = "aes-256-cbc" ) {
 	if(!extension_loaded('openssl')) return $value;
 	return openssl_encrypt( $value , $cipher, wp_salt('nonce'), $options=0, substr(wp_salt('nonce'), 0, 16) );
