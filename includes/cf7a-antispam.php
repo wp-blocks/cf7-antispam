@@ -530,7 +530,10 @@ class CF7_AntiSpam_filters {
 		$cf7_remote_ip = sanitize_text_field($submission->get_meta( 'remote_ip' ));
 
 		// CF7A version
-		$cf7a_version = isset( $_POST[ $prefix . '_version' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_version' ] ), $options['cf7a_cipher'] ) : null;
+		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'version' ] ), $options['cf7a_cipher'] ) : null;
+
+		// client referer
+		$cf7a_referer = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'referer' ] ), $options['cf7a_cipher'] ) : null;
 
 		// CF7 user agent
 		$user_agent = sanitize_text_field($submission->get_meta( 'user_agent' ));
@@ -611,6 +614,22 @@ class CF7_AntiSpam_filters {
 
 			if (CF7ANTISPAM_DEBUG)
 				error_log( CF7ANTISPAM_LOG_PREFIX . "Incorrect data submitted by $remote_ip in the hidden field _version, may have been modified, removed or hacked" );
+		}
+
+		/**
+		 * Check the client http refer
+		 * it is much more likely that it is a bot that lands on the page without a referrer than a human that pastes in the address bar the url of the contact form.
+		 */
+		if ( intval( $options['check_refer'] ) == 1 ) {
+			if ( ! $cf7a_referer || $cf7a_referer == '' ) {
+
+				$spam_score            += $score_warn;
+				$reason['no_referrer'] = "client has referrer address";
+
+				if ( CF7ANTISPAM_DEBUG ) {
+					error_log( CF7ANTISPAM_LOG_PREFIX . "the $remote_ip has reached the contact form page without any referrer" );
+				}
+			}
 		}
 
 

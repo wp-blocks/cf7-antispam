@@ -38,6 +38,7 @@ class CF7_AntiSpam_Activator {
 			"check_bad_email_strings"      => true,
 			"check_bad_user_agent"         => true,
 			"check_dnsbl"                  => true,
+			"check_refer"                  => false,
 			"check_honeypot"               => true,
 			"check_honeyform"              => false,
 			"check_language"               => false,

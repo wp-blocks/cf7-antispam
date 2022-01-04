@@ -155,6 +155,14 @@ class CF7_AntiSpam_Admin_Customizations {
             'cf7a-settings' // Page
         );
 
+		// Settings check_bad_ip
+		add_settings_field( 'check_refer', // ID
+			__('Check HTTP referrer', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_print_check_refer' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_bad_ip' // Section
+		);
+
         // Settings check_bad_ip
         add_settings_field( 'check_bad_ip', // ID
 			__('Check the sender IP Address', 'cf7-antispam'), // Title
@@ -577,6 +585,7 @@ class CF7_AntiSpam_Admin_Customizations {
         } else { $new_input['languages']['disallowed'] = array();}
 
         // bad ip
+		$new_input['check_refer'] = isset( $input['check_refer'] ) ? 1 : 0;
         $new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
         if ( isset( $input['bad_ip_list'] ) ) {
             $new_input['bad_ip_list'] = explode( "\r\n", sanitize_textarea_field( $input['bad_ip_list'] ) );
@@ -803,6 +812,10 @@ class CF7_AntiSpam_Admin_Customizations {
         printf( '<textarea id="languages_disallowed" name="cf7a_options[languages][disallowed]" />%s</textarea>', isset( $this->options['languages']['disallowed'] ) && is_array( $this->options['languages']['disallowed'] ) ? esc_textarea( implode( "\r\n", $this->options['languages']['disallowed'] ) ) : '' );
     }
 
+
+	public function cf7a_print_check_refer() {
+		printf( '<input type="checkbox" id="check_refer" name="cf7a_options[check_refer]" %s />', isset( $this->options['check_refer'] ) && $this->options['check_refer'] == 1 ? 'checked="true"' : '' );
+	}
 
     public function cf7a_check_bad_ip_callback() {
         printf( '<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />', isset( $this->options['check_bad_ip'] ) && $this->options['check_bad_ip'] == 1 ? 'checked="true"' : '' );
