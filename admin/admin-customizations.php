@@ -795,7 +795,7 @@ class CF7_AntiSpam_Admin_Customizations {
     }
 
     public function cf7a_check_time_max_callback() {
-        printf( '<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />', isset( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : 3600 );
+        printf( '<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />', isset( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : 3600 * 48 );
     }
 
 

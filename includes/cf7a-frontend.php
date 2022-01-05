@@ -228,10 +228,9 @@ class CF7_AntiSpam_Frontend {
 
         // add the default hidden fields
         return array_merge( $fields, array(
-            $prefix . '_version' => '1.0',
+            $prefix . 'version' => '1.0',
             $prefix . 'address'  => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
-            $prefix . 'referer'  => cf7a_crypt( !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'no referer', $this->options['cf7a_cipher'] ),
-            'referer'  => !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'no referer'
+            $prefix . 'referer'  => cf7a_crypt( !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'no referer', $this->options['cf7a_cipher'] )
         ) );
     }
 

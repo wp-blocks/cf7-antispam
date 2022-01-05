@@ -460,7 +460,6 @@ class CF7_AntiSpam_filters {
 	}
 
 
-
     public function cf7a_check_language_disallowed( $languages, $disalloweds, $alloweds = array() ) {
 
 	    if (!is_array($languages)) $languages = array($languages);

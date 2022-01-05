@@ -11,22 +11,22 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	public $options;
 
-  public function display_dashboard() {
+	public function display_dashboard() {
 		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_header' ) );
-	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
-	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_footer' ), 23 );
+		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
+		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_footer' ), 23 );
 
-	  add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_debug' ), 30 );
+		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_debug' ), 30 );
 
-	  do_action( 'cf7a_dashboard' );
-  }
+		do_action( 'cf7a_dashboard' );
+	}
 
 
-	function cf7a_display_header(){
-	  $html  = '<div class="wrap"><div class="cf7-antispam">';
-	  $html .= '<h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 - AntiSpam</h1>';
-	  echo $html;
-  }
+	function cf7a_display_header() {
+		$html = '<div class="wrap"><div class="cf7-antispam">';
+		$html .= '<h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 - AntiSpam</h1>';
+		echo $html;
+	}
 
 	function cf7a_display_content() {
 		CF7_AntiSpam_Admin_Tools::cf7a_handle_actions();
@@ -78,16 +78,16 @@ class CF7_AntiSpam_Admin_Display {
 
 	function cf7a_display_debug() {
 
-	  $tools = new CF7_AntiSpam_Admin_Tools();
+		$tools = new CF7_AntiSpam_Admin_Tools();
 
-	  // prints the blacklisted ip, the rating and some informations
-	  $tools->cf7a_get_blacklisted_table();
+		// prints the blacklisted ip, the rating and some informations
+		$tools->cf7a_get_blacklisted_table();
 
-	  // returns the plugins debug informations
+		// returns the plugins debug informations
 		$tools->cf7a_advanced_settings();
 
-	  // returns the plugins debug informations
-	  $tools->cf7a_get_debug_info();
+		// returns the plugins debug informations
+		$tools->cf7a_get_debug_info();
 	}
 
 

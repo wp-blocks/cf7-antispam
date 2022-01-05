@@ -30,7 +30,7 @@ class CF7_AntiSpam_Activator {
 			"append_on_submit"             => true,
 			"check_time"                   => true,
 			"check_time_min"               => 6,
-			"check_time_max"               => 3660,
+			"check_time_max"               => 3600 * 48,
 			"check_bad_ip"                 => true,
 			"autostore_bad_ip"             => true,
 			"unban_after"                  => 'disabled',
