@@ -122,6 +122,12 @@ window.onload = function() {
 		// how append bot fingerprint into hidden fields
 		const append_on_submit = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'append_on_submit]');
 
+		// how append bot fingerprint into hidden fields
+		const cf7a_version_input = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'version]');
+
+		// then set the cf7 antispam version field
+		cf7a_version_input.setAttribute("value", cf7a_version);
+
 		// fingerprint browser data
 		let tests = browserFingerprint();
 
@@ -399,8 +405,6 @@ window.onload = function() {
         hiddenInputsContainer.append( createCF7Afield( 'browser_language', getBrowserLanguage() ) );
       }
 
-	  // 4) set the cf7 antispam version field
-	  hiddenInputsContainer.append( createCF7Afield( 'version', cf7a_version ) );
 
     }
 
