@@ -179,7 +179,7 @@ class CF7_AntiSpam_Admin {
 		);
 
 		$mail_collection = array(
-			'by_mail' => array(
+			'by_type' => array(
 				'ham' => 0,
 				'spam' => 0,
 			),
@@ -188,7 +188,7 @@ class CF7_AntiSpam_Admin {
 
 
 		$query = new WP_Query($args);
-		if ($query->have_posts() ) :
+		if ( $query->have_posts() ) :
 			// this is needed to parse and create a list of emails
 			$html = '<div id="antispam-widget-list" class="activity-block"><h3>'.__('Last Week Emails', 'cf7-antispam').'</h3><ul>';
 
@@ -198,20 +198,22 @@ class CF7_AntiSpam_Admin {
 				$is_ham = $post->post_status !== 'flamingo-spam';
 
 				if ( get_the_date('Y-m-d') > date('Y-m-d', strtotime("-1 week") ) )
-					$html .= sprintf('<li><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a></li>',
+					$html .= sprintf('<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
 						get_the_date('Y-m-d') ,
 						admin_url('admin.php?page=flamingo_inbound&post='.$post->ID.'&action=edit' ),
 						$post->ID,
 						$is_ham ? '✅️' : '⛔',
+						htmlentities(get_post_meta($post->ID, '_from')[0]),
 						$post->post_title
 					) ;
 
 				// for each post collect the main informations like spam/ham or date
 				if (!isset($mail_collection['by_date'][get_the_date('Y-m-d')])) $mail_collection['by_date'][get_the_date('Y-m-d')] = array();
-				$mail_collection['by_mail'][$is_ham ? 'spam' :'ham']++;
+				$mail_collection['by_type'][$is_ham ? 'spam' :'ham']++;
 				array_push($mail_collection['by_date'][get_the_date('Y-m-d')], array( 'status' => $is_ham ? 'ham' : 'spam' ));
 
 			endwhile;
+
 			wp_reset_postdata();
 			$html .= '</ul></div>';
 
@@ -238,70 +240,140 @@ class CF7_AntiSpam_Admin {
 
 			?>
 			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-			<div><canvas id="lineChart" width="400" height="200"></canvas>
-			<script>
-
-				const lineLabels = [ '<?php echo implode("','", array_keys($mail_collection['by_date'])); ?>' ];
-
-				const lineData = {
-					labels: lineLabels,
-					datasets: [{
-						label: 'Ham',
-						backgroundColor: 'rgb(0,255,122)',
-						borderColor: 'rgb(3, 210, 106)',
-						tension: 0.25,
-						data: [<?php if ( isset( $ham ) ) {
-								echo implode( ",", $ham );
-							}?>],
-					},
-					{
-						label: 'Spam',
-						backgroundColor: 'rgb(255,4,0)',
-						borderColor: 'rgb(248, 49, 47)',
-						tension: 0.25,
-						data: [<?php if ( isset( $spam ) ) {
-							echo implode( ",", $spam );
-						}?>],
-					}]
-				};
-
-				const lineConfig = {
-					type: 'line',
-					data: lineData,
-					options: {
-						responsive: true,
-						plugins: {
-							legend: { display: false }
-						}
-					}
-				};
-
-				const lineChart = new Chart(
-					document.getElementById('lineChart'),
-					lineConfig
-				);
-
-			</script>
-			<style>
-				#antispam-widget-list li {
-
-				}
-				#antispam-widget-list span.timestamp {
-					margin-right: 5px;
-					min-width: 70px;
-					color: #a5a5a5;
-					display: inline-block;
-					font-size: 90%;
-				}
-			</style>
-
+			<div>
+				<canvas id="lineChart" width="400" height="200"></canvas>
+				<hr>
+				<canvas id="pieChart" width="50" height="50"></canvas>
 				<?php
 				// print the received mail list
 				echo $html; ?>
-			</div>
+				<p class="community-events-footer">
+					<a href="<?php echo admin_url('admin.php?page=flamingo' ) ?>">Flamingo <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					|
+					<a href="<?php echo admin_url('admin.php?page=cf7-antispam' ) ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+				</p>
+				<script>
 
+					const lineLabels = [ '<?php echo implode("','", array_keys($mail_collection['by_date'])); ?>' ];
+					const pieLabels = [ '<?php echo implode("','", array_keys($mail_collection['by_type'])); ?>' ];
+
+					const lineData = {
+						labels: lineLabels,
+						datasets: [{
+							label: 'Ham',
+							backgroundColor: 'rgb(0,255,122)',
+							borderColor: 'rgb(3, 210, 106)',
+							tension: 0.25,
+							data: [<?php if ( isset( $ham ) ) {
+									echo implode( ",", $ham );
+								}?>],
+						},
+						{
+							label: 'Spam',
+							backgroundColor: 'rgb(255,4,0)',
+							borderColor: 'rgb(248, 49, 47)',
+							tension: 0.25,
+							data: [<?php if ( isset( $spam ) ) {
+								echo implode( ",", $spam );
+							}?>],
+						}]
+					};
+
+					const pieData = {
+						labels: pieLabels,
+						datasets: [{
+							data: [<?php echo $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam'] ; ?>],
+							backgroundColor: [
+								'rgb(15,199,107)',
+								'rgb(248,49,47)'
+							]
+						}]
+					};
+
+					const lineConfig = {
+						type: 'line',
+						data: lineData,
+						options: {
+							responsive: true,
+							plugins: {
+								legend: {display: false}
+							},
+							scales: {
+								y: {
+									ticks: {
+										min: 0,
+										precision: 0
+									}
+								}
+							}
+						}
+					};
+
+					const PieConfig = {
+						type: 'pie',
+						data: pieData,
+						options: {
+							responsive: true,
+							plugins: {
+								legend: {display: false}
+							},
+						}
+					};
+
+					const lineChart = new Chart(
+						document.getElementById('lineChart'),
+						lineConfig
+					);
+
+					const pieChart = new Chart(
+						document.getElementById('pieChart'),
+						PieConfig
+					);
+
+				</script>
+			</div>
 		<?php
+		else:
+			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>You have not received any email in the last 7 days</p></div>';
 		endif;
+		?>
+
+		<style>
+			.cf7-a_list-item {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			#antispam-widget-list span.timestamp {
+				margin-right: 5px;
+				color: #a5a5a5;
+				display: inline-block;
+				font-size: 90%;
+				font-family: monospace;
+			}
+			#pieChart {
+				width: 36px!important;
+				height: 36px !important;
+				display: inline-block !important;
+				padding: 4px;
+				float: left;
+				margin-right: 4px;
+			}
+			.cf7-a_widget-empty {
+				text-align: center;
+			}
+			.cf7-a_widget-empty .dashicons,
+			.cf7-a_widget-empty .dashicons-before {
+				font-size: 96px;
+				line-height: 1;
+				height: 100px;
+				margin-top: 6px;
+				margin-left: 0;
+				width: 96px;
+				opacity: .7;
+			}
+		</style>
+		<?php
 
 	}
 }
