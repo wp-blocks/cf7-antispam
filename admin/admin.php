@@ -57,6 +57,9 @@ class CF7_AntiSpam_Admin {
 		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
 
 		add_action( 'plugin_action_links_'.CF7ANTISPAM_PLUGIN_BASENAME, array($this, 'cf7a_plugin_settings_link'), 10, 2 );
+
+		add_action('wp_dashboard_setup', array($this, 'cf7a_dashboard_widget' ) );
+
 	}
 
 	public function cf7a_admin_menu() {
@@ -153,5 +156,152 @@ class CF7_AntiSpam_Admin {
 		$admin_page = get_current_screen();
 		if (false === strpos($admin_page->base, $this->plugin_name )) return $classes;
         return "$classes cf7-antispam-admin";
+	}
+
+	public function cf7a_dashboard_widget() {
+		global $wp_meta_boxes;
+		wp_add_dashboard_widget('custom_help_widget', 'Contact Form 7 Antispam - Recap', array($this, 'cf7a_flamingo_recap') );
+	}
+
+	function cf7a_flamingo_recap() {
+
+		$args = array(
+			'post_type' => 'flamingo_inbound',
+			'post_status' => array( 'flamingo-spam', 'publish' ),
+			'posts_per_page' => -1,
+			'orderby' => 'date',
+			'order' => 'DESC',
+			'date_query' => array(
+				array(
+					'after' => '1 week ago'
+				)
+			)
+		);
+
+		$mail_collection = array(
+			'by_mail' => array(
+				'ham' => 0,
+				'spam' => 0,
+			),
+			'by_date' => array()
+		);
+
+
+		$query = new WP_Query($args);
+		if ($query->have_posts() ) :
+			// this is needed to parse and create a list of emails
+			$html = '<div id="antispam-widget-list" class="activity-block"><h3>'.__('Last Week Emails', 'cf7-antispam').'</h3><ul>';
+
+			while ( $query->have_posts() ) : $query->the_post();
+				global $post;
+
+				$is_ham = $post->post_status !== 'flamingo-spam';
+
+				if ( get_the_date('Y-m-d') > date('Y-m-d', strtotime("-1 week") ) )
+					$html .= sprintf('<li><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a></li>',
+						get_the_date('Y-m-d') ,
+						admin_url('admin.php?page=flamingo_inbound&post='.$post->ID.'&action=edit' ),
+						$post->ID,
+						$is_ham ? '✅️' : '⛔',
+						$post->post_title
+					) ;
+
+				// for each post collect the main informations like spam/ham or date
+				if (!isset($mail_collection['by_date'][get_the_date('Y-m-d')])) $mail_collection['by_date'][get_the_date('Y-m-d')] = array();
+				$mail_collection['by_mail'][$is_ham ? 'spam' :'ham']++;
+				array_push($mail_collection['by_date'][get_the_date('Y-m-d')], array( 'status' => $is_ham ? 'ham' : 'spam' ));
+
+			endwhile;
+			wp_reset_postdata();
+			$html .= '</ul></div>';
+
+			$count = array();
+
+			$mail_collection['by_date'] = array_reverse($mail_collection['by_date']);
+
+			// for each date
+			foreach ( $mail_collection['by_date'] as $date => $items ) {
+
+				// add the date to the list if not yet added
+				if ( ! isset( $count[ $date ] ) ) { $count[ $date ] = array( 'ham' => 0, 'spam' => 0 ); }
+
+				// for each item of that date feed the count by email type
+				foreach ( $items as $item ) { 'spam' == $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
+
+			}
+
+			// Create two lists where the key is the date and the value is the number of mails of that type
+			foreach ( $count as $date ) {
+				$ham[]  = $date['ham'];
+				$spam[] = $date['spam'];
+			}
+
+			?>
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+			<div><canvas id="lineChart" width="400" height="200"></canvas>
+			<script>
+
+				const lineLabels = [ '<?php echo implode("','", array_keys($mail_collection['by_date'])); ?>' ];
+
+				const lineData = {
+					labels: lineLabels,
+					datasets: [{
+						label: 'Ham',
+						backgroundColor: 'rgb(0,255,122)',
+						borderColor: 'rgb(3, 210, 106)',
+						tension: 0.25,
+						data: [<?php if ( isset( $ham ) ) {
+								echo implode( ",", $ham );
+							}?>],
+					},
+					{
+						label: 'Spam',
+						backgroundColor: 'rgb(255,4,0)',
+						borderColor: 'rgb(248, 49, 47)',
+						tension: 0.25,
+						data: [<?php if ( isset( $spam ) ) {
+							echo implode( ",", $spam );
+						}?>],
+					}]
+				};
+
+				const lineConfig = {
+					type: 'line',
+					data: lineData,
+					options: {
+						responsive: true,
+						plugins: {
+							legend: { display: false }
+						}
+					}
+				};
+
+				const lineChart = new Chart(
+					document.getElementById('lineChart'),
+					lineConfig
+				);
+
+			</script>
+			<style>
+				#antispam-widget-list li {
+
+				}
+				#antispam-widget-list span.timestamp {
+					margin-right: 5px;
+					min-width: 70px;
+					color: #a5a5a5;
+					display: inline-block;
+					font-size: 90%;
+				}
+			</style>
+
+				<?php
+				// print the received mail list
+				echo $html; ?>
+			</div>
+
+		<?php
+		endif;
+
 	}
 }

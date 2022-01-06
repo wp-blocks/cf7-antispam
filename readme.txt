@@ -124,10 +124,17 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 
 == Upgrade Notice ==
 
-= 0.2.7 =
-Please clean cache after update! thanks!
+= 0.2.8 =
+Please flush cache after update this plugin! Thanks!
 
 == Changelog ==
+
+= 0.2.8 =
+* Enhanced activation script
+* Cron unban fix
+* Referrer verify (under bad ip checks)
+* CF7-AntiSpam version check enhanced (but you will probably have to flush cache anyway when you update this plugin)
+* Dashboard widget to display the email received of the last week
 
 = 0.2.7 =
 * avoid to parse multiple times the stored flamingo messages
