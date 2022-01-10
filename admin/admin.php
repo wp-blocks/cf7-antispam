@@ -209,7 +209,7 @@ class CF7_AntiSpam_Admin {
 
 				// for each post collect the main informations like spam/ham or date
 				if (!isset($mail_collection['by_date'][get_the_date('Y-m-d')])) $mail_collection['by_date'][get_the_date('Y-m-d')] = array();
-				$mail_collection['by_type'][$is_ham ? 'spam' :'ham']++;
+				$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
 				array_push($mail_collection['by_date'][get_the_date('Y-m-d')], array( 'status' => $is_ham ? 'ham' : 'spam' ));
 
 			endwhile;
