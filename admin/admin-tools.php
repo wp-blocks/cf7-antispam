@@ -106,6 +106,27 @@ class CF7_AntiSpam_Admin_Tools {
 
 			}
 
+			if ( substr( $action, 0, 12 ) === "cf7a_resend_" ) {
+
+				$mail_id = (int) substr( $action, 12 );
+
+				$refer = $_SERVER['HTTP_REFERER'];
+
+				if ($mail_id > 1) {
+
+					$r = $filter->cf7a_resend_mail( $mail_id );
+
+					if ( ! is_wp_error( $r ) ) {
+						CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'CF7 AntiSpam email '.$mail_id.' sent with success', 'cf7-antispam' ), "success" );
+						wp_redirect( $refer );
+					}
+				}
+
+				CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Ops! something went wrong... unable to resend '.$mail_id.' email', 'cf7-antispam' ) );
+				wp_redirect( $refer );
+
+			}
+
 		}
 
 	}

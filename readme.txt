@@ -135,6 +135,7 @@ Please flush cache after update this plugin! Thanks!
 * Referrer verify (under bad ip checks)
 * CF7-AntiSpam version check enhanced (but you will probably have to flush cache anyway when you update this plugin)
 * Dashboard widget to display the email received of the last week
+* Resend email from Flamingo UI
 
 = 0.2.7 =
 * avoid to parse multiple times the stored flamingo messages

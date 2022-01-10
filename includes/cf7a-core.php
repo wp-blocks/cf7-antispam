@@ -183,7 +183,7 @@ class CF7_AntiSpam {
 
 		// if flamingo is defined the mail will be analyzed after flamingo has stored
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
-			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_store_b8_classification' ), 11, 1 );
+			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_store_additional_data' ), 11, 1 );
 		}
 
 		if (is_admin()) {
@@ -198,6 +198,7 @@ class CF7_AntiSpam {
 				add_action( 'load-flamingo_page_flamingo_inbound', array( $plugin_antispam , 'cf7a_d8_flamingo_classify' ), 9, 0 );
 				add_filter(	'manage_flamingo_inbound_posts_columns', array( $plugin_antispam, 'flamingo_columns' ));
 				add_action(	'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_d8_column' ), 10, 2);
+				add_action(	'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_resend_column' ), 11, 2);
 			}
 		}
 	}
