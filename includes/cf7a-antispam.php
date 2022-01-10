@@ -674,7 +674,7 @@ class CF7_AntiSpam_filters {
 		 */
 		if ( !$cf7a_version || $cf7a_version != CF7ANTISPAM_VERSION ) {
 
-			$spam_score += $score_warn;
+			$spam_score += $score_fingerprinting;
 			$reason['data_mismatch'] = "Version mismatch '$cf7a_version' != '". CF7ANTISPAM_VERSION . "'";
 
 			if (CF7ANTISPAM_DEBUG)
