@@ -58,7 +58,9 @@ class CF7_AntiSpam_Admin {
 
 		add_action( 'plugin_action_links_'.CF7ANTISPAM_PLUGIN_BASENAME, array($this, 'cf7a_plugin_settings_link'), 10, 2 );
 
-		add_action('wp_dashboard_setup', array($this, 'cf7a_dashboard_widget' ) );
+		if ( defined( 'FLAMINGO_VERSION' ) ) {
+			add_action( 'wp_dashboard_setup', array( $this, 'cf7a_dashboard_widget' ) );
+		}
 
 	}
 
@@ -248,7 +250,7 @@ class CF7_AntiSpam_Admin {
 				// print the received mail list
 				echo $html; ?>
 				<p class="community-events-footer">
-					<a href="<?php echo admin_url('admin.php?page=flamingo' ) ?>">Flamingo <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo admin_url('admin.php?page=flamingo' ) ?>"><?php echo  __( 'Flamingo Inbound Messages', 'flamingo' ) ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 					|
 					<a href="<?php echo admin_url('admin.php?page=cf7-antispam' ) ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
