@@ -36,7 +36,7 @@ window.onload = function() {
 		});
 
 		// show the advanced section
-		showAdvanced = () => {
+		const showAdvanced = () => {
 			const advancedCheckbox = document.getElementById('enable_advanced_settings');
 			const AdvSettingsTitle = document.querySelectorAll('#cf7a_settings h2');
 			const AdvSettingsForm = document.querySelectorAll('#cf7a_settings table');
@@ -56,7 +56,6 @@ window.onload = function() {
 			}
 		}
 
-		showAdvanced();
 		document.getElementById('enable_advanced_settings').addEventListener('click', showAdvanced);
 	}
 }
