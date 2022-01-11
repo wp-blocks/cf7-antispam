@@ -600,7 +600,7 @@ class CF7_AntiSpam_Admin_Customizations {
         }
 
         // max attempts before ban
-		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ?: 2;
+		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval($input['max_attempts']) : 2;
 
         // auto-ban
         $new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
