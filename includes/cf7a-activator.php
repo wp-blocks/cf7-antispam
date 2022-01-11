@@ -33,6 +33,7 @@ class CF7_AntiSpam_Activator {
 			"check_time_max"               => 3600 * 48,
 			"check_bad_ip"                 => true,
 			"autostore_bad_ip"             => true,
+			"max_attempts"                 => 2,
 			"unban_after"                  => 'disabled',
 			"check_bad_words"              => true,
 			"check_bad_email_strings"      => true,

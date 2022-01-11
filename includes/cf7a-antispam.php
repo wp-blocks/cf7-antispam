@@ -693,7 +693,7 @@ class CF7_AntiSpam_filters {
 			$ip_data = self::cf7a_blacklist_get_ip($remote_ip);
 			$ip_data_status = isset($ip_data->status) ? intval($ip_data->status) : 0;
 
-			if ($ip_data_status != 0) {
+			if (isset($options['max_attempts']) && $options['max_attempts'] !== 0 && $ip_data_status >= $options['max_attempts']) {
 
 				$spam_score += $score_detection;
 				$reason['blacklisted'] = "Score: " . ($ip_data_status + $score_warn);
