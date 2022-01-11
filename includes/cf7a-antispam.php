@@ -482,7 +482,7 @@ class CF7_AntiSpam_filters {
 		$additional_settings = $this->cf7a_get_mail_additional_data($result['contact_form_id']);
 
 		$additional_meta = array(
-			"message_field" => $additional_settings['message_field'],
+			"message_field" => $additional_settings['message'],
 			"recipient" => wpcf7_mail_replace_tags($cf->prop('mail')['recipient']),
 			"subject" => wpcf7_mail_replace_tags($cf->prop('mail')['subject']),
 		);
@@ -496,7 +496,7 @@ class CF7_AntiSpam_filters {
 			$text   = stripslashes( $posted_data[$additional_settings['message']] );
 			$rating = $text != '' ? $this->cf7a_b8_classify( $text ) : "none";
 
-			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', $rating );
+			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', round($rating, 2) );
 
 		}
 	}
