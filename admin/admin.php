@@ -150,8 +150,12 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/admin-script.js', array(), $this->version, true );
+		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/admin-script.js', array(), $this->version );
+		wp_enqueue_script( $this->plugin_name );
 
+		wp_localize_script($this->plugin_name, "cf7a_admin_settings", array(
+				"alertMessage" => esc_html__('Are you sure?', 'cf7-antispam')
+		));
 	}
 
 	public function cf7a_body_class( $classes ) {

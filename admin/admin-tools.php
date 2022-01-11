@@ -174,7 +174,7 @@ class CF7_AntiSpam_Admin_Tools {
 			__('If you need to remove or reset the whole blacklist data on your server.', 'cf7-antispam')
 		);
 		$url = wp_nonce_url( add_query_arg("action", "reset-blacklist", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
-		$html .= printf('<pre><button class="button" datahref="%s" onclick="confirmationAlert(this)">%s</button></pre>', esc_url( $url ), __('Remove all blacklisted IP', 'cf7-antispam') );
+		$html .= printf('<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>', esc_url( $url ), __('Remove all blacklisted IP', 'cf7-antispam') );
 
 
 		// output the button to remove all the words into dictionary
@@ -183,7 +183,7 @@ class CF7_AntiSpam_Admin_Tools {
 			__('Use only if you need to reset the whole b8 dictionary.', 'cf7-antispam')
 		);
 		$url = wp_nonce_url( add_query_arg("action", "reset-dictionary", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
-		$html .= printf('<pre><button class="button" datahref="%s" onclick="confirmationAlert(this)">%s</button></pre>', esc_url( $url ), __('Reset b8 dictionary', 'cf7-antispam') );
+		$html .= printf('<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>', esc_url( $url ), __('Reset b8 dictionary', 'cf7-antispam') );
 
 		// output the button to rebuild b8 dictionary
 		$html .= printf('<hr/><h3>%s</h3><p>%s</p>',
@@ -191,7 +191,7 @@ class CF7_AntiSpam_Admin_Tools {
 			__('Reanalyze all the Flamingo inbound emails (you may need to reset dictionary before).', 'cf7-antispam')
 		);
 		$url = wp_nonce_url( add_query_arg("action", "rebuild-dictionary", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
-		$html .= printf('<pre><button class="button" datahref="%s" onclick="confirmationAlert(this)">%s</button></pre>', esc_url( $url ), __('Rebuild b8 dictionary', 'cf7-antispam') );
+		$html .= printf('<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>', esc_url( $url ), __('Rebuild b8 dictionary', 'cf7-antispam') );
 
 
 		// output the button to full reset cf7a
@@ -200,18 +200,12 @@ class CF7_AntiSpam_Admin_Tools {
 			__('Fully reinitialize cf7-antispam plugin database and options', 'cf7-antispam')
 		);
 		$url = wp_nonce_url( add_query_arg("action", "cf7a-full-reset", menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
-		$html .= printf('<pre><button class="button" datahref="%s" onclick="confirmationAlert(this)">%s</button></pre>', esc_url( $url ), __('FULL RESET', 'cf7-antispam') );
-
-
-		// the confirmation alert script
-		$html .= printf('<script>function confirmationAlert(e) { if (confirm("%s")) location.href = e.getAttribute("datahref"); }</script>', esc_html__('Are you sure?', 'cf7-antispam') );
+		$html .= printf('<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>', esc_url( $url ), __('FULL RESET', 'cf7-antispam') );
 
 
 		$html .= printf('</div>');
 
 		return $html;
-
-
 
 	}
 

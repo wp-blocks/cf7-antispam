@@ -554,7 +554,7 @@ class CF7_AntiSpam_filters {
 	public function flamingo_resend_column( $column, $post_id ) {
 		if ( 'resend' === $column ) {
 			$url = wp_nonce_url( add_query_arg("action", "cf7a_resend_".$post_id , menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce'  );
-			printf('<a class="button" href="%s" onclick="confirmationAlert(this)">%s</a>', $url , __('Resend Email', 'cf7-antispam') );
+			printf('<a class="button cf7a_alert" data-href="%s" data-message="%s">%s</a>', $url ,__('Are you sure?', 'cf7-antispam'), __('Resend Email', 'cf7-antispam'));
 		}
 	}
 
