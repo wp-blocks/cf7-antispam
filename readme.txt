@@ -203,9 +203,10 @@ Please flush cache after update this plugin! Thanks!
 * This is the first release
 
 == Screenshot ==
-1. the plugin options (1/3)
-2. the plugin options (2/3)
-3. the plugin options (3/3)
+1. Plugin options (1/4)
+2. Plugin options (2/4)
+3. Flamingo customizations (3/4)
+3. Dashboard widget (4/4)
 
 == copyright ==
 AntiSpam for Contact Form 7, Copyright 2021 Codekraft Studio
