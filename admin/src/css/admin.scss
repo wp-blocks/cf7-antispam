@@ -224,10 +224,18 @@ body.flamingo_page_flamingo_inbound {
     }
   }
 
-  .column-d8 {
-    width: 120px;
-    text-align: center;
+  .column {
+	&-d8 {
+	  width: 120px;
+	  text-align: center;
+	}
+
+	&-resend {
+	  width: 180px;
+	  text-align: right;
+	}
   }
+
 }
 
 // Animations
