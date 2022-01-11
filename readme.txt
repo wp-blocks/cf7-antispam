@@ -11,8 +11,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
-Antispam for Contact Form 7 is an anti-bot plugin for your contact form, that without boring you with configurations, block bots from flood your email inbox.
+Antispam for Contact Form 7 is a free anti-bot plugin for contact form 7, that without boring you with configurations, block bots from flood your email inbox.
 We use several in-page and off-page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called b8.
+CF7-AntiSpam adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such resending emails.
 
 == SETUP ==
 **Basic** - install & go! no action required to get the standard protection.
@@ -32,9 +33,9 @@ This is required for advanced text statistical analysis, without this b8 will CA
 - B8 statistical "Bayesian" spam filter
 
 ==Install Flamingo to unlock the spam manager!==
-Cf7A adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such as the one for sending emails back.
+Not using Flamingo? well i suggest you to install it, even if it is not essential. In this way from your wordpress installation you will be able to review emails and "re-teach" b8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
 And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation.
-So while activating CF7A all previous collected mail will be parsed and b8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
+While activating CF7A all previous collected mail will be parsed and b8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
 Notes:
 - On the right side of Flamingo inbound page i've added a new column that show the mail spamminess level
 - if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
@@ -121,11 +122,6 @@ After that the sender ip will be searched into *DNS-based Blackhole server* to f
 =What is b8? How it works?=
 
 b8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. b8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
-
-== Upgrade Notice ==
-
-= 0.3.0 =
-Please flush cache after update this plugin! Thanks!
 
 == Changelog ==
 
@@ -224,7 +220,7 @@ See the LICENSE file for more details.
 
 == TODOs ==
 * Geoip ban
-* CSV Export/import settings, banned ip
+* Banned ip and dictionary CSV Export/import settings
 * Remove mail duplicates if users sent multiple
 * Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
 * Cover with the antispam also the wordpress comment form and the login panel
