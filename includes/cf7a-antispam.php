@@ -501,6 +501,39 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
+	public function cf7a_flamingo_remove_honeypot( $result ) {
+
+		$options = get_option( 'cf7a_options', array() );
+
+		if ( isset( $options['check_honeypot'] ) && intval( $options['check_honeypot']) === 1 ) {
+
+			$submission = WPCF7_Submission::get_instance();
+
+			if ( ! $submission
+			     or ! $posted_data = $submission->get_posted_data() ) {
+				return true;
+			}
+
+			error_log(print_r($posted_data,true));
+
+			$fields = array();
+
+			foreach ( $posted_data as $key => $field ) {
+
+				// if a honeypot field was found into posted data delete it
+				if ( in_array($key, $options['honeypot_input_names']) && empty($field)) {
+					delete_post_meta( $result['flamingo_inbound_id'], '_field_' . $key );
+				} else {
+					$fields[$key] = null;
+				}
+			}
+
+			return update_post_meta($result['flamingo_inbound_id'], '_fields', $fields );
+		}
+
+		return true;
+	}
+
 
 	// FLAMINGO CUSTOMIZATION
 

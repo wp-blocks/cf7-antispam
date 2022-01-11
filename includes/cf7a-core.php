@@ -181,9 +181,11 @@ class CF7_AntiSpam {
 		// the spam filter
 		add_filter( 'wpcf7_spam', array($plugin_antispam, 'cf7a_spam_filter'), 8, 1 );
 
-		// if flamingo is defined the mail will be analyzed after flamingo has stored
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
+			// if flamingo is defined the mail will be analyzed after flamingo has stored
 			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_store_additional_data' ), 11, 1 );
+			// remove honeypot fields before store into database
+			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_remove_honeypot' ), 12, 1 );
 		}
 
 		if (is_admin()) {
