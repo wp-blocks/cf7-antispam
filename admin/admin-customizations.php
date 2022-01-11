@@ -40,6 +40,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_auto_blacklist' // Section
 		);
 
+		// Settings check_time
+		add_settings_field( 'max_attempts', // ID
+			__('Mail blocked before Ban', 'cf7-antispam'), // Title
+			array( $this, 'cf7a_max_attempts' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_auto_blacklist' // Section
+		);
+
 		// unban after
 		add_settings_field( 'unban_after', // ID
 			__('Automatic Unban', 'cf7-antispam'), // Title
@@ -591,6 +599,9 @@ class CF7_AntiSpam_Admin_Customizations {
             $new_input['bad_ip_list'] = explode( "\r\n", sanitize_textarea_field( $input['bad_ip_list'] ) );
         }
 
+        // max attempts before ban
+		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ?: 2;
+
         // auto-ban
         $new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
 
@@ -753,6 +764,12 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<input type="checkbox" id="autostore_bad_ip" name="cf7a_options[autostore_bad_ip]" %s />',
 			isset( $this->options['autostore_bad_ip'] ) && $this->options['autostore_bad_ip'] == 1 ? 'checked="true"' : ''
 		);
+	}
+
+	public function cf7a_max_attempts() {
+		printf(
+			'<input type="number" id="max_attempts" name="cf7a_options[max_attempts]" value="%s" step="1" />',
+			isset( $this->options['max_attempts'] ) ? esc_attr( $this->options['max_attempts']) : 2 );
 	}
 
 	public function cf7a_unban_after_callback() {
