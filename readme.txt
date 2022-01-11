@@ -4,7 +4,7 @@ Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, 
 Requires at least: 5.1
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 0.2.7
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,7 +32,7 @@ This is required for advanced text statistical analysis, without this b8 will CA
 - B8 statistical "Bayesian" spam filter
 
 ==Install Flamingo to unlock the spam manager!==
-Cf7A adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system.
+Cf7A adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such as the one for sending emails back.
 And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation.
 So while activating CF7A all previous collected mail will be parsed and b8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
 Notes:
@@ -124,18 +124,20 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 
 == Upgrade Notice ==
 
-= 0.2.8 =
+= 0.3.0 =
 Please flush cache after update this plugin! Thanks!
 
 == Changelog ==
 
-= 0.2.8 =
+= 0.3.0 =
+* Dashboard widget to display the email received of the last week
+* Resend email from Flamingo UI (works with mail received after this update)
+* CF7-AntiSpam version check enhanced (but you will probably have to flush cache anyway when you update this plugin)
+* Honeyform enhancements
 * Enhanced activation script
+* Adds an option to set the number of attempt before ban
 * Cron unban fix
 * Referrer verify (under bad ip checks)
-* CF7-AntiSpam version check enhanced (but you will probably have to flush cache anyway when you update this plugin)
-* Dashboard widget to display the email received of the last week
-* Resend email from Flamingo UI
 
 = 0.2.7 =
 * avoid to parse multiple times the stored flamingo messages
@@ -222,14 +224,14 @@ See the LICENSE file for more details.
 == TODOs ==
 * Geoip ban
 * CSV Export/import settings, banned ip
-* Resend emails if not were spam, remove mail duplicates if users sent multiple
+* Remove mail duplicates if users sent multiple
 * Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
 * Cover with the antispam also the wordpress comment form and the login panel
-* Dashboard widget with flamingo stats
 
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
 * b8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
+* chart.js https://www.chartjs.org/, © 2021 Chart.js [contributors](https://github.com/chartjs/Chart.js/graphs/contributors), [MIT](https://github.com/chartjs/Chart.js/blob/master/LICENSE.md)
 * Sudden Shower in the Summer, Public domain, Wikimedia Commons https://commons.wikimedia.org/wiki/File:Sudden_Shower_in_the_Summer_(5759500422).jpg
 
 == DNSBL servers privacy policies ==
