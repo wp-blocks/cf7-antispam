@@ -125,6 +125,9 @@ window.onload = function() {
 		// how append bot fingerprint into hidden fields
 		const cf7a_version_input = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'version]');
 
+		// get the fake field and skip it
+		if (wpcf7Form.querySelector('form').getAttribute('autocomplete')) break;
+
 		// then set the cf7 antispam version field
 		cf7a_version_input.setAttribute("value", cf7a_version);
 
