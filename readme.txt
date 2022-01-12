@@ -11,22 +11,23 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
-Antispam for Contact Form 7 is a free anti-bot plugin for contact form 7, that without boring you with configurations, block bots from flood your email inbox.
+Antispam for Contact Form 7 is a free anti-bot plugin for Contact Form 7, that without boring you with configurations, block bots from flood your email inbox.
 We use several in-page and off-page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called b8.
-CF7-AntiSpam adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such resending emails.
+CF7-AntiSpam adds some functionalities also to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such a dashboard widget or a function to resend emails.
 
 == SETUP ==
 **Basic** - install & go! no action required to get the standard protection.
-**Advanced** - For each contact form add 'flamingo_message: "[your-message]"' in the same way you do for [flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/) to set the field to be checked as a text message.
-This is required for advanced text statistical analysis, without this b8 will CANNOT be enabled.
+**Advanced** - CF7A needs to know the input message field of your form to analyze properly the email content with its dictionary.
+So, for each contact form please add 'flamingo_message: "[your-message]"' in the same way you do for [flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/).
+This is required for advanced text statistical analysis, without this B8 filter will be disabled.
 
 ==Antispam Available Test==
-- it is verified that the mail is sent through the cf7 module protecting the form with a encrypted unique hash
+- It is verified that the mail is sent through the cf7 module protecting the form with a encrypted unique hash
 - Browser Fingerprinting (check if is a real browser or a bot that camouflaging as such)
+- Blacklist bots after a customizable number of attempts (with the possibility to schedule unban)
 - Time elapsed (a form is not filled out in a few seconds as bots do)
-- IP ban list (you can list IP's to be banned or parts thereof, ipv6 compatible)
-- Prohibited words in message/email
-- Prohibited user agent
+- IP check (you set a list of banned IP's, ipv6 compatible)
+- Prohibited words in message/email and user agent
 - DNS Blacklists
 - Honeypot
 - Honeyform

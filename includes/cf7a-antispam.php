@@ -514,8 +514,6 @@ class CF7_AntiSpam_filters {
 				return true;
 			}
 
-			error_log(print_r($posted_data,true));
-
 			$fields = array();
 
 			foreach ( $posted_data as $key => $field ) {
@@ -570,12 +568,12 @@ class CF7_AntiSpam_filters {
         }
 
         if ( ! empty( $disalloweds ) ) {
-            foreach ( $disalloweds as $k => $disallowed ) {
-                if ( in_array( $disallowed, $languages ) ) return $languages[ $k ];
+            foreach ( $disalloweds as $disallowed ) {
+                if ( in_array( $disallowed, $languages ) ) return $disallowed;
             }
         }
 
-        return false;
+        return !empty( $alloweds ) ? implode("," , $languages) : false;
     }
 
     public function cf7a_log( $string, $log_level = 0 ) {
@@ -879,13 +877,14 @@ class CF7_AntiSpam_filters {
                     if ( !array_intersect($languages['browser'], $languages['accept']) ) {
 
                     	// checks if http accept language is the same of javascript navigator.languages
-                        $fails[] = 'languages detected not coherent';
+                        $fails[] = 'languages detected not coherent ('.implode("-",$languages['browser']).' vs '.implode("-",$languages['accept']).')';
 
                     } else {
 
 	                    // check if the language is allowed and if is disallowed
 	                    $client_languages = array_unique( array_merge($languages['browser'], $languages['accept'] ) );
-                        if ( false !== ($language_disallowed = $this->cf7a_check_language_disallowed( $client_languages, $languages_disallowed, $languages_allowed ) ) ) {
+
+                        if ( false !== ( $language_disallowed = $this->cf7a_check_language_disallowed( $client_languages, $languages_disallowed, $languages_allowed ) ) ) {
                             $fails[] = "language disallowed ($language_disallowed)";
                         }
 

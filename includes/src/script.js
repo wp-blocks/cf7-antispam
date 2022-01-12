@@ -126,7 +126,7 @@ window.onload = function() {
 		const cf7a_version_input = hiddenInputsContainer.querySelector('input[name=' + cf7a_prefix + 'version]');
 
 		// get the fake field and skip it
-		if (wpcf7Form.querySelector('form').getAttribute('autocomplete')) break;
+		if (wpcf7Form.querySelector('form').getAttribute('autocomplete')) continue;
 
 		// then set the cf7 antispam version field
 		cf7a_version_input.setAttribute("value", cf7a_version);
