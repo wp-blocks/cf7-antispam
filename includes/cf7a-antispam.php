@@ -259,6 +259,95 @@ class CF7_AntiSpam_filters {
 	}
 
 
+	// GEOIP
+    public function cf7a_geoip_update_db($license = CF7ANTISPAM_GEOIP_KEY) {
+
+	    if ( ! extension_loaded( 'zlib' ) || ! extension_loaded( 'phar' ) ) return __('zlib and phar php modules are mandatory to unpack database.', 'cf7-antispam');
+
+	    $license = urlencode($license);
+	    $upload_dir = wp_upload_dir();
+
+		$database_type =  'GeoLite2-Country';
+		$filename = 'cf7a_db_country';
+		$ext = ".tar.gz";
+
+		$download_url = 'https://download.maxmind.com/app/geoip_download?edition_id='.$database_type.'&license_key='.$license.'&suffix=tar.gz';
+
+		$destination_uri = $upload_dir['basedir'] . '/'. sanitize_file_name($filename.'.mmdb');
+
+	    $file_content = '';
+
+		// Download
+	    if ( ( $stream = fopen( $download_url , 'r' ) ) !== false ) {
+		    while ( ! feof( $stream ) ) {
+			    $file_content .= fgets( $stream );
+		    }
+		    fclose( $stream );
+	    } else {
+		    return __( CF7ANTISPAM_PREFIX . " unable to download GEOIP DB {$download_url}", 'cf7-antispam');
+	    }
+
+	    if (!empty($file_content)) {
+
+		    if (file_exists($destination_uri . $ext)) wp_delete_file( $destination_uri . $ext );
+
+		    if (!file_put_contents( $destination_uri . $ext , $file_content ))
+			    return sprintf(__('Database could not be written (%s).', 'cf7-antispam'), $upload_dir['basedir'] . $filename.'.mmdb');
+
+			// decompress
+		    $p = new PharData( $destination_uri . $ext );
+
+		    $temp_file = $p->current()->getFilename() ."/$database_type.mmdb";
+
+		    $p->extractTo(
+			    dirname($destination_uri),
+			    $temp_file,
+			    true
+		    );
+
+		    if ( copy(
+			    $upload_dir['basedir'] . '/' . $temp_file,
+			    $destination_uri
+		    )) {
+		    	// remove original compressed file
+			    wp_delete_file( $destination_uri . ".tar.gz" );
+			    // remove unpacked
+			    wp_delete_file( $upload_dir['basedir'] . '/' . $temp_file );
+			    rmdir($upload_dir['basedir'] . '/' . $p->current()->getFilename() . '/');
+
+			    return true;
+		    } else {
+			    return __( CF7ANTISPAM_PREFIX . "GEOIP DB copy failed {$download_url}", 'cf7-antispam');
+		    }
+	    }
+
+		return false;
+
+	}
+
+	public function cf7a_geoip_schedule_update() {
+		$next_event = wp_next_scheduled( 'cf7a_geoip_update_db' );
+		if ( !$next_event ) {
+			$next_event = strtotime('first day of next month 23:59:00');
+			wp_schedule_single_event($next_event, 'cf7a_geoip_update_db');
+		}
+
+		wp_schedule_single_event( time(), 'cf7a_geoip_update_db', array(false) );
+	}
+
+	public function cf7a_geoip_check_ip($ip) {
+
+		if ( ! extension_loaded( 'phar' ) ) return "no phar";
+
+		require CF7ANTISPAM_PLUGIN_DIR.'/vendor/GeoIP2/geoip2.phar';
+
+		// This creates the Reader object, which should be reused across lookups.
+		$reader = new GeoIp2\Database\Reader(wp_upload_dir()["basedir"].'/cf7a_db_country.mmdb');
+
+		return $reader->country($ip);
+	}
+
+
 	// Database management Flamingo
 
 	public function cf7a_clean_blacklist() {
