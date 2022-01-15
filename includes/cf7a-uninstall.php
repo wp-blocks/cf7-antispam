@@ -22,6 +22,10 @@ class CF7_AntiSpam_Uninstaller {
 
 			$wpdb->query( "DELETE FROM " . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
 
+			// unschedule cf7a events
+			$timestamp = wp_next_scheduled( 'cf7a_cron' );
+			if ($timestamp) wp_unschedule_event( $timestamp, 'cf7a_cron' );
+
 			error_log(print_r(CF7ANTISPAM_LOG_PREFIX.'plugin uninstalled',true));
 			return true;
 
