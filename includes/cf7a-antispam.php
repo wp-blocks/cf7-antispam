@@ -10,7 +10,7 @@ class CF7_AntiSpam_filters {
 	public function __construct() {
 		$this->b8 = $this->cf7a_b8_init();
 
-		add_action( 'cf7a_cron', array($this, 'cron_unban') );
+		add_action( 'cf7a_cron', array($this, 'cf7a_cron_unban') );
 	}
 
 
@@ -250,7 +250,7 @@ class CF7_AntiSpam_filters {
 
 	}
 
-	public function cron_unban() {
+	public function cf7a_cron_unban() {
 		global $wpdb;
 		$rows_updated = $wpdb->query( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
 		$unbanned = $wpdb->query( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0" );

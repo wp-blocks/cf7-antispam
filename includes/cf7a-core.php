@@ -69,13 +69,7 @@ class CF7_AntiSpam {
 		// the i18n
 		$this->set_locale();
 
-		if ( empty($this->options['cf7a_version']) || $this->version !== $this->options['cf7a_version'] ) {
-
-			add_action('admin_notices', function () {
-				printf( '<div class="notice notice-warning"><p>%s</p></div>',
-					esc_html__('CF7 AntiSpam updated successful! ⚠️Please flush cache to refresh hidden form data', 'cf7-antispam')
-				);
-			});
+		if ( empty( $this->options['cf7a_version'] ) || $this->version !== $this->options['cf7a_version'] ) {
 
 			// the php files
 			$this->update();

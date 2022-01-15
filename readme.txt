@@ -4,22 +4,22 @@ Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, 
 Requires at least: 5.1
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
-Antispam for Contact Form 7 is a free anti-bot plugin for Contact Form 7, that without boring you with configurations, block bots from flood your email inbox.
-We use several in-page and off-page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called b8.
+Antispam for Contact Form 7 is a free plugin for Contact Form 7, that without boring you with configurations, block bots from flood your email inbox.
+CF7A use several in and off page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called b8.
 CF7-AntiSpam adds some functionalities also to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such a dashboard widget or a function to resend emails.
 
 == SETUP ==
 **Basic** - install & go! no action required to get the standard protection.
-**Advanced** - CF7A needs to know the input message field of your form to analyze properly the email content with its dictionary.
-So, for each contact form please add 'flamingo_message: "[your-message]"' in the same way you do for [flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/).
-This is required for advanced text statistical analysis, without this B8 filter will be disabled.
+**Advanced** - CF7A needs to parse the input message field of your form to analyze properly the email content with its dictionary.
+So the only thing you need to do is add to (for each contact form) 'flamingo_message: "[your-message]"' in the same way you do for [flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/).
+This is **required for advanced text statistical analysis**, without this B8 filter will couldn't be enabled.
 
 ==Antispam Available Test==
 - It is verified that the mail is sent through the cf7 module protecting the form with a encrypted unique hash
@@ -221,6 +221,7 @@ See the LICENSE file for more details.
 
 == TODOs ==
 * Geoip ban
+* Enhance user agent specific checks (especially for apple devices, lately bots are using this user agent to try to escape the scans)
 * Banned ip and dictionary CSV Export/import settings
 * Remove mail duplicates if users sent multiple
 * Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
