@@ -124,6 +124,31 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 
+		// Section GEOIP
+		add_settings_section( 'cf7a_check_geoip', // ID
+			__( 'GeoIP Check', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_check_geoip' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings enable geoip
+		add_settings_field( 'check_geoip', // ID
+			__( 'Enable GeoIP', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_enable_geoip_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_geoip' // Section
+		);
+
+		// The maxmind update key (unless you have defined it). Adds cron job to keep database updated;
+		// https://www.maxmind.com/en/geolite2/signup?lang=en
+		add_settings_field( 'geoip_dbkey', // ID
+			__( 'MaxMind Update Key', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_geoip_key_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_geoip' // Section
+		);
+
+
         // Section Language
         add_settings_section( 'cf7a_check_language', // ID
             __( 'Language Checks', 'cf7-antispam' ), // Title
@@ -521,6 +546,16 @@ class CF7_AntiSpam_Admin_Customizations {
         printf( '<p>' . esc_html__( "This test the submission time", 'cf7-antispam' ) . '</p>' );
     }
 
+	public function cf7a_check_geoip() {
+		printf(
+			'<p>' . esc_html__( "Detect user location with MaxMind GeoIP2 database", 'cf7-antispam' ) . '</p>' .
+			'<p>' . esc_html__( "You need to agree at ", 'cf7-antispam' ) .
+			' <a href="https://www.maxmind.com/en/geolite2/eula">'. esc_html__( "GeoLite2 End User License Agreement", 'cf7-antispam' ) .'</a> '.
+			esc_html__( "and signed up for", 'cf7-antispam' ) .
+			' <a href="https://www.maxmind.com/en/geolite2/signup">' . esc_html__( "GeoLite2 Downloadable Databases", 'cf7-antispam' ) . '</a></p>'
+		);
+	}
+
     public function cf7a_check_language() {
         printf( '<p>' . esc_html__( "Check the user browser language", 'cf7-antispam' ) . '</p>' );
     }
@@ -582,6 +617,27 @@ class CF7_AntiSpam_Admin_Customizations {
         $new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
         $new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : ( 60 * 60 * 25 ); // a day + 1 hour of timeframe to send the mail seem fine :)
 
+		$check_geoip = isset( $input['check_geoip'] ) ? 1 : 0;
+
+		// if check_geoip has changed we need also to set or unset the cron download
+		$geo = new CF7_Antispam_geoip;
+
+		$download_geoip_db = $geo->cf7a_maybe_download_geoip_db();
+
+		if ( $check_geoip > 0 && $download_geoip_db ){
+
+			$geo->cf7a_geoip_schedule_update(true);
+
+		}  else if ( $check_geoip === 0 ) {
+
+			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db', array( false ) );
+			if ($timestamp) wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
+
+		}
+
+		$new_input['check_geoip'] = $check_geoip;
+		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
+
         // browser languages
         $new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
         if ( !empty( $input['languages']['allowed'] ) ) {
@@ -611,15 +667,17 @@ class CF7_AntiSpam_Admin_Customizations {
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
 				// delete previous scheduled events
-				$timestamp = wp_next_scheduled( 'cf7a_cron' );
-				wp_unschedule_event( $timestamp, 'cf7a_cron' );
-				// add the new scheduled event
+				$timestamp = wp_next_scheduled( 'cf7a_cron', array( false ) );
+				if ($timestamp) wp_unschedule_event( $timestamp, 'cf7a_cron' );
+
 				wp_schedule_event( time(), $new_input['unban_after'], 'cf7a_cron' );
+				// add the new scheduled event
 			}
+
 		} else {
 			// Get the timestamp for the next event.
 			$timestamp = wp_next_scheduled( 'cf7a_cron', array( false ) );
-			wp_unschedule_event( $timestamp, 'cf7a_cron' );
+			if ($timestamp) wp_unschedule_event( $timestamp, 'cf7a_cron' );
 			$new_input['unban_after'] = 'disabled';
 		}
 
@@ -815,6 +873,14 @@ class CF7_AntiSpam_Admin_Customizations {
         printf( '<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />', isset( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : 3600 * 48 );
     }
 
+
+	public function cf7a_enable_geoip_callback() {
+		printf( '<input type="checkbox" id="check_geoip" name="cf7a_options[check_geoip]" %s />', isset( $this->options['check_geoip'] ) && $this->options['check_geoip'] == 1 ? 'checked="true"' : '' );
+	}
+	public function cf7a_geoip_key_callback() {
+		$enabled = (empty(CF7ANTISPAM_GEOIP_KEY)) ? '' : ' disabled';
+		printf( '<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>', isset( $this->options['geoip_dbkey'] ) && !empty($this->options['geoip_dbkey']) ? 'value="'.esc_textarea($this->options['geoip_dbkey']).'"' : '', $enabled );
+	}
 
     public function cf7a_check_browser_language_callback() {
         printf( '<input type="checkbox" id="check_language" name="cf7a_options[check_language]" %s />', isset( $this->options['check_language'] ) && $this->options['check_language'] == 1 ? 'checked="true"' : '' );
