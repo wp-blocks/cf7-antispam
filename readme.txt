@@ -237,7 +237,7 @@ See the LICENSE file for more details.
 == MaxMind GeoIP2 ==
 This plugin on demand can enable GeoLite2 created by MaxMind, available from [https://www.maxmind.com](https://www.maxmind.com)
 While enabled you **have to mention it in the privacy policy** of your site!
-* GeoIP2 databases [GeoLite2 Country](https://www.maxmind.com/en/accounts/662306/geoip/downloads)
+* GeoIP2 databases [GeoLite2 Country](https://www.maxmind.com/en/accounts/current/geoip/downloads)
 
 == DNSBL servers privacy policies ==
 * dnsbl-1.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
