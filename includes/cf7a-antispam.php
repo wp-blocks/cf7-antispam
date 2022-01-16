@@ -1,8 +1,199 @@
 <?php
 
+class CF7_Antispam_geoip {
+
+	/**
+	 * The GeoIP2 db license key
+	 *
+	 * @since    0.3.1
+	 * @access   private
+	 * @var      string    $license    license key
+	 */
+	private $license;
+
+
+	/**
+	 * The GeoIP2 reader
+	 *
+	 * @since    0.3.1
+	 * @access   private
+	 * @var      string    $geo    the GeoIP class
+	 */
+	private $geo;
+
+	/**
+	 * The options of this plugin.
+	 *
+	 * @since    0.3.1
+	 * @access   private
+	 * @var      array    $options    options of this plugin.
+	 */
+	private $options;
+
+	/**
+	 * CF7_AntiSpam_filters constructor.
+	 * @since    0.3.1
+	 *
+	 */
+	public function __construct() {
+
+		// zlib and phar php modules are mandatory to unpack database.
+		if ( ! extension_loaded( 'zlib' ) || ! extension_loaded( 'phar' ) ) return false;
+
+		// the plugin options
+		$this->options = CF7_AntiSpam::get_options();
+
+		// the GeoIP2 license key
+		$this->license = $this->cf7a_geoip_set_license();
+
+		// init the geocoder
+		$this->geo = ( $this->cf7a_can_enable_geoip() ) ? $this->cf7a_geo_init() : false;
+
+		add_action( 'cf7a_geoip_update_db', array( $this, 'cf7a_geoip_download_database' ) ) ;
+	}
+
+	private function cf7a_geoip_set_license() {
+		if (CF7ANTISPAM_GEOIP_KEY)
+			return CF7ANTISPAM_GEOIP_KEY;
+		else if (!empty($this->options['geoip_dbkey']))
+			return $this->options['geoip_dbkey'];
+
+		return false;
+	}
+
+	public function cf7a_can_enable_geoip() {
+		$last_db_update = get_option('cf7a_geodb_update');
+		return ( $last_db_update && $this->license !== false );
+	}
+
+	private function cf7a_geo_init() {
+
+		require CF7ANTISPAM_PLUGIN_DIR.'/vendor/GeoIP2/geoip2.phar';
+
+		// This creates the Reader object, which should be reused across lookups.
+		return new GeoIp2\Database\Reader(wp_upload_dir()["basedir"].'/GeoLite2-Country.mmdb');
+
+	}
+
+	public function cf7a_maybe_download_geoip_db() {
+		$last_db_update = get_option('cf7a_geodb_update');
+		return ( !$last_db_update && $this->license !== false );
+	}
+
+	// GEOIP
+
+	public function cf7a_geoip_download_database() {
+
+		error_log( "GeoIP DB download start" );
+
+		$this->license = urlencode($this->license);
+
+		$upload_dir = wp_upload_dir();
+
+		$database_type = 'GeoLite2-Country';
+		$filename = $database_type;
+		$ext = ".tar.gz";
+
+		$download_url = 'https://download.maxmind.com/app/geoip_download?edition_id='.$database_type.'&license_key='.$this->license.'&suffix=tar.gz';
+
+		$destination_uri = $upload_dir['basedir'] . '/'. sanitize_file_name($filename.'.mmdb');
+
+		$file_content = '';
+
+		// TODO: in case it fails we need to retry earlier than the month after
+		$this->cf7a_geoip_schedule_update();
+
+		// Download
+		if ( ( $stream = fopen( $download_url , 'r' ) ) !== false ) {
+			while ( ! feof( $stream ) ) {
+				$file_content .= fgets( $stream );
+			}
+			fclose( $stream );
+		} else {
+			error_log( __( CF7ANTISPAM_PREFIX . " unable to download GEOIP DB {$download_url}", 'cf7-antispam') );
+			return false;
+		}
+
+		if (!empty($file_content)) {
+
+			if (file_exists($destination_uri . $ext)) wp_delete_file( $destination_uri . $ext );
+
+			if (!file_put_contents( $destination_uri . $ext , $file_content )) {
+				error_log( sprintf( __( 'Database could not be written (%s).', 'cf7-antispam' ), $upload_dir['basedir'] . $filename . '.mmdb' ) );
+				return false;
+			}
+
+			// decompress
+			$p = new PharData( $destination_uri . $ext );
+
+			$temp_file = $p->current()->getFilename() ."/$database_type.mmdb";
+
+			$p->extractTo(
+				dirname($destination_uri),
+				$temp_file,
+				true
+			);
+
+			if ( copy(
+				$upload_dir['basedir'] . '/' . $temp_file,
+				$destination_uri
+			)) {
+				// remove original compressed file
+				wp_delete_file( $destination_uri . ".tar.gz" );
+				// remove unpacked
+				wp_delete_file( $upload_dir['basedir'] . '/' . $temp_file );
+				rmdir($upload_dir['basedir'] . '/' . $p->current()->getFilename() . '/');
+
+				update_option( "cf7a_geodb_update", time() );
+
+				return true;
+
+			} else {
+				error_log( __( CF7ANTISPAM_PREFIX . "GEOIP DB copy failed {$download_url}", 'cf7-antispam') );
+				return false;
+			}
+		}
+
+		return false;
+
+	}
+
+	public function cf7a_geoip_schedule_update($now = false) {
+
+		if ($now) $this->cf7a_geoip_download_database();
+
+		wp_clear_scheduled_hook('cf7a_geoip_update_db');
+
+		$next_event = strtotime('first day of next month 23:59:00');
+
+		wp_schedule_single_event( $next_event, 'cf7a_geoip_update_db', array('Geoip_update_db') );
+
+	}
+
+	public function cf7a_geoip_check_ip($ip) {
+
+		try {
+
+			$ip_data = $this->geo->country($ip);
+
+			return array(
+				'continent' => $ip_data->continent->code,
+				'continent_name' => $ip_data->continent->name,
+				'country' => $ip_data->country->isoCode,
+				'country_name' => $ip_data->country->name,
+			);
+		} catch (Exception $e) {
+			return array(
+				'error' => $e->getMessage()
+			);
+		}
+	}
+}
+
 class CF7_AntiSpam_filters {
 
 	private $b8;
+	private $geoip;
 
 	/**
 	 * CF7_AntiSpam_filters constructor.
@@ -257,96 +448,6 @@ class CF7_AntiSpam_filters {
 		error_log( CF7ANTISPAM_LOG_PREFIX . "Unbanned $unbanned users (rows updated $rows_updated)" );
 		return true;
 	}
-
-
-	// GEOIP
-    public function cf7a_geoip_update_db($license = CF7ANTISPAM_GEOIP_KEY) {
-
-	    if ( ! extension_loaded( 'zlib' ) || ! extension_loaded( 'phar' ) ) return __('zlib and phar php modules are mandatory to unpack database.', 'cf7-antispam');
-
-	    $license = urlencode($license);
-	    $upload_dir = wp_upload_dir();
-
-		$database_type =  'GeoLite2-Country';
-		$filename = 'cf7a_db_country';
-		$ext = ".tar.gz";
-
-		$download_url = 'https://download.maxmind.com/app/geoip_download?edition_id='.$database_type.'&license_key='.$license.'&suffix=tar.gz';
-
-		$destination_uri = $upload_dir['basedir'] . '/'. sanitize_file_name($filename.'.mmdb');
-
-	    $file_content = '';
-
-		// Download
-	    if ( ( $stream = fopen( $download_url , 'r' ) ) !== false ) {
-		    while ( ! feof( $stream ) ) {
-			    $file_content .= fgets( $stream );
-		    }
-		    fclose( $stream );
-	    } else {
-		    return __( CF7ANTISPAM_PREFIX . " unable to download GEOIP DB {$download_url}", 'cf7-antispam');
-	    }
-
-	    if (!empty($file_content)) {
-
-		    if (file_exists($destination_uri . $ext)) wp_delete_file( $destination_uri . $ext );
-
-		    if (!file_put_contents( $destination_uri . $ext , $file_content ))
-			    return sprintf(__('Database could not be written (%s).', 'cf7-antispam'), $upload_dir['basedir'] . $filename.'.mmdb');
-
-			// decompress
-		    $p = new PharData( $destination_uri . $ext );
-
-		    $temp_file = $p->current()->getFilename() ."/$database_type.mmdb";
-
-		    $p->extractTo(
-			    dirname($destination_uri),
-			    $temp_file,
-			    true
-		    );
-
-		    if ( copy(
-			    $upload_dir['basedir'] . '/' . $temp_file,
-			    $destination_uri
-		    )) {
-		    	// remove original compressed file
-			    wp_delete_file( $destination_uri . ".tar.gz" );
-			    // remove unpacked
-			    wp_delete_file( $upload_dir['basedir'] . '/' . $temp_file );
-			    rmdir($upload_dir['basedir'] . '/' . $p->current()->getFilename() . '/');
-
-			    return true;
-		    } else {
-			    return __( CF7ANTISPAM_PREFIX . "GEOIP DB copy failed {$download_url}", 'cf7-antispam');
-		    }
-	    }
-
-		return false;
-
-	}
-
-	public function cf7a_geoip_schedule_update() {
-		$next_event = wp_next_scheduled( 'cf7a_geoip_update_db' );
-		if ( !$next_event ) {
-			$next_event = strtotime('first day of next month 23:59:00');
-			wp_schedule_single_event($next_event, 'cf7a_geoip_update_db');
-		}
-
-		wp_schedule_single_event( time(), 'cf7a_geoip_update_db', array(false) );
-	}
-
-	public function cf7a_geoip_check_ip($ip) {
-
-		if ( ! extension_loaded( 'phar' ) ) return "no phar";
-
-		require CF7ANTISPAM_PLUGIN_DIR.'/vendor/GeoIP2/geoip2.phar';
-
-		// This creates the Reader object, which should be reused across lookups.
-		$reader = new GeoIp2\Database\Reader(wp_upload_dir()["basedir"].'/cf7a_db_country.mmdb');
-
-		return $reader->country($ip);
-	}
-
 
 	// Database management Flamingo
 
