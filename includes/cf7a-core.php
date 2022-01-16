@@ -176,6 +176,7 @@ class CF7_AntiSpam {
 	 */
 	private function load_admin() {
 
+		// the spam filter
 		$plugin_antispam = new CF7_AntiSpam_filters();
 
 		// the spam filter
@@ -190,6 +191,10 @@ class CF7_AntiSpam {
 
 		if (is_admin()) {
 
+			// the GeoIP2 database
+			new CF7_Antispam_geoip();
+
+			// the admin area
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
