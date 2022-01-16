@@ -199,7 +199,10 @@ class CF7_AntiSpam_filters {
 	 * CF7_AntiSpam_filters constructor.
 	 */
 	public function __construct() {
+
 		$this->b8 = $this->cf7a_b8_init();
+
+		$this->geoip = new CF7_Antispam_geoip();
 
 		add_action( 'cf7a_cron', array($this, 'cron_unban') );
 	}
@@ -1081,6 +1084,22 @@ class CF7_AntiSpam_filters {
                     }
 
                 }
+
+
+	            if ( $this->geoip && intval( $options['check_geoip'] ) == 1 ) {
+
+		            try {
+			            $geoip_data = $this->geoip->cf7a_geoip_check_ip($remote_ip);
+
+			            if ( !isset($geoip_data['error']) && false !== ( $country_disallowed = $this->cf7a_check_language_disallowed( array(strtolower($geoip_data['continent']),strtolower($geoip_data['country'])), $languages_disallowed, $languages_allowed ) ) ) {
+				            $reason['language'] = 'GEOIP:'.$geoip_data['continent'].",".$geoip_data['country'];
+				            $fails[] = "GeoIP country disallowed ($country_disallowed)";
+			            }
+		            } catch (Exception $e) {
+			            $this->cf7a_log("unable to check geoip for $remote_ip - " . $e->getMessage(), 1);
+		            }
+
+	            }
 
                 if ( !empty( $fails ) ) {
                     $spam_score += $score_warn;
