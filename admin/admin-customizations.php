@@ -548,11 +548,12 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_check_geoip() {
 		printf(
-			'<p>' . esc_html__( "Detect user location with MaxMind GeoIP2 database", 'cf7-antispam' ) . '</p>' .
-			'<p>' . esc_html__( "You need to agree at ", 'cf7-antispam' ) .
+			'<p>' . esc_html__( "Detect user location using MaxMind GeoIP2 database.", 'cf7-antispam' ) . '</p>' .
+			'<p>' . esc_html__( "In order to enable this functionality you need to agree at  ", 'cf7-antispam' ) .
 			' <a href="https://www.maxmind.com/en/geolite2/eula">'. esc_html__( "GeoLite2 End User License Agreement", 'cf7-antispam' ) .'</a> '.
-			esc_html__( "and signed up for", 'cf7-antispam' ) .
-			' <a href="https://www.maxmind.com/en/geolite2/signup">' . esc_html__( "GeoLite2 Downloadable Databases", 'cf7-antispam' ) . '</a></p>'
+			esc_html__( "and sign up ", 'cf7-antispam' ) .
+			' <a href="https://www.maxmind.com/en/geolite2/signup">' . esc_html__( "GeoLite2 Downloadable Databases", 'cf7-antispam' ) . '</a></p>'.
+			'<p>' . esc_html__( "With the key obtained the CF7-Antispam will be able to automatically download every month the updated GeoIP Database. ", 'cf7-antispam' ) . '</p>'
 		);
 	}
 
@@ -878,7 +879,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf( '<input type="checkbox" id="check_geoip" name="cf7a_options[check_geoip]" %s />', isset( $this->options['check_geoip'] ) && $this->options['check_geoip'] == 1 ? 'checked="true"' : '' );
 	}
 	public function cf7a_geoip_key_callback() {
-		$enabled = (empty(CF7ANTISPAM_GEOIP_KEY)) ? '' : ' disabled';
+		$enabled = (empty(CF7ANTISPAM_GEOIP_KEY)) ? '' : ' disabled placeholder="KEY provided"';
 		printf( '<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>', isset( $this->options['geoip_dbkey'] ) && !empty($this->options['geoip_dbkey']) ? 'value="'.esc_textarea($this->options['geoip_dbkey']).'"' : '', $enabled );
 	}
 
