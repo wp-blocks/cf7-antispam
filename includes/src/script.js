@@ -39,6 +39,7 @@ window.onload = function() {
 	// as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
 	const ua = navigator.userAgent;
 
+	// holds the object with the tested props
 	let tests = {
 		"timezone": Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
 		"platform": navigator.platform ?? null,
@@ -80,7 +81,7 @@ window.onload = function() {
 		tests.isAndroid = true;
 	}
 
-	if ( tests.isIos || tests.isAndroid ) tests.touch = testTouch();
+	if ( tests.isIos || tests.isAndroid ) tests.touch = () => testTouch;
 
 	return tests;
 	};
