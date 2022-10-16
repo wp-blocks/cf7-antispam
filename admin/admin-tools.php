@@ -235,6 +235,25 @@ class CF7_AntiSpam_Admin_Tools {
 				htmlentities(print_r($options, true))
 			);
 
+			try {
+			$geoip = new CF7_Antispam_geoip();
+				if ($geoip) {
+					$server_data = $geoip->cf7a_geoip_check_ip($_SERVER['SERVER_ADDR']);
+
+					if (empty($server_data)) $server_data = 'Unable to retrieve geoip information for '.$_SERVER['SERVER_ADDR'];
+
+					$html .= printf('<p>%s</p><pre>%s</pre>',
+						__('The Server GeoIP information', 'cf7-antispam'),
+						print_r($server_data, true)
+					);
+				}
+			} catch (Exception $e) {
+				$html .= printf('<p>%s</p><pre>%s</pre>',
+					__('GeoIP Error', 'cf7-antispam'),
+					print_r($e->getMessage(), true)
+				);
+			}
+
 			$html .= printf('</div>');
 
 			return $html;

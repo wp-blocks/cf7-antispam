@@ -42,6 +42,8 @@ class CF7_AntiSpam_Activator {
 			"check_refer"                  => false,
 			"check_honeypot"               => true,
 			"check_honeyform"              => false,
+			"check_geoip"                  => false,
+			"geoip_dbkey"                  => false,
 			"check_language"               => false,
 			"honeyform_position"           => "wp_footer",
 			"enable_b8"                    => true,

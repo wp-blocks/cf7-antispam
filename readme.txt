@@ -230,8 +230,15 @@ See the LICENSE file for more details.
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
 * b8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
+* GeoLite2 [license](https://www.maxmind.com/en/geolite2/eula)
+* GeoIP2 PHP API [GeoIP2-php](https://github.com/maxmind/GeoIP2-php)
 * chart.js https://www.chartjs.org/, © 2021 Chart.js [contributors](https://github.com/chartjs/Chart.js/graphs/contributors), [MIT](https://github.com/chartjs/Chart.js/blob/master/LICENSE.md)
 * Sudden Shower in the Summer, Public domain, Wikimedia Commons https://commons.wikimedia.org/wiki/File:Sudden_Shower_in_the_Summer_(5759500422).jpg
+
+== MaxMind GeoIP2 ==
+This plugin on demand can enable GeoLite2 created by MaxMind, available from [https://www.maxmind.com](https://www.maxmind.com)
+While enabled you **have to mention it in the privacy policy** of your site!
+* GeoIP2 databases [GeoLite2 Country](https://www.maxmind.com/en/accounts/current/geoip/downloads)
 
 == DNSBL servers privacy policies ==
 * dnsbl-1.uceprotect.net [www.uceprotect.net license](http://www.uceprotect.net/en/index.php?m=13&s=0)
