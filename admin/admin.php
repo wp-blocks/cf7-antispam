@@ -128,7 +128,7 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/style.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/main.css', array(), $this->version );
 
 	}
 
@@ -150,7 +150,7 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/admin-script.js', array(), $this->version );
+		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/admin-script.js', array(), $this->version );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script($this->plugin_name, "cf7a_admin_settings", array(
@@ -166,7 +166,7 @@ class CF7_AntiSpam_Admin {
 
 	public function cf7a_dashboard_widget() {
 		global $wp_meta_boxes;
-		wp_add_dashboard_widget('custom_help_widget', 'Contact Form 7 Antispam - Recap', array($this, 'cf7a_flamingo_recap') );
+		wp_add_dashboard_widget('custom_help_widget', 'Contact Form 7 Antispam - Recap', array($this, 'cf7-antispam') );
 	}
 
 	function cf7a_flamingo_recap() {

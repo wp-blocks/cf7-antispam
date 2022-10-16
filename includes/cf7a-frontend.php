@@ -55,7 +55,7 @@ class CF7_AntiSpam_Frontend {
 
 		$hook = $this->options['honeyform_position'];
 		if ( isset( $this->options['check_honeyform'] ) && intval($this->options['check_honeyform']) === 1 ) {
-			if (!is_admin()) add_action( $hook, array( $this,'cf7a_honeyform') , 99 );
+			if ( !is_admin() && ( defined('REST_REQUEST') && !REST_REQUEST ) ) add_action( $hook, array( $this,'cf7a_honeyform') , 99 );
 		}
 
 		if ( (isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) ||
@@ -281,7 +281,7 @@ class CF7_AntiSpam_Frontend {
 		 * class.
 		 */
 
-		wp_register_script($this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/script.js', array( 'jquery' ), $this->version, true );
+		wp_register_script($this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/script.js', array( 'jquery' ), $this->version, true );
 		wp_enqueue_script($this->plugin_name);
 
 		wp_localize_script($this->plugin_name, "cf7a_settings", array(
