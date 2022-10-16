@@ -1,43 +1,24 @@
-require( '@wordpress/dependency-extraction-webpack-plugin' );
-const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const defaultConfig = require('@wordpress/scripts/config/webpack.config');
+const path = require('path');
 
-const production = 'development' !== process.env.NODE_ENV;
+const entry = {};
 
-module.exports = {
-  ...defaultConfig,
-  module: {
-    ...defaultConfig.module,
-    rules: [
-			{
-				test: /\.jsx?$/,
-				exclude: /(node_modules|bower_components)/,
-				use: [{
-						loader: require.resolve('babel-loader'),
-						options: {
-							presets: [
-								["@babel/preset-env", {
-									useBuiltIns: "usage",
-									corejs: 3,
-								}],
-								'@wordpress/babel-preset-default'
-							],
-							plugins: [
-								'@babel/plugin-proposal-async-generator-functions',
-								'@babel/plugin-proposal-object-rest-spread'
-							]
-						},
-					}],
-			},
-			...defaultConfig.module.rules
-    ]
-  },
-  plugins: [
-    ...defaultConfig.plugins.filter(
-      plugin => plugin.constructor.name !== 'CleanWebpackPlugin'
-    )
-  ],
+const addModule = ( fileName, filePath ) => {
+	return {
+		...defaultConfig,
+		name: fileName,
+		entry: path.resolve( __dirname, filePath + fileName ),
+		output: {
+			path: path.resolve( __dirname, filePath + 'dist/' ),
+			filename: fileName,
+		},
+	};
 };
 
-if ( production ) {
-  module.exports.devtool = false;
-}
+const mainScript = addModule( 'script.js', 'includes/src/' );
+const adminScript = addModule( 'admin-script.js', 'admin/src/' );
+
+module.exports = [
+	mainScript,
+	adminScript
+];
