@@ -686,12 +686,12 @@ class CF7_AntiSpam_filters {
 		}
 
 
-		if ($remote_ip && $options['autostore_bad_ip'] && !CF7ANTISPAM_DEBUG_EXTENDED) {
+		if ($remote_ip && $options['autostore_bad_ip'] && $options['max_attempts']) {
 
 			$ip_data = self::cf7a_blacklist_get_ip($remote_ip);
 			$ip_data_status = isset($ip_data->status) ? intval($ip_data->status) : 0;
 
-			if (isset($options['max_attempts']) && $options['max_attempts'] !== 0 && $ip_data_status >= $options['max_attempts']) {
+			if ($ip_data_status >= $options['max_attempts']) {
 
 				$spam_score += $score_detection;
 				$reason['blacklisted'] = "Score: " . ($ip_data_status + $score_warn);
@@ -743,7 +743,7 @@ class CF7_AntiSpam_filters {
 
 		/**
 		 * if the mail was marked as spam no more checks are needed.
-		 * This will save server computing power, this ip has already been banned so there's no need to push it.
+		 * This will save server computing power, this ip has already been banned so there's no reason for further processing
 		 */
 		if ($spam_score < 1) {
 
@@ -1192,7 +1192,7 @@ class CF7_AntiSpam_filters {
 		do_action('cf7a_additional_spam_filters', $message, $submission, $spam);
 
 		// if the autostore ip is enabled (but not exteded debug)
-		if ($options['autostore_bad_ip'] && $spam && !CF7ANTISPAM_DEBUG_EXTENDED) {
+		if ($options['autostore_bad_ip'] && $spam) {
 			if ( false === $this->cf7a_ban_by_ip($remote_ip, $reason, round($spam_score) ) )
 				error_log( CF7ANTISPAM_LOG_PREFIX . "unable to ban $remote_ip" );
 		}
