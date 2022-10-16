@@ -340,7 +340,7 @@ class CF7_AntiSpam_Admin {
 			</div>
 		<?php
 		else:
-			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>You have not received any email in the last 7 days</p></div>';
+			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>' . __('You have not received any e-mails in the last 7 days.', 'cf7-antispam' ) . '</p></div>';
 		endif;
 		?>
 

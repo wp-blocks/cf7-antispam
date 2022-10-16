@@ -462,7 +462,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// Section Personalization
 		add_settings_section( 'cf7a_scoring', // ID
 			__('Scoring Tweaks (1 = Ban)', 'cf7-antispam'), // Title
-			null,
+			array( $this, 'cf7a_print_scoring_settings' ), // Callback
 			'cf7a-settings' // Page
 		);
 
@@ -532,18 +532,18 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_print_section_auto_blacklist() {
-		printf( '<p>' . esc_html__("After detection the bot will be automatically blacklisted. However you can decide to unban that IP after some time", 'cf7-antispam') . '</p>' );
+		printf( '<p>' . esc_html__("How many failed attempts before being banned", 'cf7-antispam') . '</p>' );
         if ( wp_next_scheduled( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG ) {
             printf( '<small class="monospace">' . esc_html__( "Next scheduled unban event: ", 'cf7-antispam' ) . wp_date( "Y-m-d H:i:s", wp_next_scheduled( 'cf7a_cron' ) ) . ' <br/>Server time ' . wp_date( "Y-m-d H:i:s", time() ) . '</small>' );
         }
     }
 
     public function cf7a_print_section_bot_fingerprint() {
-        printf( '<p>' . esc_html__( "Enable some extra check to detect bot activity", 'cf7-antispam' ) . '</p>' );
+        printf( '<p>' . esc_html__( "Fingerprinting is a way of exploiting certain data that the browser can provide to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) . '</p>' );
     }
 
     public function cf7a_print_section_check_time() {
-        printf( '<p>' . esc_html__( "This test the submission time", 'cf7-antispam' ) . '</p>' );
+        printf( '<p>' . esc_html__( "Check that the e-mail is sent in the 'right' time frame. If the e-mail was sent too quickly or too slowly, the sender is probably not human. Values in seconds", 'cf7-antispam' ) . '</p>' );
     }
 
 	public function cf7a_check_geoip() {
@@ -558,29 +558,29 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
     public function cf7a_check_language() {
-        printf( '<p>' . esc_html__( "Check the user browser language", 'cf7-antispam' ) . '</p>' );
+        printf( '<p>' . esc_html__( "Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. I want to remind you that it is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)", 'cf7-antispam' ) . '</p>' );
     }
 
     public function cf7a_print_section_bad_ip() {
-        printf( '<p>' . esc_html__( "Filter the sender IP Address", 'cf7-antispam' ) . '</p>' );
+        printf( '<p>' . esc_html__( 'Adding a list of forbidden senders per IP address, one "bad" ip each line', 'cf7-antispam' ) . '</p>' );
     }
 
     public function cf7a_print_section_bad_words() {
-        printf( '<p>' . esc_html__( "Check if the mail message contains bad words", 'cf7-antispam' ) . '</p>' );
+        printf( '<p>' . esc_html__( 'Check if the mail message contains "bad" words, all e-mails containing one of these words in the text will be flagged. A bad string per line', 'cf7-antispam' ) . '</p>' );
     }
 
     public function cf7a_print_section_bad_email_strings() {
-        printf( '<p>' . esc_html__( "Check if the sender mail contains a prohibited text", 'cf7-antispam' ) . '</p>' );
+        printf( '<p>' . esc_html__( "Check if the mail content contains a word and in this case flag this mail, one forbidden word per line", 'cf7-antispam' ) . '</p>' );
     }
 
     public function cf7a_print_user_agent() {
-		printf( '<p>' . esc_html__("Check the User Agent if is listed into blacklist", 'cf7-antispam') . '</p>' );
+		printf( '<p>' . esc_html__("Enter a list of forbidden user agents, one per line. When the string match the user agent (or a part of) the mail will be flagged", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_dnsbl() {
-		printf( '<p>' . esc_html__("Check sender ip on DNS Blacklists", 'cf7-antispam') . '</p>' );
+		printf( '<p>' . esc_html__("Check sender ip on DNS Blacklists, DNSBLs are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers. One DSNBL server address per line ", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_honeypot() {
-		printf( '<p>' . esc_html__("the honeypot is a \"trap\" field that is hidden with css or js from the user but remains visible to bots. Since this fields are automatically added and appended inside the forms with standard names.", 'cf7-antispam'). " <p class='info monospace'>[*] " . esc_html("Please check the list below because the name MUST differ from the cf7 tag class names", 'cf7-antispam') . '</p></p>' );
+		printf( '<p>' . esc_html__("the honeypot is a \"trap\" field that is hidden with css or js from the user but remains visible to bots. Since this fields are automatically added and appended inside the forms with standard names.", 'cf7-antispam'). " <p class='info monospace'>[*] " . esc_html__("Please check the list below because the name MUST differ from the cf7 tag class names", 'cf7-antispam') . '</p></p>' );
 	}
 	public function cf7a_print_honeyform() {
 		printf( '<p>' . esc_html__("I'm actually going to propose the honeyform for the first time! Instead of creating trap fields that even my grandfather knows about, I directly create a trap form (much less detectable for bots)", 'cf7-antispam') . '</p>' );
@@ -591,6 +591,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_print_customizations() {
 		printf( '<p>' . esc_html__("RECOMMENDED: create your own and unique css class and customized fields name", 'cf7-antispam') . '</p>' );
 		printf( '<p>' . esc_html__("You can also choose in encryption method. But, After changing cypher do a couple of tests because a small amount of them aren't compatible with the format of the form data.", 'cf7-antispam') . '</p>' );
+	}
+	public function cf7a_print_scoring_settings() {
+		printf( '<p>' . esc_html__("The calculation system of antispam for contact form 7 works like this: each failed test has its own score (shown below where you can refine it to your liking). If the mail at the end of all tests exceeds a value of 1, the mail is considered spam, and is consequently processed by b8, which analyses the text and learns the words of a spam mail.", 'cf7-antispam') . '</p>' );
 	}
 	public function cf7a_print_advanced_settings() {
 		printf( '<p>' . esc_html__("In this section you will find some advanced settings to manage the database", 'cf7-antispam') . '</p>' );

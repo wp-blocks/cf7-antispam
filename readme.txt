@@ -74,11 +74,15 @@ if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antisp
 
 == Debug / Plugin PHP Constants ==
 
-Enable **debug mode** (verbose mode - need wp debug to be enabled and prints analysis results into log)
+Enable **debug mode** (wp-debug has to be enabled)
+- verbose mode
+- prints email analysis results into log
 `define( 'CF7ANTISPAM_DEBUG', true);`
 
-Enable **extended debug mode** (CF7ANTISPAM_DEBUG needs to be enabled, disable autoban and enable advanced logging).
-if you uninstall this plugin with this option is enabled options and b8 words database will not be deleted. (Use it if you know what you are doing, because this way you do not delete/reset options and vocabulary)
+Enable **extended debug mode** (need "CF7ANTISPAM_DEBUG" to be enabled)
+- disable autoban
+- enable advanced logging (the result of each test for each email)
+if you uninstall this plugin with this option is enabled the cf7 options and and the cf7 words database used by b8 will not be deleted. (Use it if you know what you are doing, because this way you do not delete/reset options and vocabulary)
 `define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
 
 **Dnsbl benchmark**
