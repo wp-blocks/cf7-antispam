@@ -104,6 +104,7 @@ class CF7_AntiSpam_Frontend {
 			// TODO: it needs an internal list if the user has inserted few names
 			$honeypot_names = isset($input_names[$k]) ? $input_names[$k] : $honeypot_default_names[$k - count($input_names)];
 			$clones[$k]->setAttribute( 'name', $honeypot_names );
+			$clones[$k]->setAttribute( 'value', '' );
 			$clones[$k]->setAttribute( 'autocomplete', 'fill' );
 			$clones[$k]->setAttribute( 'tabindex', '-1' );
 			$clones[$k]->setAttribute( 'class', $clones[$k]->getAttribute( 'class' ) . ' '.$input_class.' autocomplete input' );
