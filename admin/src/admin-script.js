@@ -5,12 +5,14 @@ window.onload = function () {
 		document.body.classList.contains( 'cf7-antispam-admin' ) ||
 		document.body.classList.contains( 'flamingo_page_flamingo_inbound' )
 	) {
+		// eslint-disable-next-line
 		const alertMessage = cf7a_admin_settings.alertMessage;
 
 		// the confirmation alert script
 		const alerts = document.querySelectorAll( '.cf7a_alert' );
 
 		function confirmationAlert( e, message ) {
+			// eslint-disable-next-line no-alert,no-undef
 			if ( confirm( message || alertMessage ) )
 				window.location.href = e.dataset.href;
 		}

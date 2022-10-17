@@ -1,12 +1,12 @@
-/* global cf7a_settings, cf7a_settings.prefix, wpcf7 */
+/* global cf7a_settings, wpcf7 */
 'use strict';
 
 window.onload = function () {
 	// disable cf7a script if contact form is not loaded in this page
 	if ( ! window.wpcf7 ) return;
 
-	const cf7a_prefix = cf7a_settings.prefix;
-	const cf7a_version = cf7a_settings.version;
+	const cf7aPrefix = cf7a_settings.prefix;
+	const cf7aVersion = cf7a_settings.version;
 
 	// disable cf7 refill on load
 	wpcf7.cached =
@@ -19,34 +19,36 @@ window.onload = function () {
 	 * `orientation` property, then return `true`. If the browser doesn't support any of the above, then return the value of
 	 * the `test` method of the `RegExp` object
 	 *
-	 * @return {bool} if has touchscreen or not
+	 * @return {boolean} if has touchscreen or not
 	 */
 	function testTouch() {
-		if ( 'maxTouchPoints' in navigator ) {
-			testTouch = navigator.maxTouchPoints > 0;
-		} else if ( 'msMaxTouchPoints' in navigator ) {
-			testTouch = navigator.msMaxTouchPoints > 0;
+		let hasTouch;
+		if ( 'maxTouchPoints' in window.navigator ) {
+			hasTouch = window.navigator.maxTouchPoints > 0;
+		} else if ( 'msMaxTouchPoints' in window.navigator ) {
+			hasTouch = window.navigator.msMaxTouchPoints > 0;
 		} else {
-			const mQ = window.matchMedia && matchMedia( '(pointer:coarse)' );
+			const mQ =
+				window.matchMedia && window.matchMedia( '(pointer:coarse)' );
 			if ( mQ && mQ.media === '(pointer:coarse)' ) {
-				testTouch = !! mQ.matches;
+				hasTouch = !! mQ.matches;
 			} else if ( 'orientation' in window ) {
-				testTouch = true; // deprecated, but good fallback
+				hasTouch = true; // deprecated, but good fallback
 			} else {
 				// Only as a last resort, fall back to user agent sniffing
-				const UA = navigator.userAgent;
-				testTouch =
+				const UA = window.navigator.userAgent;
+				hasTouch =
 					/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test( UA ) ||
 					/\b(Android|Windows Phone|iPad|iPod)\b/i.test( UA );
 			}
 		}
-		return testTouch;
+		return hasTouch;
 	}
 
 	/**
 	 * It returns an object with the browser's name, version, and other information
 	 *
-	 * @return An object with the following properties:
+	 * @return {boolean} An object with the following properties:
 	 * 	- isFFox
 	 * 	- isSamsung
 	 * 	- isOpera
@@ -62,19 +64,19 @@ window.onload = function () {
 	 */
 	const browserFingerprint = () => {
 		// as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
-		const ua = navigator.userAgent;
+		const ua = window.navigator.userAgent;
 
 		// holds the object with the tested props
 		const tests = {
 			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
-			platform: navigator.platform ?? null,
-			hardware_concurrency: navigator.hardwareConcurrency ?? null,
-			screens: [ screen.width, screen.height ] ?? null,
-			memory: navigator.deviceMemory ?? null,
+			platform: window.navigator.platform ?? null,
+			hardware_concurrency: window.navigator.hardwareConcurrency ?? null,
+			screens: [ window.screen.width, window.screen.height ] ?? null,
+			memory: window.navigator.deviceMemory ?? null,
 			user_agent: ua ?? null,
-			app_version: navigator.appVersion ?? null,
-			webdriver: navigator.webdriver === false ?? null,
-			session_storage: sessionStorage ? 1 : null,
+			app_version: window.navigator.appVersion ?? null,
+			webdriver: window.navigator.webdriver === false ?? null,
+			session_storage: window.sessionStorage ? 1 : null,
 		};
 
 		// detect browser
@@ -104,7 +106,7 @@ window.onload = function () {
 			tests.isUnknown = true;
 		}
 
-		if ( typeof navigator.standalone === 'boolean' ) {
+		if ( typeof window.navigator.standalone === 'boolean' ) {
 			// Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
 			tests.isIos = true;
 		} else if ( ua.indexOf( 'Android' ) > -1 ) {
@@ -119,7 +121,7 @@ window.onload = function () {
 	/**
 	 * It returns the browser language.
 	 *
-	 * @return The language of the browser.
+	 * @return {string} The language of the browser.
 	 */
 	const getBrowserLanguage = () => {
 		return (
@@ -133,12 +135,12 @@ window.onload = function () {
 	/**
 	 * It creates a hidden input field with a name and value
 	 *
-	 * @param  key      - the name of the field
-	 * @param  value    - The value of the field.
-	 * @param  [prefix] - The prefix for the field name.
+	 * @param {string} key      - the name of the field
+	 * @param {string} value    - The value of the field.
+	 * @param {string} [prefix] - The prefix for the field name.
 	 * @return A new input element with the type of hidden, name of the key, and value of the value.
 	 */
-	const createCF7Afield = ( key, value, prefix = cf7a_prefix ) => {
+	const createCF7Afield = ( key, value, prefix = cf7aPrefix ) => {
 		const e = document.createElement( 'input' );
 		e.setAttribute( 'type', 'hidden' );
 		e.setAttribute( 'name', prefix + key );
@@ -154,36 +156,36 @@ window.onload = function () {
 
 	if ( wpcf7Forms.length ) {
 		let oldy = 0,
-			mouseMove_value = 0,
-			mouseActivity_value = 0;
+			mouseMoveValue = 0,
+			mouseActivityValue = 0;
 
 		for ( const wpcf7Form of wpcf7Forms ) {
 			const hiddenInputsContainer =
 				wpcf7Form.querySelector( 'form > div' );
 
 			// 1) Standard bot checks
-			const bot_fingerprint_key = hiddenInputsContainer.querySelector(
-				'input[name=' + cf7a_prefix + 'bot_fingerprint]'
+			const botFingerprintKey = hiddenInputsContainer.querySelector(
+				'input[name=' + cf7aPrefix + 'bot_fingerprint]'
 			);
 
 			// 2) Bot fingerprint extra checks
-			const bot_fingerprint_extra = hiddenInputsContainer.querySelector(
-				'input[name=' + cf7a_prefix + 'bot_fingerprint_extras]'
+			const botFingerprintExtra = hiddenInputsContainer.querySelector(
+				'input[name=' + cf7aPrefix + 'bot_fingerprint_extras]'
 			);
 
 			// 3) Language check
-			const language_checks_enabled = hiddenInputsContainer.querySelector(
-				'input[name=' + cf7a_prefix + '_language]'
+			const languageChecksEnabled = hiddenInputsContainer.querySelector(
+				'input[name=' + cf7aPrefix + '_language]'
 			);
 
 			// how append bot fingerprint into hidden fields
-			const append_on_submit = hiddenInputsContainer.querySelector(
-				'input[name=' + cf7a_prefix + 'append_on_submit]'
+			const appendOnSubmit = hiddenInputsContainer.querySelector(
+				'input[name=' + cf7aPrefix + 'append_on_submit]'
 			);
 
 			// how append bot fingerprint into hidden fields
-			const cf7a_version_input = hiddenInputsContainer.querySelector(
-				'input[name=' + cf7a_prefix + 'version]'
+			const cf7aVersionInput = hiddenInputsContainer.querySelector(
+				'input[name=' + cf7aPrefix + 'version]'
 			);
 
 			// get the fake field and skip it
@@ -193,21 +195,21 @@ window.onload = function () {
 				continue;
 
 			// then set the cf7 antispam version field
-			cf7a_version_input.setAttribute( 'value', cf7a_version );
+			cf7aVersionInput.setAttribute( 'value', cf7aVersion );
 
 			// fingerprint browser data
 			const tests = browserFingerprint();
 
-			if ( bot_fingerprint_key ) {
+			if ( botFingerprintKey ) {
 				// 1.0 hijack the value of the bot_fingerprint
-				bot_fingerprint_key.setAttribute(
+				botFingerprintKey.setAttribute(
 					'value',
-					bot_fingerprint_key.getAttribute( 'value' ).slice( 0, 5 )
+					botFingerprintKey.getAttribute( 'value' ).slice( 0, 5 )
 				);
 
 				// then append the fields on submit
 				// not supported in safari https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
-				if ( ! append_on_submit || tests.isIos || tests.isIE ) {
+				if ( ! appendOnSubmit || tests.isIos || tests.isIE ) {
 					// or add them directly to hidden input container
 					for ( const key in tests ) {
 						hiddenInputsContainer.appendChild(
@@ -221,7 +223,7 @@ window.onload = function () {
 					formElem.addEventListener( 'formdata', ( e ) => {
 						const data = e.formData;
 						for ( const key in tests ) {
-							data.append( cf7a_prefix + key, tests[ key ] );
+							data.append( cf7aPrefix + key, tests[ key ] );
 						}
 						formData = data;
 					} );
@@ -229,18 +231,18 @@ window.onload = function () {
 			}
 
 			// 2) Bot fingerprint extra checks
-			if ( bot_fingerprint_extra ) {
+			if ( botFingerprintExtra ) {
 				// 2.1) check for mouse clicks
 				const activity = function ( e ) {
-					const bot_activity = hiddenInputsContainer.querySelector(
-						'input[name=' + cf7a_prefix + 'activity]'
+					const botActivity = hiddenInputsContainer.querySelector(
+						'input[name=' + cf7aPrefix + 'activity]'
 					);
-					if ( bot_activity ) bot_activity.remove();
+					if ( botActivity ) botActivity.remove();
 					hiddenInputsContainer.append(
-						createCF7Afield( 'activity', mouseActivity_value++ )
+						createCF7Afield( 'activity', mouseActivityValue++ )
 					);
 
-					if ( mouseActivity_value > 3 ) {
+					if ( mouseActivityValue > 3 ) {
 						document.body.removeEventListener(
 							'mouseup',
 							activity
@@ -259,10 +261,10 @@ window.onload = function () {
 
 				// 2.2) detect the mouse/touch direction change OR touchscreen iterations
 				const mouseMove = function ( e ) {
-					if ( e.pageY > oldy ) mouseMove_value += 1;
+					if ( e.pageY > oldy ) mouseMoveValue += 1;
 					oldy = e.pageY;
 
-					if ( mouseMove_value > 3 ) {
+					if ( mouseMoveValue > 3 ) {
 						document.removeEventListener( 'mousemove', mouseMove );
 						hiddenInputsContainer.append(
 							createCF7Afield( 'mousemove_activity', 'passed' )
@@ -290,7 +292,9 @@ window.onload = function () {
 					if ( this.length === 0 ) return hash;
 					for ( i = 0; i < this.length; i++ ) {
 						chr = this.charCodeAt( i );
+						// eslint-disable-next-line no-bitwise
 						hash = ( hash << 5 ) - hash + chr;
+						// eslint-disable-next-line no-bitwise
 						hash |= 0; // Convert to 32bit integer
 					}
 					return hash;
@@ -410,6 +414,7 @@ window.onload = function () {
 				} );
 
 				const drawCanvas2 = function ( num, useIframe = false ) {
+					let datUrl;
 					let canvas2d;
 
 					/** @type {boolean} */
@@ -481,13 +486,13 @@ window.onload = function () {
 							isOkCanvas &&
 							'function' === typeof canvasElement.toDataURL
 						) {
-							var datUrl = canvasElement.toDataURL( 'image/png' );
+							datUrl = canvasElement.toDataURL( 'image/png' );
 							try {
 								if (
 									'boolean' === typeof datUrl ||
 									void 0 === datUrl
 								) {
-									throw e;
+									throw new Error( 'Unable to load image' );
 								}
 							} catch ( a ) {
 								/** @type {string} */
@@ -533,7 +538,7 @@ window.onload = function () {
 			}
 
 			// 3) check the browser language
-			if ( language_checks_enabled ) {
+			if ( languageChecksEnabled ) {
 				hiddenInputsContainer.append(
 					createCF7Afield( 'browser_language', getBrowserLanguage() )
 				);

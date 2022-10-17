@@ -1,7 +1,5 @@
-const defaultConfig = require('@wordpress/scripts/config/webpack.config');
-const path = require('path');
-
-const entry = {};
+const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const path = require( 'path' );
 
 const addModule = ( fileName, filePath ) => {
 	return {
@@ -18,7 +16,4 @@ const addModule = ( fileName, filePath ) => {
 const mainScript = addModule( 'script.js', 'includes/src/' );
 const adminScript = addModule( 'admin-script.js', 'admin/src/' );
 
-module.exports = [
-	mainScript,
-	adminScript
-];
+module.exports = [ mainScript, adminScript ];
