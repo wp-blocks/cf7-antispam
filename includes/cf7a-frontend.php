@@ -65,52 +65,70 @@ class CF7_AntiSpam_Frontend {
 	}
 
 	/**
-	 * @param $form_elements
+	 * It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to
+	 * the form
 	 *
-	 * @return string
+	 * @param $form_elements - The form elements that are passed to the function.
+	 *
+	 * @return string - The form elements.
 	 */
 	public function cf7a_honeypot_add( $form_elements ) {
 
-		$html = new DOMDocument();
-		$html->encoding = 'utf-8';
-		$html->loadHTML( mb_convert_encoding( force_balance_tags($form_elements), 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
+		try {
+			$html = new DOMDocument('1.0', 'UTF-8');
+			libxml_use_internal_errors(true);
+			$html->loadHTML( $form_elements );
+			$xpath = new DOMXpath($html);
+			$inputs = $xpath->query('//input');
 
-		$inputs  = $html->getelementsbytagname( 'input' );
-		$parents = array();
-		$clones  = array();
+		} catch (Exception $e) {
+			if (is_admin()) {
+				error_log(print_r(__("CF7-Antispam: I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)", 'cf7-antispam' )));
+				print_r($e);
+			}
+			return $form_elements;
+		}
 
-		$input_names = sanitize_html_class($this->options['honeypot_input_names']);
+		/* A list of default names for the honeypot fields. */
+		$honeypot_default_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
+
+
+		$input_names = array_merge(sanitize_html_class($this->options['honeypot_input_names']), $honeypot_default_names);
 		$input_class = sanitize_html_class($this->options['cf7a_customizations_class']);
 
 		// get the inputs data
 		if ( $inputs && $inputs->length > 0 ) {
 			// to be on the save side it can be a good idea to store the name of the input (to avoid duplicates)
-			for ( $i = 0; $i < count( $inputs ); $i ++ ) {
+			foreach ( $inputs as $i => $input ) {
+
+				error_log(print_r($inputs->item( $i ), true));
+
 				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
 
-					$parents[] = $inputs->item( $i )->parentNode;
-					$clones[]  = $inputs->item( $i )->cloneNode();
+					$item = $inputs->item( $i );
 
-					$inputs->item( $i )->setAttribute( 'tabindex', '' );
-					$inputs->item( $i )->setAttribute( 'class', $inputs->item( $i )->getAttribute( 'class' ) );
+					$parent = $item->parentNode;
+					$sibling = $item->nextSibling;
+					$clone  = $item->cloneNode();
+
+					$item->setAttribute( 'tabindex', '' );
+					$item->setAttribute( 'class', $item->getAttribute( 'class' ) );
+
+					$honeypot_names = isset($input_names[$i]) ? $input_names[$i] : $honeypot_default_names[$i];
+
+					$clone->setAttribute( 'name', $honeypot_names );
+					$clone->setAttribute( 'value', '' );
+					$clone->setAttribute( 'autocomplete', 'fill' );
+					$clone->setAttribute( 'tabindex', '-1' );
+					$clone->setAttribute( 'class', $clone->getAttribute( 'class' ) . ' '.$input_class.' autocomplete input' );
+
+					// duplicate the inputs into honeypots
+					$parent->insertBefore( $clone, $sibling );
+
+					if ($i > 0) return $html->saveHTML();
 				}
 			}
 		}
-
-		$honeypot_default_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
-
-		// duplicate the inputs into honeypots
-		foreach ( $parents as $k => $parent ) {
-			// TODO: it needs an internal list if the user has inserted few names
-			$honeypot_names = isset($input_names[$k]) ? $input_names[$k] : $honeypot_default_names[$k - count($input_names)];
-			$clones[$k]->setAttribute( 'name', $honeypot_names );
-			$clones[$k]->setAttribute( 'value', '' );
-			$clones[$k]->setAttribute( 'autocomplete', 'fill' );
-			$clones[$k]->setAttribute( 'tabindex', '-1' );
-			$clones[$k]->setAttribute( 'class', $clones[$k]->getAttribute( 'class' ) . ' '.$input_class.' autocomplete input' );
-			$parent->appendChild( $clones[ $k ] );
-		}
-
 		return $html->saveHTML();
 	}
 
