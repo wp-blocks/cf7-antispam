@@ -157,7 +157,7 @@ $color__info: $color__blue;
   }
 
   // welcome panel
-  .welcome-panel {
+  #welcome-panel {
     margin-top: 20px;
     padding: 0.7em 2em 1em;
 
@@ -199,9 +199,30 @@ $color__info: $color__blue;
       code.blink { animation: 4s 1s blink }
     }
 
-    .welcome-panel-close {
-      z-index: 2;
-    }
+	.welcome-panel-close {
+	  position: absolute;
+	  top: 10px;
+	  right: 10px;
+	  padding: 10px 15px 10px 24px;
+	  font-size: 13px;
+	  line-height: 1.23076923;
+	  text-decoration: none;
+
+	  &:before {
+		position: absolute;
+		top: 8px;
+		left: 0;
+		transition: all .1s ease-in-out;
+		content: '\f335';
+		font-size: 24px;
+		color: #1d2327;
+		display: block;
+		font: normal 16px/20px dashicons;
+		height: 20px;
+		text-align: center;
+		width: 20px;
+	  }
+	}
   }
 }
 
