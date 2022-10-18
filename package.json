@@ -7,8 +7,10 @@
   "files": [
     "admin/*",
     "includes/*",
-    "languages/*",
-    "vendor/*",
+    "libs/*",
+    "vendor/autoload.php",
+    "vendor/composer/*",
+    "vendor/geoip2/*",
     "cf7-antispam.php",
     "LICENSE",
     "readme.txt"

@@ -21,8 +21,7 @@
   },
   "scripts": {
 	"lint": "vendor/bin/phpcs --standard=phpcs.xml.dist --report=summary,source",
-	"lint-fix": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
-	"phpcs-fix": "phpcbf --standard=phpcs.xml.dist"
+	"lint-fix": "vendor/bin/phpcbf --standard=phpcs.xml.dist"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
