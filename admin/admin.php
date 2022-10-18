@@ -48,7 +48,7 @@ class CF7_AntiSpam_Admin {
 		// the menu item
 		new CF7_AntiSpam_Admin_Customizations();
 
-		$tools = new CF7_AntiSpam_Admin_Tools();
+		new CF7_AntiSpam_Admin_Tools();
 
 		add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ) );
 
@@ -131,7 +131,7 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/main.css', array(), $this->version );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/style-main.css', array(), $this->version );
 
 	}
 
@@ -175,7 +175,7 @@ class CF7_AntiSpam_Admin {
 
 	public function cf7a_dashboard_widget() {
 		global $wp_meta_boxes;
-		wp_add_dashboard_widget( 'custom_help_widget', 'Contact Form 7 Antispam - Recap', array( $this, 'cf7-antispam' ) );
+		wp_add_dashboard_widget( 'custom_help_widget', 'Contact Form 7 Antispam - Recap', array( $this, 'cf7a_flamingo_recap' ) );
 	}
 
 	function cf7a_flamingo_recap() {
@@ -202,6 +202,7 @@ class CF7_AntiSpam_Admin {
 		);
 
 		$query = new WP_Query( $args );
+
 		if ( $query->have_posts() ) :
 			// this is needed to parse and create a list of emails
 			$html = '<div id="antispam-widget-list" class="activity-block"><h3>' . __( 'Last Week Emails', 'cf7-antispam' ) . '</h3><ul>';
@@ -210,12 +211,12 @@ class CF7_AntiSpam_Admin {
 				$query->the_post();
 				global $post;
 
-				$is_ham = $post->post_status !== 'flamingo-spam';
+				$is_ham = 'flamingo-spam' !== $post->post_status;
 
-				if ( get_the_date( 'Y-m-d' ) > date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
+				if ( wp_date( 'Y-m-d' ) > wp_date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
 					$html .= sprintf(
 						'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
-						get_the_date( 'Y-m-d' ),
+						wp_date( 'Y-m-d' ),
 						admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
 						$post->ID,
 						$is_ham ? '✅️' : '⛔',
@@ -224,12 +225,12 @@ class CF7_AntiSpam_Admin {
 					);
 				}
 
-				// for each post collect the main informations like spam/ham or date
+				// for each post collect the main information like spam/ham or date
 				if ( ! isset( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] ) ) {
 					$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] = array();
 				}
 				$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
-				array_push( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ], array( 'status' => $is_ham ? 'ham' : 'spam' ) );
+				$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ][] = array( 'status' => $is_ham ? 'ham' : 'spam' );
 
 			endwhile;
 
@@ -252,7 +253,7 @@ class CF7_AntiSpam_Admin {
 
 				// for each item of that date feed the count by email type
 				foreach ( $items as $item ) {
-					'spam' == $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
+					'spam' === $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
 			}
 
 			// Create two lists where the key is the date and the value is the number of mails of that type
@@ -263,7 +264,7 @@ class CF7_AntiSpam_Admin {
 
 			?>
 			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-			<div>
+			<div id="antispam-widget">
 				<canvas id="lineChart" width="400" height="200"></canvas>
 				<hr>
 				<canvas id="pieChart" width="50" height="50"></canvas>
@@ -368,44 +369,5 @@ class CF7_AntiSpam_Admin {
 		else :
 			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>' . __( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' ) . '</p></div>';
 		endif;
-		?>
-
-		<style>
-			.cf7-a_list-item {
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-			#antispam-widget-list span.timestamp {
-				margin-right: 5px;
-				color: #a5a5a5;
-				display: inline-block;
-				font-size: 90%;
-				font-family: monospace;
-			}
-			#pieChart {
-				width: 36px!important;
-				height: 36px !important;
-				display: inline-block !important;
-				padding: 4px;
-				float: left;
-				margin-right: 4px;
-			}
-			.cf7-a_widget-empty {
-				text-align: center;
-			}
-			.cf7-a_widget-empty .dashicons,
-			.cf7-a_widget-empty .dashicons-before {
-				font-size: 96px;
-				line-height: 1;
-				height: 100px;
-				margin-top: 6px;
-				margin-left: 0;
-				width: 96px;
-				opacity: .7;
-			}
-		</style>
-		<?php
-
 	}
 }

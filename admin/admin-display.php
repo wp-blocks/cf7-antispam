@@ -53,9 +53,9 @@ class CF7_AntiSpam_Admin_Display {
 				<b><code class="blink"><?php echo esc_html( __( 'flamingo_message: "[your-message]" ', 'cf7-antispam' ) ); ?></code></b>
 				<p>
 					<?php echo esc_html( __( 'Please replace ', 'cf7-antispam' ) ); ?>
-					<b><?php echo   esc_attr( __( '[your-message]', 'cf7-antispam' ) ); ?></b>
+					<b><?php echo esc_attr( __( '[your-message]', 'cf7-antispam' ) ); ?></b>
 					<?php echo esc_html( __( ' with the message field used in your form because that is the field scanned with b8. You need add this string to each form ', 'cf7-antispam' ) ); ?>
-					<a href='https://contactform7.com/additional-settings/'><?php	echo esc_attr( __( 'additional settings section', 'cf7-antispam' ) ); ?></a>
+					<a href='https://contactform7.com/additional-settings/'><?php echo esc_attr( __( 'additional settings section', 'cf7-antispam' ) ); ?></a>
 					<?php echo esc_html( __( 'to enable the most advanced protection we can offer! Thank you!', 'cf7-antispam' ) ); ?>
 				</p>
 			</div>
@@ -85,13 +85,13 @@ class CF7_AntiSpam_Admin_Display {
 
 		$tools = new CF7_AntiSpam_Admin_Tools();
 
-		// prints the blacklisted ip, the rating and some informations
+		// prints the blacklisted ip, the rating and some information
 		$tools->cf7a_get_blacklisted_table();
 
-		// returns the plugins debug informations
+		// returns the plugins debug information
 		$tools->cf7a_advanced_settings();
 
-		// returns the plugins debug informations
+		// returns the plugins debug information
 		$tools->cf7a_get_debug_info();
 	}
 

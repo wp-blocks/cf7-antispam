@@ -1,0 +1,40 @@
+#antispam-widget {
+
+  .cf7-a_list-item {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+  }
+
+  #antispam-widget-list span.timestamp {
+	margin-right: 5px;
+	color: #a5a5a5;
+	display: inline-block;
+	font-size: 90%;
+	font-family: monospace;
+  }
+
+  #pieChart {
+	width: 36px!important;
+	height: 36px !important;
+	display: inline-block !important;
+	padding: 4px;
+	float: left;
+	margin-right: 4px;
+  }
+
+  .cf7-a_widget-empty {
+	text-align: center;
+	.dashicons,
+	.dashicons-before {
+	  font-size: 96px;
+	  line-height: 1;
+	  height: 100px;
+	  margin-top: 6px;
+	  margin-left: 0;
+	  width: 96px;
+	  opacity: .7;
+	}
+  }
+
+}

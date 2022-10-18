@@ -1,4 +1,4 @@
-import './css/admin.scss';
+import './style/style.scss';
 
 window.onload = function () {
 	/* This is the code that adds the confirmation alert to the delete buttons on the settings page. */
