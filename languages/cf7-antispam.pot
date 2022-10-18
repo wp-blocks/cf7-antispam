@@ -1,0 +1,716 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: AntiSpam for Contact Form 7\n"
+"POT-Creation-Date: 2022-10-18 13:32+0200\n"
+"PO-Revision-Date: 2022-10-17 12:03+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: cf7-antispam.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+"X-Poedit-SearchPathExcluded-2: node_modules\n"
+
+#: admin/admin-customizations.php:32
+msgid "Ban automatically spammers"
+msgstr ""
+
+#: admin/admin-customizations.php:40
+msgid "Automatic spammer IP Blacklist"
+msgstr ""
+
+#: admin/admin-customizations.php:49
+msgid "Mail blocked before Ban"
+msgstr ""
+
+#: admin/admin-customizations.php:58
+msgid "Automatic Unban"
+msgstr ""
+
+#: admin/admin-customizations.php:67
+msgid "Bot Fingerprinting"
+msgstr ""
+
+#: admin/admin-customizations.php:75
+msgid "Enable anti-bot checks"
+msgstr ""
+
+#: admin/admin-customizations.php:84
+msgid "Enable anti-bot extra checks"
+msgstr ""
+
+#: admin/admin-customizations.php:93
+msgid "Append hidden fields on submit"
+msgstr ""
+
+#: admin/admin-customizations.php:102
+msgid "Time checks"
+msgstr ""
+
+#: admin/admin-customizations.php:110
+msgid "Check the elapsed time"
+msgstr ""
+
+#: admin/admin-customizations.php:119
+msgid "Minimum elapsed time"
+msgstr ""
+
+#: admin/admin-customizations.php:128
+msgid "Maximum elapsed time"
+msgstr ""
+
+#: admin/admin-customizations.php:137
+msgid "GeoIP Check"
+msgstr ""
+
+#: admin/admin-customizations.php:146
+msgid "MaxMind Update Key"
+msgstr ""
+
+#: admin/admin-customizations.php:155
+msgid "Language Checks"
+msgstr ""
+
+#: admin/admin-customizations.php:163
+msgid "Enable GeoIP"
+msgstr ""
+
+#: admin/admin-customizations.php:172
+msgid "Check Browser Language"
+msgstr ""
+
+#: admin/admin-customizations.php:181
+msgid "Allowed browser Languages"
+msgstr ""
+
+#: admin/admin-customizations.php:190
+msgid "Disallowed browser Languages"
+msgstr ""
+
+#: admin/admin-customizations.php:199
+msgid "Bad IP Address"
+msgstr ""
+
+#: admin/admin-customizations.php:207
+msgid "Check HTTP referrer"
+msgstr ""
+
+#: admin/admin-customizations.php:216
+msgid "Check the sender IP Address"
+msgstr ""
+
+#: admin/admin-customizations.php:225
+msgid "Bad IP Address List"
+msgstr ""
+
+#: admin/admin-customizations.php:234
+msgid "Bad words"
+msgstr ""
+
+#: admin/admin-customizations.php:242
+msgid "Check the message for prohibited words"
+msgstr ""
+
+#: admin/admin-customizations.php:251
+msgid "Bad words List"
+msgstr ""
+
+#: admin/admin-customizations.php:260
+msgid "Bad email strings"
+msgstr ""
+
+#: admin/admin-customizations.php:268
+msgid "Check the email for prohibited words"
+msgstr ""
+
+#: admin/admin-customizations.php:277
+msgid "Email prohibited words"
+msgstr ""
+
+#: admin/admin-customizations.php:286
+msgid "User Agent blacklist"
+msgstr ""
+
+#: admin/admin-customizations.php:294
+msgid "Enable User Agent blacklist"
+msgstr ""
+
+#: admin/admin-customizations.php:303
+msgid "Disallowed user agents"
+msgstr ""
+
+#: admin/admin-customizations.php:312
+msgid "DNS Blacklists"
+msgstr ""
+
+#: admin/admin-customizations.php:320
+msgid "Check IP on DNS blocklist"
+msgstr ""
+
+#: admin/admin-customizations.php:329
+msgid "DNS blocklist servers"
+msgstr ""
+
+#: admin/admin-customizations.php:338
+msgid "Honeypot"
+msgstr ""
+
+#: admin/admin-customizations.php:346
+msgid "Add some fake input inside the form"
+msgstr ""
+
+#: admin/admin-customizations.php:355
+msgid "Name for the honeypots inputs[*]"
+msgstr ""
+
+#: admin/admin-customizations.php:364
+msgid "Honeyform <span class=\"label alert monospace\">[experimental]</span>"
+msgstr ""
+
+#: admin/admin-customizations.php:372
+msgid "Add a hidden form at the beginning of the content"
+msgstr ""
+
+#: admin/admin-customizations.php:381
+msgid "Select where the honeyform will be hidden"
+msgstr ""
+
+#: admin/admin-customizations.php:390
+msgid "B8 statistical \"Bayesian\" spam filter"
+msgstr ""
+
+#: admin/admin-customizations.php:398
+msgid "Enable B8"
+msgstr ""
+
+#: admin/admin-customizations.php:407
+msgid "B8 spam threshold"
+msgstr ""
+
+#: admin/admin-customizations.php:416
+msgid "Spam filter customizations"
+msgstr ""
+
+#: admin/admin-customizations.php:424
+msgid "Disable cf7 form reload if the page is cached"
+msgstr ""
+
+#: admin/admin-customizations.php:433
+msgid "Your unique css class"
+msgstr ""
+
+#: admin/admin-customizations.php:442
+msgid "Your unique fields prefix"
+msgstr ""
+
+#: admin/admin-customizations.php:451
+msgid "The encryption method"
+msgstr ""
+
+#: admin/admin-customizations.php:460 admin/admin-customizations.php:477
+msgid "Enable advanced settings"
+msgstr ""
+
+#: admin/admin-customizations.php:468
+msgid "Severity of anti-spam control"
+msgstr ""
+
+#: admin/admin-customizations.php:486
+msgid "Scoring Tweaks (1 = Ban)"
+msgstr ""
+
+#: admin/admin-customizations.php:494
+msgid "Bot fingerprinting score <small>(for each failed test)</small>"
+msgstr ""
+
+#: admin/admin-customizations.php:503
+msgid "Time checks score"
+msgstr ""
+
+#: admin/admin-customizations.php:512
+msgid "String found"
+msgstr ""
+
+#: admin/admin-customizations.php:521
+msgid "DNSBL score <small>(for each server)</small>"
+msgstr ""
+
+#: admin/admin-customizations.php:530
+msgid "Honeypot fill score <small>(for each fail)</small>"
+msgstr ""
+
+#: admin/admin-customizations.php:539
+msgid "Honeyform fill score"
+msgstr ""
+
+#: admin/admin-customizations.php:548
+msgid "Bot detected"
+msgstr ""
+
+#: admin/admin-customizations.php:557
+msgid "Bot warn"
+msgstr ""
+
+#: admin/admin-customizations.php:565
+msgid "How many failed attempts before being banned"
+msgstr ""
+
+#: admin/admin-customizations.php:567
+msgid "Next scheduled unban event: "
+msgstr ""
+
+#: admin/admin-customizations.php:572
+msgid ""
+"Fingerprinting is a way of exploiting certain data that the browser can "
+"provide to check whether it is a real browser. A script checks software and "
+"hardware configuration like screen resolution, 3d support, available fonts "
+"and OS version, that usually aren't available for bots."
+msgstr ""
+
+#: admin/admin-customizations.php:576
+msgid ""
+"Check that the e-mail is sent in the 'right' time frame. If the e-mail was "
+"sent too quickly or too slowly, the sender is probably not human. Values in "
+"seconds"
+msgstr ""
+
+#: admin/admin-customizations.php:583
+msgid "Detect user location using MaxMind GeoIP2 database."
+msgstr ""
+
+#: admin/admin-customizations.php:584
+msgid "In order to enable this functionality you need to agree at  "
+msgstr ""
+
+#: admin/admin-customizations.php:585
+msgid "GeoLite2 End User License Agreement"
+msgstr ""
+
+#: admin/admin-customizations.php:586
+msgid "and sign up "
+msgstr ""
+
+#: admin/admin-customizations.php:587
+msgid "GeoLite2 Downloadable Databases"
+msgstr ""
+
+#: admin/admin-customizations.php:588
+msgid ""
+"With the key obtained the CF7-Antispam will be able to automatically "
+"download every month the updated GeoIP Database. "
+msgstr ""
+
+#: admin/admin-customizations.php:589
+msgid "Recommended - define a key your config.php the key in this way: "
+msgstr ""
+
+#: admin/admin-customizations.php:596
+msgid ""
+"Check the user browser language / user keyboard. Add one language code (en-"
+"US) or language (en) per line, the language code specifically enables or "
+"denies a state while the language enables or denies all language codes "
+"beginning with that language. This method is not as accurate as geo ip "
+"because it is based on what is provided by the browser and can easily be "
+"bypassed (however, less sophisticated bots do not pass this test)"
+msgstr ""
+
+#: admin/admin-customizations.php:600
+msgid ""
+"Adding a list of forbidden senders per IP address, one \"bad\" ip each line"
+msgstr ""
+
+#: admin/admin-customizations.php:604
+msgid ""
+"Check if the mail message contains \"bad\" words, all e-mails containing one "
+"of these words in the text will be flagged. A bad string per line"
+msgstr ""
+
+#: admin/admin-customizations.php:608
+msgid ""
+"Check if the mail content contains a word and in this case flag this mail, "
+"one forbidden word per line"
+msgstr ""
+
+#: admin/admin-customizations.php:612
+msgid ""
+"Enter a list of forbidden user agents, one per line. When the string match "
+"the user agent (or a part of) the mail will be flagged"
+msgstr ""
+
+#: admin/admin-customizations.php:615
+msgid ""
+"Check sender ip on DNS Blacklists, DNSBLs are real-time lists of proven/"
+"recognised spam addresses. These may include lists of addresses of zombie "
+"computers or other machines used to send spam, Internet Service Providers "
+"(ISPs) that voluntarily host spammers. One DSNBL server address per line "
+msgstr ""
+
+#: admin/admin-customizations.php:618
+msgid ""
+"the honeypot is a \"trap\" field that is hidden with css or js from the user "
+"but remains visible to bots. Since this fields are automatically added and "
+"appended inside the forms with standard names."
+msgstr ""
+
+#: admin/admin-customizations.php:618
+msgid ""
+"Please check the list below because the name MUST differ from the cf7 tag "
+"class names"
+msgstr ""
+
+#: admin/admin-customizations.php:621
+msgid ""
+"I'm actually going to propose the honeyform for the first time! Instead of "
+"creating trap fields that even my grandfather knows about, I directly create "
+"a trap form (much less detectable for bots)"
+msgstr ""
+
+#: admin/admin-customizations.php:624
+msgid ""
+"Tells you whether a text is spam or not, using statistical text analysis of "
+"the text message"
+msgstr ""
+
+#: admin/admin-customizations.php:627
+msgid ""
+"RECOMMENDED: create your own and unique css class and customized fields name"
+msgstr ""
+
+#: admin/admin-customizations.php:628
+msgid ""
+"You can also choose in encryption method. But, After changing cypher do a "
+"couple of tests because a small amount of them aren't compatible with the "
+"format of the form data."
+msgstr ""
+
+#: admin/admin-customizations.php:631
+msgid ""
+"The calculation system of antispam for contact form 7 works like this: each "
+"failed test has its own score (shown below where you can refine it to your "
+"liking). If the mail at the end of all tests exceeds a value of 1, the mail "
+"is considered spam, and is consequently processed by b8, which analyses the "
+"text and learns the words of a spam mail."
+msgstr ""
+
+#: admin/admin-customizations.php:634
+msgid ""
+"In this section you will find some advanced settings to manage the database"
+msgstr ""
+
+#: admin/admin-display.php:38
+msgid "Dismiss"
+msgstr ""
+
+#: admin/admin-display.php:40
+msgid "Before you cry over spilt mail&#8230;"
+msgstr ""
+
+#: admin/admin-display.php:41
+msgid ""
+"Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, "
+"you may lose important messages forever if your mail server has issues or "
+"you make a mistake in mail configuration."
+msgstr ""
+
+#. translators: %s: link labeled 'Flamingo'
+#: admin/admin-display.php:45
+#, php-format
+msgid ""
+"Install a message storage plugin before this happens to you. %s saves all "
+"messages through contact forms into the database. Flamingo is a free "
+"WordPress plugin created by the same author as Contact Form 7."
+msgstr ""
+
+#: admin/admin-display.php:46
+msgid "https://contactform7.com/save-submitted-messages-with-flamingo/"
+msgstr ""
+
+#: admin/admin-display.php:46
+msgid "Flamingo"
+msgstr ""
+
+#: admin/admin-display.php:52
+msgid "PLEASE don't forget to add "
+msgstr ""
+
+#: admin/admin-display.php:53
+msgid "flamingo_message: \"[your-message]\" "
+msgstr ""
+
+#: admin/admin-display.php:55
+msgid "Please replace "
+msgstr ""
+
+#: admin/admin-display.php:56
+msgid "[your-message]"
+msgstr ""
+
+#: admin/admin-display.php:57
+msgid ""
+" with the message field used in your form because that is the field scanned "
+"with b8. You need add this string to each form "
+msgstr ""
+
+#: admin/admin-display.php:58
+msgid "additional settings section"
+msgstr ""
+
+#: admin/admin-display.php:59
+msgid "to enable the most advanced protection we can offer! Thank you!"
+msgstr ""
+
+#: admin/admin-tools.php:57
+msgid "Success: ip blacklist cleaned"
+msgstr ""
+
+#: admin/admin-tools.php:60
+msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgstr ""
+
+#: admin/admin-tools.php:71
+msgid "b8 dictionary reset successful"
+msgstr ""
+
+#: admin/admin-tools.php:74
+msgid ""
+"Something goes wrong while deleting b8 dictionary. Please refresh and try "
+"again!"
+msgstr ""
+
+#: admin/admin-tools.php:85
+msgid "b8 dictionary rebuild successful"
+msgstr ""
+
+#: admin/admin-tools.php:88
+msgid ""
+"Something goes wrong while rebuilding b8 dictionary. Please refresh and try "
+"again!"
+msgstr ""
+
+#: admin/admin-tools.php:98
+msgid "CF7 AntiSpam fully reinitialized with success"
+msgstr ""
+
+#: admin/admin-tools.php:101
+msgid "Ops! something went wrong... Please refresh and try again!"
+msgstr ""
+
+#: admin/admin-tools.php:117
+msgid "CF7 AntiSpam email "
+msgstr ""
+
+#: admin/admin-tools.php:122
+msgid "Ops! something went wrong... unable to resend "
+msgstr ""
+
+#: admin/admin-tools.php:137
+msgid "IP Blacklist"
+msgstr ""
+
+#: admin/admin-tools.php:164
+msgid "Advanced settings"
+msgstr ""
+
+#: admin/admin-tools.php:165
+msgid ""
+"This section contains features that completely change what is stored in the "
+"cf7-antispam database, use them with caution!"
+msgstr ""
+
+#: admin/admin-tools.php:171
+msgid "Blacklist Reset"
+msgstr ""
+
+#: admin/admin-tools.php:172
+msgid "If you need to remove or reset the whole blacklist data on your server."
+msgstr ""
+
+#: admin/admin-tools.php:175
+msgid "Remove all blacklisted IP"
+msgstr ""
+
+#: admin/admin-tools.php:180
+msgid "Dictionary Reset"
+msgstr ""
+
+#: admin/admin-tools.php:181
+msgid "Use only if you need to reset the whole b8 dictionary."
+msgstr ""
+
+#: admin/admin-tools.php:184
+msgid "Reset b8 dictionary"
+msgstr ""
+
+#: admin/admin-tools.php:189
+msgid "Rebuid Dictionary"
+msgstr ""
+
+#: admin/admin-tools.php:190
+msgid ""
+"Reanalyze all the Flamingo inbound emails (you may need to reset dictionary "
+"before)."
+msgstr ""
+
+#: admin/admin-tools.php:193
+msgid "Rebuild b8 dictionary"
+msgstr ""
+
+#: admin/admin-tools.php:198
+msgid "Full Reset"
+msgstr ""
+
+#: admin/admin-tools.php:199
+msgid "Fully reinitialize cf7-antispam plugin database and options"
+msgstr ""
+
+#: admin/admin-tools.php:202
+msgid "FULL RESET"
+msgstr ""
+
+#: admin/admin-tools.php:219
+msgid "Debug info"
+msgstr ""
+
+#: admin/admin-tools.php:220
+msgid "(...If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true)"
+msgstr ""
+
+#: admin/admin-tools.php:226 admin/admin-tools.php:232
+msgid "is enabled"
+msgstr ""
+
+#: admin/admin-tools.php:237
+msgid "Options debug"
+msgstr ""
+
+#: admin/admin-tools.php:240
+msgid "Those are the options of this plugin"
+msgstr ""
+
+#: admin/admin-tools.php:255
+msgid "The Server GeoIP information"
+msgstr ""
+
+#: admin/admin-tools.php:262
+msgid "GeoIP Error"
+msgstr ""
+
+#: admin/admin.php:70 admin/admin.php:71
+msgid "Antispam"
+msgstr ""
+
+#: admin/admin.php:87
+msgid "Antispam Settings"
+msgstr ""
+
+#: admin/admin.php:107
+msgid "Antispam setting updated with success"
+msgstr ""
+
+#: admin/admin.php:163 includes/cf7a-antispam.php:794
+msgid "Are you sure?"
+msgstr ""
+
+#: admin/admin.php:207
+msgid "Last Week Emails"
+msgstr ""
+
+#: admin/admin.php:275
+msgid "Flamingo Inbound Messages"
+msgstr ""
+
+#: admin/admin.php:369
+msgid "You have not received any e-mails in the last 7 days."
+msgstr ""
+
+#: includes/cf7a-activator.php:202
+msgid ""
+"CF7 AntiSpam updated successful! ⚠️Please flush cache to refresh hidden form "
+"data"
+msgstr ""
+
+#: includes/cf7a-antispam.php:130
+#, php-format
+msgid "Database could not be written (%s)."
+msgstr ""
+
+#: includes/cf7a-antispam.php:610
+#, php-format
+msgid "%s has no message text so can't be analyzed"
+msgstr ""
+
+#: includes/cf7a-antispam.php:624
+msgid "flamingo ban"
+msgstr ""
+
+#: includes/cf7a-antispam.php:643
+#, php-format
+msgid ""
+"b8 has learned this e-mail from %1$s was %2$s - score before/after: %3$f/%4$f"
+msgstr ""
+
+#: includes/cf7a-antispam.php:778
+msgid "D8 classification"
+msgstr ""
+
+#: includes/cf7a-antispam.php:779
+msgid "CF7-AntiSpam actions"
+msgstr ""
+
+#: includes/cf7a-antispam.php:794
+msgid "Resend Email"
+msgstr ""
+
+#: includes/cf7a-core.php:237
+msgid "CF7 AntiSpam need "
+msgstr ""
+
+#: includes/cf7a-core.php:239
+msgid "Contact Form 7"
+msgstr ""
+
+#: includes/cf7a-core.php:240
+msgid " installed and enabled in order to work."
+msgstr ""
+
+#: includes/cf7a-frontend.php:88
+msgid ""
+"CF7-Antispam: I cannot parse this form correctly, please double check that "
+"the code is correct, thank you! (this message is only displayed to admins)"
+msgstr ""
+
+#: includes/cf7a-functions.php:72
+msgid "Every 5 Minutes"
+msgstr ""
+
+#: includes/cf7a-functions.php:76
+msgid "Every 60 seconds"
+msgstr ""
+
+#: includes/cf7a-functions.php:111
+msgid "none"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "AntiSpam for Contact Form 7"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "A trustworthy antispam plugin for Contact Form 7. Simple but effective."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Codekraft"
+msgstr ""

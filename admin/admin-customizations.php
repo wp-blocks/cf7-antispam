@@ -587,7 +587,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				esc_html__( 'GeoLite2 Downloadable Databases', 'cf7-antispam' ),
 				esc_html__( 'With the key obtained the CF7-Antispam will be able to automatically download every month the updated GeoIP Database. ', 'cf7-antispam' ),
 				esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
-				esc_html__( "define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );", 'cf7-antispam' )
+				"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
 			)
 		);
 	}
