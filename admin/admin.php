@@ -50,13 +50,13 @@ class CF7_AntiSpam_Admin {
 
 		$tools = new CF7_AntiSpam_Admin_Tools();
 
-		add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ));
+		add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ) );
 
 		add_action( 'admin_notices', array( $this, 'cf7a_display_notices' ) );
 
 		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
 
-		add_action( 'plugin_action_links_'.CF7ANTISPAM_PLUGIN_BASENAME, array($this, 'cf7a_plugin_settings_link'), 10, 2 );
+		add_action( 'plugin_action_links_' . CF7ANTISPAM_PLUGIN_BASENAME, array( $this, 'cf7a_plugin_settings_link' ), 10, 2 );
 
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
 			add_action( 'wp_dashboard_setup', array( $this, 'cf7a_dashboard_widget' ) );
@@ -65,7 +65,8 @@ class CF7_AntiSpam_Admin {
 	}
 
 	public function cf7a_admin_menu() {
-		add_submenu_page( 'wpcf7',
+		add_submenu_page(
+			'wpcf7',
 			__( 'Antispam', $this->plugin_name ),
 			__( 'Antispam', $this->plugin_name ),
 			'wpcf7_edit_contact_forms',
@@ -97,14 +98,16 @@ class CF7_AntiSpam_Admin {
 	public function cf7a_display_notices() {
 
 		$admin_page = get_current_screen();
-		if (false === strpos($admin_page->base, $this->plugin_name )) return;
+		if ( false === strpos( $admin_page->base, $this->plugin_name ) ) {
+			return;
+		}
 
 		$settings_updated = isset( $_REQUEST['settings-updated'] ) ? sanitize_text_field( $_REQUEST['settings-updated'] ) : false;
 		if ( $settings_updated === 'true' ) {
-			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Antispam setting updated with success', 'cf7-antispam' ), "success" );
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Antispam setting updated with success', 'cf7-antispam' ), 'success' );
 		}
 
-		if ( false !== ( $notice = get_transient( 'cf7a_notice' )) ) {
+		if ( false !== ( $notice = get_transient( 'cf7a_notice' ) ) ) {
 			echo $notice;
 			delete_transient( 'cf7a_notice' );
 		}
@@ -153,70 +156,80 @@ class CF7_AntiSpam_Admin {
 		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/admin-script.js', array(), $this->version );
 		wp_enqueue_script( $this->plugin_name );
 
-		wp_localize_script($this->plugin_name, "cf7a_admin_settings", array(
-				"alertMessage" => esc_html__('Are you sure?', 'cf7-antispam')
-		));
+		wp_localize_script(
+			$this->plugin_name,
+			'cf7a_admin_settings',
+			array(
+				'alertMessage' => esc_html__( 'Are you sure?', 'cf7-antispam' ),
+			)
+		);
 	}
 
 	public function cf7a_body_class( $classes ) {
 		$admin_page = get_current_screen();
-		if (false === strpos($admin_page->base, $this->plugin_name )) return $classes;
-        return "$classes cf7-antispam-admin";
+		if ( false === strpos( $admin_page->base, $this->plugin_name ) ) {
+			return $classes;
+		}
+		return "$classes cf7-antispam-admin";
 	}
 
 	public function cf7a_dashboard_widget() {
 		global $wp_meta_boxes;
-		wp_add_dashboard_widget('custom_help_widget', 'Contact Form 7 Antispam - Recap', array($this, 'cf7-antispam') );
+		wp_add_dashboard_widget( 'custom_help_widget', 'Contact Form 7 Antispam - Recap', array( $this, 'cf7-antispam' ) );
 	}
 
 	function cf7a_flamingo_recap() {
 
 		$args = array(
-			'post_type' => 'flamingo_inbound',
-			'post_status' => array( 'flamingo-spam', 'publish' ),
+			'post_type'      => 'flamingo_inbound',
+			'post_status'    => array( 'flamingo-spam', 'publish' ),
 			'posts_per_page' => -1,
-			'orderby' => 'date',
-			'order' => 'DESC',
-			'date_query' => array(
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+			'date_query'     => array(
 				array(
-					'after' => '1 week ago'
-				)
-			)
+					'after' => '1 week ago',
+				),
+			),
 		);
 
 		$mail_collection = array(
 			'by_type' => array(
-				'ham' => 0,
+				'ham'  => 0,
 				'spam' => 0,
 			),
-			'by_date' => array()
+			'by_date' => array(),
 		);
 
-
-		$query = new WP_Query($args);
+		$query = new WP_Query( $args );
 		if ( $query->have_posts() ) :
 			// this is needed to parse and create a list of emails
-			$html = '<div id="antispam-widget-list" class="activity-block"><h3>'.__('Last Week Emails', 'cf7-antispam').'</h3><ul>';
+			$html = '<div id="antispam-widget-list" class="activity-block"><h3>' . __( 'Last Week Emails', 'cf7-antispam' ) . '</h3><ul>';
 
-			while ( $query->have_posts() ) : $query->the_post();
+			while ( $query->have_posts() ) :
+				$query->the_post();
 				global $post;
 
 				$is_ham = $post->post_status !== 'flamingo-spam';
 
-				if ( get_the_date('Y-m-d') > date('Y-m-d', strtotime("-1 week") ) )
-					$html .= sprintf('<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
-						get_the_date('Y-m-d') ,
-						admin_url('admin.php?page=flamingo_inbound&post='.$post->ID.'&action=edit' ),
+				if ( get_the_date( 'Y-m-d' ) > date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
+					$html .= sprintf(
+						'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
+						get_the_date( 'Y-m-d' ),
+						admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
 						$post->ID,
 						$is_ham ? '✅️' : '⛔',
-						htmlentities(get_post_meta($post->ID, '_from')[0]),
+						htmlentities( get_post_meta( $post->ID, '_from' )[0] ),
 						$post->post_title
-					) ;
+					);
+				}
 
 				// for each post collect the main informations like spam/ham or date
-				if (!isset($mail_collection['by_date'][get_the_date('Y-m-d')])) $mail_collection['by_date'][get_the_date('Y-m-d')] = array();
+				if ( ! isset( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] ) ) {
+					$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] = array();
+				}
 				$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
-				array_push($mail_collection['by_date'][get_the_date('Y-m-d')], array( 'status' => $is_ham ? 'ham' : 'spam' ));
+				array_push( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ], array( 'status' => $is_ham ? 'ham' : 'spam' ) );
 
 			endwhile;
 
@@ -225,17 +238,21 @@ class CF7_AntiSpam_Admin {
 
 			$count = array();
 
-			$mail_collection['by_date'] = array_reverse($mail_collection['by_date']);
+			$mail_collection['by_date'] = array_reverse( $mail_collection['by_date'] );
 
 			// for each date
 			foreach ( $mail_collection['by_date'] as $date => $items ) {
 
 				// add the date to the list if not yet added
-				if ( ! isset( $count[ $date ] ) ) { $count[ $date ] = array( 'ham' => 0, 'spam' => 0 ); }
+				if ( ! isset( $count[ $date ] ) ) {
+					$count[ $date ] = array(
+						'ham'  => 0,
+						'spam' => 0,
+					); }
 
 				// for each item of that date feed the count by email type
-				foreach ( $items as $item ) { 'spam' == $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
-
+				foreach ( $items as $item ) {
+					'spam' == $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
 			}
 
 			// Create two lists where the key is the date and the value is the number of mails of that type
@@ -252,16 +269,17 @@ class CF7_AntiSpam_Admin {
 				<canvas id="pieChart" width="50" height="50"></canvas>
 				<?php
 				// print the received mail list
-				echo $html; ?>
+				echo $html;
+				?>
 				<p class="community-events-footer">
-					<a href="<?php echo admin_url('admin.php?page=flamingo' ) ?>"><?php echo  __( 'Flamingo Inbound Messages', 'flamingo' ) ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo admin_url( 'admin.php?page=flamingo' ); ?>"><?php echo  __( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 					|
-					<a href="<?php echo admin_url('admin.php?page=cf7-antispam' ) ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo admin_url( 'admin.php?page=cf7-antispam' ); ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
 				<script>
 
-					const lineLabels = [ '<?php echo implode("','", array_keys($mail_collection['by_date'])); ?>' ];
-					const pieLabels = [ '<?php echo implode("','", array_keys($mail_collection['by_type'])); ?>' ];
+					const lineLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_date'] ) ); ?>' ];
+					const pieLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_type'] ) ); ?>' ];
 
 					const lineData = {
 						labels: lineLabels,
@@ -270,25 +288,33 @@ class CF7_AntiSpam_Admin {
 							backgroundColor: 'rgb(0,255,122)',
 							borderColor: 'rgb(3, 210, 106)',
 							tension: 0.25,
-							data: [<?php if ( isset( $ham ) ) {
-									echo implode( ",", $ham );
-								}?>],
+							data: [
+							<?php
+							if ( isset( $ham ) ) {
+									echo implode( ',', $ham );
+							}
+							?>
+								],
 						},
 						{
 							label: 'Spam',
 							backgroundColor: 'rgb(255,4,0)',
 							borderColor: 'rgb(248, 49, 47)',
 							tension: 0.25,
-							data: [<?php if ( isset( $spam ) ) {
-								echo implode( ",", $spam );
-							}?>],
+							data: [
+							<?php
+							if ( isset( $spam ) ) {
+								echo implode( ',', $spam );
+							}
+							?>
+							],
 						}]
 					};
 
 					const pieData = {
 						labels: pieLabels,
 						datasets: [{
-							data: [<?php echo $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam'] ; ?>],
+							data: [<?php echo $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam']; ?>],
 							backgroundColor: [
 								'rgb(15,199,107)',
 								'rgb(248,49,47)'
@@ -338,9 +364,9 @@ class CF7_AntiSpam_Admin {
 
 				</script>
 			</div>
-		<?php
-		else:
-			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>' . __('You have not received any e-mails in the last 7 days.', 'cf7-antispam' ) . '</p></div>';
+			<?php
+		else :
+			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>' . __( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' ) . '</p></div>';
 		endif;
 		?>
 

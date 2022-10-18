@@ -33,34 +33,36 @@ class CF7_AntiSpam_Frontend {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 
-		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields') , 100, 1 );
+		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields' ), 100, 1 );
 
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
 
-		if ( isset( $this->options['check_bot_fingerprint'] ) && intval($this->options['check_bot_fingerprint']) === 1 ) {
+		if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100, 1 );
 		}
 
-		if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval($this->options['check_bot_fingerprint_extras']) === 1 ) {
+		if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval( $this->options['check_bot_fingerprint_extras'] ) === 1 ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100, 1 );
 		}
 
-		if ( isset( $this->options['append_on_submit'] ) && intval($this->options['append_on_submit']) === 1 ) {
+		if ( isset( $this->options['append_on_submit'] ) && intval( $this->options['append_on_submit'] ) === 1 ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_append_on_submit' ), 100, 1 );
 		}
 
-		if ( isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) {
-			add_filter( 'wpcf7_form_elements', array( $this,'cf7a_honeypot_add'), 10, 1  );
+		if ( isset( $this->options['check_honeypot'] ) && intval( $this->options['check_honeypot'] ) === 1 ) {
+			add_filter( 'wpcf7_form_elements', array( $this, 'cf7a_honeypot_add' ), 10, 1 );
 		}
 
 		$hook = $this->options['honeyform_position'];
-		if ( isset( $this->options['check_honeyform'] ) && intval($this->options['check_honeyform']) === 1 ) {
-			if ( !is_admin() && ( defined('REST_REQUEST') && !REST_REQUEST ) ) add_action( $hook, array( $this,'cf7a_honeyform') , 99 );
+		if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
+			if ( ! is_admin() && ( defined( 'REST_REQUEST' ) && ! REST_REQUEST ) ) {
+				add_action( $hook, array( $this, 'cf7a_honeyform' ), 99 );
+			}
 		}
 
-		if ( (isset( $this->options['check_honeypot'] ) && intval($this->options['check_honeypot']) === 1 ) ||
-		     (isset( $this->options['check_honeyform'] ) && intval($this->options['check_honeyform']) === 1) ) {
-			add_action( 'wp_footer', array( $this,'cf7a_add_honeypot_css'), 11  );
+		if ( ( isset( $this->options['check_honeypot'] ) && intval( $this->options['check_honeypot'] ) === 1 ) ||
+			 ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) ) {
+			add_action( 'wp_footer', array( $this, 'cf7a_add_honeypot_css' ), 11 );
 		}
 	}
 
@@ -75,57 +77,58 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_honeypot_add( $form_elements ) {
 
 		try {
-			$html = new DOMDocument('1.0', 'UTF-8');
-			libxml_use_internal_errors(true);
+			$html = new DOMDocument( '1.0', 'UTF-8' );
+			libxml_use_internal_errors( true );
 			$html->loadHTML( $form_elements );
-			$xpath = new DOMXpath($html);
-			$inputs = $xpath->query('//input');
+			$xpath  = new DOMXpath( $html );
+			$inputs = $xpath->query( '//input' );
 
-		} catch (Exception $e) {
-			if (is_admin()) {
-				error_log(print_r(__("CF7-Antispam: I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)", 'cf7-antispam' )));
-				print_r($e);
+		} catch ( Exception $e ) {
+			if ( is_admin() ) {
+				error_log( print_r( __( 'CF7-Antispam: I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)', 'cf7-antispam' ) ) );
+				print_r( $e );
 			}
 			return $form_elements;
 		}
 
 		/* A list of default names for the honeypot fields. */
-		$honeypot_default_names = array('name','email','address','zip','town','phone','credit-card','ship-address', 'billing_company','billing_city', 'billing_country', 'email-address');
+		$honeypot_default_names = array( 'name', 'email', 'address', 'zip', 'town', 'phone', 'credit-card', 'ship-address', 'billing_company', 'billing_city', 'billing_country', 'email-address' );
 
-
-		$input_names = array_merge(sanitize_html_class($this->options['honeypot_input_names']), $honeypot_default_names);
-		$input_class = sanitize_html_class($this->options['cf7a_customizations_class']);
+		$input_names = array_merge( sanitize_html_class( $this->options['honeypot_input_names'] ), $honeypot_default_names );
+		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 
 		// get the inputs data
 		if ( $inputs && $inputs->length > 0 ) {
 			// to be on the save side it can be a good idea to store the name of the input (to avoid duplicates)
 			foreach ( $inputs as $i => $input ) {
 
-				error_log(print_r($inputs->item( $i ), true));
+				error_log( print_r( $inputs->item( $i ), true ) );
 
 				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
 
 					$item = $inputs->item( $i );
 
-					$parent = $item->parentNode;
+					$parent  = $item->parentNode;
 					$sibling = $item->nextSibling;
-					$clone  = $item->cloneNode();
+					$clone   = $item->cloneNode();
 
 					$item->setAttribute( 'tabindex', '' );
 					$item->setAttribute( 'class', $item->getAttribute( 'class' ) );
 
-					$honeypot_names = isset($input_names[$i]) ? $input_names[$i] : $honeypot_default_names[$i];
+					$honeypot_names = isset( $input_names[ $i ] ) ? $input_names[ $i ] : $honeypot_default_names[ $i ];
 
 					$clone->setAttribute( 'name', $honeypot_names );
 					$clone->setAttribute( 'value', '' );
 					$clone->setAttribute( 'autocomplete', 'fill' );
 					$clone->setAttribute( 'tabindex', '-1' );
-					$clone->setAttribute( 'class', $clone->getAttribute( 'class' ) . ' '.$input_class.' autocomplete input' );
+					$clone->setAttribute( 'class', $clone->getAttribute( 'class' ) . ' ' . $input_class . ' autocomplete input' );
 
 					// duplicate the inputs into honeypots
 					$parent->insertBefore( $clone, $sibling );
 
-					if ($i > 0) return $html->saveHTML();
+					if ( $i > 0 ) {
+						return $html->saveHTML();
+					}
 				}
 			}
 		}
@@ -134,21 +137,26 @@ class CF7_AntiSpam_Frontend {
 
 	public function cf7a_honeyform( $content ) {
 
-		$form_class = sanitize_html_class($this->options['cf7a_customizations_class']);
+		$form_class   = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 		$form_post_id = 0;
 
-		$args = array( 'post_type' => 'wpcf7_contact_form', 'posts_per_page' => 1);
+		$args = array(
+			'post_type'      => 'wpcf7_contact_form',
+			'posts_per_page' => 1,
+		);
 		$loop = new WP_Query( $args );
-		while ( $loop->have_posts() ) : $loop->the_post();
+		while ( $loop->have_posts() ) :
+			$loop->the_post();
 			$form_post_id = get_the_ID();
 		endwhile;
 
 		$WPCF7 = WPCF7_ContactForm::get_template();
 
 		static $global_count = 0;
-		$global_count += 1;
+		$global_count       += 1;
 
-		$unit_tag = sprintf( 'wpcf7-f%1$d-p%2$d-o%3$d',
+		$unit_tag = sprintf(
+			'wpcf7-f%1$d-p%2$d-o%3$d',
 			$form_post_id,
 			get_the_ID(),
 			$global_count
@@ -163,12 +171,12 @@ class CF7_AntiSpam_Frontend {
 		$lang_tag = str_replace( '_', '-', $WPCF7->locale() );
 
 		$hidden_fields = array(
-			'_wpcf7' => $form_post_id,
-			'_wpcf7_version' => WPCF7_VERSION,
-			'_wpcf7_locale' => $WPCF7->locale(),
-			'_wpcf7_unit_tag' => $unit_tag,
-			'_wpcf7_posted_data_hash' => "",
-			'_wpcf7_'.$form_class => ""
+			'_wpcf7'                  => $form_post_id,
+			'_wpcf7_version'          => WPCF7_VERSION,
+			'_wpcf7_locale'           => $WPCF7->locale(),
+			'_wpcf7_unit_tag'         => $unit_tag,
+			'_wpcf7_posted_data_hash' => '',
+			'_wpcf7_' . $form_class   => '',
 		);
 
 		if ( in_the_loop() ) {
@@ -183,103 +191,119 @@ class CF7_AntiSpam_Frontend {
 
 		foreach ( $hidden_fields as $name => $value ) {
 			$hidden_fields_html .= sprintf(
-                '<input type="hidden" name="%1$s" value="%2$s" />',
-                esc_attr( $name ), esc_attr( $value ) ) . "\n";
+				'<input type="hidden" name="%1$s" value="%2$s" />',
+				esc_attr( $name ),
+				esc_attr( $value )
+			) . "\n";
 		}
 
-		$html = sprintf( '<div %s>',
-			wpcf7_format_atts( array(
-				'role' => 'form',
-				'class' => 'wpcf7',
-				'id' => $unit_tag,
-				( get_option( 'html_type' ) == 'text/html' ) ? 'lang' : 'xml:lang'
-				=> $lang_tag,
-				'dir' => wpcf7_is_rtl( $WPCF7->locale() ) ? 'rtl' : 'ltr'
-			) )
+		$html = sprintf(
+			'<div %s>',
+			wpcf7_format_atts(
+				array(
+					'role'  => 'form',
+					'class' => 'wpcf7',
+					'id'    => $unit_tag,
+					( get_option( 'html_type' ) == 'text/html' ) ? 'lang' : 'xml:lang'
+					=> $lang_tag,
+					'dir'   => wpcf7_is_rtl( $WPCF7->locale() ) ? 'rtl' : 'ltr',
+				)
+			)
 		);
 
 		$html .= $WPCF7->screen_reader_response();
 
 		$atts = array(
-			'action' => esc_url( $url ),
-			'method' => 'post',
-			'class' => 'wpcf7-form init',
-			'enctype' => wpcf7_enctype_value( '' ),
+			'action'       => esc_url( $url ),
+			'method'       => 'post',
+			'class'        => 'wpcf7-form init',
+			'enctype'      => wpcf7_enctype_value( '' ),
 			'autocomplete' => true,
-			'novalidate' => wpcf7_support_html5() ? 'novalidate' : '',
-			'data-status' => 'init',
-			'locale' => $WPCF7->locale(),
+			'novalidate'   => wpcf7_support_html5() ? 'novalidate' : '',
+			'data-status'  => 'init',
+			'locale'       => $WPCF7->locale(),
 		);
 		$atts = wpcf7_format_atts( $atts );
 
-
 		$html .= sprintf( '<form %s>', $atts ) . "\n";
 		$html .= '<div style="display: none;">' . "\n" . $hidden_fields_html . '</div>' . "\n";
-        $html .= $WPCF7->replace_all_form_tags();
+		$html .= $WPCF7->replace_all_form_tags();
 		$html .= $WPCF7->form_response_output();
 		$html .= '</form></div>';
-		$html = html_entity_decode($html, ENT_COMPAT, 'UTF-8');
+		$html  = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
 
 		wp_reset_query();
 
-		echo '<div><div class="wpcf7-form"><div class="' . $form_class . '"><div>' . $html . "</div></div></div></div>" . $content;
+		echo '<div><div class="wpcf7-form"><div class="' . $form_class . '"><div>' . $html . '</div></div></div></div>' . $content;
 	}
 
 	public function cf7a_add_honeypot_css() {
-		$form_class = sanitize_html_class($this->options['cf7a_customizations_class']);
-		echo '<style>body div .wpcf7-form .'.$form_class.'{position:absolute;margin-left:-999em;}</style>';
+		$form_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
+		echo '<style>body div .wpcf7-form .' . $form_class . '{position:absolute;margin-left:-999em;}</style>';
 	}
 
 	public function cf7a_add_hidden_fields( $fields ) {
 
-        // the base hidden field prefix
-        $prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
+		// the base hidden field prefix
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
-        // add the language if required
-        if ( intval( $this->options['check_language'] ) == 1 ) {
-            $fields[$prefix . '_language'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
-                cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) :
-                cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
-        }
+		// add the language if required
+		if ( intval( $this->options['check_language'] ) == 1 ) {
+			$fields[ $prefix . '_language' ] = isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ?
+				cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) :
+				cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
+		}
 
-        // add the timestamp if required
-        if ( intval( $this->options['check_time'] ) == 1 ) {
-            $fields[$prefix . '_timestamp'] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
-        }
+		// add the timestamp if required
+		if ( intval( $this->options['check_time'] ) == 1 ) {
+			$fields[ $prefix . '_timestamp' ] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
+		}
 
-        // add the default hidden fields
-        return array_merge( $fields, array(
-            $prefix . 'version' => '1.0',
-            $prefix . 'address'  => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
-            $prefix . 'referer'  => cf7a_crypt( !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'no referer', $this->options['cf7a_cipher'] )
-        ) );
-    }
+		// add the default hidden fields
+		return array_merge(
+			$fields,
+			array(
+				$prefix . 'version' => '1.0',
+				$prefix . 'address' => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
+				$prefix . 'referer' => cf7a_crypt( ! empty( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : 'no referer', $this->options['cf7a_cipher'] ),
+			)
+		);
+	}
 
 	public function cf7a_add_bot_fingerprinting( $fields ) {
 
-		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
-		return array_merge( $fields, array(
-			$prefix.'bot_fingerprint' => cf7a_crypt( time(), $this->options['cf7a_cipher'] )
-		));
+		return array_merge(
+			$fields,
+			array(
+				$prefix . 'bot_fingerprint' => cf7a_crypt( time(), $this->options['cf7a_cipher'] ),
+			)
+		);
 	}
 
 	public function cf7a_add_bot_fingerprinting_extras( $fields ) {
 
-		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
-		return array_merge( $fields, array(
-			$prefix.'bot_fingerprint_extras' => false
-		));
+		return array_merge(
+			$fields,
+			array(
+				$prefix . 'bot_fingerprint_extras' => false,
+			)
+		);
 	}
 
 	public function cf7a_append_on_submit( $fields ) {
 
-		$prefix = sanitize_html_class($this->options['cf7a_customizations_prefix']);
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
-		return array_merge( $fields, array(
-			$prefix.'append_on_submit' => false
-		));
+		return array_merge(
+			$fields,
+			array(
+				$prefix . 'append_on_submit' => false,
+			)
+		);
 	}
 
 	/**
@@ -300,13 +324,17 @@ class CF7_AntiSpam_Frontend {
 		 * class.
 		 */
 
-		wp_register_script($this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/script.js', array( 'jquery' ), $this->version, true );
-		wp_enqueue_script($this->plugin_name);
+		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/script.js', array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->plugin_name );
 
-		wp_localize_script($this->plugin_name, "cf7a_settings", array(
-			"prefix" => $this->options['cf7a_customizations_prefix'],
-			"disableReload" => $this->options['cf7a_disable_reload'],
-			'version' => cf7a_crypt( CF7ANTISPAM_VERSION, $this->options['cf7a_cipher'] )
-		));
+		wp_localize_script(
+			$this->plugin_name,
+			'cf7a_settings',
+			array(
+				'prefix'        => $this->options['cf7a_customizations_prefix'],
+				'disableReload' => $this->options['cf7a_disable_reload'],
+				'version'       => cf7a_crypt( CF7ANTISPAM_VERSION, $this->options['cf7a_cipher'] ),
+			)
+		);
 	}
 }

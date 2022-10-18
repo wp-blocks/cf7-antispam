@@ -61,7 +61,7 @@ class CF7_AntiSpam {
 		}
 
 		$this->plugin_name = CF7ANTISPAM_NAME;
-		$this->options = $this->get_options(); // the plugin options
+		$this->options     = $this->get_options(); // the plugin options
 
 		// the php files
 		$this->load_dependencies();
@@ -79,7 +79,7 @@ class CF7_AntiSpam {
 					$filters = new CF7_AntiSpam_filters();
 					$filters->cf7a_flamingo_on_install();
 				}
-				delete_transient('cf7a_activation');
+				delete_transient( 'cf7a_activation' );
 			}
 		}
 
@@ -174,7 +174,7 @@ class CF7_AntiSpam {
 		$plugin_antispam = new CF7_AntiSpam_filters();
 
 		// the spam filter
-		add_filter( 'wpcf7_spam', array($plugin_antispam, 'cf7a_spam_filter'), 8, 1 );
+		add_filter( 'wpcf7_spam', array( $plugin_antispam, 'cf7a_spam_filter' ), 8, 1 );
 
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
 			// if flamingo is defined the mail will be analyzed after flamingo has stored
@@ -183,7 +183,7 @@ class CF7_AntiSpam {
 			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_remove_honeypot' ), 12, 1 );
 		}
 
-		if (is_admin()) {
+		if ( is_admin() ) {
 
 			// the GeoIP2 database
 			new CF7_Antispam_geoip();
@@ -196,10 +196,10 @@ class CF7_AntiSpam {
 
 			// if flamingo is enabled use submitted spam / ham to feed d8
 			if ( defined( 'FLAMINGO_VERSION' ) ) {
-				add_action( 'load-flamingo_page_flamingo_inbound', array( $plugin_antispam , 'cf7a_d8_flamingo_classify' ), 9, 0 );
-				add_filter(	'manage_flamingo_inbound_posts_columns', array( $plugin_antispam, 'flamingo_columns' ));
-				add_action(	'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_d8_column' ), 10, 2);
-				add_action(	'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_resend_column' ), 11, 2);
+				add_action( 'load-flamingo_page_flamingo_inbound', array( $plugin_antispam, 'cf7a_d8_flamingo_classify' ), 9, 0 );
+				add_filter( 'manage_flamingo_inbound_posts_columns', array( $plugin_antispam, 'flamingo_columns' ) );
+				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_d8_column' ), 10, 2 );
+				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_resend_column' ), 11, 2 );
 			}
 		}
 	}
@@ -212,10 +212,10 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_frontend() {
-		if (!is_admin()) {
+		if ( ! is_admin() ) {
 			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
-			$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts'  );
+			$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );
 
 		}
 	}
@@ -229,14 +229,18 @@ class CF7_AntiSpam {
 		if ( defined( 'WPCF7_VERSION' ) ) {
 			$this->loader->run();
 		} else {
-			add_action('admin_notices', function () {
-				printf( '<div class="notice notice-info"><p>%s<a href="%s">%s</a>%s</p></div>',
-					esc_html__('CF7 AntiSpam need ', 'cf7-antispam'),
-					esc_url( 'https://wordpress.org/plugins/contact-form-7/' ),
-					esc_html__('Contact Form 7', 'cf7-antispam'),
-					esc_html__(' installed and enabled in order to work.', 'cf7-antispam')
-				);
-			});
+			add_action(
+				'admin_notices',
+				function () {
+					printf(
+						'<div class="notice notice-info"><p>%s<a href="%s">%s</a>%s</p></div>',
+						esc_html__( 'CF7 AntiSpam need ', 'cf7-antispam' ),
+						esc_url( 'https://wordpress.org/plugins/contact-form-7/' ),
+						esc_html__( 'Contact Form 7', 'cf7-antispam' ),
+						esc_html__( ' installed and enabled in order to work.', 'cf7-antispam' )
+					);
+				}
+			);
 		}
 	}
 

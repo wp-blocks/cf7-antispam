@@ -1,6 +1,7 @@
 import './css/admin.scss';
 
 window.onload = function () {
+	/* This is the code that adds the confirmation alert to the delete buttons on the settings page. */
 	if (
 		document.body.classList.contains( 'cf7-antispam-admin' ) ||
 		document.body.classList.contains( 'flamingo_page_flamingo_inbound' )
@@ -24,12 +25,16 @@ window.onload = function () {
 		} );
 	}
 
+	/* This is the code that hides the welcome panel,
+	adds the ctrl-s keypress to save the settings,
+	and shows the advanced settings. */
 	if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
 		// hide the welcome panel
 		const welcomePanel = document.getElementById( 'welcome-panel' );
 		const welcomePanelCloseBtn = welcomePanel.querySelector(
 			'a.welcome-panel-close'
 		);
+
 		welcomePanelCloseBtn.addEventListener( 'click', ( event ) => {
 			event.preventDefault();
 			welcomePanel.classList.add( 'hidden' );

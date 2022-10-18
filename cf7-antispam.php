@@ -5,16 +5,18 @@ Description: A trustworthy antispam plugin for Contact Form 7. Simple but effect
 Author: Codekraft
 Text Domain: cf7-antispam
 Domain Path: /languages/
-Version: 0.3.1
+Version: 0.4.0
 */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) die;
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
 // CONSTANTS
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
-define( 'CF7ANTISPAM_VERSION', '0.3.1' );
+define( 'CF7ANTISPAM_VERSION', '0.4.0' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
@@ -24,13 +26,25 @@ define( 'CF7ANTISPAM_PLUGIN_DIR', untrailingslashit( dirname( CF7ANTISPAM_PLUGIN
 
 define( 'CF7ANTISPAM_LOG_PREFIX', 'CF7A: ' );
 
-if (!defined('CF7ANTISPAM_DEBUG')) define( 'CF7ANTISPAM_DEBUG', false);
-if (!defined('CF7ANTISPAM_DEBUG_EXTENDED')) define( 'CF7ANTISPAM_DEBUG_EXTENDED', false);
-if (!defined('CF7ANTISPAM_DNSBL_BENCHMARK')) define( 'CF7ANTISPAM_DNSBL_BENCHMARK', false);
+if ( ! defined( 'CF7ANTISPAM_DEBUG' ) ) {
+	define( 'CF7ANTISPAM_DEBUG', false );
+}
+if ( ! defined( 'CF7ANTISPAM_DEBUG_EXTENDED' ) ) {
+	define( 'CF7ANTISPAM_DEBUG_EXTENDED', false );
+}
+if ( ! defined( 'CF7ANTISPAM_DNSBL_BENCHMARK' ) ) {
+	define( 'CF7ANTISPAM_DNSBL_BENCHMARK', false );
+}
 
-if (!defined('CF7ANTISPAM_PREFIX')) define( 'CF7ANTISPAM_PREFIX', "_cf7a_");
-if (!defined('CF7ANTISPAM_HONEYPOT_CLASS')) define( 'CF7ANTISPAM_HONEYPOT_CLASS', "fit-the-fullspace");
-if (!defined('CF7ANTISPAM_CYPHER')) define( 'CF7ANTISPAM_CYPHER', "aes-128-cbc");
+if ( ! defined( 'CF7ANTISPAM_PREFIX' ) ) {
+	define( 'CF7ANTISPAM_PREFIX', '_cf7a_' );
+}
+if ( ! defined( 'CF7ANTISPAM_HONEYPOT_CLASS' ) ) {
+	define( 'CF7ANTISPAM_HONEYPOT_CLASS', 'fit-the-fullspace' );
+}
+if ( ! defined( 'CF7ANTISPAM_CYPHER' ) ) {
+	define( 'CF7ANTISPAM_CYPHER', 'aes-128-cbc' );
+}
 
 if ( ! defined( 'CF7ANTISPAM_GEOIP_KEY' ) ) {
 	define( 'CF7ANTISPAM_GEOIP_KEY', false );
@@ -42,7 +56,6 @@ if ( ! defined( 'CF7ANTISPAM_GEOIP_KEY' ) ) {
 require_once  CF7ANTISPAM_PLUGIN_DIR . '/vendor/autoload.php';
 
 // PLUGIN
-
 /**
  * CF7-AntiSpam functions
  */
@@ -73,7 +86,7 @@ function uninstall_cf7_antispam() {
 	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
 	CF7_AntiSpam_Uninstaller::uninstall();
 }
-register_uninstall_hook(  CF7ANTISPAM_PLUGIN, 'uninstall_cf7_antispam' );
+register_uninstall_hook( CF7ANTISPAM_PLUGIN, 'uninstall_cf7_antispam' );
 
 
 /**
