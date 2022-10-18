@@ -1,0 +1,34 @@
+{
+  "name": "codekraft/contactform7-antispam",
+  "description": "AntiSpam for Contact Form 7",
+  "license": "GPL-3.0-or-later",
+  "type": "wordpress-plugin",
+  "authors": [
+	{
+	  "name": "Erik Golinelli",
+	  "email": "erik@codekraft.t",
+	  "homepage": "https://modul-r.codekraft.it/"
+	}
+  ],
+  "homepage": "https://wordpress.org/plugins/cf7-antispam/",
+  "require-dev": {
+	"friendsofphp/php-cs-fixer": "^2",
+	"wp-coding-standards/wpcs": "^2.3",
+	"yoast/i18n-module": "3.1.*"
+  },
+  "require": {
+	"geoip2/geoip2": "~2.0"
+  },
+  "scripts": {
+	"lint": "vendor/bin/phpcs --standard=phpcs.xml.dist --report=summary,source",
+	"lint-fix": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
+	"phpcs-fix": "phpcbf --standard=phpcs.xml.dist"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+	"allow-plugins": {
+	  "dealerdirect/phpcodesniffer-composer-installer": true
+	}
+  }
+}
