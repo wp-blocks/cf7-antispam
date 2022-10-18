@@ -54,7 +54,7 @@ class CF7_Antispam_geoip {
 		// init the geocoder
 		$this->geo = ( $this->cf7a_can_enable_geoip() ) ? $this->cf7a_geo_init() : false;
 
-		add_action( 'cf7a_geoip_update_db', array( $this, 'cf7a_geoip_download_database' ) );
+		return add_action( 'cf7a_geoip_update_db', array( $this, 'cf7a_geoip_download_database' ) );
 	}
 
 	private function cf7a_geoip_set_license() {
@@ -706,10 +706,11 @@ class CF7_AntiSpam_filters {
 
 		$submission = WPCF7_Submission::get_instance();
 
-		if ( ! $submission
-			 or ! $posted_data = $submission->get_posted_data() ) {
-			return;
+		if ( ! $submission ) {
+			return true;
 		}
+
+		$posted_data = $submission->get_posted_data();
 
 		// get the contact form data mail data
 		$cf = $submission->get_contact_form();
@@ -730,7 +731,7 @@ class CF7_AntiSpam_filters {
 		if ( ! empty( $additional_settings ) && isset( $posted_data[ $additional_settings['message'] ] ) ) {
 
 			$text   = stripslashes( $posted_data[ $additional_settings['message'] ] );
-			$rating = $text != '' ? $this->cf7a_b8_classify( $text ) : 'none';
+			$rating = ! empty( $text ) ? $this->cf7a_b8_classify( $text ) : 'none';
 
 			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', round( $rating, 2 ) );
 
@@ -743,19 +744,21 @@ class CF7_AntiSpam_filters {
 
 		if ( isset( $options['check_honeypot'] ) && intval( $options['check_honeypot'] ) === 1 ) {
 
-			$submission = WPCF7_Submission::get_instance();
+			$submission             = WPCF7_Submission::get_instance();
+			$honeypot_default_names = array_merge( $options['honeypot_input_names'], array( 'name', 'email', 'address', 'zip', 'town', 'phone', 'credit-card', 'ship-address', 'billing_company', 'billing_city', 'billing_country', 'email-address' ) );
 
-			if ( ! $submission
-				 or ! $posted_data = $submission->get_posted_data() ) {
+			if ( ! $submission ) {
 				return true;
 			}
+
+			$posted_data = $submission->get_posted_data();
 
 			$fields = array();
 
 			foreach ( $posted_data as $key => $field ) {
 
 				// if a honeypot field was found into posted data delete it
-				if ( in_array( $key, $options['honeypot_input_names'] ) && empty( $field ) ) {
+				if ( in_array( $key, $honeypot_default_names, true ) && empty( $field ) ) {
 					delete_post_meta( $result['flamingo_inbound_id'], '_field_' . $key );
 				} else {
 					$fields[ $key ] = null;
@@ -828,7 +831,7 @@ class CF7_AntiSpam_filters {
 		if ( is_array( $string ) ) {
 			$string = implode( ', ', $string );
 		}
-		if ( $log_level === 0 || $log_level == 1 && CF7ANTISPAM_DEBUG || $log_level == 2 && CF7ANTISPAM_DEBUG_EXTENDED ) {
+		if ( $log_level === 0 || $log_level === 1 && CF7ANTISPAM_DEBUG || $log_level === 2 && CF7ANTISPAM_DEBUG_EXTENDED ) {
 			error_log( CF7ANTISPAM_LOG_PREFIX . $string );
 		}
 	}
@@ -845,10 +848,11 @@ class CF7_AntiSpam_filters {
 		// Get the submitted data
 		$submission = WPCF7_Submission::get_instance();
 
-		if ( ! $submission
-			 or ! $posted_data = $submission->get_posted_data() ) {
-			return;
+		if ( ! $submission ) {
+			return true;
 		}
+
+		$posted_data = $submission->get_posted_data();
 
 		// Get the contact form additional data
 		$contact_form = $submission->get_contact_form();
@@ -921,13 +925,11 @@ class CF7_AntiSpam_filters {
 		$reason     = array();
 		$spam_score = 0;
 
-		/**
-		 * Checks if the ip is already banned - no mercy :)
-		 * TODO: check coherence between $cf7_remote_ip and $remote_ip
-		 */
+		/* Checking if the IP address is empty. If it is empty, it will add a score of 10 to the spam score and add a reason to
+		the reason array. */
 		if ( ! $remote_ip ) {
 
-			$remote_ip = $cf7_remote_ip ?: null;
+			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
 
 			$spam_score     += $score_detection;
 			$reason['no_ip'] = 'Address field empty';
@@ -937,6 +939,7 @@ class CF7_AntiSpam_filters {
 			}
 		}
 
+		/* Checking if the IP address is already blacklisted - no mercy :) */
 		if ( $remote_ip && $options['autostore_bad_ip'] && $options['max_attempts'] ) {
 
 			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
@@ -954,7 +957,7 @@ class CF7_AntiSpam_filters {
 		/**
 		 * Check the CF7 AntiSpam version field
 		 */
-		if ( ! $cf7a_version || $cf7a_version != CF7ANTISPAM_VERSION ) {
+		if ( ! $cf7a_version || $cf7a_version !== CF7ANTISPAM_VERSION ) {
 
 			$spam_score             += $score_fingerprinting;
 			$reason['data_mismatch'] = "Version mismatch '$cf7a_version' != '" . CF7ANTISPAM_VERSION . "'";
