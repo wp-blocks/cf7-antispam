@@ -11,6 +11,9 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	public $options;
 
+	/**
+	 * It adds actions to the `cf7a_dashboard` hook
+	 */
 	public function display_dashboard() {
 		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_header' ) );
 		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
@@ -22,12 +25,18 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 
+	/**
+	 * It displays the header for the widget.
+	 */
 	function cf7a_display_header() {
 		$html  = '<div class="wrap"><div class="cf7-antispam">';
 		$html .= '<h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 - AntiSpam</h1>';
 		echo $html;
 	}
 
+	/**
+	 * It displays the content of the widget
+	 */
 	function cf7a_display_content() {
 		CF7_AntiSpam_Admin_Tools::cf7a_handle_actions();
 
@@ -80,7 +89,19 @@ class CF7_AntiSpam_Admin_Display {
 		<?php
 	}
 
+	/**
+	 * It displays the footer for the widget.
+	 */
+	function cf7a_display_footer() {
+		?>
+		</div></div>
+		<?php
+	}
 
+	/**
+	 * It prints the blacklisted ip, the rating and some information, returns the plugins debug information and the
+	 * plugins debug information
+	 */
 	function cf7a_display_debug() {
 
 		$tools = new CF7_AntiSpam_Admin_Tools();
@@ -94,14 +115,4 @@ class CF7_AntiSpam_Admin_Display {
 		// returns the plugins debug information
 		$tools->cf7a_get_debug_info();
 	}
-
-
-
-	function cf7a_display_footer() {
-		?>
-	  </div></div>
-		<?php
-	}
-
-
 }

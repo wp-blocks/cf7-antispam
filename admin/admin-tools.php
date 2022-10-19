@@ -2,6 +2,13 @@
 
 class CF7_AntiSpam_Admin_Tools {
 
+	/**
+	 * It sets a transient with the name of `cf7a_notice` and the value of the notice
+	 *
+	 * @param string $message The message you want to display.
+	 * @param string $type error, warning, success, info
+	 * @param boolean $dismissible when the notice need the close button
+	 */
 	public static function cf7a_push_notice( $message = 'generic', $type = 'error', $dismissible = true ) {
 		$class  = "notice notice-$type";
 		$class .= $dismissible ? ' is-dismissible' : '';
@@ -9,6 +16,13 @@ class CF7_AntiSpam_Admin_Tools {
 		set_transient( 'cf7a_notice', $notice );
 	}
 
+	/**
+	 * It takes a number and returns a color based on that number.
+	 *
+	 * @param numeric $rank The rank of the page.
+	 *
+	 * @return string an icon with a red color, that becomes greener when the rank is high
+	 */
 	public static function cf7a_format_status( $rank ) {
 		$color = 200 - ( $rank * 2 );
 		$color = $color < 0 ? 0 : $color;
@@ -207,11 +221,70 @@ class CF7_AntiSpam_Admin_Tools {
 
 	}
 
+	private static function cf7a_get_debug_info_options() {
+
+		$options = CF7_AntiSpam::get_options();
+
+		$html = '';
+		$html .= printf( '<hr/><h3>%s</h3>', __( 'Options debug', 'cf7-antispam' ) );
+		$html .= printf(
+			'<p>%s</p><pre>%s</pre>',
+			__( 'Those are the options of this plugin', 'cf7-antispam' ),
+
+			htmlentities( print_r( $options, true ) )
+		);
+
+		return $html;
+	}
+
+	private static function cf7a_get_debug_info_geoip() {
+		$html = '';
+
+		try {
+			$cf7a_geo = new CF7_Antispam_geoip;
+
+			if ( $cf7a_geo ) {
+				$geoip = $cf7a_geo->cf7a_can_enable_geoip();
+				$geoip_update = $geoip ? date_i18n( get_option( 'date_format' ),  get_option( 'cf7a_geodb_update' ) ) : __( 'update not set', 'cf7-antispam' );
+
+				$html_update_schedule = sprintf(
+					'<p class="debug"><code>GEOIP</code> %s</p>',
+					$geoip
+						? __('Enabled', 'cf7-antispam') . " - ". __('Geo-ip database last update date: ', 'cf7-antispam') . $geoip_update
+						: __('Disabled', 'cf7-antispam')
+				);
+
+
+				$your_ip = cf7a_get_real_ip();
+				$server_data = $cf7a_geo->cf7a_geoip_check_ip( $your_ip );
+
+				if ( empty( $server_data ) ) {
+					$server_data = 'Unable to retrieve geoip information for ' . $your_ip;
+				}
+
+				$html .= printf(
+					'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
+					__( 'GeoIP test', 'cf7-antispam' ),
+					$html_update_schedule,
+					__('Your IP address', 'cf7-antispam' ),
+					$your_ip,
+					print_r( $server_data, true )
+				);
+			}
+		} catch ( Exception $e ) {
+			$html .= printf(
+				'<p>%s</p><pre>%s</pre>',
+				__( 'GeoIP Error', 'cf7-antispam' ),
+				print_r( $e->getMessage(), true )
+			);
+		}
+
+		return $html;
+	}
+
 	public static function cf7a_get_debug_info() {
 
 		if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) {
-
-			$options = CF7_AntiSpam::get_options();
 
 			// the header
 			$html = printf(
@@ -226,6 +299,7 @@ class CF7_AntiSpam_Admin_Tools {
 					'<code>CF7ANTISPAM_DEBUG</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
 				);
 			}
+
 			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
 				$html .= printf(
 					'<p class="debug">%s</p>',
@@ -234,35 +308,9 @@ class CF7_AntiSpam_Admin_Tools {
 			}
 
 			// output the options
-			$html .= printf( '<hr/><h3>%s</h3>', __( 'Options debug', 'cf7-antispam' ) );
-			$html .= printf(
-				'<p>%s</p><pre>%s</pre>',
-				__( 'Those are the options of this plugin', 'cf7-antispam' ),
-				htmlentities( print_r( $options, true ) )
-			);
+			$html .= self::cf7a_get_debug_info_options();
 
-			try {
-				$geoip = new CF7_Antispam_geoip();
-				if ( $geoip ) {
-					$server_data = $geoip->cf7a_geoip_check_ip( $_SERVER['SERVER_ADDR'] );
-
-					if ( empty( $server_data ) ) {
-						$server_data = 'Unable to retrieve geoip information for ' . $_SERVER['SERVER_ADDR'];
-					}
-
-					$html .= printf(
-						'<p>%s</p><pre>%s</pre>',
-						__( 'The Server GeoIP information', 'cf7-antispam' ),
-						print_r( $server_data, true )
-					);
-				}
-			} catch ( Exception $e ) {
-				$html .= printf(
-					'<p>%s</p><pre>%s</pre>',
-					__( 'GeoIP Error', 'cf7-antispam' ),
-					print_r( $e->getMessage(), true )
-				);
-			}
+			$html .= self::cf7a_get_debug_info_geoip();
 
 			$html .= printf( '</div>' );
 

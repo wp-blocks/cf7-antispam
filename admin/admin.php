@@ -64,6 +64,9 @@ class CF7_AntiSpam_Admin {
 
 	}
 
+	/**
+	 * It adds a submenu page to the Contact Form 7 menu in the admin dashboard
+	 */
 	public function cf7a_admin_menu() {
 		add_submenu_page(
 			'wpcf7',
@@ -90,11 +93,21 @@ class CF7_AntiSpam_Admin {
 		return $links;
 	}
 
+	/**
+	 * It creates a new instance of the CF7_AntiSpam_Admin_Display class and then calls the display_dashboard() method on that
+	 * instance
+	 */
 	public function cf7a_admin_dashboard() {
 		$admin_display = new CF7_AntiSpam_Admin_Display();
 		$admin_display->display_dashboard();
 	}
 
+	/**
+	 * If the current admin page is not the plugin's admin page, return. Otherwise, if the settings have been updated, display
+	 * a success message. Otherwise, if there's a notice in the transient, display it and delete the transient
+	 *
+	 * @return null the current screen.
+	 */
 	public function cf7a_display_notices() {
 
 		$admin_page = get_current_screen();
@@ -165,6 +178,14 @@ class CF7_AntiSpam_Admin {
 		);
 	}
 
+	/**
+	 * If the current admin page is not a Contact Form 7 Anti-Spam page, then return the $classes variable. Otherwise, return
+	 * the $classes variable with the string "cf7-antispam-admin" appended to it
+	 *
+	 * @param string $classes Space-separated list of CSS classes.
+	 *
+	 * @return string $classes The $classes variable is being returned.
+	 */
 	public function cf7a_body_class( $classes ) {
 		$admin_page = get_current_screen();
 		if ( false === strpos( $admin_page->base, $this->plugin_name ) ) {
@@ -173,11 +194,20 @@ class CF7_AntiSpam_Admin {
 		return "$classes cf7-antispam-admin";
 	}
 
+	/**
+	 * It adds a dashboard widget to the WordPress admin dashboard
+	 */
 	public function cf7a_dashboard_widget() {
 		global $wp_meta_boxes;
 		wp_add_dashboard_widget( 'custom_help_widget', 'Contact Form 7 Antispam - Recap', array( $this, 'cf7a_flamingo_recap' ) );
 	}
 
+	/**
+	 * Prints a widget with a chart displaying spam and ham mails received
+	 *
+	 * It queries the database for all the emails received in the last week, then it creates two lists: one with the number of
+	 * emails received per day, and one with the number of emails received per type (ham or spam)
+	 */
 	function cf7a_flamingo_recap() {
 
 		$args = array(
