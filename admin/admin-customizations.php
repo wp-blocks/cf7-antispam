@@ -10,11 +10,29 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public $options;
 
+	/**
+	 * The geoip utils
+	 *
+	 * @since    0.4.0
+	 * @access   public
+	 */
+	public $geo;
+
+	/**
+	 * The function `__construct()` is called when the class is instantiated.
+	 *
+	 * The function `cf7a_options_init()` is called when the admin page is loaded.
+	 *
+	 * The function `get_options()` is called to get the plugin options.
+	 *
+	 * The class `CF7_Antispam_geoip` is instantiated.
+	 */
 	public function __construct() {
 		// the plugin main menu
 		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
 
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
+		$this->geo = new CF7_Antispam_geoip; // the plugin options
 	}
 
 	public function cf7a_options_init() {
@@ -96,6 +114,87 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bot_fingerprint' // Section
 		);
 
+		// Section GEOIP
+		add_settings_section(
+			'cf7a_check_geoip', // ID
+			__( 'GeoIP', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_check_geoip' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings enable geoip
+		add_settings_field(
+			'check_geoip', // ID
+			__( 'Enable GeoIP DB Download', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_enable_geoip_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_geoip' // Section
+		);
+
+		// Settings enable geoip
+		add_settings_field(
+			'check_geoip_enabled', // ID
+			__( 'GeoIP database available', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_geoip_is_enabled_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_geoip' // Section
+		);
+
+		// The maxmind update key (unless you have defined it). Adds cron job to keep database updated;
+		// https://www.maxmind.com/en/geolite2/signup?lang=en
+		add_settings_field(
+			'geoip_dbkey', // ID
+			__( 'MaxMind Update Key', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_geoip_key_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_geoip' // Section
+		);
+
+		// Section Language
+		add_settings_section(
+			'cf7a_check_language', // ID
+			__( 'Language Checks', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_check_language' ), // Callback
+			'cf7a-settings' // Page
+		);
+
+		// Settings enable browser language check
+		add_settings_field(
+			'check_language', // ID
+			__( 'Check Browser Language', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_check_browser_language_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_language' // Section
+		);
+
+
+		// Settings enable geoip check (available only if the geoip is enabled)
+		if ( $this->options['check_geoip']) add_settings_field(
+			'check_geo_location', // ID
+			__( 'Detect location using GeoIP', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_check_geo_location_callback' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_language' // Section
+		);
+
+		// Settings allowed languages
+		add_settings_field(
+			'language_allowed', // ID
+			__( 'Allowed browser Languages', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_language_allowed' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_language' // Section
+		);
+
+		// Settings disallowed languages
+		add_settings_field(
+			'cf7a_language_disallowed', // ID
+			__( 'Disallowed browser Languages', 'cf7-antispam' ), // Title
+			array( $this, 'cf7a_language_disallowed' ), // Callback
+			'cf7a-settings', // Page
+			'cf7a_check_language' // Section
+		);
+
 		// Section Time Checks
 		add_settings_section(
 			'cf7a_time_elapsed', // ID
@@ -129,68 +228,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_check_time_max_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_time_elapsed' // Section
-		);
-
-		// Section GEOIP
-		add_settings_section(
-			'cf7a_check_geoip', // ID
-			__( 'GeoIP Check', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_geoip' ), // Callback
-			'cf7a-settings' // Page
-		);
-
-		// The maxmind update key (unless you have defined it). Adds cron job to keep database updated;
-		// https://www.maxmind.com/en/geolite2/signup?lang=en
-		add_settings_field(
-			'geoip_dbkey', // ID
-			__( 'MaxMind Update Key', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_geoip_key_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_geoip' // Section
-		);
-
-		// Section Language
-		add_settings_section(
-			'cf7a_check_language', // ID
-			__( 'Language Checks', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_language' ), // Callback
-			'cf7a-settings' // Page
-		);
-
-		// Settings enable geoip
-		add_settings_field(
-			'check_geoip', // ID
-			__( 'Enable GeoIP', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_enable_geoip_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
-		);
-
-		// Settings enable browser language check
-		add_settings_field(
-			'check_language', // ID
-			__( 'Check Browser Language', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_browser_language_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
-		);
-
-		// Settings allowed languages
-		add_settings_field(
-			'language_allowed', // ID
-			__( 'Allowed browser Languages', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_language_allowed' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
-		);
-
-		// Settings disallowed languages
-		add_settings_field(
-			'cf7a_language_disallowed', // ID
-			__( 'Disallowed browser Languages', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_language_disallowed' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
 		);
 
 		// Section Bad IP
@@ -570,6 +607,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_section_bot_fingerprint() {
 		printf( '<p>' . esc_html__( "Fingerprinting is a way of exploiting certain data that the browser can provide to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( "The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.", 'cf7-antispam' ) . '</p>' );
 	}
 
 	public function cf7a_print_section_check_time() {
@@ -578,22 +616,25 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_check_geoip() {
 		printf(
-			sprintf(
-				'<p>%s</p><p>%s <a href="https://www.maxmind.com/en/geolite2/eula">%s</a> %s <a href="https://www.maxmind.com/en/geolite2/signup">%s</a></p> <p>%s</p> <p>%s<br/><code>%s</code></p>',
-				esc_html__( 'Detect user location using MaxMind GeoIP2 database.', 'cf7-antispam' ),
-				esc_html__( 'In order to enable this functionality you need to agree at  ', 'cf7-antispam' ),
-				esc_html__( 'GeoLite2 End User License Agreement', 'cf7-antispam' ),
-				esc_html__( 'and sign up ', 'cf7-antispam' ),
-				esc_html__( 'GeoLite2 Downloadable Databases', 'cf7-antispam' ),
-				esc_html__( 'With the key obtained the CF7-Antispam will be able to automatically download every month the updated GeoIP Database. ', 'cf7-antispam' ),
-				esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
-				"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
-			)
+			'<p>%s</p><p>%s <a href="https://www.maxmind.com/en/geolite2/eula">%s</a> %s <a href="https://www.maxmind.com/en/geolite2/signup">%s</a></p> <p>%s</p>',
+			esc_html__( 'Detect user location using MaxMind GeoIP2 database.', 'cf7-antispam' ),
+			esc_html__( 'In order to enable this functionality you need to agree at  ', 'cf7-antispam' ),
+			esc_html__( 'GeoLite2 End User License Agreement', 'cf7-antispam' ),
+			esc_html__( 'and sign up ', 'cf7-antispam' ),
+			esc_html__( 'GeoLite2 Downloadable Databases', 'cf7-antispam' ),
+			esc_html__( 'After registration you will get a key, paste it into the input below and CF7-Antispam will be able to automatically download the updated GeoIP database every month.', 'cf7-antispam' ),
+		);
+		// if the geo-ip constant was not set recommend to do so
+		if (! CF7ANTISPAM_GEOIP_KEY) printf(
+			'<p>%s<br/><code>%s</code></p>',
+			esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
+			"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
 		);
 	}
 
 	public function cf7a_check_language() {
-		printf( '<p>' . esc_html__( 'Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. This method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( 'Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. ', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( 'This method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) . '</p>' );
 	}
 
 	public function cf7a_print_section_bad_ip() {
@@ -612,7 +653,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf( '<p>' . esc_html__( 'Enter a list of forbidden user agents, one per line. When the string match the user agent (or a part of) the mail will be flagged', 'cf7-antispam' ) . '</p>' );
 	}
 	public function cf7a_print_dnsbl() {
-		printf( '<p>' . esc_html__( 'Check sender ip on DNS Blacklists, DNSBLs are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers. One DSNBL server address per line ', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( 'Check sender ip on DNS Blacklists, DNSBLs are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers. A DSNBL server url each line ', 'cf7-antispam' ) . '</p>' );
 	}
 	public function cf7a_print_honeypot() {
 		printf( '<p>' . esc_html__( 'the honeypot is a "trap" field that is hidden with css or js from the user but remains visible to bots. Since this fields are automatically added and appended inside the forms with standard names.', 'cf7-antispam' ) . " <p class='info monospace'>[*] " . esc_html__( 'Please check the list below because the name MUST differ from the cf7 tag class names', 'cf7-antispam' ) . '</p></p>' );
@@ -635,18 +676,26 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/**
-	 * It takes a string of comma separated values and converts it to a string of newline separated values
+	 * It takes a string of comma separated values and line-break separated value then returns an array of those values
 	 *
 	 * @param string $input - The user input with comma and spaces
 	 *
-	 * @return string $new_input - The formatted input.
+	 * @return array $new_input - The formatted input.
 	 */
 	private function cf7a_settings_format_user_input( $input ) {
-		$values = explode( ',', $input );
-		foreach ( $values as $string ) {
-			$new_input[] = trim( $string );
+		$new_input = str_replace("\r\n", ',', $input);
+		$new_input = explode( ',', $new_input);
+		$clean_item_collection = array();
+
+		if (! empty($new_input)) {
+			foreach ($new_input as $input) {
+				if ( ! is_string($input) ) continue;
+				$input = trim($input);
+				if ( $input ) $clean_item_collection[] = $input;
+			}
 		}
-		return ! empty( $new_input ) ? $new_input : $input;
+
+		return $clean_item_collection;
 	}
 
 	/**
@@ -684,6 +733,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		} elseif ( $check_geoip === 0 ) {
 
+			update_option( 'cf7a_geodb_update', false );
+
 			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db', array( false ) );
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
@@ -693,13 +744,15 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_geoip'] = $check_geoip;
 		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
-		// browser languages
+		// browser language check enabled
 		$new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
+		// geo-ip location check enabled
+		$new_input['check_geo_location'] = isset( $input['check_geo_location'] ) ? 1 : 0;
+		//languages allowed / disallowed
 		if ( ! empty( $input['languages']['allowed'] ) ) {
 			$new_input['languages']['allowed'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['allowed'] ) );
 		} else {
 			$new_input['languages']['allowed'] = array();}
-
 		if ( ! empty( $input['languages']['disallowed'] ) ) {
 			$new_input['languages']['disallowed'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['disallowed'] ) );
 		} else {
@@ -744,7 +797,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// bad words
 		$new_input['check_bad_words'] = isset( $input['check_bad_words'] );
 		if ( ! empty( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_words_list'] ) );
+			$new_input['bad_words_list'] = explode( '\r\n', $input['bad_words_list'] );
 		}
 
 		// email strings
@@ -937,6 +990,11 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_enable_geoip_callback() {
 		printf( '<input type="checkbox" id="check_geoip" name="cf7a_options[check_geoip]" %s />', isset( $this->options['check_geoip'] ) && $this->options['check_geoip'] == 1 ? 'checked="true"' : '' );
 	}
+
+	public function cf7a_geoip_is_enabled_callback() {
+		printf( ( get_option( 'cf7a_geodb_update' ) ) ? "✅ " : "❌ " );
+	}
+
 	public function cf7a_geoip_key_callback() {
 		$enabled = ( empty( CF7ANTISPAM_GEOIP_KEY ) ) ? '' : ' disabled placeholder="KEY provided"';
 		printf( '<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>', isset( $this->options['geoip_dbkey'] ) && ! empty( $this->options['geoip_dbkey'] ) ? 'value="' . esc_textarea( $this->options['geoip_dbkey'] ) . '"' : '', $enabled );
@@ -944,6 +1002,10 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_check_browser_language_callback() {
 		printf( '<input type="checkbox" id="check_language" name="cf7a_options[check_language]" %s />', isset( $this->options['check_language'] ) && $this->options['check_language'] == 1 ? 'checked="true"' : '' );
+	}
+
+	public function cf7a_check_geo_location_callback() {
+		printf( '<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s />', isset( $this->options['check_geo_location'] ) && $this->options['check_geo_location'] == 1 ? 'checked="true"' : '' );
 	}
 
 	public function cf7a_language_allowed() {
