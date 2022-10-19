@@ -246,7 +246,7 @@ class CF7_AntiSpam_Admin {
 				if ( wp_date( 'Y-m-d' ) > wp_date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
 					$html .= sprintf(
 						'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
-						wp_date( 'Y-m-d' ),
+						get_the_date( 'Y-m-d' ),
 						admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
 						$post->ID,
 						$is_ham ? '✅️' : '⛔',
