@@ -230,12 +230,11 @@ class CF7_AntiSpam_Admin_Tools {
 
 		$options = CF7_AntiSpam::get_options();
 
-		$html = '';
+		$html  = '';
 		$html .= printf( '<hr/><h3>%s</h3>', __( 'Options debug', 'cf7-antispam' ) );
 		$html .= printf(
 			'<p>%s</p><pre>%s</pre>',
 			__( 'Those are the options of this plugin', 'cf7-antispam' ),
-
 			htmlentities( print_r( $options, true ) )
 		);
 
@@ -249,18 +248,17 @@ class CF7_AntiSpam_Admin_Tools {
 			$cf7a_geo = new CF7_Antispam_geoip;
 
 			if ( $cf7a_geo ) {
-				$geoip = $cf7a_geo->cf7a_can_enable_geoip();
-				$geoip_update = $geoip ? date_i18n( get_option( 'date_format' ),  get_option( 'cf7a_geodb_update' ) ) : __( 'update not set', 'cf7-antispam' );
+				$geoip        = $cf7a_geo->cf7a_can_enable_geoip();
+				$geoip_update = $geoip ? date_i18n( get_option( 'date_format' ), get_option( 'cf7a_geodb_update' ) ) : __( 'update not set', 'cf7-antispam' );
 
 				$html_update_schedule = sprintf(
 					'<p class="debug"><code>GEOIP</code> %s</p>',
 					$geoip
-						? __('Enabled', 'cf7-antispam') . " - ". __('Geo-ip database last update date: ', 'cf7-antispam') . $geoip_update
-						: __('Disabled', 'cf7-antispam')
+						? __( 'Enabled', 'cf7-antispam' ) . ' - ' . __( 'Geo-ip database last update date: ', 'cf7-antispam' ) . $geoip_update
+						: __( 'Disabled', 'cf7-antispam' )
 				);
 
-
-				$your_ip = cf7a_get_real_ip();
+				$your_ip     = cf7a_get_real_ip();
 				$server_data = $cf7a_geo->cf7a_geoip_check_ip( $your_ip );
 
 				if ( empty( $server_data ) ) {
@@ -271,7 +269,7 @@ class CF7_AntiSpam_Admin_Tools {
 					'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
 					__( 'GeoIP test', 'cf7-antispam' ),
 					$html_update_schedule,
-					__('Your IP address', 'cf7-antispam' ),
+					__( 'Your IP address', 'cf7-antispam' ),
 					$your_ip,
 					print_r( $server_data, true )
 				);

@@ -32,7 +32,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
 
 		$this->options = CF7_AntiSpam::get_options(); // the plugin options
-		$this->geo = new CF7_Antispam_geoip; // the plugin options
+		$this->geo     = new CF7_Antispam_geoip; // the plugin options
 	}
 
 	public function cf7a_options_init() {
@@ -167,15 +167,16 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_check_language' // Section
 		);
 
-
 		// Settings enable geoip check (available only if the geoip is enabled)
-		if ( $this->options['check_geoip']) add_settings_field(
-			'check_geo_location', // ID
-			__( 'Detect location using GeoIP', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_geo_location_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
-		);
+		if ( $this->options['check_geoip'] ) {
+			add_settings_field(
+				'check_geo_location', // ID
+				__( 'Detect location using GeoIP', 'cf7-antispam' ), // Title
+				array( $this, 'cf7a_check_geo_location_callback' ), // Callback
+				'cf7a-settings', // Page
+				'cf7a_check_language' // Section
+			);
+		}
 
 		// Settings allowed languages
 		add_settings_field(
@@ -607,7 +608,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_print_section_bot_fingerprint() {
 		printf( '<p>' . esc_html__( "Fingerprinting is a way of exploiting certain data that the browser can provide to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) . '</p>' );
-		printf( '<p>' . esc_html__( "The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.", 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' ) . '</p>' );
 	}
 
 	public function cf7a_print_section_check_time() {
@@ -625,11 +626,13 @@ class CF7_AntiSpam_Admin_Customizations {
 			esc_html__( 'After registration you will get a key, paste it into the input below and CF7-Antispam will be able to automatically download the updated GeoIP database every month.', 'cf7-antispam' ),
 		);
 		// if the geo-ip constant was not set recommend to do so
-		if (! CF7ANTISPAM_GEOIP_KEY) printf(
-			'<p>%s<br/><code>%s</code></p>',
-			esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
-			"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
-		);
+		if ( ! CF7ANTISPAM_GEOIP_KEY ) {
+			printf(
+				'<p>%s<br/><code>%s</code></p>',
+				esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
+				"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
+			);
+		}
 	}
 
 	public function cf7a_check_language() {
@@ -683,15 +686,19 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return array $new_input - The formatted input.
 	 */
 	private function cf7a_settings_format_user_input( $input ) {
-		$new_input = str_replace("\r\n", ',', $input);
-		$new_input = explode( ',', $new_input);
+		$new_input             = str_replace( "\r\n", ',', $input );
+		$new_input             = explode( ',', $new_input );
 		$clean_item_collection = array();
 
-		if (! empty($new_input)) {
-			foreach ($new_input as $input) {
-				if ( ! is_string($input) ) continue;
-				$input = trim($input);
-				if ( $input ) $clean_item_collection[] = $input;
+		if ( ! empty( $new_input ) ) {
+			foreach ( $new_input as $input ) {
+				if ( ! is_string( $input ) ) {
+					continue;
+				}
+				$input = trim( $input );
+				if ( $input ) {
+					$clean_item_collection[] = $input;
+				}
 			}
 		}
 
@@ -992,7 +999,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_geoip_is_enabled_callback() {
-		printf( ( get_option( 'cf7a_geodb_update' ) ) ? "✅ " : "❌ " );
+		printf( ( get_option( 'cf7a_geodb_update' ) ) ? '✅ ' : '❌ ' );
 	}
 
 	public function cf7a_geoip_key_callback() {

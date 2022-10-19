@@ -29,16 +29,6 @@ window.onload = function () {
 	adds the ctrl-s keypress to save the settings,
 	and shows the advanced settings. */
 	if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
-		// hide the welcome panel
-		const welcomePanel = document.getElementById( 'welcome-panel' );
-		const welcomePanelCloseBtn = welcomePanel.querySelector(
-			'a.welcome-panel-close'
-		);
-
-		welcomePanelCloseBtn.addEventListener( 'click', ( event ) => {
-			event.preventDefault();
-			welcomePanel.classList.add( 'hidden' );
-		} );
 
 		// save on ctrl-s keypress
 		document.addEventListener( 'keydown', ( e ) => {
