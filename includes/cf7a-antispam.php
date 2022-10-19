@@ -817,7 +817,7 @@ class CF7_AntiSpam_filters {
 	 * @param array $alloweds An array of allowed languages. If the user's language is in this array, the form will be shown.
 	 *
 	 */
-	public function cf7a_check_language_disallowed( $languages, $disalloweds = array(), $alloweds = array() ) {
+	public function cf7a_check_language_allowed( $languages, $disalloweds = array(), $alloweds = array() ) {
 
 		if ( ! is_array( $languages ) ) {
 			$languages = array( $languages );
@@ -1202,7 +1202,7 @@ class CF7_AntiSpam_filters {
 						// check if the language is allowed and if is disallowed
 						$client_languages = array_unique( array_merge( $languages['browser'], $languages['accept'] ) );
 
-						if ( false !== ( $language_disallowed = $this->cf7a_check_language_disallowed( $client_languages, $languages_disallowed, $languages_allowed ) ) ) {
+						if ( false === ( $language_disallowed = $this->cf7a_check_language_allowed( $client_languages, $languages_disallowed, $languages_allowed ) ) ) {
 							$reason['language'] = 'LANG:' . implode( ', ', $client_languages );
 							$fails[]            = "language disallowed ($language_disallowed)";
 						}
@@ -1215,7 +1215,7 @@ class CF7_AntiSpam_filters {
 						$geoip_data = $this->geoip->cf7a_geoip_check_ip( $remote_ip );
 						$geo_data   = array( strtolower( $geoip_data['continent'] ), strtolower( $geoip_data['country'] ) );
 
-						if ( empty( $geoip_data['error'] ) && false !== ( $country_disallowed = $this->cf7a_check_language_disallowed( $geo_data, $languages_disallowed, $languages_allowed ) ) ) {
+						if ( empty( $geoip_data['error'] ) && false === ( $country_disallowed = $this->cf7a_check_language_allowed( $geo_data, $languages_disallowed, $languages_allowed ) ) ) {
 							$reason['geo'] = 'GEOIP:' . $geoip_data['continent'] . ',' . $geoip_data['country'];
 							$fails[]       = "GeoIP country disallowed ($country_disallowed)";
 						}
