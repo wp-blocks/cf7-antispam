@@ -64,7 +64,36 @@ function cf7a_get_accept_language_array( $languages ) {
 	);
 }
 
-add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
+/**
+ * It adds a bunch of common honeypot input names to the list of honeypot input names
+ *
+ * @param array $options The array of input names to check for.
+ *
+ * @return array An array of possible input names.
+ */
+function get_honeypot_input_names( $options ) {
+	return array_merge( $options, array(
+		'name',
+		'email',
+		'address',
+		'zip',
+		'town',
+		'phone',
+		'credit-card',
+		'ship-address',
+		'billing_company',
+		'billing_city',
+		'billing_country',
+		'email-address'
+	) );
+}
+
+
+/**
+ * It adds two new cron schedules to WordPress
+ *
+ * @param array $schedules This is the name of the hook that we're adding a schedule to.
+ */
 function cf7a_add_cron_steps( $schedules ) {
 	$schedules = array(
 		'5min'  => array(

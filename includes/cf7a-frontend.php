@@ -92,9 +92,7 @@ class CF7_AntiSpam_Frontend {
 		}
 
 		/* A list of default names for the honeypot fields. */
-		$honeypot_default_names = array( 'name', 'email', 'address', 'zip', 'town', 'phone', 'credit-card', 'ship-address', 'billing_company', 'billing_city', 'billing_country', 'email-address' );
-
-		$input_names = array_merge( sanitize_html_class( $this->options['honeypot_input_names'] ), $honeypot_default_names );
+		$input_names = get_honeypot_input_names( sanitize_html_class( $this->options['honeypot_input_names'] ) );
 		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 
 		// get the inputs data

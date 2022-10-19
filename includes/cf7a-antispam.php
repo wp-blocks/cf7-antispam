@@ -745,7 +745,7 @@ class CF7_AntiSpam_filters {
 		if ( isset( $options['check_honeypot'] ) && intval( $options['check_honeypot'] ) === 1 ) {
 
 			$submission             = WPCF7_Submission::get_instance();
-			$honeypot_default_names = array_merge( $options['honeypot_input_names'], array( 'name', 'email', 'address', 'zip', 'town', 'phone', 'credit-card', 'ship-address', 'billing_company', 'billing_city', 'billing_country', 'email-address' ) );
+			$honeypot_default_names = get_honeypot_input_names( $options['honeypot_input_names'] );
 
 			if ( ! $submission ) {
 				return true;
