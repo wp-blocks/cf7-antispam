@@ -1,10 +1,10 @@
 === AntiSpam for Contact Form 7 ===
 Contributors: codekraft
 Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, security
-Requires at least: 5.1
-Tested up to: 5.8
+Requires at least: 5.4
+Tested up to: 6.0
 Requires PHP: 5.6
-Stable tag: 0.3.1
+Stable tag: 0.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -130,6 +130,12 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 
 == Changelog ==
 
+= 0.4.0 =
+* Adds geoip antispam filter
+* Updated widgets
+* Updated settings and frontend scripts
+* Improved honeypot (fixes 2 bugs)
+
 = 0.3.0 =
 * Dashboard widget to display the email received of the last week
 * Resend email from Flamingo UI (works with mail received after this update)
@@ -158,7 +164,7 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 * Enhanced fingerprint support for chrome on ios
 
 = 0.2.4 =
-* A new section "Advanced Section" that can be unlocked at the end of cf7a options. I will put the more complex options there to make the interface easier.
+* A new section "Advanced Section" that can be unlocked at the end of cf7-antispam options. I will put the more complex options there to make the interface easier.
 * Improved spam management with flamingo
 * New automatic options update handler
 * Selectable encryption cypher
@@ -224,7 +230,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the LICENSE file for more details.
 
 == TODOs ==
-* Geoip ban
 * Enhance user agent specific checks (especially for apple devices, lately bots are using this user agent to try to escape the scans)
 * Banned ip and dictionary CSV Export/import settings
 * Remove mail duplicates if users sent multiple

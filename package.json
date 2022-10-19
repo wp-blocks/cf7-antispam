@@ -1,5 +1,5 @@
 {
-  "name": "contact-form-7-antispam",
+  "name": "cf7-antispam",
   "author": "Erik Golinelli",
   "license": "GPL-2.0-only",
   "version": "0.4.0",
@@ -8,9 +8,7 @@
     "admin/*",
     "includes/*",
     "libs/*",
-    "vendor/autoload.php",
-    "vendor/composer/*",
-    "vendor/geoip2/*",
+    "vendor/*",
     "cf7-antispam.php",
     "LICENSE",
     "readme.txt"
@@ -19,14 +17,8 @@
     "start": "wp-scripts start",
     "build": "wp-scripts build",
     "plugin-zip": "wp-scripts plugin-zip",
-    "check-engines": "wp-scripts check-engines",
-    "check-licenses": "wp-scripts check-licenses",
-    "format": "wp-scripts format",
     "lint:css": "wp-scripts lint-style",
     "lint:js": "wp-scripts lint-js",
-    "lint:md:docs": "wp-scripts lint-md-docs",
-    "lint:md:js": "wp-scripts lint-md-js",
-    "lint:pkg-json": "wp-scripts lint-pkg-json",
     "packages-update": "wp-scripts packages-update"
   },
   "repository": {
