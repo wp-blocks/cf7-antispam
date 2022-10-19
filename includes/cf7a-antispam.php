@@ -1,7 +1,6 @@
 <?php
 
 use GeoIp2\Database\Reader;
-use MaxMind\Db\Reader\InvalidDatabaseException;
 
 class CF7_Antispam_geoip {
 
@@ -52,9 +51,18 @@ class CF7_Antispam_geoip {
 		$this->license = $this->cf7a_geoip_set_license();
 
 		// init the geocoder
-		$this->geo = ( $this->cf7a_can_enable_geoip() ) ? $this->cf7a_geo_init() : false;
+		if ( ( $this->cf7a_can_enable_geoip() ) ) {
+			$this->geo = $this->cf7a_geo_init();
+			if ( ! $this->geo ) {
+				// else has failed to access to geoip database file, disable it
+				update_option( 'cf7a_geodb_update', false );
 
-		return add_action( 'cf7a_geoip_update_db', array( $this, 'cf7a_geoip_download_database' ) );
+				$notice = new CF7_AntiSpam_Admin_Tools;
+				$notice::cf7a_push_notice( __( 'unable to access geoip database file', 'cf7-antispam' ) );
+			}
+		}
+
+		add_action( 'cf7a_geoip_update_db', array( $this, 'cf7a_geoip_download_database' ) );
 	}
 
 	private function cf7a_geoip_set_license() {
@@ -76,8 +84,10 @@ class CF7_Antispam_geoip {
 		// This creates the Reader object, which should be reused across lookups.
 		try {
 			return new Reader( wp_upload_dir()['basedir'] . '/GeoLite2-Country.mmdb' );
-		} catch ( InvalidDatabaseException $e ) {
-			error_log( 'GeoIP Database init error' );
+		} catch ( Exception $e ) {
+			error_log( 'GeoIP Database init error, unable to read file' );
+			update_option( 'cf7a_geodb_update', false );
+			return false;
 		}
 	}
 
@@ -116,7 +126,7 @@ class CF7_Antispam_geoip {
 			}
 			fclose( $stream );
 		} else {
-			error_log( CF7ANTISPAM_PREFIX . __( " unable to download GEOIP DB {$download_url}", 'cf7-antispam' ) );
+			error_log( CF7ANTISPAM_PREFIX . __( " unable to download GeoIp DataBase {$download_url}", 'cf7-antispam' ) );
 			return false;
 		}
 
@@ -771,7 +781,6 @@ class CF7_AntiSpam_filters {
 		return true;
 	}
 
-
 	// FLAMINGO CUSTOMIZATION
 
 	public function flamingo_columns( $columns ) {
@@ -816,21 +825,21 @@ class CF7_AntiSpam_filters {
 
 		if ( ! empty( $alloweds ) ) {
 			foreach ( $alloweds as $allowed ) {
-				if ( in_array( $allowed, $languages ) ) {
-					return false;
+				if ( in_array( $allowed, $languages, true ) ) {
+					return true;
 				}
 			}
 		}
 
 		if ( ! empty( $disalloweds ) ) {
 			foreach ( $disalloweds as $disallowed ) {
-				if ( in_array( $disallowed, $languages ) ) {
-					return $disallowed;
+				if ( in_array( $disallowed, $languages, true ) ) {
+					return false;
 				}
 			}
 		}
 
-		return ! empty( $alloweds ) ? implode( ',', $languages ) : false;
+		return true;
 	}
 
 	/**
@@ -847,7 +856,7 @@ class CF7_AntiSpam_filters {
 		if ( is_array( $string ) ) {
 			$string = implode( ', ', $string );
 		}
-		if ( $log_level === 0 || $log_level === 1 && CF7ANTISPAM_DEBUG || $log_level === 2 && CF7ANTISPAM_DEBUG_EXTENDED ) {
+		if ( 0 === $log_level || 1 === $log_level && CF7ANTISPAM_DEBUG || 2 === $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
 			error_log( CF7ANTISPAM_LOG_PREFIX . $string );
 		}
 	}
@@ -1194,7 +1203,8 @@ class CF7_AntiSpam_filters {
 						$client_languages = array_unique( array_merge( $languages['browser'], $languages['accept'] ) );
 
 						if ( false !== ( $language_disallowed = $this->cf7a_check_language_disallowed( $client_languages, $languages_disallowed, $languages_allowed ) ) ) {
-							$fails[] = "language disallowed ($language_disallowed)";
+							$reason['language'] = 'LANG:' . implode( ', ', $client_languages );
+							$fails[]            = "language disallowed ($language_disallowed)";
 						}
 					}
 				}
@@ -1203,10 +1213,11 @@ class CF7_AntiSpam_filters {
 
 					try {
 						$geoip_data = $this->geoip->cf7a_geoip_check_ip( $remote_ip );
+						$geo_data   = array( strtolower( $geoip_data['continent'] ), strtolower( $geoip_data['country'] ) );
 
-						if ( ! isset( $geoip_data['error'] ) && false !== ( $country_disallowed = $this->cf7a_check_language_disallowed( array( strtolower( $geoip_data['continent'] ), strtolower( $geoip_data['country'] ) ), $languages_disallowed, $languages_allowed ) ) ) {
-							$reason['language'] = 'GEOIP:' . $geoip_data['continent'] . ',' . $geoip_data['country'];
-							$fails[]            = "GeoIP country disallowed ($country_disallowed)";
+						if ( empty( $geoip_data['error'] ) && false !== ( $country_disallowed = $this->cf7a_check_language_disallowed( $geo_data, $languages_disallowed, $languages_allowed ) ) ) {
+							$reason['geo'] = 'GEOIP:' . $geoip_data['continent'] . ',' . $geoip_data['country'];
+							$fails[]       = "GeoIP country disallowed ($country_disallowed)";
 						}
 					} catch ( Exception $e ) {
 						$this->cf7a_log( "unable to check geoip for $remote_ip - " . $e->getMessage(), 1 );
@@ -1224,9 +1235,9 @@ class CF7_AntiSpam_filters {
 			/**
 			 * Check if the time to submit the email il lower than expected
 			 */
-			if ( intval( $options['check_time'] ) == 1 ) {
+			if ( intval( $options['check_time'] ) === 1 ) {
 
-				if ( ! $timestamp || $timestamp == 0 ) {
+				if ( ! $timestamp || $timestamp === 0 ) {
 
 					$spam_score         += $score_detection;
 					$reason['timestamp'] = 'undefined';
