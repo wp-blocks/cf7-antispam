@@ -35,7 +35,12 @@ class CF7_AntiSpam_Admin_Tools {
 		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
 		if ( $action === 'dismiss-banner' ) {
-			update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1 );
+			if (get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on')) {
+				update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1 );
+			} else {
+				add_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1, true );
+			}
+
 			wp_redirect( $url );
 			exit();
 		}

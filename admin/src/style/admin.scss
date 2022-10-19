@@ -116,8 +116,6 @@ $color__info: $color__blue;
           font-family: monospace;
           border-radius: 50%;
           color: $color__white;
-          width: 30px;
-          line-height: 30px;
           font-size: 20px;
           font-weight: bold;
           text-shadow: 0 1px 1px transparentize($color__black, .7);
@@ -125,6 +123,10 @@ $color__info: $color__blue;
           text-align: center;
           margin: 0;
           padding: 5px;
+		  line-height: 30px;
+		  width: 40px;
+		  height: 40px;
+		  text-overflow: '😎'
         }
       }
 
