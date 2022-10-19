@@ -221,7 +221,7 @@ class CF7_AntiSpam {
 	}
 
 	/**
-	 * Run the loader to execute all of the hooks with WordPress.
+	 * Run the loader to execute all the hooks with WordPress.
 	 *
 	 * @since    0.1.0
 	 */

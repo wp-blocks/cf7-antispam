@@ -799,7 +799,16 @@ class CF7_AntiSpam_filters {
 	}
 
 
-	public function cf7a_check_language_disallowed( $languages, $disalloweds, $alloweds = array() ) {
+	/**
+	 * If the language is not allowed, return the language.
+	 * TODO: actually this function is case-sensitive, but maybe this is not wanted
+	 *
+	 * @param array $languages The languages to check.
+	 * @param array $disalloweds An array of languages that are not allowed.
+	 * @param array $alloweds An array of allowed languages. If the user's language is in this array, the form will be shown.
+	 *
+	 */
+	public function cf7a_check_language_disallowed( $languages, $disalloweds = array(), $alloweds = array() ) {
 
 		if ( ! is_array( $languages ) ) {
 			$languages = array( $languages );
@@ -824,6 +833,13 @@ class CF7_AntiSpam_filters {
 		return ! empty( $alloweds ) ? implode( ',', $languages ) : false;
 	}
 
+	/**
+	 * If the string is not empty, and the log level is 0 or 1 and debug is on, or the log level is 2 and extended debug is
+	 * on, then log the string
+	 *
+	 * @param string|array $string - The string to log.
+	 * @param numeric $log_level - 0 = no logging, 1 = normal logging, 2 = extended logging
+	 */
 	public function cf7a_log( $string, $log_level = 0 ) {
 		if ( empty( $string ) ) {
 			return true;

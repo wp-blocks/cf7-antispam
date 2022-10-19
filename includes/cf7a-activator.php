@@ -45,6 +45,7 @@ class CF7_AntiSpam_Activator {
 			'check_geoip'                  => false,
 			'geoip_dbkey'                  => false,
 			'check_language'               => false,
+			'check_geo_location'           => false,
 			'honeyform_position'           => 'wp_footer',
 			'enable_b8'                    => true,
 			'b8_threshold'                 => 0.95,

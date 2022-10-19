@@ -25,9 +25,5 @@ class CF7_AntiSpam_i18n {
 			false,
 			CF7ANTISPAM_PLUGIN_DIR . '/languages/'
 		);
-
 	}
-
-
-
 }
