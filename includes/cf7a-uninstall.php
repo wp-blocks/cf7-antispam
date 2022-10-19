@@ -6,9 +6,19 @@
  */
 class CF7_AntiSpam_Uninstaller {
 
+	/**
+	 * It deletes the plugin's database tables and options
+	 *
+	 * @param string $force If set to true, the cf7-antispam database and options tables delete will be forced.
+	 */
 	public static function uninstall( $force = false ) {
 
-		if ( ! CF7ANTISPAM_DEBUG_EXTENDED || $force ) {
+		if ( CF7ANTISPAM_DEBUG_EXTENDED && ! $force ) {
+
+			error_log( print_r( 'CONTACT FORM 7 ANTISPAM - constant "CF7ANTISPAM_DEBUG_EXTENDED" is set so options and database will NOT be deleted.', true ) );
+			return false;
+
+		} else {
 
 			global $wpdb;
 
@@ -30,11 +40,6 @@ class CF7_AntiSpam_Uninstaller {
 
 			error_log( print_r( CF7ANTISPAM_LOG_PREFIX . 'plugin uninstalled', true ) );
 			return true;
-
-		} else {
-
-			error_log( print_r( 'CONTACT FORM 7 ANTISPAM - "CF7ANTISPAM_DEBUG_EXTENDED = true" so options and database will NOT be deleted.', true ) );
-			return false;
 		}
 
 	}
