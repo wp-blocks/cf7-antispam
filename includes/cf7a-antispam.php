@@ -193,15 +193,20 @@ class CF7_Antispam_geoip {
 	public function cf7a_geoip_check_ip( $ip ) {
 
 		try {
+			if ( $this->geo ) {
+				$ip_data = $this->geo->country( $ip );
 
-			$ip_data = $this->geo->country( $ip );
-
-			return array(
-				'continent'      => $ip_data->continent->code,
-				'continent_name' => $ip_data->continent->name,
-				'country'        => $ip_data->country->isoCode,
-				'country_name'   => $ip_data->country->name,
-			);
+				return array(
+					'continent'      => $ip_data->continent->code,
+					'continent_name' => $ip_data->continent->name,
+					'country'        => $ip_data->country->isoCode,
+					'country_name'   => $ip_data->country->name,
+				);
+			} else {
+				return array(
+					'error' => 'geoip not initialized',
+				);
+			}
 		} catch ( Exception $e ) {
 			return array(
 				'error' => $e->getMessage(),

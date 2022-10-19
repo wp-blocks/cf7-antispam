@@ -40,7 +40,7 @@ class CF7_AntiSpam_Admin_Display {
 	function cf7a_display_content() {
 		CF7_AntiSpam_Admin_Tools::cf7a_handle_actions();
 		$dismissible_banner_class = get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ? ' hidden' : '';
-	?>
+		?>
 	<div id="welcome-panel" class="card banner dismissible<?php echo $dismissible_banner_class; ?>">
 			<div class="inside">
 				<a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>

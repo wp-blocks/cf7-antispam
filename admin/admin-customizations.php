@@ -623,7 +623,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			esc_html__( 'GeoLite2 End User License Agreement', 'cf7-antispam' ),
 			esc_html__( 'and sign up ', 'cf7-antispam' ),
 			esc_html__( 'GeoLite2 Downloadable Databases', 'cf7-antispam' ),
-			esc_html__( 'After registration you will get a key, paste it into the input below and CF7-Antispam will be able to automatically download the updated GeoIP database every month.', 'cf7-antispam' ),
+			esc_html__( 'After registration you will get a key, paste it into the input below and CF7-Antispam will be able to automatically download the updated GeoIP database every month.', 'cf7-antispam' )
 		);
 		// if the geo-ip constant was not set recommend to do so
 		if ( ! CF7ANTISPAM_GEOIP_KEY ) {
@@ -876,13 +876,13 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// Scoring
 		// if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed)
-		if ( $input['cf7a_score_preset'] == 'weak' && ( $input['score'] == $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
+		if ( $input['cf7a_score_preset'] === 'weak' && ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
 			$new_input['score']             = $score_preset['weak'];
 			$new_input['cf7a_score_preset'] = 'weak';
-		} elseif ( $input['cf7a_score_preset'] == 'standard' && ( $input['score'] == $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
+		} elseif ( $input['cf7a_score_preset'] === 'standard' && ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
 			$new_input['score']             = $score_preset['standard'];
 			$new_input['cf7a_score_preset'] = 'standard';
-		} elseif ( $input['cf7a_score_preset'] == 'secure' && ( $input['score'] == $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
+		} elseif ( $input['cf7a_score_preset'] === 'secure' && ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
 			$new_input['score']             = $score_preset['secure'];
 			$new_input['cf7a_score_preset'] = 'secure';
 		} else {
@@ -910,7 +910,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['cf7a_customizations_prefix'] = ! empty( $input['cf7a_customizations_prefix'] ) ? sanitize_html_class( $input['cf7a_customizations_prefix'] ) : CF7ANTISPAM_PREFIX;
 
 		$input['cf7a_cipher']     = sanitize_html_class( $input['cf7a_cipher'] );
-		$new_input['cf7a_cipher'] = ! empty( $input['cf7a_cipher'] ) && in_array( $input['cf7a_cipher'], openssl_get_cipher_methods() ) ? $input['cf7a_cipher'] : CF7ANTISPAM_CYPHER;
+		$new_input['cf7a_cipher'] = ! empty( $input['cf7a_cipher'] ) && in_array( $input['cf7a_cipher'], openssl_get_cipher_methods(), true ) ? $input['cf7a_cipher'] : CF7ANTISPAM_CYPHER;
 
 		// store the sanitized options
 		return $new_input;
@@ -938,7 +938,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_autostore_bad_ip_callback() {
 		printf(
 			'<input type="checkbox" id="autostore_bad_ip" name="cf7a_options[autostore_bad_ip]" %s />',
-			isset( $this->options['autostore_bad_ip'] ) && $this->options['autostore_bad_ip'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['autostore_bad_ip'] ) && 1 === $this->options['autostore_bad_ip'] ? 'checked="true"' : ''
 		);
 	}
 
@@ -959,19 +959,19 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_bot_fingerprint_callback() {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint" name="cf7a_options[check_bot_fingerprint]" %s />',
-			isset( $this->options['check_bot_fingerprint'] ) && $this->options['check_bot_fingerprint'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_bot_fingerprint'] ) && 1 === $this->options['check_bot_fingerprint'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_check_bot_fingerprint_extras_callback() {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint_extras" name="cf7a_options[check_bot_fingerprint_extras]" %s />',
-			isset( $this->options['check_bot_fingerprint_extras'] ) && $this->options['check_bot_fingerprint_extras'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_bot_fingerprint_extras'] ) && 1 === $this->options['check_bot_fingerprint_extras'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_append_on_submit_callback() {
 		printf(
 			'<input type="checkbox" id="append_on_submit" name="cf7a_options[append_on_submit]" %s />',
-			isset( $this->options['append_on_submit'] ) && $this->options['append_on_submit'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['append_on_submit'] ) && 1 === $this->options['append_on_submit'] ? 'checked="true"' : ''
 		);
 	}
 
@@ -979,7 +979,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_time_callback() {
 		printf(
 			'<input type="checkbox" id="check_time" name="cf7a_options[check_time]" %s />',
-			isset( $this->options['check_time'] ) && $this->options['check_time'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_time'] ) && 1 === $this->options['check_time'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_check_time_min_callback() {
@@ -995,7 +995,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 	public function cf7a_enable_geoip_callback() {
-		printf( '<input type="checkbox" id="check_geoip" name="cf7a_options[check_geoip]" %s />', isset( $this->options['check_geoip'] ) && $this->options['check_geoip'] == 1 ? 'checked="true"' : '' );
+		printf( '<input type="checkbox" id="check_geoip" name="cf7a_options[check_geoip]" %s />', isset( $this->options['check_geoip'] ) && 1 === $this->options['check_geoip'] ? 'checked="true"' : '' );
 	}
 
 	public function cf7a_geoip_is_enabled_callback() {
@@ -1008,11 +1008,11 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_check_browser_language_callback() {
-		printf( '<input type="checkbox" id="check_language" name="cf7a_options[check_language]" %s />', isset( $this->options['check_language'] ) && $this->options['check_language'] == 1 ? 'checked="true"' : '' );
+		printf( '<input type="checkbox" id="check_language" name="cf7a_options[check_language]" %s />', isset( $this->options['check_language'] ) && 1 === $this->options['check_language'] ? 'checked="true"' : '' );
 	}
 
 	public function cf7a_check_geo_location_callback() {
-		printf( '<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s />', isset( $this->options['check_geo_location'] ) && $this->options['check_geo_location'] == 1 ? 'checked="true"' : '' );
+		printf( '<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s />', isset( $this->options['check_geo_location'] ) && 1 === $this->options['check_geo_location'] ? 'checked="true"' : '' );
 	}
 
 	public function cf7a_language_allowed() {
@@ -1025,11 +1025,11 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 	public function cf7a_print_check_refer() {
-		printf( '<input type="checkbox" id="check_refer" name="cf7a_options[check_refer]" %s />', isset( $this->options['check_refer'] ) && $this->options['check_refer'] == 1 ? 'checked="true"' : '' );
+		printf( '<input type="checkbox" id="check_refer" name="cf7a_options[check_refer]" %s />', isset( $this->options['check_refer'] ) && 1 === $this->options['check_refer'] ? 'checked="true"' : '' );
 	}
 
 	public function cf7a_check_bad_ip_callback() {
-		printf( '<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />', isset( $this->options['check_bad_ip'] ) && $this->options['check_bad_ip'] == 1 ? 'checked="true"' : '' );
+		printf( '<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />', isset( $this->options['check_bad_ip'] ) && 1 === $this->options['check_bad_ip'] ? 'checked="true"' : '' );
 	}
 
 	public function cf7a_bad_ip_list_callback() {
@@ -1043,7 +1043,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_bad_words_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_words" name="cf7a_options[check_bad_words]" %s />',
-			isset( $this->options['check_bad_words'] ) && $this->options['check_bad_words'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_bad_words'] ) && 1 === $this->options['check_bad_words'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_bad_words_list_callback() {
@@ -1057,7 +1057,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_bad_email_strings_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_email_strings" name="cf7a_options[check_bad_email_strings]" %s />',
-			isset( $this->options['check_bad_email_strings'] ) && $this->options['check_bad_email_strings'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_bad_email_strings'] ) && 1 === $this->options['check_bad_email_strings'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_bad_email_strings_list_callback() {
@@ -1071,7 +1071,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_user_agent_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_user_agent" name="cf7a_options[check_bad_user_agent]" %s />',
-			isset( $this->options['check_bad_user_agent'] ) && $this->options['check_bad_user_agent'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_bad_user_agent'] ) && 1 === $this->options['check_bad_user_agent'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_user_agent_list_callback() {
@@ -1085,7 +1085,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_dnsbl_callback() {
 		printf(
 			'<input type="checkbox" id="check_dnsbl" name="cf7a_options[check_dnsbl]" %s />',
-			isset( $this->options['check_dnsbl'] ) && $this->options['check_dnsbl'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_dnsbl'] ) && 1 === $this->options['check_dnsbl'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_dnsbl_list_callback() {
@@ -1100,7 +1100,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_enable_honeypot_callback() {
 		printf(
 			'<input type="checkbox" id="check_honeypot" name="cf7a_options[check_honeypot]" %s />',
-			isset( $this->options['check_honeypot'] ) && $this->options['check_honeypot'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_honeypot'] ) && 1 === $this->options['check_honeypot'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_honeypot_input_names_callback() {
@@ -1115,7 +1115,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_enable_honeyform_callback() {
 		printf(
 			'<input type="checkbox" id="check_honeyform" name="cf7a_options[check_honeyform]" %s />',
-			isset( $this->options['check_honeyform'] ) && $this->options['check_honeyform'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['check_honeyform'] ) && 1 === $this->options['check_honeyform'] ? 'checked="true"' : ''
 		);
 	}
 
@@ -1129,7 +1129,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_enable_b8_callback() {
 		printf(
 			'<input type="checkbox" id="enable_b8" name="cf7a_options[enable_b8]" %s />',
-			isset( $this->options['enable_b8'] ) && $this->options['enable_b8'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['enable_b8'] ) && 1 === $this->options['enable_b8'] ? 'checked="true"' : ''
 		);
 	}
 	public function cf7a_b8_threshold_callback() {
@@ -1223,12 +1223,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_enable_advanced_settings_callback() {
 		printf(
 			'<input type="checkbox" id="enable_advanced_settings" name="cf7a_options[enable_advanced_settings]" %s />',
-			isset( $this->options['enable_advanced_settings'] ) && $this->options['enable_advanced_settings'] == 1 ? 'checked="true"' : ''
+			isset( $this->options['enable_advanced_settings'] ) && 1 === $this->options['enable_advanced_settings'] ? 'checked="true"' : ''
 		);
 	}
 
 	public function cf7a_score_preset_callback() {
-		$options = ( $this->options['enable_advanced_settings'] === 1 || ( ! empty( $this->options['cf7a_score_preset'] ) && $this->options['cf7a_score_preset'] === 'custom' ) ) ? array( 'weak', 'standard', 'secure', 'custom' ) : array( 'weak', 'standard', 'secure' );
+		$options = ( 1 === $this->options['enable_advanced_settings'] || ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] ) ) ? array( 'weak', 'standard', 'secure', 'custom' ) : array( 'weak', 'standard', 'secure' );
 		printf(
 			'<select id="cf7a_score_preset" name="cf7a_options[cf7a_score_preset]">%s</select>',
 			$this->cf7a_generate_options( $options, isset( $this->options['cf7a_score_preset'] ) ? esc_attr( $this->options['cf7a_score_preset'] ) : 'custom' )
