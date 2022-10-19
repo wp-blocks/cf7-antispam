@@ -11,7 +11,8 @@ class CF7_AntiSpam_Deactivator {
 			error_log( print_r( CF7ANTISPAM_LOG_PREFIX . 'plugin deactivated', true ) );
 		}
 
-		delete_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on' );
+		// delete all user related metadata (the setting panel notice)
+		delete_metadata( 'user', 0, 'cf7a_hide_welcome_panel_on', '', true );
 
 	}
 }
