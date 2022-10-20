@@ -66,7 +66,6 @@ class CF7_AntiSpam_Activator {
 				'_bad_string'     => 1,
 				'_dnsbl'          => 0.15,
 				'_honeypot'       => 0.5,
-				'_honeyform'      => 5,
 				'_detection'      => 1,
 				'_warn'           => 0.5,
 			),
