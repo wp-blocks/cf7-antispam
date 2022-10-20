@@ -83,7 +83,7 @@ class CF7_Antispam_geoip {
 	private function cf7a_geo_init() {
 		// This creates the Reader object, which should be reused across lookups.
 		try {
-			return new Reader( wp_upload_dir()['basedir'] . '/GeoLite2-Country.mmdb' );
+			return new Reader( $this->cf7a_get_upload_dir() . '/GeoLite2-Country.mmdb' );
 		} catch ( Exception $e ) {
 			error_log( 'GeoIP Database init error, unable to read file' );
 			update_option( 'cf7a_geodb_update', false );
@@ -98,13 +98,45 @@ class CF7_Antispam_geoip {
 
 	// GEOIP
 
+	private function cf7a_get_upload_dir() {
+
+		$upload_dir = wp_upload_dir();
+
+		return trailingslashit( $upload_dir['basedir'] . '/cf7-antispam' );
+
+	}
+
+	/**
+	 * It creates a directory, creates a .htaccess file in that directory, and writes "Deny from all" to the .htaccess file
+	 *
+	 * @param string $plugin_upload_dir The directory you want to create.
+	 *
+	 * @return bool the value of the variable $plugin_upload_dir.
+	 */
+	private function cf7a_create_upload_dir( $plugin_upload_dir ) {
+		// Creates a directory
+		wp_mkdir_p( $plugin_upload_dir );
+		// and the .htaccess file
+		try {
+			$htaccess_file = fopen( $plugin_upload_dir . '.htaccess', 'w' );
+		} catch ( Exception $e ) {
+			error_log( CF7ANTISPAM_PLUGIN_BASENAME . " can\'t create " . print_r( $e, true ) );
+			return false;
+		}
+		$ht_content = 'Require local';
+		fwrite( $htaccess_file, $ht_content );
+		fclose( $htaccess_file );
+		return true;
+	}
+
 	public function cf7a_geoip_download_database() {
 
 		error_log( 'GeoIP DB download start' );
 
 		$this->license = urlencode( $this->license );
 
-		$upload_dir = wp_upload_dir();
+		$upload_dir        = wp_upload_dir();
+		$plugin_upload_dir = $this->cf7a_get_upload_dir();
 
 		$database_type = 'GeoLite2-Country';
 		$filename      = $database_type;
@@ -112,12 +144,14 @@ class CF7_Antispam_geoip {
 
 		$download_url = 'https://download.maxmind.com/app/geoip_download?edition_id=' . $database_type . '&license_key=' . $this->license . '&suffix=tar.gz';
 
-		$destination_uri = $upload_dir['basedir'] . '/' . sanitize_file_name( $filename . '.mmdb' );
+		$destination_file_uri = $plugin_upload_dir . sanitize_file_name( $filename . '.mmdb' );
+
+		// check if the plugin upload directory exist, otherwise create it
+		if ( ! is_dir( $plugin_upload_dir ) && $this->cf7a_create_upload_dir( $plugin_upload_dir ) ) {
+			error_log( CF7ANTISPAM_NAME . ' - geo-ip download folder created with success' );
+		}
 
 		$file_content = '';
-
-		// TODO: in case it fails we need to retry earlier than the month after
-		$this->cf7a_geoip_schedule_update();
 
 		// Download
 		if ( ( $stream = fopen( $download_url, 'r' ) ) !== false ) {
@@ -126,50 +160,60 @@ class CF7_Antispam_geoip {
 			}
 			fclose( $stream );
 		} else {
-			error_log( CF7ANTISPAM_PREFIX . __( " unable to download GeoIp DataBase {$download_url}", 'cf7-antispam' ) );
+			error_log( CF7ANTISPAM_NAME . " unable to download GeoIp DataBase {$download_url}" );
 			return false;
 		}
 
 		if ( ! empty( $file_content ) ) {
 
-			if ( file_exists( $destination_uri . $ext ) ) {
-				wp_delete_file( $destination_uri . $ext );
+			if ( file_exists( $destination_file_uri . $ext ) ) {
+				wp_delete_file( $destination_file_uri . $ext );
 			}
 
-			if ( ! file_put_contents( $destination_uri . $ext, $file_content ) ) {
-				error_log( sprintf( __( 'Database could not be written (%s).', 'cf7-antispam' ), $upload_dir['basedir'] . $filename . '.mmdb' ) );
+			if ( ! file_put_contents( $destination_file_uri . $ext, $file_content ) ) {
+				error_log( sprintf( 'Unable to write geo-ip database at this path %s.', $destination_file_uri ) );
 				return false;
 			}
 
 			// decompress
-			$p = new PharData( $destination_uri . $ext );
+			$p = new PharData( $destination_file_uri . $ext );
 
-			$temp_file = $p->current()->getFilename() . "/$database_type.mmdb";
+			$temp_file          = $p->current()->getFilename();
+			$temp_database_file = $temp_file . "/$database_type.mmdb";
 
 			$p->extractTo(
-				dirname( $destination_uri ),
-				$temp_file,
+				dirname( $destination_file_uri ),
+				$temp_database_file,
 				true
 			);
 
+			error_log( CF7ANTISPAM_NAME . ' extract to ' . dirname( $destination_file_uri ) . ' file ' . $temp_file );
+
 			if ( copy(
-				$upload_dir['basedir'] . '/' . $temp_file,
-				$destination_uri
+				$plugin_upload_dir . $temp_database_file,
+				$destination_file_uri
 			) ) {
 				// remove original compressed file
-				wp_delete_file( $destination_uri . '.tar.gz' );
-				// remove unpacked
-				wp_delete_file( $upload_dir['basedir'] . '/' . $temp_file );
-				rmdir( $upload_dir['basedir'] . '/' . $p->current()->getFilename() . '/' );
+				wp_delete_file( $destination_file_uri . $ext );
+				error_log( $destination_file_uri . $ext );
 
-				update_option( 'cf7a_geodb_update', time() );
+				// remove unpacked inside the folder
+				wp_delete_file( $plugin_upload_dir . $temp_database_file );
+				error_log( $plugin_upload_dir . $temp_database_file );
 
-				return true;
+				// remove the extracted directory
+				rmdir( $plugin_upload_dir . $temp_file );
 
-			} else {
-				error_log( __( CF7ANTISPAM_PREFIX . "GEOIP DB copy failed {$download_url}", 'cf7-antispam' ) );
-				return false;
+				if ( update_option( 'cf7a_geodb_update', time() ) ) {
+					return true;
+				}
+
+				// TODO: in case it fails we need to retry earlier than the month after
+				$this->cf7a_geoip_schedule_update();
 			}
+
+			error_log( CF7ANTISPAM_NAME . 'GEO-IP Database copy failed ' . $plugin_upload_dir . $temp_database_file . ' to ' . $plugin_upload_dir );
+
 		}
 
 		return false;
