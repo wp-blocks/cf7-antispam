@@ -986,14 +986,13 @@ class CF7_AntiSpam_filters {
 		$b8_threshold = ( $b8_threshold > 0 && $b8_threshold < 1 ) ? $b8_threshold : 1;
 
 		// Scoring
-		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
-		$score_time           = floatval( $options['score']['_time'] );
-		$score_bad_string     = floatval( $options['score']['_bad_string'] );
-		$score_dnsbl          = floatval( $options['score']['_dnsbl'] );
-		$score_honeypot       = floatval( $options['score']['_honeypot'] );
-		$score_honeyform      = floatval( $options['score']['_honeyform'] );
-		$score_warn           = floatval( $options['score']['_warn'] );
-		$score_detection      = floatval( $options['score']['_detection'] );
+		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] ); // cf7-antispam version check, fingerprinting, fingerprints extras (for each failed test)
+		$score_time           = floatval( $options['score']['_time'] ); // time lower or higher than the limits entered
+		$score_bad_string     = floatval( $options['score']['_bad_string'] ); // blacklisted ip (with bad ip list), bad string in email or in message fields, bad user agent
+		$score_dnsbl          = floatval( $options['score']['_dnsbl'] ); // dsnbl score (for each server found)
+		$score_honeypot       = floatval( $options['score']['_honeypot'] ); // honeypot
+		$score_warn           = floatval( $options['score']['_warn'] ); // no http refer, language check fail
+		$score_detection      = floatval( $options['score']['_detection'] ); // already blacklisted, ip, user agent or timestamp fields missing
 
 		// collect data
 		$reason     = array();
