@@ -101,8 +101,6 @@ class CF7_AntiSpam_Frontend {
 			// to be on the save side it can be a good idea to store the name of the input (to avoid duplicates)
 			foreach ( $inputs as $i => $input ) {
 
-				error_log( print_r( $inputs->item( $i ), true ) );
-
 				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
 
 					$item = $inputs->item( $i );
