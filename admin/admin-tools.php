@@ -24,9 +24,11 @@ class CF7_AntiSpam_Admin_Tools {
 	 * @return string an icon with a red color, that becomes greener when the rank is high
 	 */
 	public static function cf7a_format_status( $rank ) {
-		$color = 200 - ( $rank * 2 );
-		$color = $color < 0 ? 0 : $color;
-		return "<span class='ico' style='background-color: rgba(250,$color,0)'>$rank</span>";
+		$rank       = intval( $rank );
+		$color      = 200 - ( $rank * 2 );
+		$color      = $color < 0 ? 0 : $color;
+		$rank_clean = $rank > 99 ? '😎' : $rank;
+		return "<span class='ico' style='background-color: rgba(250,$color,0)'>$rank_clean</span>";
 	}
 
 	public static function cf7a_handle_actions() {
