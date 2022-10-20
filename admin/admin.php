@@ -48,8 +48,6 @@ class CF7_AntiSpam_Admin {
 		// the menu item
 		new CF7_AntiSpam_Admin_Customizations();
 
-		new CF7_AntiSpam_Admin_Tools();
-
 		add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ) );
 
 		add_action( 'admin_notices', array( $this, 'cf7a_display_notices' ) );
@@ -110,17 +108,21 @@ class CF7_AntiSpam_Admin {
 	 */
 	public function cf7a_display_notices() {
 
+		/* It checks if the current admin page is the plugin's admin page. If it is not, it returns. */
 		$admin_page = get_current_screen();
 		if ( false === strpos( $admin_page->base, $this->plugin_name ) ) {
 			return;
 		}
 
+		/* It checks if the settings have been updated, and if so, it displays a success message. */
 		$settings_updated = isset( $_REQUEST['settings-updated'] ) ? sanitize_text_field( $_REQUEST['settings-updated'] ) : false;
-		if ( $settings_updated === 'true' ) {
+		if ( 'true' === $settings_updated ) {
 			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Antispam setting updated with success', 'cf7-antispam' ), 'success' );
 		}
 
-		if ( false !== ( $notice = get_transient( 'cf7a_notice' ) ) ) {
+		/* if there is a notice stored, print it then delete the transient */
+		$notice = get_transient( 'cf7a_notice' );
+		if ( false !== $notice ) {
 			echo $notice;
 			delete_transient( 'cf7a_notice' );
 		}
@@ -136,7 +138,7 @@ class CF7_AntiSpam_Admin {
 		/**
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in load_admin as all of the hooks are defined
+		 * defined in load_admin as all the hooks are defined
 		 * in that particular class.
 		 *
 		 * The load_admin will then create the relationship
@@ -158,7 +160,7 @@ class CF7_AntiSpam_Admin {
 		/**
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in load_admin as all of the hooks are defined
+		 * defined in load_admin as all the hooks are defined
 		 * in that particular class.
 		 *
 		 * The load_admin will then create the relationship
