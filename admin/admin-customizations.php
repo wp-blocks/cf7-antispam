@@ -407,7 +407,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// Enable honeyform
 		add_settings_field(
 			'check_honeyform', // ID
-			__( 'Add a hidden form at the beginning of the content', 'cf7-antispam' ), // Title
+			__( 'Add an hidden form inside the page content', 'cf7-antispam' ), // Title
 			array( $this, 'cf7a_enable_honeyform_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_honeyform' // Section
@@ -416,7 +416,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// Honeyform position
 		add_settings_field(
 			'honeyform_position', // ID
-			__( 'Select where the honeyform will be hidden', 'cf7-antispam' ), // Title
+			__( 'Select where the honeyform will be placed', 'cf7-antispam' ), // Title
 			array( $this, 'cf7a_honeyform_position_callback' ), // Callback
 			'cf7a-settings', // Page
 			'cf7a_honeyform' // Section
@@ -677,6 +677,30 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/**
+	 * It takes an array of strings, removes any empty strings, and returns the array
+	 *
+	 * @param array $array The array to be cleaned.
+	 *
+	 * @return array an array of values that are not empty.
+	 */
+	private function cf7a_remove_empty_from_array( $array ) {
+		if ( ! empty( $array ) && is_array( $array ) ) {
+			$clean_item_collection = array();
+			foreach ( $array as $value ) {
+				if ( ! is_string( $value ) ) {
+					continue;
+				}
+				$value = trim( $value );
+				if ( $value ) {
+					$clean_item_collection[] = $value;
+				}
+			}
+			return $clean_item_collection;
+		}
+		return $array;
+	}
+
+	/**
 	 * It takes a string of comma separated values and line-break separated value then returns an array of those values
 	 *
 	 * @param string $input - The user input with comma and spaces
@@ -684,23 +708,10 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return array $new_input - The formatted input.
 	 */
 	private function cf7a_settings_format_user_input( $input ) {
-		$new_input             = str_replace( "\r\n", ',', $input );
-		$new_input             = explode( ',', $new_input );
-		$clean_item_collection = array();
+		$new_input = str_replace( "\r\n", ',', $input );
+		$new_input = explode( ',', $new_input );
 
-		if ( ! empty( $new_input ) ) {
-			foreach ( $new_input as $input ) {
-				if ( ! is_string( $input ) ) {
-					continue;
-				}
-				$input = trim( $input );
-				if ( $input ) {
-					$clean_item_collection[] = $input;
-				}
-			}
-		}
-
-		return $clean_item_collection;
+		return self::cf7a_remove_empty_from_array( $new_input );
 	}
 
 	/**
@@ -800,7 +811,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// bad words
 		$new_input['check_bad_words'] = isset( $input['check_bad_words'] ) ? 1 : 0;
 		if ( ! empty( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = explode( "\r\n", $input['bad_words_list'] );
+			$new_input['bad_words_list'] = $this->cf7a_remove_empty_from_array( explode( "\r\n", $input['bad_words_list'] ) );
 		}
 
 		// email strings
@@ -818,7 +829,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// dnsbl
 		$new_input['check_dnsbl'] = isset( $input['check_dnsbl'] ) ? 1 : 0;
 		if ( ! empty( $input['dnsbl_list'] ) ) {
-			$new_input['dnsbl_list'] = explode( "\r\n", sanitize_textarea_field( $input['dnsbl_list'] ) );
+			$new_input['dnsbl_list'] = $this->cf7a_remove_empty_from_array( explode( "\r\n", sanitize_textarea_field( $input['dnsbl_list'] ) ) );
 		}
 
 		// honeypot
@@ -918,7 +929,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	private function cf7a_generate_options( $values, $selected = '' ) {
 		$html = '';
 		foreach ( $values as $value ) {
-			$sel   = ( $value == $selected ) ? 'selected' : '';
+			$sel   = ( $value === $selected ) ? 'selected' : '';
 			$html .= "<option value=\"$value\" $sel>$value</option>";
 		}
 		return $html;
@@ -1068,6 +1079,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			! empty( $this->options['check_bad_words'] ) ? 'checked="true"' : ''
 		);
 	}
+
 	public function cf7a_bad_words_list_callback() {
 		printf(
 			'<textarea id="bad_words_list" name="cf7a_options[bad_words_list]" />%s</textarea>',
@@ -1082,6 +1094,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			! empty( $this->options['check_bad_email_strings'] ) ? 'checked="true"' : ''
 		);
 	}
+
 	public function cf7a_bad_email_strings_list_callback() {
 		printf(
 			'<textarea id="bad_email_strings_list" name="cf7a_options[bad_email_strings_list]" />%s</textarea>',
@@ -1096,6 +1109,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			! empty( $this->options['check_bad_user_agent'] ) ? 'checked="true"' : ''
 		);
 	}
+
 	public function cf7a_user_agent_list_callback() {
 		printf(
 			'<textarea id="bad_user_agent_list" name="cf7a_options[bad_user_agent_list]" />%s</textarea>',
@@ -1204,42 +1218,49 @@ class CF7_AntiSpam_Admin_Customizations {
 			isset( $this->options['score']['_fingerprinting'] ) ? floatval( $this->options['score']['_fingerprinting'] ) : 0.25
 		);
 	}
+
 	public function cf7a_score_time_callback() {
 		printf(
 			'<input type="number" id="score_time" name="cf7a_options[score][_time]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_time'] ) ? floatval( $this->options['score']['_time'] ) : 1
 		);
 	}
+
 	public function cf7a_score_bad_string_callback() {
 		printf(
 			'<input type="number" id="score_bad_string" name="cf7a_options[score][_bad_string]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_bad_string'] ) ? floatval( $this->options['score']['_bad_string'] ) : 1
 		);
 	}
+
 	public function cf7a_score_dnsbl_callback() {
 		printf(
 			'<input type="number" id="score_dnsbl" name="cf7a_options[score][_dnsbl]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_dnsbl'] ) ? floatval( $this->options['score']['_dnsbl'] ) : 0.25
 		);
 	}
+
 	public function cf7a_score_honeypot_callback() {
 		printf(
 			'<input type="number" id="score_honeypot" name="cf7a_options[score][_honeypot]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_honeypot'] ) ? floatval( $this->options['score']['_honeypot'] ) : 1
 		);
 	}
+
 	public function cf7a_score_warn_callback() {
 		printf(
 			'<input type="number" id="score_warn" name="cf7a_options[score][_warn]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_warn'] ) ? floatval( $this->options['score']['_warn'] ) : 1
 		);
 	}
+
 	public function cf7a_score_detection_callback() {
 		printf(
 			'<input type="number" id="score_detection" name="cf7a_options[score][_detection]" value="%s" min="0" max="100" step="0.01" />',
 			isset( $this->options['score']['_detection'] ) ? floatval( $this->options['score']['_detection'] ) : 5
 		);
 	}
+
 	public function cf7a_enable_advanced_settings_callback() {
 		printf(
 			'<input type="checkbox" id="enable_advanced_settings" name="cf7a_options[enable_advanced_settings]" %s />',
