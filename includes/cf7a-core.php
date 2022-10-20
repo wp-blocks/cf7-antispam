@@ -282,4 +282,34 @@ class CF7_AntiSpam {
 	public static function get_options() {
 		return get_option( 'cf7a_options' );
 	}
+
+	/**
+	 * CF7 AntiSpam update options function
+	 *
+	 * @since 4.0.0
+	 *
+	 * @param  array $options options
+	 * @return bool
+	 */
+	public static function update_options( $options ) {
+		return update_option( 'cf7a_options', $options );
+	}
+
+
+	/**
+	 * CF7 AntiSpam update a function to a single option
+	 *
+	 * @since 4.0.0
+	 *
+	 * @param  array $options options
+	 * @return bool
+	 */
+	public static function update_option( $option, $value ) {
+		$options = self::get_options();
+		if ( isset( $options[ $option ] ) ) {
+			return update_option( 'cf7a_options', $options );
+		} else {
+			return false;
+		}
+	}
 }
