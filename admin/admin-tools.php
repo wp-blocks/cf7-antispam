@@ -67,6 +67,22 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 			}
 
+			// Ban forever a single ID
+			if ( substr( $action, 0, 11 ) === 'ban_forever_' ) {
+				$ban_id = intval( substr( $action, 11 ) );
+				$ban_ip = $filter->cf7a_blacklist_get_ip( $ban_id );
+
+				$options = self::get_options();
+				$bad_ip_list = $options . "\r\n" . $ban_ip;
+
+				if ( CF7_AntiSpam::update_option( $options ) ) {
+					$filter->cf7a_unban_by_id( $ban_id );
+				} else {
+					/* translators: the first %s is the user id and the second is the ip address. */
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'Error: unable to ban forever id %1$s (ip %2$s)', 'cf7-antispam' ), $ban_id, $ban_ip ) );
+				}
+			}
+
 			// Purge the blacklist
 			if ( $action === 'reset-blacklist' ) {
 
@@ -164,8 +180,8 @@ class CF7_AntiSpam_Admin_Tools {
 				// the row
 				$html .= '<div class="row">';
 				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status ) );
-				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">[unban ip]</a></small></p>', $row->ip, esc_url( $url ) );
-				$html .= sprintf( "<span class='data ellipsis'>%s</span></div>", cf7a_compress_array( $meta['reason'], 1 ) );
+				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">%s</a> <a href="%s">%s</a></small></p>', $row->ip, esc_url( $unban_url ), __( '[unban ip]' ), esc_url( $ban_url ), __( '[ban forever]' ) );
+				$html .= sprintf( "<span class='data'>%s</span></div>", cf7a_compress_array( $meta['reason'], 1 ) );
 				$html .= '</div>';
 
 			}
