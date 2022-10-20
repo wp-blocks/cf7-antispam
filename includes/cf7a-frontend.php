@@ -92,7 +92,8 @@ class CF7_AntiSpam_Frontend {
 		}
 
 		/* A list of default names for the honeypot fields. */
-		$input_names = get_honeypot_input_names( sanitize_html_class( $this->options['honeypot_input_names'] ) );
+		$options     = get_option( 'cf7a_options', array() );
+		$input_names = get_honeypot_input_names( $options );
 		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 
 		// get the inputs data
@@ -113,7 +114,7 @@ class CF7_AntiSpam_Frontend {
 					$item->setAttribute( 'tabindex', '' );
 					$item->setAttribute( 'class', $item->getAttribute( 'class' ) );
 
-					$honeypot_names = isset( $input_names[ $i ] ) ? $input_names[ $i ] : $honeypot_default_names[ $i ];
+					$honeypot_names = $input_names[ $i ];
 
 					$clone->setAttribute( 'name', $honeypot_names );
 					$clone->setAttribute( 'value', '' );
