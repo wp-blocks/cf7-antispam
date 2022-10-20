@@ -70,8 +70,8 @@ class CF7_AntiSpam_Admin {
 	public function cf7a_admin_menu() {
 		add_submenu_page(
 			'wpcf7',
-			__( 'Antispam', $this->plugin_name ),
-			__( 'Antispam', $this->plugin_name ),
+			__( 'Antispam', 'cf7-antispam' ),
+			__( 'Antispam', 'cf7-antispam' ),
 			'wpcf7_edit_contact_forms',
 			$this->plugin_name,
 			array( $this, 'cf7a_admin_dashboard' )

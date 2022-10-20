@@ -546,12 +546,22 @@ class CF7_AntiSpam_filters {
 
 	// Database management Flamingo
 
+	/**
+	 * It deletes all the blacklisted ip
+	 *
+	 * @return bool - The result of the query.
+	 */
 	public function cf7a_clean_blacklist() {
 		global $wpdb;
 		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_blacklist" );
 		return ! is_wp_error( $r );
 	}
 
+	/**
+	 * It resets the database table that stores the spam and ham words
+	 *
+	 * @return bool - The result of the query.
+	 */
 	public function cf7a_reset_dictionary() {
 		global $wpdb;
 		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_wordlist" );
@@ -564,17 +574,28 @@ class CF7_AntiSpam_filters {
 		return false;
 	}
 
+	/**
+	 * It deletes all the _cf7a_b8_classification metadata from the database
+	 */
 	public static function cf7a_reset_b8_classification() {
 		global $wpdb;
 		$wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
 	}
 
+	/**
+	 * It resets the dictionary and classification, then analyzes all the stored mails
+	 *
+	 * @return bool - The return value is the number of mails that were analyzed.
+	 */
 	public function cf7a_rebuild_dictionary() {
 		$this->cf7a_reset_dictionary();
 		$this->cf7a_reset_b8_classification();
 		return $this->cf7a_flamingo_analyze_stored_mails();
 	}
 
+	/**
+	 * It uninstalls the plugin, then reinstall it
+	 */
 	public function cf7a_full_reset() {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
 		CF7_AntiSpam_Uninstaller::uninstall( true );
@@ -586,10 +607,18 @@ class CF7_AntiSpam_filters {
 
 	// CF7_AntiSpam_filters Flamingo
 
+	/**
+	 * It checks the database for any stored emails that have been sent by Contact Form 7, and if it finds any, it adds them
+	 * to the Flamingo database
+	 */
 	public function cf7a_flamingo_on_install() {
 		$this->cf7a_flamingo_analyze_stored_mails();
 	}
 
+	/**
+	 * It gets all the Flamingo inbound posts, and for each one, it gets the content of the post, and then it uses the b8
+	 * classifier to classify the content as spam or ham
+	 */
 	private function cf7a_flamingo_analyze_stored_mails() {
 
 		// get all the flamingo inbound post and classify them
@@ -615,9 +644,9 @@ class CF7_AntiSpam_filters {
 
 				if ( ! empty( $message ) ) {
 
-					if ( $post_status == 'flamingo-spam' ) {
+					if ( 'flamingo-spam' === $post_status ) {
 						$this->cf7a_b8_learn_spam( $message );
-					} elseif ( $post_status == 'publish' ) {
+					} elseif ( 'publish' === $post_status ) {
 						$this->cf7a_b8_learn_ham( $message );
 					}
 
@@ -641,15 +670,15 @@ class CF7_AntiSpam_filters {
 
 	public function cf7a_d8_flamingo_classify() {
 
-		if ( ! isset( $_REQUEST['action'] ) || $_REQUEST['action'] !== 'spam' && $_REQUEST['action'] !== 'unspam' && $_REQUEST['action'] !== 'save' ) {
+		if ( ! isset( $_REQUEST['action'] ) || ( 'spam' !== $_REQUEST['action'] ) && ( 'unspam' !== $_REQUEST['action'] ) && 'save' !== $_REQUEST['action'] ) {
 			return;
 		}
 
-		if ( $_REQUEST['action'] === 'save' && $_REQUEST['save'] === 'Update' ) {
-			$action = $_REQUEST['inbound']['status'] == 'spam' ? 'spam' : 'ham'; // spam / ham
-		} elseif ( $_REQUEST['action'] === 'spam' ) {
+		if ( 'save' === $_REQUEST['action'] && 'Update' === $_REQUEST['save'] ) {
+			$action = 'spam' === $_REQUEST['inbound']['status'] ? 'spam' : 'ham'; // spam / ham
+		} elseif ( 'spam' === $_REQUEST['action'] ) {
 			$action = 'spam';
-		} elseif ( $_REQUEST['action'] === 'unspam' ) {
+		} elseif ( 'unspam' === $_REQUEST['action'] ) {
 			$action = 'ham';
 		}
 
@@ -666,6 +695,7 @@ class CF7_AntiSpam_filters {
 					update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', 'none' );
 
 					if ( CF7ANTISPAM_DEBUG ) {
+						/* translators: %s - the post id. */
 						error_log( CF7ANTISPAM_LOG_PREFIX . sprintf( __( "%s has no message text so can't be analyzed", 'cf7-antispam' ), $post_id ) );
 					}
 				} else {
@@ -674,7 +704,7 @@ class CF7_AntiSpam_filters {
 
 					$options = get_option( 'cf7a_options' );
 
-					if ( $action == 'spam' ) {
+					if ( 'spam' === $action ) {
 
 						$this->cf7a_b8_unlearn_ham( $message );
 						$this->cf7a_b8_learn_spam( $message );
@@ -682,7 +712,7 @@ class CF7_AntiSpam_filters {
 						if ( $options['autostore_bad_ip'] ) {
 							$this->cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], __( 'flamingo ban' ) );
 						}
-					} elseif ( $action == 'ham' ) {
+					} elseif ( 'ham' === $action ) {
 
 						$this->cf7a_b8_unlearn_spam( $message );
 						$this->cf7a_b8_learn_ham( $message );
@@ -699,6 +729,7 @@ class CF7_AntiSpam_filters {
 					if ( CF7ANTISPAM_DEBUG ) {
 						error_log(
 							CF7ANTISPAM_LOG_PREFIX . sprintf(
+								/* translators: %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email */
 								__( 'b8 has learned this e-mail from %1$s was %2$s - score before/after: %3$f/%4$f', 'cf7-antispam' ),
 								$flamingo_post->from_email,
 								$action,
@@ -1021,7 +1052,7 @@ class CF7_AntiSpam_filters {
 			if ( $ip_data_status >= $options['max_attempts'] ) {
 
 				$spam_score           += $score_detection;
-				$reason['blacklisted'] = 'Score: ' . ( $ip_data_status + $score_warn );
+				$reason['blacklisted'] = 'Score: ' . ( $ip_data_status + $spam_score );
 
 				$this->cf7a_log( "The $remote_ip is already blacklisted, status $ip_data_status", 1 );
 			}
@@ -1062,7 +1093,7 @@ class CF7_AntiSpam_filters {
 
 			// get the "marker" field
 			if ( isset( $_POST[ '_wpcf7_' . $form_class ] ) ) {
-				$spam_score               += $score_honeyform;
+				$spam_score               += $score_detection;
 				$reason['bot_fingerprint'] = 'honeyform';
 			}
 		}
@@ -1113,7 +1144,7 @@ class CF7_AntiSpam_filters {
 				if ( ! $bot_fingerprint['session_storage'] ) {
 					$fails[] = 'session_storage';
 				}
-				if ( strlen( $bot_fingerprint['bot_fingerprint'] ) != 5 ) {
+				if ( 5 !== strlen( $bot_fingerprint['bot_fingerprint'] ) ) {
 					$fails[] = 'bot_fingerprint';
 				}
 
@@ -1125,7 +1156,7 @@ class CF7_AntiSpam_filters {
 					}
 				} else {
 					// but in ios isn't provided so we expect a null value
-					if ( $bot_fingerprint['hardware_concurrency'] !== null ) {
+					if ( null !== $bot_fingerprint['hardware_concurrency'] ) {
 						$fails[] = 'hardware_concurrency_Ios';
 					}
 				}

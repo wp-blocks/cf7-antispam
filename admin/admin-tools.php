@@ -76,7 +76,7 @@ class CF7_AntiSpam_Admin_Tools {
 				$ban_id = intval( substr( $action, 11 ) );
 				$ban_ip = $filter->cf7a_blacklist_get_ip( $ban_id );
 
-				$options = self::get_options();
+				$options     = self::get_options();
 				$bad_ip_list = $options . "\r\n" . $ban_ip;
 
 				if ( CF7_AntiSpam::update_option( $options ) ) {

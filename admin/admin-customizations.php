@@ -1243,7 +1243,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_enable_advanced_settings_callback() {
 		printf(
 			'<input type="checkbox" id="enable_advanced_settings" name="cf7a_options[enable_advanced_settings]" %s />',
-			!empty( $this->options['enable_advanced_settings'] ) ? 'checked="true"' : ''
+			! empty( $this->options['enable_advanced_settings'] ) ? 'checked="true"' : ''
 		);
 	}
 

@@ -161,8 +161,9 @@ class CF7_AntiSpam_Frontend {
 			$global_count
 		);
 
-		$url = add_query_arg( array() );
-		if ( $frag = strstr( $url, '#' ) ) {
+		$url  = add_query_arg( array() );
+		$frag = strstr( $url, '#' );
+		if ( $frag ) {
 			$url = substr( $url, 0, -strlen( $frag ) );
 		}
 		$url .= '#' . $unit_tag;
