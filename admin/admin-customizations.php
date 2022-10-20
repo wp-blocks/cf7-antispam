@@ -800,7 +800,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		// bad words
 		$new_input['check_bad_words'] = isset( $input['check_bad_words'] ) ? 1 : 0;
 		if ( ! empty( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = explode( '\r\n', $input['bad_words_list'] );
+			$new_input['bad_words_list'] = explode( "\r\n", $input['bad_words_list'] );
 		}
 
 		// email strings
