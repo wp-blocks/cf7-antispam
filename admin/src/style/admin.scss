@@ -113,20 +113,21 @@ $color__info: $color__blue;
         margin-right: 8px;
 
         .ico {
+		  display: inline-block;
           font-family: monospace;
-          border-radius: 50%;
+		  text-align: center;
+		  border-radius: 50%;
+		  width: 40px;
+		  height: 40px;
+		  line-height: 30px;
+		  box-sizing: border-box;
+		  padding: 5px;
+		  margin: 0;
+
           color: $color__white;
           font-size: 20px;
           font-weight: bold;
           text-shadow: 0 1px 1px transparentize($color__black, .7);
-          display: inline-block;
-          text-align: center;
-          margin: 0;
-          padding: 5px;
-		  line-height: 30px;
-		  width: 40px;
-		  height: 40px;
-		  text-overflow: '😎'
         }
       }
 
