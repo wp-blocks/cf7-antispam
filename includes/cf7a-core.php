@@ -277,7 +277,8 @@ class CF7_AntiSpam {
 
 	/**
 	 * the CF7 AntiSpam options
-	 * @return string
+	 *
+	 * @return array the plugin options
 	 */
 	public static function get_options() {
 		return get_option( 'cf7a_options' );
@@ -301,15 +302,17 @@ class CF7_AntiSpam {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param  array $options options
+	 * @param string $option the option that you need to change
+	 * @param mixed $value the new option value
+	 *
 	 * @return bool
 	 */
 	public static function update_option( $option, $value ) {
 		$options = self::get_options();
 		if ( isset( $options[ $option ] ) ) {
+			$options[ $option ] = $value;
 			return update_option( 'cf7a_options', $options );
-		} else {
-			return false;
 		}
+		return false;
 	}
 }
