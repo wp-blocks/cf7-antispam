@@ -571,15 +571,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_scoring' // Section
 		);
 
-		// Settings score honeyform
-		add_settings_field(
-			'score_honeyform', // ID
-			__( 'Honeyform fill score', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_honeyform_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
-		);
-
 		// Settings score detection
 		add_settings_field(
 			'score_detection', // ID
@@ -852,7 +843,6 @@ class CF7_AntiSpam_Admin_Customizations {
 				'_bad_string'     => 0.5,
 				'_dnsbl'          => 0.1,
 				'_honeypot'       => 0.3,
-				'_honeyform'      => 1,
 				'_detection'      => 0.5,
 				'_warn'           => 0.25,
 			),
@@ -862,7 +852,6 @@ class CF7_AntiSpam_Admin_Customizations {
 				'_bad_string'     => 1,
 				'_dnsbl'          => 0.15,
 				'_honeypot'       => 0.5,
-				'_honeyform'      => 5,
 				'_detection'      => 1,
 				'_warn'           => 0.5,
 			),
@@ -872,7 +861,6 @@ class CF7_AntiSpam_Admin_Customizations {
 				'_bad_string'     => 1,
 				'_dnsbl'          => 0.2,
 				'_honeypot'       => 1,
-				'_honeyform'      => 10,
 				'_detection'      => 5,
 				'_warn'           => 1,
 			),
@@ -896,7 +884,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['score']['_bad_string']     = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string'] ) : 1;
 			$new_input['score']['_dnsbl']          = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl'] ) : 0.2;
 			$new_input['score']['_honeypot']       = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot'] ) : 1;
-			$new_input['score']['_honeyform']      = isset( $input['score']['_honeyform'] ) ? floatval( $input['score']['_honeyform'] ) : 10;
 			$new_input['score']['_detection']      = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection'] ) : 5;
 			$new_input['score']['_warn']           = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn'] ) : 1;
 			$new_input['cf7a_score_preset']        = 'custom';
@@ -1239,12 +1226,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="number" id="score_honeypot" name="cf7a_options[score][_honeypot]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_honeypot'] ) ? floatval( $this->options['score']['_honeypot'] ) : 1
-		);
-	}
-	public function cf7a_score_honeyform_callback() {
-		printf(
-			'<input type="number" id="score_honeyform" name="cf7a_options[score][_honeyform]" value="%s" min="0" max="100" step="0.01" />',
-			isset( $this->options['score']['_honeyform'] ) ? floatval( $this->options['score']['_honeyform'] ) : 10
 		);
 	}
 	public function cf7a_score_warn_callback() {
