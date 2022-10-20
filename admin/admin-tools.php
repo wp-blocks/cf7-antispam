@@ -36,7 +36,7 @@ class CF7_AntiSpam_Admin_Tools {
 		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : false;
 		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
-		if ( $action === 'dismiss-banner' ) {
+		if ( 'dismiss-banner' === $action ) {
 			if ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on' ) ) {
 				update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1 );
 			} else {
@@ -61,10 +61,12 @@ class CF7_AntiSpam_Admin_Tools {
 				$r = $filter->cf7a_unban_by_id( $unban_id );
 
 				if ( ! is_wp_error( $r ) ) {
-					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( "Success: ip $unban_id unbanned", 'cf7-antispam' ), 'success' );
+					/* translators: %s is the ip address. */
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'Success: ip %s unbanned', 'cf7-antispam' ), $unban_id ), 'success' );
 					wp_redirect( $url );
 				} else {
-					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( "Error: unable to unban $unban_id", 'cf7-antispam' ) );
+					/* translators: %s is the ip address. */
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'Error: unable to unban %s', 'cf7-antispam' ), $unban_id ) );
 					wp_redirect( $url );
 				}
 			}
@@ -86,7 +88,7 @@ class CF7_AntiSpam_Admin_Tools {
 			}
 
 			// Purge the blacklist
-			if ( $action === 'reset-blacklist' ) {
+			if ( 'reset-blacklist' === $action ) {
 
 				$r = $filter->cf7a_clean_blacklist();
 
@@ -100,7 +102,7 @@ class CF7_AntiSpam_Admin_Tools {
 			}
 
 			// Reset Dictionary
-			if ( $action === 'reset-dictionary' ) {
+			if ( 'reset-dictionary' === $action ) {
 
 				$r = $filter->cf7a_reset_dictionary();
 
@@ -114,7 +116,7 @@ class CF7_AntiSpam_Admin_Tools {
 			}
 
 			// Rebuild Dictionary
-			if ( $action === 'rebuild-dictionary' ) {
+			if ( 'rebuild-dictionary' === $action ) {
 
 				$r = $filter->cf7a_rebuild_dictionary();
 
@@ -127,7 +129,7 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 			}
 
-			if ( $action === 'cf7a-full-reset' ) {
+			if ( 'cf7a-full-reset' === $action ) {
 
 				$r = $filter->cf7a_full_reset();
 
@@ -151,12 +153,14 @@ class CF7_AntiSpam_Admin_Tools {
 					$r = $filter->cf7a_resend_mail( $mail_id );
 
 					if ( ! is_wp_error( $r ) ) {
-						CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'CF7 AntiSpam email ' . $mail_id . ' sent with success', 'cf7-antispam' ), 'success' );
+						/* translators: %s is the mail id. */
+						CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'CF7 AntiSpam email %s sent with success', 'cf7-antispam' ), $mail_id ) );
 						wp_redirect( $refer );
 					}
 				}
 
-				CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Ops! something went wrong... unable to resend ' . $mail_id . ' email', 'cf7-antispam' ) );
+				/* translators: %s is the mail id. */
+				CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'Ops! something went wrong... unable to resend %s email', 'cf7-antispam' ), $mail_id ) );
 				wp_redirect( $refer );
 
 			}
@@ -175,7 +179,8 @@ class CF7_AntiSpam_Admin_Tools {
 			foreach ( $blacklisted as $row ) {
 
 				// the row url
-				$url = wp_nonce_url( add_query_arg( 'action', 'unban_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+				$unban_url = wp_nonce_url( add_query_arg( 'action', 'unban_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+				$ban_url   = wp_nonce_url( add_query_arg( 'action', 'ban_forever_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
 
 				$meta = unserialize( $row->meta );
 
@@ -311,7 +316,7 @@ class CF7_AntiSpam_Admin_Tools {
 			$html = printf(
 				'<div id="debug-info" class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
 				__( 'Debug info', 'cf7-antispam' ),
-				__( '(...If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true)', 'cf7-antispam' )
+				__( 'If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true', 'cf7-antispam' )
 			);
 
 			if ( CF7ANTISPAM_DEBUG ) {
