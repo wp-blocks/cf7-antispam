@@ -63,12 +63,11 @@ class CF7_AntiSpam_Admin_Tools {
 				if ( ! is_wp_error( $r ) ) {
 					/* translators: %s is the ip address. */
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'Success: ip %s unbanned', 'cf7-antispam' ), $unban_id ), 'success' );
-					wp_redirect( $url );
 				} else {
 					/* translators: %s is the ip address. */
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'Error: unable to unban %s', 'cf7-antispam' ), $unban_id ) );
-					wp_redirect( $url );
 				}
+				wp_redirect( $url );
 			}
 
 			// Ban forever a single ID
@@ -102,11 +101,10 @@ class CF7_AntiSpam_Admin_Tools {
 
 				if ( ! is_wp_error( $r ) ) {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Success: ip blacklist cleaned', 'cf7-antispam' ), 'success' );
-					wp_redirect( $url );
 				} else {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' ) );
-					wp_redirect( $url );
 				}
+				wp_redirect( $url );
 			}
 
 			// Reset Dictionary
@@ -116,11 +114,10 @@ class CF7_AntiSpam_Admin_Tools {
 
 				if ( ! is_wp_error( $r ) ) {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'b8 dictionary reset successful', 'cf7-antispam' ), 'success' );
-					wp_redirect( $url );
 				} else {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
-					wp_redirect( $url );
 				}
+				wp_redirect( $url );
 			}
 
 			// Rebuild Dictionary
@@ -130,11 +127,10 @@ class CF7_AntiSpam_Admin_Tools {
 
 				if ( ! is_wp_error( $r ) ) {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'b8 dictionary rebuild successful', 'cf7-antispam' ), 'success' );
-					wp_redirect( $url );
 				} else {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Something goes wrong while rebuilding b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
-					wp_redirect( $url );
 				}
+				wp_redirect( $url );
 			}
 
 			if ( 'cf7a-full-reset' === $action ) {
@@ -143,11 +139,10 @@ class CF7_AntiSpam_Admin_Tools {
 
 				if ( ! is_wp_error( $r ) ) {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'CF7 AntiSpam fully reinitialized with success', 'cf7-antispam' ), 'success' );
-					wp_redirect( $url );
 				} else {
 					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Ops! something went wrong... Please refresh and try again!', 'cf7-antispam' ) );
-					wp_redirect( $url );
 				}
+				wp_redirect( $url );
 			}
 
 			if ( substr( $action, 0, 12 ) === 'cf7a_resend_' ) {
@@ -183,7 +178,8 @@ class CF7_AntiSpam_Admin_Tools {
 
 		if ( $blacklisted ) {
 
-			$html = '<div id="blacklist-section"  class="cf7-antispam card"><h3>' . __( 'IP Blacklist' ) . '</h3><div class="widefat blacklist-table">';
+			$html = sprintf( '<div id="blacklist-section"  class="cf7-antispam card"><h3>%s</h3><div class="widefat blacklist-table">', __( 'IP Blacklist' ) );
+
 			foreach ( $blacklisted as $row ) {
 
 				// the row url
@@ -192,9 +188,12 @@ class CF7_AntiSpam_Admin_Tools {
 
 				$meta = unserialize( $row->meta );
 
+				// max_attempts
+				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
+
 				// the row
 				$html .= '<div class="row">';
-				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status ) );
+				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status - $max_attempts ) );
 				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">%s</a> <a href="%s">%s</a></small></p>', $row->ip, esc_url( $unban_url ), __( '[unban ip]' ), esc_url( $ban_url ), __( '[ban forever]' ) );
 				$html .= sprintf( "<span class='data'>%s</span></div>", cf7a_compress_array( $meta['reason'], 1 ) );
 				$html .= '</div>';

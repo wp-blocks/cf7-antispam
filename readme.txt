@@ -66,7 +66,7 @@ We love your input! We want to make contributing to this project as easy and tra
 * Discussing the current state, features, improvements
 * Submitting a fix or a new feature
 
-We use github to host code, to track issues and feature requests, as well as accept pull requests.
+We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
 By contributing, you agree that your contributions will be licensed under its GPLv2 License.
 
 My goal is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
@@ -82,13 +82,12 @@ Enable **debug mode** (wp-debug has to be enabled)
 Enable **extended debug mode** (need "CF7ANTISPAM_DEBUG" to be enabled)
 - disable autoban
 - enable advanced logging (the result of each test for each email)
-if you uninstall this plugin with this option is enabled the cf7 options and and the cf7 words database used by b8 will not be deleted. (Use it if you know what you are doing, because this way you do not delete/reset options and vocabulary)
+if you uninstall this plugin with this option is enabled the cf7 options and the cf7 words database used by b8 will not be deleted. (Use it if you know what you are doing, because this way you do not delete/reset options and vocabulary)
 `define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
 
 **Dnsbl benchmark**
 if the mail takes so long to be sent, maybe it is a dnsbl that is taking so long to reply. with this option active, the time that each dns took to reply is printed in the log.
 `define( 'CF7ANTISPAM_DNSBL_BENCHMARK', true);`
-
 
 == Frequently Asked Questions ==
 
@@ -110,7 +109,7 @@ Different checks are made to recognize different type of bots. This is a short l
 
 =What do you mean by Standard Spam Filters=
 
-Some of the standard test are Elapsed time, Auto-Blacklisting, Prohibited IP/strings and, in addition, we got some advanced test like HoneyPots, HoneyForms and the browser FingerPrinting.
+Some standard test are Elapsed time, Auto-Blacklisting, Prohibited IP/strings and, in addition, we got some advanced test like HoneyPots, HoneyForms and the browser FingerPrinting.
 
 =HoneyForm, or you mean Honeypot?=
 
@@ -230,11 +229,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the LICENSE file for more details.
 
 == TODOs ==
-* Enhance user agent specific checks (especially for apple devices, lately bots are using this user agent to try to escape the scans)
+* Enhance user agent specific checks (especially for apple-devices, lately bots are using this user agent to try to escape the scans)
 * Banned ip and dictionary CSV Export/import settings
 * Remove mail duplicates if users sent multiple
-* Optimise the the mail analysis function using filters (actually is a long script that execute sequentially checks)
-* Cover with the antispam also the wordpress comment form and the login panel
+* Optimise the mail analysis function using filters (actually is a long script that execute sequentially checks)
+* Extend the blacklisted with the antispam also the WordPress comment form and the login panel (https://developer.wordpress.org/reference/functions/wp_filter_comment/#hooks - https://developer.wordpress.org/reference/hooks/login_init/)
 
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)

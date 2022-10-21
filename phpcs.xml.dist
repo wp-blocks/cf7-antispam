@@ -51,6 +51,7 @@
 	<exclude-pattern>/assets/*</exclude-pattern>
 	<exclude-pattern>/libs/*</exclude-pattern>
 	<exclude-pattern>*.asset.php</exclude-pattern>
+	<exclude-pattern>*.js</exclude-pattern>
 
 	<!-- Exclude the unit tests from select sniffs. -->
 	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
