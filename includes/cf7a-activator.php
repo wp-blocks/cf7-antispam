@@ -23,7 +23,7 @@ class CF7_AntiSpam_Activator {
 			'cf7a_customizations_class'    => CF7ANTISPAM_HONEYPOT_CLASS,
 			'cf7a_customizations_prefix'   => CF7ANTISPAM_PREFIX,
 			'cf7a_cipher'                  => 'aes-128-cbc',
-			'cf7a_score_preset'            => 'standard',
+			'cf7a_score_preset'            => 'weak',
 			'cf7a_disable_reload'          => true,
 			'check_bot_fingerprint'        => true,
 			'check_bot_fingerprint_extras' => true,
@@ -33,13 +33,13 @@ class CF7_AntiSpam_Activator {
 			'check_time_max'               => 3600 * 48,
 			'check_bad_ip'                 => true,
 			'autostore_bad_ip'             => true,
-			'max_attempts'                 => 2,
+			'max_attempts'                 => 3,
 			'unban_after'                  => 'disabled',
 			'check_bad_words'              => true,
 			'check_bad_email_strings'      => true,
 			'check_bad_user_agent'         => true,
 			'check_dnsbl'                  => true,
-			'check_refer'                  => false,
+			'check_refer'                  => true,
 			'check_honeypot'               => true,
 			'check_honeyform'              => false,
 			'check_geoip'                  => false,
@@ -61,13 +61,13 @@ class CF7_AntiSpam_Activator {
 				'disallowed' => array(),
 			),
 			'score'                        => array(
-				'_fingerprinting' => 0.15,
-				'_time'           => 0.5,
-				'_bad_string'     => 1,
-				'_dnsbl'          => 0.15,
-				'_honeypot'       => 0.5,
+				'_fingerprinting' => 0.1,
+				'_time'           => 0.3,
+				'_bad_string'     => 0.5,
+				'_dnsbl'          => 0.1,
+				'_honeypot'       => 0.3,
 				'_detection'      => 1,
-				'_warn'           => 0.5,
+				'_warn'           => 0.3,
 			),
 		);
 
@@ -171,7 +171,9 @@ class CF7_AntiSpam_Activator {
 
 		self::init_vars();
 
-		if ( false !== ( $options = get_option( 'cf7a_options' ) ) && ! $reset_options ) {
+		$options = get_option( 'cf7a_options' );
+
+		if ( false !== $options && ! $reset_options ) {
 
 			// update the plugin options but add the new options automatically
 			if ( isset( $options['cf7a_version'] ) ) {
@@ -183,20 +185,23 @@ class CF7_AntiSpam_Activator {
 
 			if ( CF7ANTISPAM_DEBUG ) {
 				error_log( print_r( CF7ANTISPAM_LOG_PREFIX . ' plugin options updated', true ) );}
+
+			update_option( 'cf7a_options', $new_options );
 		} else {
 			// if the plugin options are missing Init the plugin with the default option + the default settings
 			$new_options = array_merge( CF7_AntiSpam_Activator::$default_cf7a_options, CF7_AntiSpam_Activator::$default_cf7a_options_bootstrap );
-		}
 
-		update_option( 'cf7a_options', $new_options );
+			add_option( 'cf7a_options', $new_options );
+		}
 
 		if ( CF7ANTISPAM_DEBUG ) {
 			error_log( print_r( $new_options, true ) );
 		}
 
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
+
 		$notice = new CF7_AntiSpam_Admin_Tools;
-		$notice::cf7a_push_notice( esc_html__( 'CF7 AntiSpam updated successful! ⚠️Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'cf7-antispam' );
+		$notice::cf7a_push_notice( esc_html__( '⚠️ CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'cf7-antispam' );
 
 	}
 
