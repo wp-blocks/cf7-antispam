@@ -72,19 +72,27 @@ class CF7_AntiSpam_Admin_Tools {
 			}
 
 			// Ban forever a single ID
-			if ( substr( $action, 0, 11 ) === 'ban_forever_' ) {
-				$ban_id = intval( substr( $action, 11 ) );
-				$ban_ip = $filter->cf7a_blacklist_get_ip( $ban_id );
+			if ( substr( $action, 0, 12 ) === 'ban_forever_' ) {
 
-				$options     = self::get_options();
-				$bad_ip_list = $options . "\r\n" . $ban_ip;
+				$ban_id = intval( substr( $action, 12 ) );
+				$ban_ip = $filter->cf7a_blacklist_get_id( $ban_id );
 
-				if ( CF7_AntiSpam::update_option( $options ) ) {
-					$filter->cf7a_unban_by_id( $ban_id );
+				if ( $ban_ip ) {
+					if ( CF7_AntiSpam::update_option( 'bad_ip_list', array( $ban_ip->ip ) ) ) {
+						$filter->cf7a_unban_by_id( $ban_id );
+					}
 				} else {
-					/* translators: the first %s is the user id and the second is the ip address. */
-					CF7_AntiSpam_Admin_Tools::cf7a_push_notice( sprintf( __( 'Error: unable to ban forever id %1$s (ip %2$s)', 'cf7-antispam' ), $ban_id, $ban_ip ) );
+					CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
+						sprintf(
+							/* translators: the %1$s is the user id and %2$s is the ip address. */
+							__( 'Error: unable to ban forever id %1$s (ip %2$s)', 'cf7-antispam' ),
+							$ban_id,
+							isset( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
+						)
+					);
 				}
+
+				wp_redirect( $url );
 			}
 
 			// Purge the blacklist
