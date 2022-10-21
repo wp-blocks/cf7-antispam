@@ -262,6 +262,10 @@ body.flamingo_page_flamingo_inbound {
 
 }
 
+.notice.notice-cf7-antispam {
+  border-left-color: $color__orange;
+}
+
 // Animations
 @keyframes spin {
   90% {

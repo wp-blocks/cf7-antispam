@@ -1,1 +1,234 @@
-!function(){"use strict";var e,n={269:function(){window.onload=function(){if(document.body.classList.contains("cf7-antispam-admin")||document.body.classList.contains("flamingo_page_flamingo_inbound")){const e=cf7a_admin_settings.alertMessage;document.querySelectorAll(".cf7a_alert").forEach((n=>{n.addEventListener("click",(()=>{var t,a;t=n,a=n.dataset.message||!1,confirm(a||e)&&(window.location.href=t.dataset.href)}))}))}if(document.body.classList.contains("cf7-antispam-admin")){document.addEventListener("keydown",(e=>{e.ctrlKey&&"s"===e.key&&(e.preventDefault(),document.getElementById("submit").click())}));const e=()=>{const e=document.getElementById("enable_advanced_settings"),n=document.querySelectorAll("#cf7a_settings h2"),t=document.querySelectorAll("#cf7a_settings table"),a=document.getElementById("advanced-setting-card");!0!==e.checked?a&&(a.classList.add("hidden"),n[n.length-1].classList.add("hidden"),t[t.length-1].classList.add("hidden")):a&&(a.classList.remove("hidden"),n[n.length-1].classList.remove("hidden"),t[t.length-1].classList.remove("hidden"))};document.getElementById("enable_advanced_settings").addEventListener("click",e)}}}},t={};function a(e){var c=t[e];if(void 0!==c)return c.exports;var i=t[e]={exports:{}};return n[e](i,i.exports,a),i.exports}a.m=n,e=[],a.O=function(n,t,c,i){if(!t){var s=1/0;for(l=0;l<e.length;l++){t=e[l][0],c=e[l][1],i=e[l][2];for(var o=!0,r=0;r<t.length;r++)(!1&i||s>=i)&&Object.keys(a.O).every((function(e){return a.O[e](t[r])}))?t.splice(r--,1):(o=!1,i<s&&(s=i));if(o){e.splice(l--,1);var d=c();void 0!==d&&(n=d)}}return n}i=i||0;for(var l=e.length;l>0&&e[l-1][2]>i;l--)e[l]=e[l-1];e[l]=[t,c,i]},a.o=function(e,n){return Object.prototype.hasOwnProperty.call(e,n)},function(){var e={179:0,278:0};a.O.j=function(n){return 0===e[n]};var n=function(n,t){var c,i,s=t[0],o=t[1],r=t[2],d=0;if(s.some((function(n){return 0!==e[n]}))){for(c in o)a.o(o,c)&&(a.m[c]=o[c]);if(r)var l=r(a)}for(n&&n(t);d<s.length;d++)i=s[d],a.o(e,i)&&e[i]&&e[i][0](),e[i]=0;return a.O(l)},t=self.webpackChunkcf7_antispam=self.webpackChunkcf7_antispam||[];t.forEach(n.bind(null,0)),t.push=n.bind(null,t.push.bind(t))}();var c=a.O(void 0,[278],(function(){return a(269)}));c=a.O(c)}();
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./admin/src/admin-script.js":
+/*!***********************************!*\
+  !*** ./admin/src/admin-script.js ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _style_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style/style.scss */ "./admin/src/style/style.scss");
+
+
+window.onload = function () {
+  /* This is the code that adds the confirmation alert to the delete buttons on the settings page. */
+  if (document.body.classList.contains('cf7-antispam-admin') || document.body.classList.contains('flamingo_page_flamingo_inbound')) {
+    // eslint-disable-next-line
+    const alertMessage = cf7a_admin_settings.alertMessage; // the confirmation alert script
+
+    const alerts = document.querySelectorAll('.cf7a_alert');
+
+    function confirmationAlert(e, message) {
+      // eslint-disable-next-line no-alert,no-undef
+      if (confirm(message || alertMessage)) window.location.href = e.dataset.href;
+    }
+
+    alerts.forEach(alert => {
+      alert.addEventListener('click', () => {
+        confirmationAlert(alert, alert.dataset.message || false);
+      });
+    });
+  }
+  /* This is the code that hides the welcome panel,
+  adds the ctrl-s keypress to save the settings,
+  and shows the advanced settings. */
+
+
+  if (document.body.classList.contains('cf7-antispam-admin')) {
+    // save on ctrl-s keypress
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        document.getElementById('submit').click();
+      }
+    }); // show the advanced section
+
+    const showAdvanced = () => {
+      const advancedCheckbox = document.getElementById('enable_advanced_settings');
+      const AdvSettingsCard = document.getElementById('advanced-setting-card');
+      const AdvSettingsTitle = document.querySelectorAll('#cf7a_settings h2');
+      const AdvSettingsTxt = document.querySelectorAll('#cf7a_settings p');
+      const AdvSettingsForm = document.querySelectorAll('#cf7a_settings table');
+      console.log(advancedCheckbox.checked);
+
+      if (advancedCheckbox.checked !== false) {
+        if (AdvSettingsCard) AdvSettingsCard.classList.remove('hidden');
+        AdvSettingsTitle[AdvSettingsTitle.length - 1].classList.remove('hidden');
+        AdvSettingsTxt[AdvSettingsTxt.length - 2].classList.remove('hidden');
+        AdvSettingsForm[AdvSettingsForm.length - 1].classList.remove('hidden');
+      } else {
+        if (AdvSettingsCard) AdvSettingsCard.classList.add('hidden');
+        AdvSettingsTitle[AdvSettingsTitle.length - 1].classList.add('hidden');
+        AdvSettingsTxt[AdvSettingsTxt.length - 2].classList.add('hidden');
+        AdvSettingsForm[AdvSettingsForm.length - 1].classList.add('hidden');
+      }
+    };
+
+    showAdvanced();
+    document.getElementById('enable_advanced_settings').addEventListener('click', showAdvanced);
+  }
+};
+
+/***/ }),
+
+/***/ "./admin/src/style/style.scss":
+/*!************************************!*\
+  !*** ./admin/src/style/style.scss ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	!function() {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = function(result, chunkIds, fn, priority) {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var chunkIds = deferred[i][0];
+/******/ 				var fn = deferred[i][1];
+/******/ 				var priority = deferred[i][2];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every(function(key) { return __webpack_require__.O[key](chunkIds[j]); })) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	!function() {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"main": 0,
+/******/ 			"./style-main": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = function(chunkId) { return installedChunks[chunkId] === 0; };
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = function(parentChunkLoadingFunction, data) {
+/******/ 			var chunkIds = data[0];
+/******/ 			var moreModules = data[1];
+/******/ 			var runtime = data[2];
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some(function(id) { return installedChunks[id] !== 0; })) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunkcf7_antispam"] = self["webpackChunkcf7_antispam"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["./style-main"], function() { return __webpack_require__("./admin/src/admin-script.js"); })
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
+/******/ })()
+;
+//# sourceMappingURL=admin-script.js.map

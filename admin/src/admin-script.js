@@ -29,7 +29,6 @@ window.onload = function () {
 	adds the ctrl-s keypress to save the settings,
 	and shows the advanced settings. */
 	if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
-
 		// save on ctrl-s keypress
 		document.addEventListener( 'keydown', ( e ) => {
 			if ( e.ctrlKey && e.key === 's' ) {
@@ -43,37 +42,37 @@ window.onload = function () {
 			const advancedCheckbox = document.getElementById(
 				'enable_advanced_settings'
 			);
-			const AdvSettingsTitle =
-				document.querySelectorAll( '#cf7a_settings h2' );
-			const AdvSettingsForm = document.querySelectorAll(
-				'#cf7a_settings table'
-			);
 			const AdvSettingsCard = document.getElementById(
 				'advanced-setting-card'
 			);
-			if ( advancedCheckbox.checked !== true ) {
-				if ( AdvSettingsCard ) {
+			const AdvSettingsTitle =
+				document.querySelectorAll( '#cf7a_settings h2' );
+			const AdvSettingsTxt =
+				document.querySelectorAll( '#cf7a_settings p' );
+			const AdvSettingsForm = document.querySelectorAll(
+				'#cf7a_settings table'
+			);
+			console.log( advancedCheckbox.checked );
+
+			if ( advancedCheckbox.checked !== false ) {
+				if ( AdvSettingsCard ) AdvSettingsCard.classList.remove( 'hidden' );
+
+				AdvSettingsTitle[ AdvSettingsTitle.length - 1].classList.remove( 'hidden' );
+				AdvSettingsTxt[ AdvSettingsTxt.length - 2 ].classList.remove('hidden');
+				AdvSettingsForm[ AdvSettingsForm.length - 1 ].classList.remove('hidden');
+			} else {
+				if ( AdvSettingsCard )
 					AdvSettingsCard.classList.add( 'hidden' );
-					AdvSettingsTitle[
-						AdvSettingsTitle.length - 1
-					].classList.add( 'hidden' );
-					AdvSettingsForm[ AdvSettingsForm.length - 1 ].classList.add(
-						'hidden'
-					);
-				}
-			} else if ( AdvSettingsCard ) {
-				AdvSettingsCard.classList.remove( 'hidden' );
-				AdvSettingsTitle[
-					AdvSettingsTitle.length - 1
-				].classList.remove( 'hidden' );
-				AdvSettingsForm[ AdvSettingsForm.length - 1 ].classList.remove(
-					'hidden'
-				);
+				AdvSettingsTitle[ AdvSettingsTitle.length - 1 ].classList.add('hidden');
+				AdvSettingsTxt[ AdvSettingsTxt.length - 2 ].classList.add('hidden');
+				AdvSettingsForm[ AdvSettingsForm.length - 1 ].classList.add('hidden');
 			}
 		};
+		showAdvanced();
 
 		document
 			.getElementById( 'enable_advanced_settings' )
 			.addEventListener( 'click', showAdvanced );
 	}
+
 };

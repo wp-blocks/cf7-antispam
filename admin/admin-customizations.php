@@ -720,7 +720,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @param array $input Contains all settings fields as array keys
 	 * @return array $new_input sanitized input
 	 */
-	public function cf7a_sanitize( $input ) {
+	public function cf7a_sanitize_options( $input ) {
 
 		// get the existing options
 		$new_input = $this->options;
