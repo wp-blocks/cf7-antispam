@@ -1,4 +1,5 @@
 <?php
+
 class CF7_AntiSpam_Frontend {
 
 	/**
@@ -60,8 +61,7 @@ class CF7_AntiSpam_Frontend {
 			}
 		}
 
-		if ( ( isset( $this->options['check_honeypot'] ) && intval( $this->options['check_honeypot'] ) === 1 ) ||
-			 ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) ) {
+		if ( ( isset( $this->options['check_honeypot'] ) && 1 === intval( $this->options['check_honeypot'] ) ) || ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) ) ) {
 			add_action( 'wp_footer', array( $this, 'cf7a_add_honeypot_css' ), 11 );
 		}
 	}
@@ -202,7 +202,7 @@ class CF7_AntiSpam_Frontend {
 					'role'  => 'form',
 					'class' => 'wpcf7',
 					'id'    => $unit_tag,
-					( get_option( 'html_type' ) == 'text/html' ) ? 'lang' : 'xml:lang'
+					( get_option( 'html_type' ) === 'text/html' ) ? 'lang' : 'xml:lang'
 					=> $lang_tag,
 					'dir'   => wpcf7_is_rtl( $WPCF7->locale() ) ? 'rtl' : 'ltr',
 				)
@@ -246,14 +246,14 @@ class CF7_AntiSpam_Frontend {
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
 		// add the language if required
-		if ( intval( $this->options['check_language'] ) == 1 ) {
+		if ( intval( $this->options['check_language'] ) === 1 ) {
 			$fields[ $prefix . '_language' ] = isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ?
 				cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) :
 				cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
 		}
 
 		// add the timestamp if required
-		if ( intval( $this->options['check_time'] ) == 1 ) {
+		if ( intval( $this->options['check_time'] ) === 1 ) {
 			$fields[ $prefix . '_timestamp' ] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
 		}
 

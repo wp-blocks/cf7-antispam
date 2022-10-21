@@ -648,7 +648,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_print_dnsbl() {
-		printf( '<p>' . esc_html__( 'Check sender ip on DNS Blacklists, DNSBLs are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers. A DSNBL server url each line ', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( 'Check sender ip on DNS Blacklists, DNSBL are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers, BUT they could also be users behind a proxy and that is why the method is no longer 100 per cent reliable. Add a DSNBL server url each line ', 'cf7-antispam' ) . '</p>' );
 	}
 
 	public function cf7a_print_honeypot() {
@@ -656,7 +656,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_print_honeyform() {
-		printf( '<p>' . esc_html__( "I'm actually going to propose the honeyform for the first time! Instead of creating trap fields that even my grandfather knows about, I directly create a trap form (much less detectable for bots)", 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( "I'm actually going to propose the honey-form for the first time! Instead of creating trap fields that even my grandfather knows about, I directly create a trap form (much less detectable for bots)", 'cf7-antispam' ) . '</p>' );
 	}
 
 	public function cf7a_print_b8() {
@@ -687,9 +687,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		if ( ! empty( $array ) && is_array( $array ) ) {
 			$clean_item_collection = array();
 			foreach ( $array as $value ) {
-				if ( ! is_string( $value ) ) {
-					continue;
-				}
 				$value = trim( $value );
 				if ( $value ) {
 					$clean_item_collection[] = $value;
@@ -714,6 +711,37 @@ class CF7_AntiSpam_Admin_Customizations {
 		return self::cf7a_remove_empty_from_array( $new_input );
 	}
 
+	public function cf7a_get_scores_presets() {
+		return  array(
+			'weak'     => array(
+				'_fingerprinting' => 0.1,
+				'_time'           => 0.3,
+				'_bad_string'     => 0.5,
+				'_dnsbl'          => 0.1,
+				'_honeypot'       => 0.3,
+				'_detection'      => 1,
+				'_warn'           => 0.3,
+			),
+			'standard' => array(
+				'_fingerprinting' => 0.15,
+				'_time'           => 0.5,
+				'_bad_string'     => 1,
+				'_dnsbl'          => 0.15,
+				'_honeypot'       => 0.5,
+				'_detection'      => 1,
+				'_warn'           => 0.5,
+			),
+			'secure'   => array(
+				'_fingerprinting' => 0.25,
+				'_time'           => 1,
+				'_bad_string'     => 1,
+				'_dnsbl'          => 0.2,
+				'_honeypot'       => 1,
+				'_detection'      => 5,
+				'_warn'           => 1,
+			),
+		);
+	}
 	/**
 	 * Sanitize each setting field as needed
 	 *
@@ -775,8 +803,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		// bad ip
 		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
 		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
-		if ( isset( $input['bad_ip_list'] ) ) {
-			$new_input['bad_ip_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_ip_list'] ) );
+
+		if ( ! empty( $input['bad_ip_list'] ) ) {
+			$new_input['bad_ip_list'] = $this->cf7a_remove_empty_from_array( $input['bad_ip_list'] );
 		}
 
 		// max attempts before ban
@@ -810,31 +839,31 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// bad words
 		$new_input['check_bad_words'] = isset( $input['check_bad_words'] ) ? 1 : 0;
-		if ( ! empty( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = $this->cf7a_remove_empty_from_array( explode( "\r\n", $input['bad_words_list'] ) );
+		if ( isset( $input['bad_words_list'] ) ) {
+			$new_input['bad_words_list'] = $this->cf7a_remove_empty_from_array( explode( "\r\n", sanitize_textarea_field( $input['bad_words_list'] ) ) );
 		}
 
 		// email strings
 		$new_input['check_bad_email_strings'] = isset( $input['check_bad_email_strings'] ) ? 1 : 0;
-		if ( ! empty( $input['bad_email_strings_list'] ) ) {
+		if ( isset( $input['bad_email_strings_list'] ) ) {
 			$new_input['bad_email_strings_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_email_strings_list'] ) );
 		}
 
 		// user_agent
 		$new_input['check_bad_user_agent'] = isset( $input['check_bad_user_agent'] ) ? 1 : 0;
-		if ( ! empty( $input['bad_user_agent_list'] ) ) {
+		if ( isset( $input['bad_user_agent_list'] ) ) {
 			$new_input['bad_user_agent_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_user_agent_list'] ) );
 		}
 
 		// dnsbl
 		$new_input['check_dnsbl'] = isset( $input['check_dnsbl'] ) ? 1 : 0;
-		if ( ! empty( $input['dnsbl_list'] ) ) {
+		if ( isset( $input['dnsbl_list'] ) ) {
 			$new_input['dnsbl_list'] = $this->cf7a_remove_empty_from_array( explode( "\r\n", sanitize_textarea_field( $input['dnsbl_list'] ) ) );
 		}
 
 		// honeypot
 		$new_input['check_honeypot'] = isset( $input['check_honeypot'] ) ? 1 : 0;
-		if ( ! empty( $input['honeypot_input_names'] ) ) {
+		if ( isset( $input['honeypot_input_names'] ) ) {
 			$new_input['honeypot_input_names'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['honeypot_input_names'] ) );
 		}
 
@@ -847,36 +876,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$threshold                 = floatval( $input['b8_threshold'] );
 		$new_input['b8_threshold'] = ( $threshold >= 0 && $threshold < 1 ) ? $threshold : 1;
 
-		$score_preset = array(
-			'weak'     => array(
-				'_fingerprinting' => 0.1,
-				'_time'           => 0.3,
-				'_bad_string'     => 0.5,
-				'_dnsbl'          => 0.1,
-				'_honeypot'       => 0.3,
-				'_detection'      => 0.5,
-				'_warn'           => 0.25,
-			),
-			'standard' => array(
-				'_fingerprinting' => 0.15,
-				'_time'           => 0.5,
-				'_bad_string'     => 1,
-				'_dnsbl'          => 0.15,
-				'_honeypot'       => 0.5,
-				'_detection'      => 1,
-				'_warn'           => 0.5,
-			),
-			'secure'   => array(
-				'_fingerprinting' => 0.25,
-				'_time'           => 1,
-				'_bad_string'     => 1,
-				'_dnsbl'          => 0.2,
-				'_honeypot'       => 1,
-				'_detection'      => 5,
-				'_warn'           => 1,
-			),
-			'custom'   => $this->options['cf7a_score_preset'],
-		);
+		$score_preset = $this->cf7a_get_scores_presets();
 
 		// Scoring
 		// if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed)
