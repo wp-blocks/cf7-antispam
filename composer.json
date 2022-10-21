@@ -12,8 +12,13 @@
   ],
   "homepage": "https://wordpress.org/plugins/cf7-antispam/",
   "require-dev": {
+	"php": ">=7.3",
 	"friendsofphp/php-cs-fixer": "^2",
-	"wp-coding-standards/wpcs": "^2.3",
+	"squizlabs/php_codesniffer": "^3.6.2",
+	"phpcompatibility/php-compatibility": "*",
+	"wp-coding-standards/wpcs": "*",
+	"phpcompatibility/phpcompatibility-wp": "*",
+	"slevomat/coding-standard": "^7.2.1",
 	"yoast/i18n-module": "3.1.*"
   },
   "require": {
