@@ -287,7 +287,7 @@ class CF7_AntiSpam {
 	/**
 	 * CF7 AntiSpam update options function
 	 *
-	 * @since 4.0.0
+	 * @since 0.4.0
 	 *
 	 * @param  array $options options
 	 * @return bool
@@ -296,11 +296,10 @@ class CF7_AntiSpam {
 		return update_option( 'cf7a_options', $options );
 	}
 
-
 	/**
 	 * CF7 AntiSpam update a function to a single option
 	 *
-	 * @since 4.0.0
+	 * @since 0.4.0
 	 *
 	 * @param string $option the option that you need to change
 	 * @param mixed $value the new option value
@@ -308,11 +307,27 @@ class CF7_AntiSpam {
 	 * @return bool
 	 */
 	public static function update_option( $option, $value ) {
+
 		$options = self::get_options();
+
 		if ( isset( $options[ $option ] ) ) {
-			$options[ $option ] = $value;
-			return update_option( 'cf7a_options', $options );
+			if ( is_string( $value ) ) {
+				// if the value is a string sanitize and replace the option
+				$options[ $option ] = sanitize_text_field( $value );
+			} elseif ( is_array( $value ) ) {
+				// if the value is an array sanitize each element then merge into option
+				$new_values = array();
+				foreach ( $value as $array_value ) {
+					$new_values[] = sanitize_text_field( trim( (string) $array_value ) );
+				}
+				$options[ $option ] = array_merge( $options[ $option ], $new_values );
+			}
+
+			$opt = new CF7_AntiSpam_Admin_Customizations();
+			self::update_options( $opt->cf7a_sanitize_options( $options ) );
+			return true;
 		}
+
 		return false;
 	}
 }
