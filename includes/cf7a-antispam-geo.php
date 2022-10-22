@@ -7,7 +7,7 @@ use GeoIp2\Database\Reader;
  * It checks if the CF7ANTISPAM_GEOIP_KEY constant is set, and if it is, it uses that as the license key. Otherwise, it
  * checks if the geoip_dbkey option is set, and if it is, it uses that as the license key. Otherwise, it sets the license key to false
  */
-class CF7_Antispam_geoip {
+class CF7_Antispam_Geoip {
 
 	/**
 	 * The GeoIP2 db license key
@@ -46,6 +46,7 @@ class CF7_Antispam_geoip {
 
 		// zlib and phar php modules are mandatory to unpack database.
 		if ( ! extension_loaded( 'zlib' ) || ! extension_loaded( 'phar' ) ) {
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( esc_html__( 'to activate geo-ip you must necessarily have the zlib and phar php modules enabled' ) );
 			return false;
 		}
 
@@ -64,12 +65,11 @@ class CF7_Antispam_geoip {
 
 			$this->geo = $this->cf7a_geo_init();
 
+			/* if at this point there is still no this->geo, all has failed, and I'm unable to access to geo-ip database file, disabling */
 			if ( ! $this->geo ) {
-				/* else has failed to access to geoip database file, disable it */
 				update_option( 'cf7a_geodb_update', false );
 
-				$notice = new CF7_AntiSpam_Admin_Tools();
-				$notice::cf7a_push_notice( __( 'unable to access geoip database file', 'cf7-antispam' ) );
+				CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'unable to access geoip database file', 'cf7-antispam' ) );
 			}
 		}
 
@@ -93,15 +93,6 @@ class CF7_Antispam_geoip {
 	}
 
 	/**
-	 * If the license is valid and the database has been updated, then the plugin can enable GeoIP
-	 *
-	 * @return bool true geo-ip can be enabled
-	 */
-	public function cf7a_can_enable_geoip() {
-		return ! empty( $this->license );
-	}
-
-	/**
 	 * It creates a new Reader object, which should be reused across lookups.
 	 *
 	 * @return GeoIp2\Database\Reader|false The Reader object is being returned.
@@ -118,6 +109,15 @@ class CF7_Antispam_geoip {
 	}
 
 	/**
+	 * If the license is valid and the database has been updated, then the plugin can enable GeoIP
+	 *
+	 * @return bool true geo-ip can be enabled
+	 */
+	public function cf7a_can_enable_geoip() {
+		return ! empty( $this->license );
+	}
+
+	/**
 	 * If the last time the database was updated is less than one month ago, then return true
 	 *
 	 * @return bool - true if the database needs to be uploaded
@@ -127,7 +127,6 @@ class CF7_Antispam_geoip {
 		$now            = strtotime( 'now' );
 		return $now > $next_db_update;
 	}
-
 
 	/**
 	 * It returns the path to the upload directory, with a trailing slash
@@ -146,7 +145,7 @@ class CF7_Antispam_geoip {
 	 * It creates a directory, creates a .htaccess file in that directory, and writes "Deny from all" to the .htaccess file
 	 *
 	 * @param string $plugin_upload_dir The directory you want to create.
-	 * @param bool   $htaccess_content - if passed will create also an htaccess with the given content
+	 * @param bool   $htaccess_content - if passed will create also a htaccess with the given content.
 	 *
 	 * @return bool the value of the variable $plugin_upload_dir.
 	 */
@@ -170,7 +169,8 @@ class CF7_Antispam_geoip {
 					$wp_filesystem->put_contents( $htaccess_filename, $ht_content, 600 );
 				}
 			} catch ( Exception $e ) {
-				cf7a_log( CF7ANTISPAM_PLUGIN_BASENAME . " can\'t create the cf7-antispam folder  " . print_r( $e, true ) );
+				cf7a_log( 'Unable to create the cf7-antispam folder' );
+				cf7a_log( $e );
 
 				return false;
 			}
@@ -272,6 +272,11 @@ class CF7_Antispam_geoip {
 
 	}
 
+	/**
+	 * It downloads the GeoIP database from MaxMind and saves it to the plugin's directory
+	 *
+	 * @param bool $now If true, the database will be downloaded immediately.
+	 */
 	public function cf7a_geoip_schedule_update( $now = false ) {
 
 		if ( $now ) {
@@ -286,6 +291,11 @@ class CF7_Antispam_geoip {
 
 	}
 
+	/**
+	 * It takes an IP address as a parameter, and returns an array of data about the IP address
+	 *
+	 * @param string $ip The IP address to check.
+	 */
 	public function cf7a_geoip_check_ip( $ip ) {
 
 		try {

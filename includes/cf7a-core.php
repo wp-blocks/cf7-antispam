@@ -195,7 +195,7 @@ class CF7_AntiSpam {
 		if ( is_admin() ) {
 
 			/* the GeoIP2 database */
-			new CF7_Antispam_geoip();
+			new CF7_Antispam_Geoip();
 
 			/* the admin area */
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
