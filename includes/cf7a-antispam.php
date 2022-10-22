@@ -13,7 +13,7 @@ class CF7_AntiSpam_filters {
 	/**
 	 * The geo-ip class
 	 *
-	 * @var CF7_Antispam_geoip $geoip the Geo-ip utility
+	 * @var CF7_Antispam_Geoip $geoip the Geo-ip utility
 	 * @description the geo-ip class
 	 */
 	private $geoip;
@@ -25,7 +25,7 @@ class CF7_AntiSpam_filters {
 
 		$this->b8 = $this->cf7a_b8_init();
 
-		$this->geoip = new CF7_Antispam_geoip();
+		$this->geoip = new CF7_Antispam_Geoip();
 
 		add_action( 'cf7a_cron', array( $this, 'cf7a_cron_unban' ) );
 	}

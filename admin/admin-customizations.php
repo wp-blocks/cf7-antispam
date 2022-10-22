@@ -38,7 +38,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$this->options = CF7_AntiSpam::get_options();
 
 		/* the geo-ip class */
-		$this->geo = new CF7_Antispam_geoip();
+		$this->geo = new CF7_Antispam_Geoip();
 	}
 
 	/**
@@ -784,7 +784,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
 			}
 		} elseif ( $enabled ) {
-			$geo = new CF7_Antispam_geoip();
+			$geo = new CF7_Antispam_Geoip();
 			if ( $geo->cf7a_can_enable_geoip() ) {
 				if ( $geo->cf7a_maybe_download_geoip_db() ) {
 					$geo->cf7a_geoip_download_database();

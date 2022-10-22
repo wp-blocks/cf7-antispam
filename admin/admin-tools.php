@@ -330,7 +330,7 @@ class CF7_AntiSpam_Admin_Tools {
 		$html = '';
 
 		try {
-			$cf7a_geo = new CF7_Antispam_geoip();
+			$cf7a_geo = new CF7_Antispam_Geoip();
 
 			if ( $cf7a_geo ) {
 				$geoip        = $cf7a_geo->cf7a_can_enable_geoip();
