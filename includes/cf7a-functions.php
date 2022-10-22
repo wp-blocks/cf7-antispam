@@ -243,7 +243,7 @@ function cf7a_compress_array( $array, $is_html = 0 ) {
  * If the string is not empty, and the log level is 0 or 1 and debug is on, or the log level is 2 and extended debug is
  * on, then log the string
  *
- * @param string|array $string - The string to log.
+ * @param string|array $string - The string/array to log.
  * @param numeric      $log_level 0 = log always, 1 = logging, 2 = only extended logging.
  *
  * @return bool|void

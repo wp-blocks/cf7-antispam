@@ -45,7 +45,7 @@ class CF7_AntiSpam_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 
-		// the menu item
+		/* the menu item */
 		new CF7_AntiSpam_Admin_Customizations();
 
 		add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ) );
@@ -115,7 +115,7 @@ class CF7_AntiSpam_Admin {
 		}
 
 		/* It checks if the settings have been updated, and if so, it displays a success message. */
-		$settings_updated = isset( $_REQUEST['settings-updated'] ) ? sanitize_text_field( $_REQUEST['settings-updated'] ) : false;
+		$settings_updated = isset( $_REQUEST['settings-updated'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['settings-updated'] ) ) : false;
 		if ( 'true' === $settings_updated ) {
 			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Antispam setting updated with success', 'cf7-antispam' ), 'success' );
 		}
@@ -123,7 +123,16 @@ class CF7_AntiSpam_Admin {
 		/* if there is a notice stored, print it then delete the transient */
 		$notice = get_transient( 'cf7a_notice' );
 		if ( false !== $notice ) {
-			echo $notice;
+			echo wp_kses(
+				$notice,
+				array(
+					'div'    => array(
+						'class' => array(),
+					),
+					'p'      => array(),
+					'strong' => array(),
+				)
+			);
 			delete_transient( 'cf7a_notice' );
 		}
 	}
@@ -168,7 +177,7 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/admin-script.js', array(), $this->version );
+		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/admin-script.js', array(), $this->version, true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(
@@ -210,7 +219,7 @@ class CF7_AntiSpam_Admin {
 	 * It queries the database for all the emails received in the last week, then it creates two lists: one with the number of
 	 * emails received per day, and one with the number of emails received per type (ham or spam)
 	 */
-	function cf7a_flamingo_recap() {
+	public function cf7a_flamingo_recap() {
 
 		$args = array(
 			'post_type'      => 'flamingo_inbound',
@@ -236,7 +245,7 @@ class CF7_AntiSpam_Admin {
 		$query = new WP_Query( $args );
 
 		if ( $query->have_posts() ) :
-			// this is needed to parse and create a list of emails
+			/* this is needed to parse and create a list of emails. */
 			$html = '<div id="antispam-widget-list" class="activity-block"><h3>' . __( 'Last Week Emails', 'cf7-antispam' ) . '</h3><ul>';
 
 			while ( $query->have_posts() ) :
@@ -257,7 +266,7 @@ class CF7_AntiSpam_Admin {
 					);
 				}
 
-				// for each post collect the main information like spam/ham or date
+				// for each post collect the main information like spam/ham or date.
 				if ( ! isset( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] ) ) {
 					$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] = array();
 				}
@@ -273,22 +282,22 @@ class CF7_AntiSpam_Admin {
 
 			$mail_collection['by_date'] = array_reverse( $mail_collection['by_date'] );
 
-			// for each date
+			/* for each date */
 			foreach ( $mail_collection['by_date'] as $date => $items ) {
 
-				// add the date to the list if not yet added
+				/* add the date to the list if not yet added */
 				if ( ! isset( $count[ $date ] ) ) {
 					$count[ $date ] = array(
 						'ham'  => 0,
 						'spam' => 0,
 					); }
 
-				// for each item of that date feed the count by email type
+				/* for each item of that date feed the count by email type */
 				foreach ( $items as $item ) {
 					'spam' === $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
 			}
 
-			// Create two lists where the key is the date and the value is the number of mails of that type
+			/* Create two lists where the key is the date and the value is the number of mails of that type */
 			foreach ( $count as $date ) {
 				$ham[]  = $date['ham'];
 				$spam[] = $date['spam'];
@@ -301,11 +310,11 @@ class CF7_AntiSpam_Admin {
 				<hr>
 				<canvas id="pieChart" width="50" height="50"></canvas>
 				<?php
-				// print the received mail list
+				/* print the received mail list */
 				echo $html;
 				?>
 				<p class="community-events-footer">
-					<a href="<?php echo admin_url( 'admin.php?page=flamingo' ); ?>"><?php echo  __( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo admin_url( 'admin.php?page=flamingo' ); ?>"><?php echo __( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 					|
 					<a href="<?php echo admin_url( 'admin.php?page=cf7-antispam' ); ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
@@ -324,7 +333,7 @@ class CF7_AntiSpam_Admin {
 							data: [
 							<?php
 							if ( isset( $ham ) ) {
-									echo implode( ',', $ham );
+								echo implode( ',', $ham );
 							}
 							?>
 								],
@@ -399,7 +408,7 @@ class CF7_AntiSpam_Admin {
 			</div>
 			<?php
 		else :
-			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>' . __( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' ) . '</p></div>';
+			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>' . esc_html__( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' ) . '</p></div>';
 		endif;
 	}
 }

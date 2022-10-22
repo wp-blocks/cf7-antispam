@@ -8,12 +8,12 @@ Domain Path: /languages/
 Version: 0.4.0
 */
 
-// If this file is called directly, abort.
+/* If this file is called directly, abort. */
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-// CONSTANTS
+/* CONSTANTS */
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
 define( 'CF7ANTISPAM_VERSION', '0.4.0' );
@@ -53,9 +53,8 @@ if ( ! defined( 'CF7ANTISPAM_GEOIP_KEY' ) ) {
 /**
  * CF7-AntiSpam autoload
  */
-require_once  CF7ANTISPAM_PLUGIN_DIR . '/vendor/autoload.php';
+require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/autoload.php';
 
-// PLUGIN
 /**
  * CF7-AntiSpam functions
  */

@@ -29,6 +29,12 @@ class CF7_AntiSpam_Frontend {
 	 */
 	private $options;
 
+	/**
+	 * It adds a filter to the wpcf7_form_hidden_fields hook, which is called by the Contact Form 7 plugin
+	 *
+	 * @param string $plugin_name The name of the plugin.
+	 * @param string $version The current version number of the plugin.
+	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
@@ -36,7 +42,8 @@ class CF7_AntiSpam_Frontend {
 
 		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields' ), 100, 1 );
 
-		$this->options = CF7_AntiSpam::get_options(); // the plugin options
+		/* the plugin options */
+		$this->options = CF7_AntiSpam::get_options();
 
 		if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
 			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100, 1 );
@@ -70,7 +77,7 @@ class CF7_AntiSpam_Frontend {
 	 * It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to
 	 * the form
 	 *
-	 * @param $form_elements - The form elements that are passed to the function.
+	 * @param string $form_elements - The form elements html.
 	 *
 	 * @return string - The form elements.
 	 */
@@ -84,8 +91,8 @@ class CF7_AntiSpam_Frontend {
 			$inputs = $xpath->query( '//input' );
 
 		} catch ( Exception $e ) {
+			error_log( 'CF7-Antispam: I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)' );
 			if ( is_admin() ) {
-				error_log( print_r( __( 'CF7-Antispam: I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)', 'cf7-antispam' ) ) );
 				print_r( $e );
 			}
 			return $form_elements;
@@ -96,9 +103,9 @@ class CF7_AntiSpam_Frontend {
 		$input_names = get_honeypot_input_names( $options );
 		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 
-		// get the inputs data
+		/* get the inputs data */
 		if ( $inputs && $inputs->length > 0 ) {
-			// to be on the save side it can be a good idea to store the name of the input (to avoid duplicates)
+			/* to be on the save side it can be a good idea to store the name of the input (to avoid duplicates) */
 			foreach ( $inputs as $i => $input ) {
 
 				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
@@ -120,7 +127,7 @@ class CF7_AntiSpam_Frontend {
 					$clone->setAttribute( 'tabindex', '-1' );
 					$clone->setAttribute( 'class', $clone->getAttribute( 'class' ) . ' ' . $input_class . ' autocomplete input' );
 
-					// duplicate the inputs into honeypots
+					/* duplicate the inputs into honeypots */
 					$parent->insertBefore( $clone, $sibling );
 
 					if ( $i > 0 ) {
@@ -132,6 +139,11 @@ class CF7_AntiSpam_Frontend {
 		return $html->saveHTML();
 	}
 
+	/**
+	 * It gets the form, formats it, and then echoes it out
+	 *
+	 * @param string $content The content of the post.
+	 */
 	public function cf7a_honeyform( $content ) {
 
 		$form_class   = sanitize_html_class( $this->options['cf7a_customizations_class'] );
@@ -147,10 +159,10 @@ class CF7_AntiSpam_Frontend {
 			$form_post_id = get_the_ID();
 		endwhile;
 
-		$WPCF7 = WPCF7_ContactForm::get_template();
+		$wpcf7 = WPCF7_ContactForm::get_template();
 
 		static $global_count = 0;
-		$global_count       += 1;
+		++ $global_count;
 
 		$unit_tag = sprintf(
 			'wpcf7-f%1$d-p%2$d-o%3$d',
@@ -166,12 +178,12 @@ class CF7_AntiSpam_Frontend {
 		}
 		$url .= '#' . $unit_tag;
 
-		$lang_tag = str_replace( '_', '-', $WPCF7->locale() );
+		$lang_tag = str_replace( '_', '-', $wpcf7->locale() );
 
 		$hidden_fields = array(
 			'_wpcf7'                  => $form_post_id,
 			'_wpcf7_version'          => WPCF7_VERSION,
-			'_wpcf7_locale'           => $WPCF7->locale(),
+			'_wpcf7_locale'           => $wpcf7->locale(),
 			'_wpcf7_unit_tag'         => $unit_tag,
 			'_wpcf7_posted_data_hash' => '',
 			'_wpcf7_' . $form_class   => '',
@@ -181,7 +193,7 @@ class CF7_AntiSpam_Frontend {
 			$hidden_fields['_wpcf7_container_post'] = (int) get_the_ID();
 		}
 
-		if ( $WPCF7->nonce_is_active() && is_user_logged_in() ) {
+		if ( $wpcf7->nonce_is_active() && is_user_logged_in() ) {
 			$hidden_fields['_wpnonce'] = wpcf7_create_nonce();
 		}
 
@@ -202,14 +214,14 @@ class CF7_AntiSpam_Frontend {
 					'role'  => 'form',
 					'class' => 'wpcf7',
 					'id'    => $unit_tag,
-					( get_option( 'html_type' ) === 'text/html' ) ? 'lang' : 'xml:lang'
+					get_option( 'html_type' ) === 'text/html' ? 'lang' : 'xml:lang'
 					=> $lang_tag,
-					'dir'   => wpcf7_is_rtl( $WPCF7->locale() ) ? 'rtl' : 'ltr',
+					'dir'   => wpcf7_is_rtl( $wpcf7->locale() ) ? 'rtl' : 'ltr',
 				)
 			)
 		);
 
-		$html .= $WPCF7->screen_reader_response();
+		$html .= $wpcf7->screen_reader_response();
 
 		$atts = array(
 			'action'       => esc_url( $url ),
@@ -219,55 +231,80 @@ class CF7_AntiSpam_Frontend {
 			'autocomplete' => true,
 			'novalidate'   => wpcf7_support_html5() ? 'novalidate' : '',
 			'data-status'  => 'init',
-			'locale'       => $WPCF7->locale(),
+			'locale'       => $wpcf7->locale(),
 		);
 		$atts = wpcf7_format_atts( $atts );
 
 		$html .= sprintf( '<form %s>', $atts ) . "\n";
-		$html .= '<div style="display: none;">' . "\n" . $hidden_fields_html . '</div>' . "\n";
-		$html .= $WPCF7->replace_all_form_tags();
-		$html .= $WPCF7->form_response_output();
+		$html .= sprintf( "<div style=\"display: none;\">\n%s</div>\n", $hidden_fields_html );
+		$html .= $wpcf7->replace_all_form_tags();
+		$html .= $wpcf7->form_response_output();
 		$html .= '</form></div>';
 		$html  = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
 
-		wp_reset_query();
-
-		echo '<div><div class="wpcf7-form"><div class="' . $form_class . '"><div>' . $html . '</div></div></div></div>' . $content;
+		wp_reset_postdata();
+		?>
+		<div>
+			<div class="wpcf7-form">
+				<div class="<?php echo esc_html( $form_class ); ?>">
+					<div><?php echo sanitize_text_field( $html ); ?></div>
+				</div>
+			</div>
+		</div>
+		<?php
+		echo sanitize_text_field( $content );
 	}
 
+	/**
+	 * It adds a CSS style to the page that hides the honeypot field
+	 */
 	public function cf7a_add_honeypot_css() {
-		$form_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
-		echo '<style>body div .wpcf7-form .' . $form_class . '{position:absolute;margin-left:-999em;}</style>';
+		$form_class = empty( $this->options['cf7a_customizations_class'] ) ? 'cf7a_' : $this->options['cf7a_customizations_class'];
+		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
 	}
 
+	/**
+	 * It adds hidden fields to the form
+	 *
+	 * @param array $fields the array of hidden fields that will be added to the form.
+	 */
 	public function cf7a_add_hidden_fields( $fields ) {
 
-		// the base hidden field prefix
+		/* the base hidden field prefix */
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
-		// add the language if required
+		/* add the language if required */
 		if ( intval( $this->options['check_language'] ) === 1 ) {
-			$fields[ $prefix . '_language' ] = isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ?
-				cf7a_crypt( $_SERVER['HTTP_ACCEPT_LANGUAGE'], $this->options['cf7a_cipher'] ) :
+			$accept                          = empty( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? false : sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) );
+			$fields[ $prefix . '_language' ] = isset( $accept ) ?
+				cf7a_crypt( $accept, $this->options['cf7a_cipher'] ) :
 				cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
 		}
 
-		// add the timestamp if required
+		/* add the timestamp if required */
 		if ( intval( $this->options['check_time'] ) === 1 ) {
 			$fields[ $prefix . '_timestamp' ] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
 		}
 
-		// add the default hidden fields
+		/* add the default hidden fields */
+		$referrer = ! empty( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( $_SERVER['HTTP_REFERER'] ) : false;
 		return array_merge(
 			$fields,
 			array(
 				$prefix . 'version' => '1.0',
 				$prefix . 'address' => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
-				$prefix . 'referer' => cf7a_crypt( ! empty( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : 'no referer', $this->options['cf7a_cipher'] ),
+				$prefix . 'referer' => cf7a_crypt( $referrer ? $referrer : 'no referer', $this->options['cf7a_cipher'] ),
 			)
 		);
 	}
 
+	/**
+	 * It adds a hidden field to the form with a unique value that is encrypted with a cipher
+	 *
+	 * @param array $fields The array of fields that will be sent to the server.
+	 *
+	 * @return array The array of fields is being returned.
+	 */
 	public function cf7a_add_bot_fingerprinting( $fields ) {
 
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
@@ -280,6 +317,13 @@ class CF7_AntiSpam_Frontend {
 		);
 	}
 
+	/**
+	 * It adds a new field to the form, which is a hidden field that will be populated with the bot fingerprinting extras
+	 *
+	 * @param array $fields The array of fields that are already in the form.
+	 *
+	 * @return array The $fields array is being merged with the $prefix . 'bot_fingerprint_extras' => false array.
+	 */
 	public function cf7a_add_bot_fingerprinting_extras( $fields ) {
 
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
@@ -292,6 +336,13 @@ class CF7_AntiSpam_Frontend {
 		);
 	}
 
+	/**
+	 * It adds a new field to the form, called `cf7a_append_on_submit`, and sets it to false
+	 *
+	 * @param array $fields The array of fields that are currently being processed.
+	 *
+	 * @return array The array of fields.
+	 */
 	public function cf7a_append_on_submit( $fields ) {
 
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
@@ -314,7 +365,7 @@ class CF7_AntiSpam_Frontend {
 		/**
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in load_admin as all of the hooks are defined
+		 * defined in load_admin as all the hooks are defined
 		 * in that particular class.
 		 *
 		 * The load_admin will then create the relationship

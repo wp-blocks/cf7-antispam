@@ -1,6 +1,7 @@
 <?php
 class CF7_AntiSpam_Admin_Customizations {
 
+
 	/**
 	 * The options of this plugin.
 	 *
@@ -14,11 +15,14 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * The geoip utils
 	 *
 	 * @since    0.4.0
+	 * @var      array    $geo    the geo-ip class
 	 * @access   public
 	 */
 	public $geo;
 
 	/**
+	 * The plugin main menu
+	 *
 	 * The function `__construct()` is called when the class is instantiated.
 	 *
 	 * The function `cf7a_options_init()` is called when the admin page is loaded.
@@ -28,566 +32,585 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * The class `CF7_Antispam_geoip` is instantiated.
 	 */
 	public function __construct() {
-		// the plugin main menu
 		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
 
-		$this->options = CF7_AntiSpam::get_options(); // the plugin options
-		$this->geo     = new CF7_Antispam_geoip; // the plugin options
+		/* the plugin options */
+		$this->options = CF7_AntiSpam::get_options();
+
+		/* the geo-ip class */
+		$this->geo = new CF7_Antispam_geoip();
 	}
 
+	/**
+	 * It creates the settings page
+	 */
 	public function cf7a_options_init() {
 
-		// Group
+		/* Group */
 		register_setting(
-			'cf7_antispam_options', // Option group
-			'cf7a_options', // Option name
-			array( $this, 'cf7a_sanitize' ) // Sanitize
+			'cf7_antispam_options',
+			'cf7a_options',
+			array( $this, 'cf7a_sanitize_options' )
 		);
 
-		// Section Bot Fingerprint
+		/* Section Bot Fingerprint */
 		add_settings_section(
-			'cf7a_auto_blacklist', // ID
-			__( 'Ban automatically spammers', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_section_auto_blacklist' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_subtitle',
+			false,
+			array( $this, 'cf7a_print_section_main_subtitle' ),
+			'cf7a-settings'
 		);
 
-		// Settings autostore_bad_ip
-		add_settings_field(
-			'autostore_bad_ip', // ID
-			__( 'Automatic spammer IP Blacklist', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_autostore_bad_ip_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_auto_blacklist' // Section
-		);
-
-		// Settings check_time
-		add_settings_field(
-			'max_attempts', // ID
-			__( 'Mail blocked before Ban', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_max_attempts' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_auto_blacklist' // Section
-		);
-
-		// unban after
-		add_settings_field(
-			'unban_after', // ID
-			__( 'Automatic Unban', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_unban_after_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_auto_blacklist' // Section
-		);
-
-		// Section Bot Fingerprint
+		/* Section Bot Fingerprint */
 		add_settings_section(
-			'cf7a_bot_fingerprint', // ID
-			__( 'Bot Fingerprinting', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_section_bot_fingerprint' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_auto_blacklist',
+			__( 'Ban automatically spammers', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_auto_blacklist' ),
+			'cf7a-settings'
 		);
 
-		// Settings bot_fingerprint
+		/* Settings autostore_bad_ip */
 		add_settings_field(
-			'check_bot_fingerprint', // ID
-			__( 'Enable anti-bot checks', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_bot_fingerprint_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bot_fingerprint' // Section
+			'autostore_bad_ip',
+			__( 'Automatic spammer IP Blacklist', 'cf7-antispam' ),
+			array( $this, 'cf7a_autostore_bad_ip_callback' ),
+			'cf7a-settings',
+			'cf7a_auto_blacklist'
 		);
 
-		// Settings bot_fingerprint
+		/* Settings check_time */
 		add_settings_field(
-			'check_bot_fingerprint_extras', // ID
-			__( 'Enable anti-bot extra checks', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_bot_fingerprint_extras_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bot_fingerprint' // Section
+			'max_attempts',
+			__( 'Mail blocked before Ban', 'cf7-antispam' ),
+			array( $this, 'cf7a_max_attempts' ),
+			'cf7a-settings',
+			'cf7a_auto_blacklist'
 		);
 
-		// Settings bot_fingerprint
+		/* Unban after */
 		add_settings_field(
-			'append_on_submit', // ID
-			__( 'Append hidden fields on submit', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_append_on_submit_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bot_fingerprint' // Section
+			'unban_after',
+			__( 'Automatic Unban', 'cf7-antispam' ),
+			array( $this, 'cf7a_unban_after_callback' ),
+			'cf7a-settings',
+			'cf7a_auto_blacklist'
 		);
 
-		// Section GEOIP
+		/* Section Bot Fingerprint */
 		add_settings_section(
-			'cf7a_check_geoip', // ID
-			__( 'GeoIP', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_geoip' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_bot_fingerprint',
+			__( 'Bot Fingerprinting', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_bot_fingerprint' ),
+			'cf7a-settings'
 		);
 
-		// Settings enable geoip
+		/* Settings bot_fingerprint */
 		add_settings_field(
-			'check_geoip', // ID
-			__( 'Enable GeoIP DB Download', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_enable_geoip_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_geoip' // Section
+			'check_bot_fingerprint',
+			__( 'Enable anti-bot checks', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_bot_fingerprint_callback' ),
+			'cf7a-settings',
+			'cf7a_bot_fingerprint'
 		);
 
-		// Settings enable geoip
+		/* Settings bot_fingerprint */
 		add_settings_field(
-			'check_geoip_enabled', // ID
-			__( 'GeoIP database available', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_geoip_is_enabled_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_geoip' // Section
+			'check_bot_fingerprint_extras',
+			__( 'Enable anti-bot extra checks', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_bot_fingerprint_extras_callback' ),
+			'cf7a-settings',
+			'cf7a_bot_fingerprint'
 		);
 
-		// The maxmind update key (unless you have defined it). Adds cron job to keep database updated;
-		// https://www.maxmind.com/en/geolite2/signup?lang=en
+		/* Settings bot_fingerprint */
 		add_settings_field(
-			'geoip_dbkey', // ID
-			__( 'MaxMind Update Key', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_geoip_key_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_geoip' // Section
+			'append_on_submit',
+			__( 'Append hidden fields on submit', 'cf7-antispam' ),
+			array( $this, 'cf7a_append_on_submit_callback' ),
+			'cf7a-settings',
+			'cf7a_bot_fingerprint'
 		);
 
-		// Section Language
+		/* Section GEOIP */
 		add_settings_section(
-			'cf7a_check_language', // ID
-			__( 'Language Checks', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_language' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_check_geoip',
+			__( 'GeoIP', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_geoip' ),
+			'cf7a-settings'
 		);
 
-		// Settings enable browser language check
+		/* Settings enable geoip */
 		add_settings_field(
-			'check_language', // ID
-			__( 'Check Browser Language', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_browser_language_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
+			'check_geoip',
+			__( 'Enable GeoIP DB Download', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_geoip_callback' ),
+			'cf7a-settings',
+			'cf7a_check_geoip'
 		);
 
-		// Settings enable geoip check (available only if the geoip is enabled)
+		/* Settings enable geoip */
+		add_settings_field(
+			'check_geoip_enabled',
+			__( 'GeoIP database available', 'cf7-antispam' ),
+			array( $this, 'cf7a_geoip_is_enabled_callback' ),
+			'cf7a-settings',
+			'cf7a_check_geoip'
+		);
+
+		/**
+		 * The maxmind update key (unless you have defined it). Adds cron job to keep database updated;
+		 * https://www.maxmind.com/en/geolite2/signup?lang=en
+		 */
+		add_settings_field(
+			'geoip_dbkey',
+			__( 'MaxMind Update Key', 'cf7-antispam' ),
+			array( $this, 'cf7a_geoip_key_callback' ),
+			'cf7a-settings',
+			'cf7a_check_geoip'
+		);
+
+		/* Section Language */
+		add_settings_section(
+			'cf7a_check_language',
+			__( 'Language Checks', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_language' ),
+			'cf7a-settings'
+		);
+
+		/* Settings enable browser language check */
+		add_settings_field(
+			'check_language',
+			__( 'Check Browser Language', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_browser_language_callback' ),
+			'cf7a-settings',
+			'cf7a_check_language'
+		);
+
+		/* Settings enable geoip check (available only if the geoip is enabled) */
 		if ( $this->options['check_geoip'] ) {
 			add_settings_field(
-				'check_geo_location', // ID
-				__( 'Detect location using GeoIP', 'cf7-antispam' ), // Title
-				array( $this, 'cf7a_check_geo_location_callback' ), // Callback
-				'cf7a-settings', // Page
-				'cf7a_check_language' // Section
+				'check_geo_location',
+				__( 'Detect location using GeoIP', 'cf7-antispam' ),
+				array( $this, 'cf7a_check_geo_location_callback' ),
+				'cf7a-settings',
+				'cf7a_check_language'
 			);
 		}
 
-		// Settings allowed languages
+		/* Settings allowed languages */
 		add_settings_field(
-			'language_allowed', // ID
-			__( 'Allowed browser Languages', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_language_allowed' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
+			'language_allowed',
+			__( 'Allowed browser Languages', 'cf7-antispam' ),
+			array( $this, 'cf7a_language_allowed' ),
+			'cf7a-settings',
+			'cf7a_check_language'
 		);
 
-		// Settings disallowed languages
+		/* Settings disallowed languages */
 		add_settings_field(
-			'cf7a_language_disallowed', // ID
-			__( 'Disallowed browser Languages', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_language_disallowed' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_check_language' // Section
+			'cf7a_language_disallowed',
+			__( 'Disallowed browser Languages', 'cf7-antispam' ),
+			array( $this, 'cf7a_language_disallowed' ),
+			'cf7a-settings',
+			'cf7a_check_language'
 		);
 
-		// Section Time Checks
+		/* Section Time Checks */
 		add_settings_section(
-			'cf7a_time_elapsed', // ID
-			__( 'Time checks', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_section_check_time' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_time_elapsed',
+			__( 'Time checks', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_check_time' ),
+			'cf7a-settings'
 		);
 
-		// Settings check_time
+		/* Settings check_time */
 		add_settings_field(
-			'check_time', // ID
-			__( 'Check the elapsed time', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_time_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_time_elapsed' // Section
+			'check_time',
+			__( 'Check the elapsed time', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_time_callback' ),
+			'cf7a-settings',
+			'cf7a_time_elapsed'
 		);
 
-		// Settings check_time
+		/* Settings check_time */
 		add_settings_field(
-			'check_time_min', // ID
-			__( 'Minimum elapsed time', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_time_min_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_time_elapsed' // Section
+			'check_time_min',
+			__( 'Minimum elapsed time', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_time_min_callback' ),
+			'cf7a-settings',
+			'cf7a_time_elapsed'
 		);
 
-		// Settings check_time
+		/* Settings check_time */
 		add_settings_field(
-			'check_time_max', // ID
-			__( 'Maximum elapsed time', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_time_max_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_time_elapsed' // Section
+			'check_time_max',
+			__( 'Maximum elapsed time', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_time_max_callback' ),
+			'cf7a-settings',
+			'cf7a_time_elapsed'
 		);
 
-		// Section Bad IP
+		/* Section Bad IP */
 		add_settings_section(
-			'cf7a_bad_ip', // ID
-			__( 'Bad IP Address', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_section_bad_ip' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_bad_ip',
+			__( 'Bad IP Address', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_bad_ip' ),
+			'cf7a-settings'
 		);
 
-		// Settings check_bad_ip
+		/* Settings check_bad_ip */
 		add_settings_field(
-			'check_refer', // ID
-			__( 'Check HTTP referrer', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_check_refer' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_ip' // Section
+			'check_refer',
+			__( 'Check HTTP referrer', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_check_refer' ),
+			'cf7a-settings',
+			'cf7a_bad_ip'
 		);
 
-		// Settings check_bad_ip
+		/* Settings check_bad_ip */
 		add_settings_field(
-			'check_bad_ip', // ID
-			__( 'Check the sender IP Address', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_bad_ip_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_ip' // Section
+			'check_bad_ip',
+			__( 'Check the sender IP Address', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_bad_ip_callback' ),
+			'cf7a-settings',
+			'cf7a_bad_ip'
 		);
 
-		// Settings bad_ip_list
+		/* Settings bad_ip_list */
 		add_settings_field(
-			'bad_ip_list', // ID
-			__( 'Bad IP Address List', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_bad_ip_list_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_ip' // Section
+			'bad_ip_list',
+			__( 'Bad IP Address List', 'cf7-antispam' ),
+			array( $this, 'cf7a_bad_ip_list_callback' ),
+			'cf7a-settings',
+			'cf7a_bad_ip'
 		);
 
-		// Section Bad Words
+		/* Section Bad Words */
 		add_settings_section(
-			'cf7a_bad_words', // ID
-			__( 'Bad words', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_section_bad_words' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_bad_words',
+			__( 'Bad words', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_bad_words' ),
+			'cf7a-settings'
 		);
 
-		// Settings check_bad_words
+		/* Settings check_bad_words */
 		add_settings_field(
-			'check_bad_words', // ID
-			__( 'Check the message for prohibited words', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_bad_words_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_words' // Section
+			'check_bad_words',
+			__( 'Check the message for prohibited words', 'cf7-antispam' ),
+			array( $this, 'cf7a_bad_words_callback' ),
+			'cf7a-settings',
+			'cf7a_bad_words'
 		);
 
-		// Settings bad_words_list
+		/* Settings bad_words_list */
 		add_settings_field(
-			'bad_words_list', // ID
-			__( 'Bad words List', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_bad_words_list_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_words' // Section
+			'bad_words_list',
+			__( 'Bad words List', 'cf7-antispam' ),
+			array( $this, 'cf7a_bad_words_list_callback' ),
+			'cf7a-settings',
+			'cf7a_bad_words'
 		);
 
-		// Section Bad Email Strings
+		/* Section Bad Email Strings */
 		add_settings_section(
-			'cf7a_bad_email_strings', // ID
-			__( 'Bad email strings', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_section_bad_email_strings' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_bad_email_strings',
+			__( 'Bad email strings', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_bad_email_strings' ),
+			'cf7a-settings'
 		);
 
-		// Settings check_bad_email_strings
+		/* Settings check_bad_email_strings */
 		add_settings_field(
-			'check_bad_email_strings', // ID
-			__( 'Check the email for prohibited words', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_bad_email_strings_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_email_strings' // Section
+			'check_bad_email_strings',
+			__( 'Check the email for prohibited words', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_bad_email_strings_callback' ),
+			'cf7a-settings',
+			'cf7a_bad_email_strings'
 		);
 
-		// Settings bad_email_strings_list
+		/* Settings bad_email_strings_list */
 		add_settings_field(
-			'bad_email_strings_list', // ID
-			__( 'Email prohibited words', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_bad_email_strings_list_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_bad_email_strings' // Section
+			'bad_email_strings_list',
+			__( 'Email prohibited words', 'cf7-antispam' ),
+			array( $this, 'cf7a_bad_email_strings_list_callback' ),
+			'cf7a-settings',
+			'cf7a_bad_email_strings'
 		);
 
-		// Section User Agent
+		/* Section User Agent */
 		add_settings_section(
-			'cf7a_user_agent', // ID
-			__( 'User Agent blacklist', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_user_agent' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_user_agent',
+			__( 'User Agent blacklist', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_user_agent' ),
+			'cf7a-settings'
 		);
 
-		// Enable User Agent Blacklist
+		/* Enable User Agent Blacklist */
 		add_settings_field(
-			'check_bad_user_agent', // ID
-			__( 'Enable User Agent blacklist', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_user_agent_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_user_agent' // Section
+			'check_bad_user_agent',
+			__( 'Enable User Agent blacklist', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_user_agent_callback' ),
+			'cf7a-settings',
+			'cf7a_user_agent'
 		);
 
-		// User Agent Blacklist list
+		/* User Agent Blacklist list */
 		add_settings_field(
-			'bad_user_agent_list', // ID
-			__( 'Disallowed user agents', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_user_agent_list_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_user_agent' // Section
+			'bad_user_agent_list',
+			__( 'Disallowed user agents', 'cf7-antispam' ),
+			array( $this, 'cf7a_user_agent_list_callback' ),
+			'cf7a-settings',
+			'cf7a_user_agent'
 		);
 
-		// Section DNSBL
+		/* Section DNSBL */
 		add_settings_section(
-			'cf7a_dnsbl', // ID
-			__( 'DNS Blacklists', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_dnsbl' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_dnsbl',
+			__( 'DNS Blacklists', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_dnsbl' ),
+			'cf7a-settings'
 		);
 
-		// Enable DNS Blacklist list
+		/* Enable DNS Blacklist list */
 		add_settings_field(
-			'check_dnsbl', // ID
-			__( 'Check IP on DNS blocklist', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_check_dnsbl_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_dnsbl' // Section
+			'check_dnsbl',
+			__( 'Check IP on DNS blocklist', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_dnsbl_callback' ),
+			'cf7a-settings',
+			'cf7a_dnsbl'
 		);
 
-		// DNS Blacklist server list
+		/* DNS Blacklist server list */
 		add_settings_field(
-			'dnsbl_list', // ID
-			__( 'DNS blocklist servers', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_dnsbl_list_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_dnsbl' // Section
+			'dnsbl_list',
+			__( 'DNS blocklist servers', 'cf7-antispam' ),
+			array( $this, 'cf7a_dnsbl_list_callback' ),
+			'cf7a-settings',
+			'cf7a_dnsbl'
 		);
 
-		// Section honeypot
+		/* Section honeypot */
 		add_settings_section(
-			'cf7a_honeypot', // ID
-			__( 'Honeypot', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_honeypot' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_honeypot',
+			__( 'Honeypot', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_honeypot' ),
+			'cf7a-settings'
 		);
 
-		// Enable honeypot
+		/* Enable honeypot */
 		add_settings_field(
-			'check_honeypot', // ID
-			__( 'Add some fake input inside the form', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_enable_honeypot_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_honeypot' // Section
+			'check_honeypot',
+			__( 'Add some fake input inside the form', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_honeypot_callback' ),
+			'cf7a-settings',
+			'cf7a_honeypot'
 		);
 
-		// DNS Blacklist server list
+		/* DNS Blacklist server list */
 		add_settings_field(
-			'honeypot_input_names', // ID
-			__( 'Name for the honeypots inputs[*]', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_honeypot_input_names_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_honeypot' // Section
+			'honeypot_input_names',
+			__( 'Name for the honeypots inputs[*]', 'cf7-antispam' ),
+			array( $this, 'cf7a_honeypot_input_names_callback' ),
+			'cf7a-settings',
+			'cf7a_honeypot'
 		);
 
-		// Section honeyform
+		/* Section honeyform */
 		add_settings_section(
-			'cf7a_honeyform', // ID
-			__( 'Honeyform <span class="label alert monospace">[experimental]</span>', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_honeyform' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_honeyform',
+			__( 'Honeyform <span class="label alert monospace">[experimental]</span>', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_honeyform' ),
+			'cf7a-settings'
 		);
 
-		// Enable honeyform
+		/* Enable honeyform */
 		add_settings_field(
-			'check_honeyform', // ID
-			__( 'Add an hidden form inside the page content', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_enable_honeyform_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_honeyform' // Section
+			'check_honeyform',
+			__( 'Add an hidden form inside the page content', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_honeyform_callback' ),
+			'cf7a-settings',
+			'cf7a_honeyform'
 		);
 
-		// Honeyform position
+		/* Honeyform position */
 		add_settings_field(
-			'honeyform_position', // ID
-			__( 'Select where the honeyform will be placed', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_honeyform_position_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_honeyform' // Section
+			'honeyform_position',
+			__( 'Select where the honeyform will be placed', 'cf7-antispam' ),
+			array( $this, 'cf7a_honeyform_position_callback' ),
+			'cf7a-settings',
+			'cf7a_honeyform'
 		);
 
-		// Section b8
+		/* Section b8 */
 		add_settings_section(
-			'cf7a_b8', // ID
-			__( 'B8 statistical "Bayesian" spam filter', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_b8' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_b8',
+			__( 'B8 statistical "Bayesian" spam filter', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_b8' ),
+			'cf7a-settings'
 		);
 
-		// Enable b8
+		/* Enable b8 */
 		add_settings_field(
-			'enable_b8', // ID
-			__( 'Enable B8', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_enable_b8_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_b8' // Section
+			'enable_b8',
+			__( 'Enable B8', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_b8_callback' ),
+			'cf7a-settings',
+			'cf7a_b8'
 		);
 
-		// Settings b8_threshold
+		/* Settings b8_threshold */
 		add_settings_field(
-			'b8_threshold', // ID
-			__( 'B8 spam threshold', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_b8_threshold_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_b8' // Section
+			'b8_threshold',
+			__( 'B8 spam threshold', 'cf7-antispam' ),
+			array( $this, 'cf7a_b8_threshold_callback' ),
+			'cf7a-settings',
+			'cf7a_b8'
 		);
 
-		// Section Personalization
+		/* Section Personalization */
 		add_settings_section(
-			'cf7a_customizations', // ID
-			__( 'Spam filter customizations', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_customizations' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_customizations',
+			__( 'Spam filter customizations', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_customizations' ),
+			'cf7a-settings'
 		);
 
-		// Enable customizations
+		/* Enable customizations */
 		add_settings_field(
-			'cf7a_disable_reload', // ID
-			__( 'Disable cf7 form reload if the page is cached', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_disable_reload_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_customizations' // Section
+			'cf7a_disable_reload',
+			__( 'Disable cf7 form reload if the page is cached', 'cf7-antispam' ),
+			array( $this, 'cf7a_disable_reload_callback' ),
+			'cf7a-settings',
+			'cf7a_customizations'
 		);
 
-		// Enable customizations
+		/* Enable customizations */
 		add_settings_field(
-			'cf7a_customizations_class', // ID
-			__( 'Your unique css class', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_customizations_class_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_customizations' // Section
+			'cf7a_customizations_class',
+			__( 'Your unique css class', 'cf7-antispam' ),
+			array( $this, 'cf7a_customizations_class_callback' ),
+			'cf7a-settings',
+			'cf7a_customizations'
 		);
 
-		// Enable customizations
+		/* Enable customizations */
 		add_settings_field(
-			'cf7a_customizations_prefix', // ID
-			__( 'Your unique fields prefix', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_customizations_prefix_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_customizations' // Section
+			'cf7a_customizations_prefix',
+			__( 'Your unique fields prefix', 'cf7-antispam' ),
+			array( $this, 'cf7a_customizations_prefix_callback' ),
+			'cf7a-settings',
+			'cf7a_customizations'
 		);
 
-		// Enable customizations
+		/* Enable customizations */
 		add_settings_field(
-			'cf7a_cipher', // ID
-			__( 'The encryption method', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_customizations_cipher_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_customizations' // Section
+			'cf7a_cipher',
+			__( 'The encryption method', 'cf7-antispam' ),
+			array( $this, 'cf7a_customizations_cipher_callback' ),
+			'cf7a-settings',
+			'cf7a_customizations'
 		);
 
-		// Section advanced settings
+		/* Section advanced settings */
 		add_settings_section(
-			'cf7a_advanced', // ID
-			__( 'Enable advanced settings', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_advanced_settings' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_advanced',
+			__( 'Enable advanced settings', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_advanced_settings' ),
+			'cf7a-settings'
 		);
 
-		// Score Preset
+		/* Score Preset */
 		add_settings_field(
-			'cf7a_score_preset', // ID
-			__( 'Severity of anti-spam control', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_preset_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_advanced' // Section
+			'cf7a_score_preset',
+			__( 'Severity of anti-spam control', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_preset_callback' ),
+			'cf7a-settings',
+			'cf7a_advanced'
 		);
 
-		// Enable advanced settings
+		/* Enable advanced settings */
 		add_settings_field(
-			'enable_advanced_settings', // ID
-			__( 'Enable advanced settings', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_enable_advanced_settings_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_advanced' // Section
+			'enable_advanced_settings',
+			__( 'Enable advanced settings', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_advanced_settings_callback' ),
+			'cf7a-settings',
+			'cf7a_advanced'
 		);
 
-		// Section Personalization
+		/* Section Personalization */
 		add_settings_section(
-			'cf7a_scoring', // ID
-			__( 'Scoring Tweaks (1 = Ban)', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_print_scoring_settings' ), // Callback
-			'cf7a-settings' // Page
+			'cf7a_scoring',
+			__( 'Scoring Tweaks (1 = Ban)', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_scoring_settings' ),
+			'cf7a-settings'
 		);
 
-		// Settings score fingerprinting
+		/* Settings score fingerprinting */
 		add_settings_field(
-			'score_fingerprinting', // ID
-			__( 'Bot fingerprinting score <small>(for each failed test)</small>', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_fingerprinting_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
+			'score_fingerprinting',
+			__( 'Bot fingerprinting score <small>(for each failed test)</small>', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_fingerprinting_callback' ),
+			'cf7a-settings',
+			'cf7a_scoring'
 		);
 
-		// Settings score time
+		/* Settings score time */
 		add_settings_field(
-			'score_time', // ID
-			__( 'Time checks score', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_time_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
+			'score_time',
+			__( 'Time checks score', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_time_callback' ),
+			'cf7a-settings',
+			'cf7a_scoring'
 		);
 
-		// Settings score bad_string
+		/* Settings score bad_string */
 		add_settings_field(
-			'score_bad_string', // ID
-			__( 'String found', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_bad_string_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
+			'score_bad_string',
+			__( 'String found', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_bad_string_callback' ),
+			'cf7a-settings',
+			'cf7a_scoring'
 		);
 
-		// Settings score dnsbl
+		/* Settings score dnsbl */
 		add_settings_field(
-			'score_dnsbl', // ID
-			__( 'DNSBL score <small>(for each server)</small>', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_dnsbl_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
+			'score_dnsbl',
+			__( 'DNSBL score <small>(for each server)</small>', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_dnsbl_callback' ),
+			'cf7a-settings',
+			'cf7a_scoring'
 		);
 
-		// Settings score honeypot
+		/* Settings score honeypot */
 		add_settings_field(
-			'score_honeypot', // ID
-			__( 'Honeypot fill score <small>(for each fail)</small>', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_honeypot_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
+			'score_honeypot',
+			__( 'Honeypot fill score <small>(for each fail)</small>', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_honeypot_callback' ),
+			'cf7a-settings',
+			'cf7a_scoring'
 		);
 
-		// Settings score detection
+		/* Settings score detection */
 		add_settings_field(
-			'score_detection', // ID
-			__( 'Bot detected', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_detection_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
+			'score_detection',
+			__( 'Bot detected', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_detection_callback' ),
+			'cf7a-settings',
+			'cf7a_scoring'
 		);
 
-		// Settings score warn
+		/* Settings score warn */
 		add_settings_field(
-			'score_warn', // ID
-			__( 'Bot warn', 'cf7-antispam' ), // Title
-			array( $this, 'cf7a_score_warn_callback' ), // Callback
-			'cf7a-settings', // Page
-			'cf7a_scoring' // Section
+			'score_warn',
+			__( 'Bot warn', 'cf7-antispam' ),
+			array( $this, 'cf7a_score_warn_callback' ),
+			'cf7a-settings',
+			'cf7a_scoring'
 		);
+	}
+
+	public function cf7a_print_section_main_subtitle() {
+		printf( '<p>' . esc_html__( 'In most cases the settings below are fine, but in case you want to customise or configure the plugin to have your own degree of protection, have fun!', 'cf7-antispam' ) . '</p>' );
 	}
 
 	public function cf7a_print_section_auto_blacklist() {
@@ -616,7 +639,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			esc_html__( 'GeoLite2 Downloadable Databases', 'cf7-antispam' ),
 			esc_html__( 'After registration you will get a key, paste it into the input below and CF7-Antispam will be able to automatically download the updated GeoIP database every month.', 'cf7-antispam' )
 		);
-		// if the geo-ip constant was not set recommend to do so
+		/* if the geo-ip constant was not set recommend to do so */
 		if ( ! CF7ANTISPAM_GEOIP_KEY ) {
 			printf(
 				'<p>%s<br/><code>%s</code></p>',
@@ -700,19 +723,23 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * It takes a string of comma separated values and line-break separated value then returns an array of those values
 	 *
-	 * @param string $input - The user input with comma and spaces
+	 * @param string $input - The user input with comma and spaces.
 	 *
 	 * @return array $new_input - The formatted input.
 	 */
 	private function cf7a_settings_format_user_input( $input ) {
-		$new_input = str_replace( "\r\n", ',', $input );
-		$new_input = explode( ',', $new_input );
+		$new_input = preg_replace( '/\R/', ',', $input );
 
-		return self::cf7a_remove_empty_from_array( $new_input );
+		return self::cf7a_remove_empty_from_array( explode( ',', $new_input ) );
 	}
 
+	/**
+	 * It returns an array of preset scores
+	 *
+	 * @return array An array of arrays.
+	 */
 	public function cf7a_get_scores_presets() {
-		return  array(
+		return array(
 			'weak'     => array(
 				'_fingerprinting' => 0.1,
 				'_time'           => 0.3,
@@ -742,91 +769,89 @@ class CF7_AntiSpam_Admin_Customizations {
 			),
 		);
 	}
+
 	/**
-	 * Sanitize each setting field as needed
+	 * If the user has enabled the GeoIP feature schedule the download of the database, and the GeoIP database is not already downloaded, download it
+	 * if the user has disabled the GeoIP feature, unscheduled the download event
 	 *
-	 * @param array $input Contains all settings fields as array keys
-	 * @return array $new_input sanitized input
+	 * @param 1|0 $enabled input The input value.
 	 */
-	public function cf7a_sanitize_options( $input ) {
-
-		// get the existing options
-		$new_input = $this->options;
-
-		// bot fingerprint
-		$new_input['check_bot_fingerprint']        = isset( $input['check_bot_fingerprint'] ) ? 1 : 0;
-		$new_input['check_bot_fingerprint_extras'] = isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0;
-		$new_input['append_on_submit']             = isset( $input['append_on_submit'] ) ? 1 : 0;
-
-		// elapsed time
-		$new_input['check_time'] = isset( $input['check_time'] ) ? 1 : 0;
-
-		$new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
-		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : ( 60 * 60 * 25 ); // a day + 1 hour of timeframe to send the mail seem fine :)
-
-		$check_geoip = ! empty( $input['check_geoip'] );
-
-		// if check_geoip has changed we need also to set or unset the cron download
-		$geo = new CF7_Antispam_geoip;
-
-		if ( $check_geoip > 0 && $geo->cf7a_maybe_download_geoip_db() ) {
-
-			$geo->cf7a_geoip_schedule_update( true );
-
-		} elseif ( 0 === $check_geoip ) {
-
+	public function cf7a_enable_geo( $enabled ) {
+		if ( 0 === $enabled ) {
 			update_option( 'cf7a_geodb_update', false );
-
 			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db', array( false ) );
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
 			}
+		} elseif ( $enabled ) {
+			$geo = new CF7_Antispam_geoip();
+			if ( $geo->cf7a_can_enable_geoip() ) {
+				if ( $geo->cf7a_maybe_download_geoip_db() ) {
+					$geo->cf7a_geoip_download_database();
+				}
+			}
 		}
+	}
 
-		$new_input['check_geoip'] = $check_geoip;
+	/**
+	 * Sanitize each setting field as needed
+	 *
+	 * @param array $input Contains all settings fields as array keys.
+	 * @return array sanitized input
+	 */
+	public function cf7a_sanitize_options( $input ) {
+
+		/* get the existing options */
+		$new_input = $this->options;
+
+		/* bot fingerprint */
+		$new_input['check_bot_fingerprint']        = isset( $input['check_bot_fingerprint'] ) ? 1 : 0;
+		$new_input['check_bot_fingerprint_extras'] = isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0;
+		$new_input['append_on_submit']             = isset( $input['append_on_submit'] ) ? 1 : 0;
+
+		/* elapsed time */
+		$new_input['check_time'] = isset( $input['check_time'] ) ? 1 : 0;
+
+		$new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
+		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : ( 60 * 60 * 25 ); /* a day + 1 hour of timeframe to send the mail seems fine :) */
+
+		$new_input['check_geoip'] = isset( $input['check_geoip'] ) ? 1 : 0;
 		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
-		// browser language check enabled
+		$this->cf7a_enable_geo( $new_input['check_geoip'] );
+
+		/* browser language check enabled */
 		$new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
-		// geo-ip location check enabled
+
+		/* geo-ip location check enabled */
 		$new_input['check_geo_location'] = isset( $input['check_geo_location'] ) ? 1 : 0;
-		//languages allowed / disallowed
-		if ( ! empty( $input['languages']['allowed'] ) ) {
-			$new_input['languages']['allowed'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['allowed'] ) );
-		} else {
-			$new_input['languages']['allowed'] = array();}
-		if ( ! empty( $input['languages']['disallowed'] ) ) {
-			$new_input['languages']['disallowed'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['disallowed'] ) );
-		} else {
-			$new_input['languages']['disallowed'] = array();}
 
-		// bad ip
-		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
-		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
+		/* languages allowed | disallowed */
+		$new_input['languages']['allowed']    = isset( $input['languages']['allowed'] )
+			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['allowed'] ) )
+			: array();
+		$new_input['languages']['disallowed'] = isset( $input['languages']['disallowed'] )
+			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['disallowed'] ) )
+			: array();
 
-		if ( ! empty( $input['bad_ip_list'] ) ) {
-			$new_input['bad_ip_list'] = $this->cf7a_remove_empty_from_array( $input['bad_ip_list'] );
-		}
-
-		// max attempts before ban
+		/* max attempts before ban */
 		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 2;
 
-		// auto-ban
+		/* auto-ban */
 		$new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
 
-		// auto-unban delay
+		/* auto-unban delay */
 		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array( '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' ), true ) ) {
-
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
-				// delete previous scheduled events
+				/* delete previous scheduled events */
 				$timestamp = wp_next_scheduled( 'cf7a_cron', array( false ) );
 				if ( $timestamp ) {
 					wp_unschedule_event( $timestamp, 'cf7a_cron' );
 				}
 
+				/* add the new scheduled event */
 				wp_schedule_event( time(), $new_input['unban_after'], 'cf7a_cron' );
-				// add the new scheduled event
 			}
 		} else {
 			// Get the timestamp for the next event.
@@ -837,73 +862,81 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['unban_after'] = 'disabled';
 		}
 
-		// bad words
-		$new_input['check_bad_words'] = isset( $input['check_bad_words'] ) ? 1 : 0;
-		if ( isset( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = $this->cf7a_remove_empty_from_array( explode( "\r\n", sanitize_textarea_field( $input['bad_words_list'] ) ) );
+		/* bad ip */
+		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
+		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
+		if ( isset( $input['bad_ip_list'] ) ) {
+			$new_input['bad_ip_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['bad_ip_list'] ) ) );
 		}
 
-		// email strings
+		/* bad words */
+		$new_input['check_bad_words'] = isset( $input['check_bad_words'] ) ? 1 : 0;
+		if ( isset( $input['bad_words_list'] ) ) {
+			$new_input['bad_words_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['bad_words_list'] ) ) );
+		}
+
+		/* email strings */
 		$new_input['check_bad_email_strings'] = isset( $input['check_bad_email_strings'] ) ? 1 : 0;
 		if ( isset( $input['bad_email_strings_list'] ) ) {
 			$new_input['bad_email_strings_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_email_strings_list'] ) );
 		}
 
-		// user_agent
+		/* user_agent */
 		$new_input['check_bad_user_agent'] = isset( $input['check_bad_user_agent'] ) ? 1 : 0;
 		if ( isset( $input['bad_user_agent_list'] ) ) {
 			$new_input['bad_user_agent_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_user_agent_list'] ) );
 		}
 
-		// dnsbl
+		/* dnsbl */
 		$new_input['check_dnsbl'] = isset( $input['check_dnsbl'] ) ? 1 : 0;
 		if ( isset( $input['dnsbl_list'] ) ) {
-			$new_input['dnsbl_list'] = $this->cf7a_remove_empty_from_array( explode( "\r\n", sanitize_textarea_field( $input['dnsbl_list'] ) ) );
+			$new_input['dnsbl_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['dnsbl_list'] ) ) );
 		}
 
-		// honeypot
+		/* honeypot */
 		$new_input['check_honeypot'] = isset( $input['check_honeypot'] ) ? 1 : 0;
 		if ( isset( $input['honeypot_input_names'] ) ) {
 			$new_input['honeypot_input_names'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['honeypot_input_names'] ) );
 		}
 
-		// honeyform
+		/* honeyform */
 		$new_input['check_honeyform']    = isset( $input['check_honeyform'] ) ? 1 : 0;
 		$new_input['honeyform_position'] = ! empty( $input['honeyform_position'] ) ? sanitize_html_class( $input['honeyform_position'] ) : 'wp_body_open';
 
-		// b8
+		/* b8 */
 		$new_input['enable_b8']    = isset( $input['enable_b8'] ) ? 1 : 0;
 		$threshold                 = floatval( $input['b8_threshold'] );
-		$new_input['b8_threshold'] = ( $threshold >= 0 && $threshold < 1 ) ? $threshold : 1;
+		$new_input['b8_threshold'] = $threshold >= 0 && $threshold < 1 ? $threshold : 1;
 
 		$score_preset = $this->cf7a_get_scores_presets();
 
-		// Scoring
-		// if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed)
-		if ( 'weak' === $input['cf7a_score_preset'] && ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
-			$new_input['score']             = $score_preset['weak'];
-			$new_input['cf7a_score_preset'] = 'weak';
-		} elseif ( 'standard' === $input['cf7a_score_preset'] && ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
-			$new_input['score']             = $score_preset['standard'];
-			$new_input['cf7a_score_preset'] = 'standard';
-		} elseif ( 'secure' === $input['cf7a_score_preset'] && ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) ) {
-			$new_input['score']             = $score_preset['secure'];
-			$new_input['cf7a_score_preset'] = 'secure';
-		} else {
-			$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting'] ) : 0.25;
-			$new_input['score']['_time']           = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time'] ) : 1;
-			$new_input['score']['_bad_string']     = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string'] ) : 1;
-			$new_input['score']['_dnsbl']          = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl'] ) : 0.2;
-			$new_input['score']['_honeypot']       = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot'] ) : 1;
-			$new_input['score']['_detection']      = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection'] ) : 5;
-			$new_input['score']['_warn']           = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn'] ) : 1;
-			$new_input['cf7a_score_preset']        = 'custom';
+		/* Scoring:  if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
+		if ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) {
+			if ( 'weak' === $input['cf7a_score_preset'] ) {
+				$new_input['score']             = $score_preset['weak'];
+				$new_input['cf7a_score_preset'] = 'weak';
+			} elseif ( 'standard' === $input['cf7a_score_preset'] ) {
+				$new_input['score']             = $score_preset['standard'];
+				$new_input['cf7a_score_preset'] = 'standard';
+			} elseif ( 'secure' === $input['cf7a_score_preset'] ) {
+				$new_input['score']             = $score_preset['secure'];
+				$new_input['cf7a_score_preset'] = 'secure';
+			} else {
+				$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting'] ) : 0.25;
+				$new_input['score']['_time']           = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time'] ) : 1;
+				$new_input['score']['_bad_string']     = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string'] ) : 1;
+				$new_input['score']['_dnsbl']          = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl'] ) : 0.2;
+				$new_input['score']['_honeypot']       = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot'] ) : 1;
+				$new_input['score']['_detection']      = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection'] ) : 5;
+				$new_input['score']['_warn']           = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn'] ) : 1;
+				$new_input['cf7a_score_preset']        = 'custom';
+			}
 		}
 
-		// Advanced settings
+		/* Advanced settings */
 		$new_input['enable_advanced_settings'] = isset( $input['enable_advanced_settings'] ) ? 1 : 0;
 
-		// Customizations
+		/* Customizations */
 		$new_input['cf7a_disable_reload'] = isset( $input['cf7a_disable_reload'] ) ? 1 : 0;
 
 		$input['cf7a_customizations_class']     = sanitize_html_class( $input['cf7a_customizations_class'] );
@@ -915,22 +948,23 @@ class CF7_AntiSpam_Admin_Customizations {
 		$input['cf7a_cipher']     = sanitize_html_class( $input['cf7a_cipher'] );
 		$new_input['cf7a_cipher'] = ! empty( $input['cf7a_cipher'] ) && in_array( $input['cf7a_cipher'], openssl_get_cipher_methods(), true ) ? $input['cf7a_cipher'] : CF7ANTISPAM_CYPHER;
 
-		// store the sanitized options
+		/* store the sanitized options */
 		return $new_input;
 	}
 
 	/**
-	 * utility to generate option select items
-	 * @param $values array - the array of selection options
-	 * @param $selected - the name of the selected one (if any)
+	 * Utility that generates the options for a select input given an array of values
+	 *
+	 * @param array  $values - the array of selection options.
+	 * @param string $selected - the name of the selected one (if any).
 	 *
 	 * @return string - the html needed inside the select
 	 */
 	private function cf7a_generate_options( $values, $selected = '' ) {
 		$html = '';
 		foreach ( $values as $value ) {
-			$sel   = ( $value === $selected ) ? 'selected' : '';
-			$html .= "<option value=\"$value\" $sel>$value</option>";
+			$sel   = $value === $selected ? 'selected' : '';
+			$html .= sprintf( '<option value="%s" %s>%s</option>', $value, $sel, $value );
 		}
 		return $html;
 	}
@@ -945,6 +979,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/**
+	 * It creates a text input field with the id of "max_attempts" and the name of "cf7a_options[max_attempts]". The value of
+	 * the field is set to the value of the "max_attempts" key in the $this->options array. If the key doesn't exist, the
+	 * value is set to 2
+	 */
 	public function cf7a_max_attempts() {
 		printf(
 			'<input type="number" id="max_attempts" name="cf7a_options[max_attempts]" value="%s" step="1" />',
@@ -952,12 +991,19 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/**
+	 * It generates a select box with the options 'disabled', '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' and
+	 * the default value is 'disabled'
+	 */
 	public function cf7a_unban_after_callback() {
 		printf(
 			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
-			$this->cf7a_generate_options(
-				array( 'disabled', '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' ),
-				! empty( $this->options['unban_after'] ) ? esc_attr( $this->options['unban_after'] ) : 'disabled'
+			wp_kses(
+				$this->cf7a_generate_options(
+					array( 'disabled', '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' ),
+					! empty( $this->options['unban_after'] ) ? esc_attr( $this->options['unban_after'] ) : 'disabled'
+				),
+				array( 'option' => array() )
 			)
 		);
 	}
@@ -1011,9 +1057,14 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_geoip_is_enabled_callback() {
-		printf( ( get_option( 'cf7a_geodb_update' ) ) ? '✅ ' : '❌ ' );
+		$last_update = get_option( 'cf7a_geodb_update' );
+		printf( $last_update ? '✅ ' : '❌ ' );
 	}
 
+	/**
+	 * It prints out an input field with the value of the option 'geoip_dbkey' if it exists, and if it doesn't exist, it
+	 * prints out an empty input field
+	 */
 	public function cf7a_geoip_key_callback() {
 		printf(
 			'<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>',
@@ -1201,6 +1252,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_customizations_cipher_callback() {
+		if ( ! extension_loaded( 'openssl' ) ) {
+			echo 'error: php extension openssl not enabled';
+		}
 		printf(
 			'<select id="cipher" name="cf7a_options[cf7a_cipher]">%s</select>',
 			$this->cf7a_generate_options(
@@ -1268,13 +1322,19 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/**
+	 * It generates a select box with the options 'weak', 'standard', 'secure', and 'custom'
+	 */
 	public function cf7a_score_preset_callback() {
-		$options = ( 1 === $this->options['enable_advanced_settings'] || ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] ) ) ? array( 'weak', 'standard', 'secure', 'custom' ) : array( 'weak', 'standard', 'secure' );
+		$options = 1 === $this->options['enable_advanced_settings'] || ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] ) ? array( 'weak', 'standard', 'secure', 'custom' ) : array( 'weak', 'standard', 'secure' );
 		printf(
 			'<select id="cf7a_score_preset" name="cf7a_options[cf7a_score_preset]">%s</select>',
-			$this->cf7a_generate_options(
-				$options,
-				isset( $this->options['cf7a_score_preset'] ) ? esc_attr( $this->options['cf7a_score_preset'] ) : 'custom'
+			wp_kses(
+				$this->cf7a_generate_options(
+					$options,
+					isset( $this->options['cf7a_score_preset'] ) ? esc_attr( $this->options['cf7a_score_preset'] ) : 'custom'
+				),
+				array( 'option' => array() )
 			)
 		);
 	}

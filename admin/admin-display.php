@@ -24,24 +24,24 @@ class CF7_AntiSpam_Admin_Display {
 		do_action( 'cf7a_dashboard' );
 	}
 
-
 	/**
 	 * It displays the header for the widget.
 	 */
-	function cf7a_display_header() {
-		$html  = '<div class="wrap"><div class="cf7-antispam">';
-		$html .= '<h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 - AntiSpam</h1>';
-		echo $html;
+	public function cf7a_display_header() {
+		?>
+		<div class="wrap"><div class="cf7-antispam">
+		<h1><span class="dashicons dashicons-shield-alt"></span>Contact Form 7 AntiSpam</h1>
+		<?php
 	}
 
 	/**
 	 * It displays the content of the widget
 	 */
-	function cf7a_display_content() {
+	public function cf7a_display_content() {
 		CF7_AntiSpam_Admin_Tools::cf7a_handle_actions();
 		$dismissible_banner_class = get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ? ' hidden' : '';
 		?>
-	<div id="welcome-panel" class="card banner dismissible<?php echo $dismissible_banner_class; ?>">
+	<div id="welcome-panel" class="card banner dismissible<?php echo sanitize_html_class( $dismissible_banner_class ); ?>">
 			<div class="inside">
 				<a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
 				<?php if ( ! is_plugin_active( 'flamingo/flamingo.php' ) ) { ?>
@@ -75,7 +75,7 @@ class CF7_AntiSpam_Admin_Display {
 	  <form method="post" action="options.php" id="cf7a_settings">
 		  <?php
 
-			// This prints out all hidden setting fields
+			/* This prints out all hidden setting fields */
 			settings_fields( 'cf7_antispam_options' );
 			do_settings_sections( 'cf7a-settings' );
 
@@ -91,7 +91,7 @@ class CF7_AntiSpam_Admin_Display {
 	/**
 	 * It displays the footer for the widget.
 	 */
-	function cf7a_display_footer() {
+	public function cf7a_display_footer() {
 		?>
 		</div></div>
 		<?php
@@ -101,17 +101,17 @@ class CF7_AntiSpam_Admin_Display {
 	 * It prints the blacklisted ip, the rating and some information, returns the plugins debug information and the
 	 * plugins debug information
 	 */
-	function cf7a_display_debug() {
+	public function cf7a_display_debug() {
 
 		$tools = new CF7_AntiSpam_Admin_Tools();
 
-		// prints the blacklisted ip, the rating and some information
+		/* The blacklisted ip, the rating and some information. */
 		$tools->cf7a_get_blacklisted_table();
 
-		// returns the plugins debug information
+		/* Returns the plugins debug information. */
 		$tools->cf7a_advanced_settings();
 
-		// returns the plugins debug information
+		/* Returns the plugins debug information. */
 		$tools->cf7a_get_debug_info();
 	}
 }

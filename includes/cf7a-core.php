@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The core plugin class.
  *
@@ -53,6 +54,10 @@ class CF7_AntiSpam {
 	 */
 	protected $loader;
 
+	/**
+	 * The constructor function is called when the plugin is loaded. It sets the version, plugin name, and options. It loads
+	 * the dependencies, sets the locale, updates the plugin, and loads the admin and frontend areas
+	 */
 	public function __construct() {
 		if ( defined( 'CF7ANTISPAM_VERSION' ) ) {
 			$this->version = CF7ANTISPAM_VERSION;
@@ -61,17 +66,17 @@ class CF7_AntiSpam {
 		}
 
 		$this->plugin_name = CF7ANTISPAM_NAME;
-		$this->options     = $this->get_options(); // the plugin options
+		$this->options     = $this->get_options(); /* the plugin options */
 
-		// the php files
+		/* the php files */
 		$this->load_dependencies();
 
-		// the i18n
+		/* the i18n */
 		$this->set_locale();
 
 		if ( empty( $this->options['cf7a_version'] ) || $this->version !== $this->options['cf7a_version'] ) {
 
-			// the php files
+			/* the php files */
 			$this->update();
 
 			if ( get_transient( 'cf7a_activation' ) ) {
@@ -83,10 +88,10 @@ class CF7_AntiSpam {
 			}
 		}
 
-		// the admin area
+		/* the admin area */
 		$this->load_admin();
 
-		// the frontend area
+		/* the frontend area */
 		$this->load_frontend();
 	}
 
@@ -107,6 +112,9 @@ class CF7_AntiSpam {
 
 	}
 
+	/**
+	 * It loads the plugin's dependencies
+	 */
 	private function load_dependencies() {
 
 		/**
@@ -128,10 +136,11 @@ class CF7_AntiSpam {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-frontend.php';
 
 		/**
-		 * The class responsible for defining antispam functionality
+		 * The class responsible for defining antispam functionality and the related Geo-ip utility
 		 * of the plugin.
 		 */
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geo.php';
 
 		/**
 		 * The class responsible for defining admin backend functionality
@@ -170,31 +179,31 @@ class CF7_AntiSpam {
 	 */
 	private function load_admin() {
 
-		// the spam filter
+		/* the spam filter */
 		$plugin_antispam = new CF7_AntiSpam_filters();
 
-		// the spam filter
+		/* the spam filter */
 		add_filter( 'wpcf7_spam', array( $plugin_antispam, 'cf7a_spam_filter' ), 8, 1 );
 
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
-			// if flamingo is defined the mail will be analyzed after flamingo has stored
+			/* if flamingo is defined the mail will be analyzed after flamingo has stored */
 			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_store_additional_data' ), 11, 1 );
-			// remove honeypot fields before store into database
+			/* remove honeypot fields before store into database */
 			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_remove_honeypot' ), 12, 1 );
 		}
 
 		if ( is_admin() ) {
 
-			// the GeoIP2 database
+			/* the GeoIP2 database */
 			new CF7_Antispam_geoip();
 
-			// the admin area
+			/* the admin area */
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-			// if flamingo is enabled use submitted spam / ham to feed d8
+			/* if flamingo is enabled use submitted spam / ham to feed d8 */
 			if ( defined( 'FLAMINGO_VERSION' ) ) {
 				add_action( 'load-flamingo_page_flamingo_inbound', array( $plugin_antispam, 'cf7a_d8_flamingo_classify' ), 9, 0 );
 				add_filter( 'manage_flamingo_inbound_posts_columns', array( $plugin_antispam, 'flamingo_columns' ) );
@@ -205,7 +214,7 @@ class CF7_AntiSpam {
 	}
 
 	/**
-	 * Register all of the hooks related to the frontend area functionality
+	 * Register all the hooks related to the frontend area functionality
 	 * of the plugin.
 	 *
 	 * @since    0.1.0
@@ -276,7 +285,7 @@ class CF7_AntiSpam {
 	}
 
 	/**
-	 * the CF7 AntiSpam options
+	 * CF7 AntiSpam options
 	 *
 	 * @return array the plugin options
 	 */
@@ -289,7 +298,7 @@ class CF7_AntiSpam {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @param  array $options options
+	 * @param  array $options the plugin options.
 	 * @return bool
 	 */
 	public static function update_options( $options ) {
@@ -301,8 +310,8 @@ class CF7_AntiSpam {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @param string $option the option that you need to change
-	 * @param mixed $value the new option value
+	 * @param string $option the option that you need to change.
+	 * @param mixed  $value the new option value.
 	 *
 	 * @return bool
 	 */
@@ -312,20 +321,18 @@ class CF7_AntiSpam {
 
 		if ( isset( $options[ $option ] ) ) {
 			if ( is_string( $value ) ) {
-				// if the value is a string sanitize and replace the option
+				/* if the value is a string sanitize and replace the option */
 				$options[ $option ] = sanitize_text_field( $value );
 			} elseif ( is_array( $value ) ) {
-				// if the value is an array sanitize each element then merge into option
+				/* if the value is an array sanitize each element then merge into option */
 				$new_values = array();
 				foreach ( $value as $array_value ) {
 					$new_values[] = sanitize_text_field( trim( (string) $array_value ) );
 				}
-				$options[ $option ] = array_merge( $options[ $option ], $new_values );
+				$options[ $option ] = array_unique( array_merge( $options[ $option ], $new_values ) );
 			}
 
-			$opt = new CF7_AntiSpam_Admin_Customizations();
-			self::update_options( $opt->cf7a_sanitize_options( $options ) );
-			return true;
+			return self::update_options( $options );
 		}
 
 		return false;

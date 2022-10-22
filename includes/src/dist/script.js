@@ -1,1 +1,453 @@
-!function(){"use strict";window.onload=function(){if(!window.wpcf7)return;const e=cf7a_settings.prefix,t=cf7a_settings.version;wpcf7.cached=0===parseInt(cf7a_settings.disableReload)&&wpcf7.cached;const n=()=>{var e,t,n,i,o,a,r;const d=window.navigator.userAgent,s={timezone:null!==(e=Intl.DateTimeFormat().resolvedOptions().timeZone)&&void 0!==e?e:null,platform:null!==(t=window.navigator.platform)&&void 0!==t?t:null,hardware_concurrency:null!==(n=window.navigator.hardwareConcurrency)&&void 0!==n?n:null,screens:null!==(i=[window.screen.width,window.screen.height])&&void 0!==i?i:null,memory:null!==(o=window.navigator.deviceMemory)&&void 0!==o?o:null,user_agent:null!=d?d:null,app_version:null!==(a=window.navigator.appVersion)&&void 0!==a?a:null,webdriver:null!==(r=!1===window.navigator.webdriver)&&void 0!==r?r:null,session_storage:window.sessionStorage?1:null};return d.indexOf("Firefox")>-1?s.isFFox=!0:d.indexOf("SamsungBrowser")>-1?s.isSamsung=!0:d.indexOf("Opera")>-1||d.indexOf("OPR")>-1?s.isOpera=!0:d.indexOf("Trident")>-1?s.isIE=!0:d.indexOf("Edge")>-1?s.isIELegacy=!0:d.indexOf("Edg")>-1?s.isEdge=!0:d.indexOf("Chrome")>-1||d.indexOf("CriOS")>-1?s.isChrome=!0:d.indexOf("Safari")>-1||d.indexOf("GSA")>-1?s.isSafari=!0:s.isUnknown=!0,"boolean"==typeof window.navigator.standalone?s.isIos=!0:d.indexOf("Android")>-1&&(s.isAndroid=!0),(s.isIos||s.isAndroid)&&(s.touch=function(){let e;if("maxTouchPoints"in window.navigator)e=window.navigator.maxTouchPoints>0;else if("msMaxTouchPoints"in window.navigator)e=window.navigator.msMaxTouchPoints>0;else{const t=window.matchMedia&&window.matchMedia("(pointer:coarse)");if(t&&"(pointer:coarse)"===t.media)e=!!t.matches;else if("orientation"in window)e=!0;else{const t=window.navigator.userAgent;e=/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(t)||/\b(Android|Windows Phone|iPad|iPod)\b/i.test(t)}}return e}()),s},i=function(t,n){let i=arguments.length>2&&void 0!==arguments[2]?arguments[2]:e;const o=document.createElement("input");return o.setAttribute("type","hidden"),o.setAttribute("name",i+t),o.setAttribute("value","string"==typeof n?n:JSON.stringify(n)),o},o=document.querySelectorAll(".wpcf7");if(o.length){let a=0,r=0,d=0;for(const s of o){const o=s.querySelector("form > div"),l=o.querySelector("input[name="+e+"bot_fingerprint]"),c=o.querySelector("input[name="+e+"bot_fingerprint_extras]"),u=o.querySelector("input[name="+e+"_language]"),m=o.querySelector("input[name="+e+"append_on_submit]"),f=o.querySelector("input[name="+e+"version]");if(s.querySelector("form").getAttribute("autocomplete"))continue;f.setAttribute("value",t);const p=n();if(l)if(l.setAttribute("value",l.getAttribute("value").slice(0,5)),!m||p.isIos||p.isIE)for(const e in p)o.appendChild(i(e,p[e]));else{const t=s.querySelector("form");let n=new FormData(t.formData);t.addEventListener("formdata",(t=>{const i=t.formData;for(const t in p)i.append(e+t,p[t]);n=i}))}if(c){const t=function(n){const a=o.querySelector("input[name="+e+"activity]");a&&a.remove(),o.append(i("activity",d++)),d>3&&(document.body.removeEventListener("mouseup",t),document.body.removeEventListener("touchend",t),o.append(i("mouseclick_activity","passed")))};document.body.addEventListener("mouseup",t),document.body.addEventListener("touchend",t);const n=function(e){e.pageY>a&&(r+=1),a=e.pageY,r>3&&(document.removeEventListener("mousemove",n),o.append(i("mousemove_activity","passed")))};document.addEventListener("mousemove",n),(p.isIos||p.isAndroid)&&o.append(i("mousemove_activity","passed"));const s=document.createElement("div");s.id="hidden",o.append(s),String.prototype.hashCode=function(){let e,t,n=0;if(0===this.length)return n;for(e=0;e<this.length;e++)t=this.charCodeAt(e),n=(n<<5)-n+t,n|=0;return n};const l=document.createElement("div");l.id="webgl-vendor",s.append(l);const c=document.getElementById("webgl-vendor"),u=document.createElement("div");u.id="webgl-renderer",s.append(u);const m=document.getElementById("webgl-renderer"),f=document.createElement("canvas"),g=f.getContext("webgl")||f.getContext("webgl-experimental");if(g){const e=g.getExtension("WEBGL_debug_renderer_info");try{const t=g.getParameter(e.UNMASKED_VENDOR_WEBGL);c.innerHTML=t,"Brian Paul"===t||"Google Inc."===t?o.append(i("webgl","failed")):o.append(i("webgl","passed"))}catch(e){c.innerHTML="Error: "+e}try{const t=g.getParameter(e.UNMASKED_RENDERER_WEBGL);m.innerHTML=t,"Mesa OffScreen"===t||-1!==t.indexOf("Swift")?o.append(i("webgl_render","failed")):o.append(i("webgl_render","passed"))}catch(e){m.innerHTML="Error: "+e}}else o.append(i("webgl","failed")),o.append(i("webgl_render","failed"));const v=[],w=[];v[1]=document.createElement("div"),v[1].id="canvas1",v[2]=document.createElement("div"),v[2].id="canvas2",v[3]=document.createElement("div"),v[3].id="canvas3",w[3]=document.createElement("iframe"),w[3].id="canvas3-iframe",w[3].class="canvased",w[3].setAttribute("sandbox","allow-same-origin"),v[3].append(w[3]),v[4]=document.createElement("div"),v[4].id="canvas4",w[4]=document.createElement("iframe"),w[4].id="canvas4-iframe",w[4].class="canvased",w[4].setAttribute("sandbox","allow-same-origin"),v[4].append(w[4]),v[5]=document.createElement("div"),v[5].id="canvas5",w[5]=document.createElement("iframe"),w[5].id="canvas5-iframe",w[5].class="canvased",v[5].append(w[5]),v.forEach((function(e){s.appendChild(e)}));const h=function(e){let t,n,i=arguments.length>1&&void 0!==arguments[1]&&arguments[1],o=!0;const a="Bot test <canvas> 1.1",r=document.getElementById("canvas"+e),d=document.getElementById("canvas"+e+"-iframe");let s=i?d.contentDocument.createElement("canvas"):document.createElement("canvas");if(s.getContext){n=s.getContext("2d");try{s.setAttribute("width",220),s.setAttribute("height",30),n.textBaseline="top",n.font="14px 'Arial'",n.textBaseline="alphabetic",n.fillStyle="#f60",n.fillRect(53,1,62,20),n.fillStyle="#069",n.fillText(a,2,15),n.fillStyle="rgba(102, 204, 0, 0.7)",n.fillText(a,4,17)}catch(e){s=document.createElement("canvas"),n=s.getContext("2d"),void 0===n||"function"!=typeof s.getContext("2d").fillText?o=!1:(s.setAttribute("width",220),s.setAttribute("height",30),n.textBaseline="top",n.font="14px 'Arial'",n.textBaseline="alphabetic",n.fillStyle="#f60",n.fillRect(125,1,62,20),n.fillStyle="#069",n.fillText(a,2,15),n.fillStyle="rgba(102, 204, 0, 0.7)",n.fillText(a,4,17))}if(o&&"function"==typeof s.toDataURL){t=s.toDataURL("image/png");try{if("boolean"==typeof t||void 0===t)throw new Error("Unable to load image")}catch(e){t=""}0===t.indexOf("data:image/png")||(o=!1)}else o=!1}else o=!1;if(o){const e=document.createElement("div");e.innerHTML="Hash: "+t.hashCode(),r.appendChild(s),r.appendChild(e)}else{const e=document.createElement("div");e.innerHTML="Canvas failed",r.appendChild(e)}};window.canvasCount=0,h("1"),h("2"),h("3",!0),h("4",!0),h("5",!0),s.remove()}u&&o.append(i("browser_language",window.navigator.languages.join()||window.navigator.language||window.navigator.browserLanguage||window.navigator.userLanguage))}}}}();
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+var __webpack_exports__ = {};
+/*!********************************!*\
+  !*** ./includes/src/script.js ***!
+  \********************************/
+/* global cf7a_settings, wpcf7 */
+
+
+window.onload = function () {
+  // disable cf7a script if contact form is not loaded in this page
+  if (!window.wpcf7) return;
+  const cf7aPrefix = cf7a_settings.prefix;
+  const cf7aVersion = cf7a_settings.version; // disable cf7 refill on load
+
+  wpcf7.cached = parseInt(cf7a_settings.disableReload) === 0 && wpcf7.cached; // if is cached disable reload
+
+  /**
+   * If the browser supports the `maxTouchPoints` property, then return the value of that property. If the browser supports
+   * the `msMaxTouchPoints` property, then return the value of that property. If the browser supports the `matchMedia`
+   * method, then return the value of the `matches` property of the `matchMedia` method. If the browser supports the
+   * `orientation` property, then return `true`. If the browser doesn't support any of the above, then return the value of
+   * the `test` method of the `RegExp` object
+   *
+   * @return {boolean} if has touchscreen or not
+   */
+
+  function testTouch() {
+    let hasTouch;
+
+    if ('maxTouchPoints' in window.navigator) {
+      hasTouch = window.navigator.maxTouchPoints > 0;
+    } else if ('msMaxTouchPoints' in window.navigator) {
+      hasTouch = window.navigator.msMaxTouchPoints > 0;
+    } else {
+      const mQ = window.matchMedia && window.matchMedia('(pointer:coarse)');
+
+      if (mQ && mQ.media === '(pointer:coarse)') {
+        hasTouch = !!mQ.matches;
+      } else if ('orientation' in window) {
+        hasTouch = true; // deprecated, but good fallback
+      } else {
+        // Only as a last resort, fall back to user agent sniffing
+        const UA = window.navigator.userAgent;
+        hasTouch = /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) || /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+      }
+    }
+
+    return hasTouch;
+  }
+  /**
+   * It returns an object with the browser's name, version, and other information
+   *
+   * @return {boolean} An object with the following properties:
+   * 	- isFFox
+   * 	- isSamsung
+   * 	- isOpera
+   * 	- isIE
+   * 	- isIELegacy
+   * 	- isEdge
+   * 	- isChrome
+   * 	- isSafari
+   * 	- isUnknown
+   * 	- isIos
+   * 	- isAndroid
+   * 	- touch
+   */
+
+
+  const browserFingerprint = () => {
+    var _Intl$DateTimeFormat$, _window$navigator$pla, _window$navigator$har, _ref, _window$navigator$dev, _window$navigator$app, _ref2;
+
+    // as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
+    const ua = window.navigator.userAgent; // holds the object with the tested props
+
+    const tests = {
+      timezone: (_Intl$DateTimeFormat$ = Intl.DateTimeFormat().resolvedOptions().timeZone) !== null && _Intl$DateTimeFormat$ !== void 0 ? _Intl$DateTimeFormat$ : null,
+      platform: (_window$navigator$pla = window.navigator.platform) !== null && _window$navigator$pla !== void 0 ? _window$navigator$pla : null,
+      hardware_concurrency: (_window$navigator$har = window.navigator.hardwareConcurrency) !== null && _window$navigator$har !== void 0 ? _window$navigator$har : null,
+      screens: (_ref = [window.screen.width, window.screen.height]) !== null && _ref !== void 0 ? _ref : null,
+      memory: (_window$navigator$dev = window.navigator.deviceMemory) !== null && _window$navigator$dev !== void 0 ? _window$navigator$dev : null,
+      user_agent: ua !== null && ua !== void 0 ? ua : null,
+      app_version: (_window$navigator$app = window.navigator.appVersion) !== null && _window$navigator$app !== void 0 ? _window$navigator$app : null,
+      webdriver: (_ref2 = window.navigator.webdriver === false) !== null && _ref2 !== void 0 ? _ref2 : null,
+      session_storage: window.sessionStorage ? 1 : null
+    }; // detect browser
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
+
+    if (ua.indexOf('Firefox') > -1) {
+      tests.isFFox = true;
+    } else if (ua.indexOf('SamsungBrowser') > -1) {
+      tests.isSamsung = true;
+    } else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) {
+      tests.isOpera = true;
+    } else if (ua.indexOf('Trident') > -1) {
+      tests.isIE = true;
+    } else if (ua.indexOf('Edge') > -1) {
+      tests.isIELegacy = true;
+    } else if (ua.indexOf('Edg') > -1) {
+      tests.isEdge = true;
+    } else if (ua.indexOf('Chrome') > -1 || ua.indexOf('CriOS') > -1) {
+      // criOS stands for chrome for ios
+      tests.isChrome = true;
+    } else if (ua.indexOf('Safari') > -1 || ua.indexOf('GSA') > -1) {
+      // GSA stand for Google Search Appliance
+      tests.isSafari = true;
+    } else {
+      tests.isUnknown = true;
+    }
+
+    if (typeof window.navigator.standalone === 'boolean') {
+      // Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
+      tests.isIos = true;
+    } else if (ua.indexOf('Android') > -1) {
+      tests.isAndroid = true;
+    }
+
+    if (tests.isIos || tests.isAndroid) tests.touch = testTouch();
+    return tests;
+  };
+  /**
+   * It returns the browser language.
+   *
+   * @return {string} The language of the browser.
+   */
+
+
+  const getBrowserLanguage = () => {
+    return window.navigator.languages.join() || window.navigator.language || window.navigator.browserLanguage || window.navigator.userLanguage;
+  };
+  /**
+   * It creates a hidden input field with a name and value
+   *
+   * @param {string} key      - the name of the field
+   * @param {string} value    - The value of the field.
+   * @param {string} [prefix] - The prefix for the field name.
+   * @return A new input element with the type of hidden, name of the key, and value of the value.
+   */
+
+
+  const createCF7Afield = function (key, value) {
+    let prefix = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : cf7aPrefix;
+    const e = document.createElement('input');
+    e.setAttribute('type', 'hidden');
+    e.setAttribute('name', prefix + key);
+    e.setAttribute('value', typeof value === 'string' ? value : JSON.stringify(value));
+    return e;
+  }; // get all page forms
+
+
+  const wpcf7Forms = document.querySelectorAll('.wpcf7');
+
+  if (wpcf7Forms.length) {
+    let oldy = 0,
+        mouseMoveValue = 0,
+        mouseActivityValue = 0;
+
+    for (const wpcf7Form of wpcf7Forms) {
+      const hiddenInputsContainer = wpcf7Form.querySelector('form > div'); // 1) Standard bot checks
+
+      const botFingerprintKey = hiddenInputsContainer.querySelector('input[name=' + cf7aPrefix + 'bot_fingerprint]'); // 2) Bot fingerprint extra checks
+
+      const botFingerprintExtra = hiddenInputsContainer.querySelector('input[name=' + cf7aPrefix + 'bot_fingerprint_extras]'); // 3) Language check
+
+      const languageChecksEnabled = hiddenInputsContainer.querySelector('input[name=' + cf7aPrefix + '_language]'); // how append bot fingerprint into hidden fields
+
+      const appendOnSubmit = hiddenInputsContainer.querySelector('input[name=' + cf7aPrefix + 'append_on_submit]'); // how append bot fingerprint into hidden fields
+
+      const cf7aVersionInput = hiddenInputsContainer.querySelector('input[name=' + cf7aPrefix + 'version]'); // get the fake field and skip it
+
+      if (wpcf7Form.querySelector('form').getAttribute('autocomplete')) continue; // then set the cf7 antispam version field
+
+      cf7aVersionInput.setAttribute('value', cf7aVersion); // fingerprint browser data
+
+      const tests = browserFingerprint();
+
+      if (botFingerprintKey) {
+        // 1.0 hijack the value of the bot_fingerprint
+        botFingerprintKey.setAttribute('value', botFingerprintKey.getAttribute('value').slice(0, 5)); // then append the fields on submit
+        // not supported in safari https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
+
+        if (!appendOnSubmit || tests.isIos || tests.isIE) {
+          // or add them directly to hidden input container
+          for (const key in tests) {
+            hiddenInputsContainer.appendChild(createCF7Afield(key, tests[key]));
+          }
+        } else {
+          const formElem = wpcf7Form.querySelector('form');
+          let formData = new FormData(formElem.formData);
+          formElem.addEventListener('formdata', e => {
+            const data = e.formData;
+
+            for (const key in tests) {
+              data.append(cf7aPrefix + key, tests[key]);
+            }
+
+            formData = data;
+          });
+        }
+      } // 2) Bot fingerprint extra checks
+
+
+      if (botFingerprintExtra) {
+        // 2.1) check for mouse clicks
+        const activity = function (e) {
+          const botActivity = hiddenInputsContainer.querySelector('input[name=' + cf7aPrefix + 'activity]');
+          if (botActivity) botActivity.remove();
+          hiddenInputsContainer.append(createCF7Afield('activity', mouseActivityValue++));
+
+          if (mouseActivityValue > 3) {
+            document.body.removeEventListener('mouseup', activity);
+            document.body.removeEventListener('touchend', activity);
+            hiddenInputsContainer.append(createCF7Afield('mouseclick_activity', 'passed'));
+          }
+        };
+
+        document.body.addEventListener('mouseup', activity);
+        document.body.addEventListener('touchend', activity); // 2.2) detect the mouse/touch direction change OR touchscreen iterations
+
+        const mouseMove = function (e) {
+          if (e.pageY > oldy) mouseMoveValue += 1;
+          oldy = e.pageY;
+
+          if (mouseMoveValue > 3) {
+            document.removeEventListener('mousemove', mouseMove);
+            hiddenInputsContainer.append(createCF7Afield('mousemove_activity', 'passed'));
+          }
+        };
+
+        document.addEventListener('mousemove', mouseMove); // set mousemove_activity true as fallback in mobile devices (we have already tested the ability to use the touchscreen)
+
+        if (tests.isIos || tests.isAndroid) {
+          hiddenInputsContainer.append(createCF7Afield('mousemove_activity', 'passed'));
+        } // 2.3) WebGL Tests
+        // credits //bot.sannysoft.com
+
+
+        const wpcf7box = document.createElement('div');
+        wpcf7box.id = 'hidden';
+        hiddenInputsContainer.append(wpcf7box);
+
+        String.prototype.hashCode = function () {
+          let hash = 0,
+              i,
+              chr;
+          if (this.length === 0) return hash;
+
+          for (i = 0; i < this.length; i++) {
+            chr = this.charCodeAt(i); // eslint-disable-next-line no-bitwise
+
+            hash = (hash << 5) - hash + chr; // eslint-disable-next-line no-bitwise
+
+            hash |= 0; // Convert to 32bit integer
+          }
+
+          return hash;
+        };
+
+        const wglv = document.createElement('div');
+        wglv.id = 'webgl-vendor';
+        wpcf7box.append(wglv);
+        const webGLVendorElement = document.getElementById('webgl-vendor');
+        const wgle = document.createElement('div');
+        wgle.id = 'webgl-renderer';
+        wpcf7box.append(wgle);
+        const webGLRendererElement = document.getElementById('webgl-renderer');
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('webgl-experimental');
+
+        if (gl) {
+          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+
+          try {
+            // WebGL Vendor Test
+            const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+            webGLVendorElement.innerHTML = vendor;
+
+            if (vendor === 'Brian Paul' || vendor === 'Google Inc.') {
+              hiddenInputsContainer.append(createCF7Afield('webgl', 'failed'));
+            } else {
+              hiddenInputsContainer.append(createCF7Afield('webgl', 'passed'));
+            }
+          } catch (e) {
+            webGLVendorElement.innerHTML = 'Error: ' + e;
+          }
+
+          try {
+            // WebGL Renderer Test
+            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            webGLRendererElement.innerHTML = renderer;
+
+            if (renderer === 'Mesa OffScreen' || renderer.indexOf('Swift') !== -1) {
+              hiddenInputsContainer.append(createCF7Afield('webgl_render', 'failed'));
+            } else hiddenInputsContainer.append(createCF7Afield('webgl_render', 'passed'));
+          } catch (e) {
+            webGLRendererElement.innerHTML = 'Error: ' + e;
+          }
+        } else {
+          hiddenInputsContainer.append(createCF7Afield('webgl', 'failed'));
+          hiddenInputsContainer.append(createCF7Afield('webgl_render', 'failed'));
+        } // TODO: change the canvas name
+
+
+        const testCanvas = [];
+        const testCanvasIframe = [];
+        testCanvas[1] = document.createElement('div');
+        testCanvas[1].id = 'canvas1';
+        testCanvas[2] = document.createElement('div');
+        testCanvas[2].id = 'canvas2';
+        testCanvas[3] = document.createElement('div');
+        testCanvas[3].id = 'canvas3';
+        testCanvasIframe[3] = document.createElement('iframe');
+        testCanvasIframe[3].id = 'canvas3-iframe';
+        testCanvasIframe[3].class = 'canvased';
+        testCanvasIframe[3].setAttribute('sandbox', 'allow-same-origin');
+        testCanvas[3].append(testCanvasIframe[3]);
+        testCanvas[4] = document.createElement('div');
+        testCanvas[4].id = 'canvas4';
+        testCanvasIframe[4] = document.createElement('iframe');
+        testCanvasIframe[4].id = 'canvas4-iframe';
+        testCanvasIframe[4].class = 'canvased';
+        testCanvasIframe[4].setAttribute('sandbox', 'allow-same-origin');
+        testCanvas[4].append(testCanvasIframe[4]);
+        testCanvas[5] = document.createElement('div');
+        testCanvas[5].id = 'canvas5';
+        testCanvasIframe[5] = document.createElement('iframe');
+        testCanvasIframe[5].id = 'canvas5-iframe';
+        testCanvasIframe[5].class = 'canvased';
+        testCanvas[5].append(testCanvasIframe[5]);
+        testCanvas.forEach(function (e) {
+          wpcf7box.appendChild(e);
+        });
+
+        const drawCanvas2 = function (num) {
+          let useIframe = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+          let datUrl;
+          let canvas2d;
+          /** @type {boolean} */
+
+          let isOkCanvas = true;
+          /** @type {string} */
+
+          const canvasText = 'Bot test <canvas> 1.1';
+          const canvasContainer = document.getElementById('canvas' + num);
+          const iframe = document.getElementById('canvas' + num + '-iframe');
+          let canvasElement = useIframe ? iframe.contentDocument.createElement('canvas') : document.createElement('canvas');
+
+          if (canvasElement.getContext) {
+            canvas2d = canvasElement.getContext('2d');
+
+            try {
+              canvasElement.setAttribute('width', 220);
+              canvasElement.setAttribute('height', 30);
+              canvas2d.textBaseline = 'top';
+              canvas2d.font = "14px 'Arial'";
+              canvas2d.textBaseline = 'alphabetic';
+              canvas2d.fillStyle = '#f60';
+              canvas2d.fillRect(53, 1, 62, 20);
+              canvas2d.fillStyle = '#069';
+              canvas2d.fillText(canvasText, 2, 15);
+              canvas2d.fillStyle = 'rgba(102, 204, 0, 0.7)';
+              canvas2d.fillText(canvasText, 4, 17);
+            } catch (b) {
+              /** @type {!Element} */
+              canvasElement = document.createElement('canvas');
+              canvas2d = canvasElement.getContext('2d');
+
+              if (void 0 === canvas2d || 'function' !== typeof canvasElement.getContext('2d').fillText) {
+                isOkCanvas = false;
+              } else {
+                canvasElement.setAttribute('width', 220);
+                canvasElement.setAttribute('height', 30);
+                /** @type {string} */
+
+                canvas2d.textBaseline = 'top';
+                /** @type {string} */
+
+                canvas2d.font = "14px 'Arial'";
+                /** @type {string} */
+
+                canvas2d.textBaseline = 'alphabetic';
+                /** @type {string} */
+
+                canvas2d.fillStyle = '#f60';
+                canvas2d.fillRect(125, 1, 62, 20);
+                /** @type {string} */
+
+                canvas2d.fillStyle = '#069';
+                canvas2d.fillText(canvasText, 2, 15);
+                /** @type {string} */
+
+                canvas2d.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                canvas2d.fillText(canvasText, 4, 17);
+              }
+            }
+
+            if (isOkCanvas && 'function' === typeof canvasElement.toDataURL) {
+              datUrl = canvasElement.toDataURL('image/png');
+
+              try {
+                if ('boolean' === typeof datUrl || void 0 === datUrl) {
+                  throw new Error('Unable to load image');
+                }
+              } catch (a) {
+                /** @type {string} */
+                datUrl = '';
+              }
+
+              if (0 === datUrl.indexOf('data:image/png')) {} else {
+                /** @type {boolean} */
+                isOkCanvas = false;
+              }
+            } else {
+              /** @type {boolean} */
+              isOkCanvas = false;
+            }
+          } else {
+            /** @type {boolean} */
+            isOkCanvas = false;
+          }
+
+          if (isOkCanvas) {
+            const newDiv = document.createElement('div');
+            newDiv.innerHTML = 'Hash: ' + datUrl.hashCode();
+            canvasContainer.appendChild(canvasElement);
+            canvasContainer.appendChild(newDiv);
+          } else {
+            const newDiv = document.createElement('div');
+            newDiv.innerHTML = 'Canvas failed';
+            canvasContainer.appendChild(newDiv);
+          }
+        };
+
+        window.canvasCount = 0;
+        drawCanvas2('1');
+        drawCanvas2('2');
+        drawCanvas2('3', true);
+        drawCanvas2('4', true);
+        drawCanvas2('5', true); // then remove the useless div
+
+        wpcf7box.remove();
+      } // 3) check the browser language
+
+
+      if (languageChecksEnabled) {
+        hiddenInputsContainer.append(createCF7Afield('browser_language', getBrowserLanguage()));
+      }
+    }
+  }
+};
+/******/ })()
+;
+//# sourceMappingURL=script.js.map

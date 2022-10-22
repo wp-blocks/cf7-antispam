@@ -131,7 +131,9 @@ class CF7_AntiSpam_Activator {
 				'email-address',
 			),
 			'languages'              => array(
-				'allowed'    => cf7a_get_browser_language_array( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ),
+				'allowed'    => isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] )
+					? cf7a_get_browser_language_array( sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) )
+					: array(),
 				'disallowed' => array(),
 			),
 		);
@@ -216,7 +218,7 @@ class CF7_AntiSpam_Activator {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
 
 		$notice = new CF7_AntiSpam_Admin_Tools();
-		$notice::cf7a_push_notice( esc_html__( '⚠️ CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'cf7-antispam' );
+		$notice::cf7a_push_notice( esc_html__( 'CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'cf7-antispam' );
 
 	}
 
