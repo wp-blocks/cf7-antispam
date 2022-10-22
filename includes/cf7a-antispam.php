@@ -967,7 +967,7 @@ class CF7_AntiSpam_filters {
 			}
 		}
 
-		/* Checking if the IP address was already blacklisted - no mercy :) */
+		/* Checking if the IP address was already blacklisted - no mercy 😎 */
 		if ( $remote_ip && $options['max_attempts'] ) {
 
 			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
@@ -979,6 +979,14 @@ class CF7_AntiSpam_filters {
 				$reason['blacklisted'] = 'Score: ' . ( $ip_data_status + $spam_score );
 
 				cf7a_log( "The $remote_ip is already blacklisted, status $ip_data_status", 1 );
+			} elseif ( $ip_data_status > 0 ) {
+				cf7a_log(
+					sprintf(
+						"The $remote_ip is already blacklisted (score $ip_data_status) but still has %d attempts left",
+						$options['max_attempts'] - $ip_data_status
+					),
+					1
+				);
 			}
 		}
 
