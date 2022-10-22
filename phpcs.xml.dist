@@ -25,24 +25,13 @@
 
 	<file>.</file>
 
+	<rule ref="WordPress">
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" />
+	</rule>
 	<rule ref="WordPress-Core"/>
 	<rule ref="WordPress.CodeAnalysis.EmptyStatement"/>
 
-	<!-- These rules are being set as warnings instead of errors, so we can error check the entire codebase. -->
-	<rule ref="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase">
-		<type>warning</type>
-	</rule>
-	<rule ref="WordPress.DB.PreparedSQL.InterpolatedNotPrepared">
-		<type>warning</type>
-	</rule>
-	<rule ref="WordPress.DB.PreparedSQL.NotPrepared">
-		<type>warning</type>
-	</rule>
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<type>warning</type>
-	</rule>
-
-	<rule ref="WordPress.NamingConventions.ValidVariableName"/>
+	<rule ref="SlevomatCodingStandard.PHP"/>
 
 	<!-- Directories and third party library exclusions. -->
 	<exclude-pattern>/node_modules/*</exclude-pattern>
@@ -53,14 +42,4 @@
 	<exclude-pattern>*.asset.php</exclude-pattern>
 	<exclude-pattern>*.js</exclude-pattern>
 
-	<!-- Exclude the unit tests from select sniffs. -->
-	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
-		<exclude-pattern>/tests/phpunit/tests/*</exclude-pattern>
-	</rule>
-	<rule ref="PEAR.NamingConventions.ValidClassName.Invalid">
-		<exclude-pattern>/tests/phpunit/tests/*</exclude-pattern>
-	</rule>
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<exclude-pattern>/tests/phpunit/tests/*</exclude-pattern>
-	</rule>
 </ruleset>
