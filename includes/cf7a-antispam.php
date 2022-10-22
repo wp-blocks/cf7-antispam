@@ -150,6 +150,8 @@ class CF7_AntiSpam_filters {
 
 	/**
 	 * CF7_AntiSpam_filters b8
+	 *
+	 * @return \b8\b8|false the B8 instance if it can be enabled, otherwise false
 	 */
 	private function cf7a_b8_init() {
 		/* the database */
@@ -188,7 +190,7 @@ class CF7_AntiSpam_filters {
 			return new b8\b8( $config_b8, $config_storage, $config_lexer, $config_degenerator );
 		} catch ( Exception $e ) {
 			cf7a_log( 'error message: ' . $e->getMessage() );
-			exit();
+			return false;
 		}
 	}
 
@@ -196,6 +198,7 @@ class CF7_AntiSpam_filters {
 	 * It takes a string, passes it to the b8 classifier, and returns the result
 	 *
 	 * @param string $message The message to be classified.
+	 * @param bool   $verbose Whetever to log  the stats for this mail analysis.
 	 *
 	 * @return float The rating of the message.
 	 */
@@ -269,9 +272,7 @@ class CF7_AntiSpam_filters {
 		}
 	}
 
-	/**
-	 * CF7_AntiSpam_filters blacklists
-	 */
+	/* CF7_AntiSpam_filters blacklists */
 
 	/**
 	 * It takes an IP address as a parameter, validates it, and then returns the row from the database that matches that IP

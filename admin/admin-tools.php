@@ -53,10 +53,10 @@ class CF7_AntiSpam_Admin_Tools {
 		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
 		if ( 'dismiss-banner' === $action ) {
-			if ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on' ) ) {
-				update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1 );
+			if ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ) {
+				update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true );
 			} else {
-				add_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', 1, true );
+				add_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true, true );
 			}
 
 			wp_safe_redirect( $url );
@@ -84,6 +84,7 @@ class CF7_AntiSpam_Admin_Tools {
 					self::cf7a_push_notice( sprintf( __( 'Error: unable to unban %s', 'cf7-antispam' ), $unban_id ) );
 				}
 				wp_safe_redirect( $url );
+				exit();
 			}
 
 			/* Ban forever a single ID */
@@ -108,6 +109,7 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 
 				wp_safe_redirect( $url );
+				exit();
 			}
 
 			/* Purge the blacklist */
@@ -121,6 +123,7 @@ class CF7_AntiSpam_Admin_Tools {
 					self::cf7a_push_notice( __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' ) );
 				}
 				wp_safe_redirect( $url );
+				exit();
 			}
 
 			/* Reset Dictionary */
@@ -134,6 +137,7 @@ class CF7_AntiSpam_Admin_Tools {
 					self::cf7a_push_notice( __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
 				}
 				wp_safe_redirect( $url );
+				exit();
 			}
 
 			/* Rebuild Dictionary */
@@ -147,6 +151,7 @@ class CF7_AntiSpam_Admin_Tools {
 					self::cf7a_push_notice( __( 'Something goes wrong while rebuilding b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
 				}
 				wp_safe_redirect( $url );
+				exit();
 			}
 
 			/* Reset plugin data */
@@ -160,6 +165,7 @@ class CF7_AntiSpam_Admin_Tools {
 					self::cf7a_push_notice( __( 'Ops! something went wrong... Please refresh and try again!', 'cf7-antispam' ) );
 				}
 				wp_safe_redirect( $url );
+				exit();
 			}
 
 			/* Resend an email */
@@ -183,7 +189,7 @@ class CF7_AntiSpam_Admin_Tools {
 				/* translators: %s is the mail id. */
 				self::cf7a_push_notice( sprintf( __( 'Ops! something went wrong... unable to resend %s email', 'cf7-antispam' ), $mail_id ) );
 				wp_safe_redirect( $refer );
-
+				exit();
 			}
 		}
 

@@ -140,7 +140,7 @@ class CF7_AntiSpam {
 		 * of the plugin.
 		 */
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geo.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geoip.php';
 
 		/**
 		 * The class responsible for defining admin backend functionality
