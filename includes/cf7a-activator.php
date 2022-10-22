@@ -151,11 +151,12 @@ class CF7_AntiSpam_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$tables = $wpdb->get_results( 'SHOW TABLES FROM ' . $wpdb->dbname );
+		error_log(print_r($tables, true));
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		/* Create the term database */
-		if ( in_array( $wpdb->prefix . 'cf7a_wordlist', $tables, true ) ) {
+		if ( ! in_array( $wpdb->prefix . 'cf7a_wordlist', $tables, true ) ) {
 
 			$cf7a_wordlist = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "cf7a_wordlist (
 			  `token` varchar(100) character set utf8 collate utf8_bin NOT NULL,
@@ -164,10 +165,11 @@ class CF7_AntiSpam_Activator {
 			  PRIMARY KEY (`token`)
 			) $charset_collate;";
 
+			dbDelta( $cf7a_wordlist );
+
 			$cf7a_wordlist_version = 'INSERT INTO ' . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
 			$cf7a_wordlist_texts   = 'INSERT INTO ' . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
 
-			dbDelta( $cf7a_wordlist );
 			dbDelta( $cf7a_wordlist_version );
 			dbDelta( $cf7a_wordlist_texts );
 
@@ -175,7 +177,7 @@ class CF7_AntiSpam_Activator {
 		}
 
 		/* Create the blacklist database */
-		if ( in_array( $wpdb->prefix . 'cf7a_blacklist', $tables, true ) ) {
+		if ( ! in_array( $wpdb->prefix . 'cf7a_blacklist', $tables, true ) ) {
 			$cf7a_database = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "cf7a_blacklist (
 				 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				 `ip` varchar(45) NOT NULL,
@@ -189,6 +191,9 @@ class CF7_AntiSpam_Activator {
 
 			add_option( 'cf7a_blacklist table creation succeeded', 2 );
 		}
+
+		$tables = $wpdb->get_results( 'SHOW TABLES FROM ' . $wpdb->dbname );
+		error_log(print_r($tables, true));
 	}
 
 	/**

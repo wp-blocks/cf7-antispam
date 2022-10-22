@@ -25,13 +25,13 @@ class CF7_AntiSpam_Uninstaller {
 			$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' );
 			$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' );
 
+			$wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
+
 			delete_option( 'cf7a_db_version' );
 			delete_option( 'cf7a_options' );
 			delete_option( 'cf7a_geodb_update' );
 
-			delete_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on' );
-
-			$wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
+			delete_metadata( 'user', 0, 'cf7a_hide_welcome_panel_on', '', true );
 
 			/* unschedule cf7a events */
 			$timestamp = wp_next_scheduled( 'cf7a_cron' );
