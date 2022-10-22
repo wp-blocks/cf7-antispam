@@ -15,7 +15,7 @@ class CF7_AntiSpam_Uninstaller {
 
 		if ( CF7ANTISPAM_DEBUG_EXTENDED && ! $force ) {
 
-			error_log( print_r( 'CONTACT FORM 7 ANTISPAM - constant "CF7ANTISPAM_DEBUG_EXTENDED" is set so options and database will NOT be deleted.', true ) );
+			error_log( 'CONTACT FORM 7 ANTISPAM - constant "CF7ANTISPAM_DEBUG_EXTENDED" is set so options and database will NOT be deleted.' );
 			return false;
 
 		} else {
@@ -38,7 +38,7 @@ class CF7_AntiSpam_Uninstaller {
 				wp_unschedule_event( $timestamp, 'cf7a_cron' );
 			}
 
-			error_log( print_r( CF7ANTISPAM_LOG_PREFIX . 'plugin uninstalled', true ) );
+			cf7a_log( 'plugin uninstalled' );
 			return true;
 		}
 

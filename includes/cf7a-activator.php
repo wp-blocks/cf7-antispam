@@ -12,10 +12,23 @@
 
 class CF7_AntiSpam_Activator {
 
+	/**
+	 * Creating a private static variable called $default_cf7a_options and assigning it an empty array.
+	 *
+	 * @var $default_cf7a_options
+	 */
 	private static $default_cf7a_options = array();
 
+	/**
+	 * Creating an array of default options for the plugin.
+	 *
+	 * @var $default_cf7a_options_bootstrap
+	 */
 	private static $default_cf7a_options_bootstrap = array();
 
+	/**
+	 * It sets the default options for the plugin.
+	 */
 	public static function init_vars() {
 
 		self::$default_cf7a_options = array(
@@ -78,7 +91,7 @@ class CF7_AntiSpam_Activator {
 				'MEET SINGLES',
 			),
 			'bad_email_strings_list' => array(
-				parse_url( get_site_url(), PHP_URL_HOST ),
+				wp_parse_url( get_site_url(), PHP_URL_HOST ),
 			),
 			'bad_user_agent_list'    => array(
 				'bot',
@@ -89,7 +102,7 @@ class CF7_AntiSpam_Activator {
 				'PHP',
 			),
 			'dnsbl_list'             => array(
-				// ipv4 dnsbl
+				/* ipv4 dnsbl */
 				'dnsbl-1.uceprotect.net',
 				'dnsbl-2.uceprotect.net',
 				'dnsbl-3.uceprotect.net',
@@ -98,7 +111,7 @@ class CF7_AntiSpam_Activator {
 				'bl.spamcop.net',
 				'b.barracudacentral.org',
 				'dnsbl.dronebl.org',
-				// ipv6 dnsbl
+				/* ipv6 dnsbl */
 				'dnsbl.spfbl.net',
 				'bogons.cymru.com',
 				'bl.ipv6.spameatingmonkey.net',
@@ -135,7 +148,7 @@ class CF7_AntiSpam_Activator {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		// create the term database
+		/* create the term database */
 		$cf7a_wordlist = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "cf7a_wordlist (
 		  `token` varchar(100) character set utf8 collate utf8_bin NOT NULL,
 		  `count_ham` int unsigned default NULL,
@@ -155,7 +168,7 @@ class CF7_AntiSpam_Activator {
              UNIQUE KEY `id` (`ip`)
 		) $charset_collate;";
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		dbDelta( $cf7a_wordlist );
 		dbDelta( $cf7a_wordlist_version );
@@ -166,6 +179,8 @@ class CF7_AntiSpam_Activator {
 
 	/**
 	 *  Create or Update the CF7 Antispam options
+	 *
+	 * @param bool $reset_options - whatever to force the reset.
 	 */
 	public static function update_options( $reset_options = false ) {
 
@@ -175,32 +190,32 @@ class CF7_AntiSpam_Activator {
 
 		if ( false !== $options && ! $reset_options ) {
 
-			// update the plugin options but add the new options automatically
+			/* update the plugin options but add the new options automatically */
 			if ( isset( $options['cf7a_version'] ) ) {
 				unset( $options['cf7a_version'] );
 			}
 
-			// merge previous options with the updated copy keeping the already selected option as default
-			$new_options = array_merge( CF7_AntiSpam_Activator::$default_cf7a_options, $options );
+			/* merge previous options with the updated copy keeping the already selected option as default */
+			$new_options = array_merge( self::$default_cf7a_options, $options );
 
 			if ( CF7ANTISPAM_DEBUG ) {
-				error_log( print_r( CF7ANTISPAM_LOG_PREFIX . ' plugin options updated', true ) );}
+				cf7a_log( ' plugin options updated' );}
 
 			update_option( 'cf7a_options', $new_options );
 		} else {
-			// if the plugin options are missing Init the plugin with the default option + the default settings
-			$new_options = array_merge( CF7_AntiSpam_Activator::$default_cf7a_options, CF7_AntiSpam_Activator::$default_cf7a_options_bootstrap );
+			/* if the plugin options are missing Init the plugin with the default option + the default settings */
+			$new_options = array_merge( self::$default_cf7a_options, self::$default_cf7a_options_bootstrap );
 
 			add_option( 'cf7a_options', $new_options );
 		}
 
 		if ( CF7ANTISPAM_DEBUG ) {
-			error_log( print_r( $new_options, true ) );
+			cf7a_log( $new_options );
 		}
 
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
 
-		$notice = new CF7_AntiSpam_Admin_Tools;
+		$notice = new CF7_AntiSpam_Admin_Tools();
 		$notice::cf7a_push_notice( esc_html__( '⚠️ CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'cf7-antispam' );
 
 	}
@@ -211,10 +226,9 @@ class CF7_AntiSpam_Activator {
 	public static function activate() {
 
 		if ( CF7ANTISPAM_DEBUG ) {
-			error_log( print_r( CF7ANTISPAM_LOG_PREFIX . ' plugin enabled', true ) );
+			cf7a_log( ' plugin enabled' );
 		}
 
-		// https://codex.wordpress.org/Creating_Tables_with_Plugins
 		if ( ! get_option( 'cf7a_db_version' ) ) {
 			self::install();
 			update_option( 'cf7a_db_version', '1' );

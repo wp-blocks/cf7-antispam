@@ -47,25 +47,32 @@ window.onload = function () {
 			);
 			const AdvSettingsTitle =
 				document.querySelectorAll( '#cf7a_settings h2' );
+			const AdvSettingsTitleEl =
+				AdvSettingsTitle[ AdvSettingsTitle.length - 1 ];
 			const AdvSettingsTxt =
 				document.querySelectorAll( '#cf7a_settings p' );
+			const AdvSettingsTxtEl =
+				AdvSettingsTxt[ AdvSettingsTxt.length - 2 ];
 			const AdvSettingsForm = document.querySelectorAll(
 				'#cf7a_settings table'
 			);
-			console.log( advancedCheckbox.checked );
+			const AdvSettingsFormEl =
+				AdvSettingsForm[ AdvSettingsForm.length - 1 ];
 
 			if ( advancedCheckbox.checked !== false ) {
-				if ( AdvSettingsCard ) AdvSettingsCard.classList.remove( 'hidden' );
+				if ( AdvSettingsCard )
+					AdvSettingsCard.classList.remove( 'hidden' );
 
-				AdvSettingsTitle[ AdvSettingsTitle.length - 1].classList.remove( 'hidden' );
-				AdvSettingsTxt[ AdvSettingsTxt.length - 2 ].classList.remove('hidden');
-				AdvSettingsForm[ AdvSettingsForm.length - 1 ].classList.remove('hidden');
+				AdvSettingsTitleEl.classList.remove( 'hidden' );
+				AdvSettingsTxtEl.classList.remove( 'hidden' );
+				AdvSettingsFormEl.classList.remove( 'hidden' );
 			} else {
 				if ( AdvSettingsCard )
 					AdvSettingsCard.classList.add( 'hidden' );
-				AdvSettingsTitle[ AdvSettingsTitle.length - 1 ].classList.add('hidden');
-				AdvSettingsTxt[ AdvSettingsTxt.length - 2 ].classList.add('hidden');
-				AdvSettingsForm[ AdvSettingsForm.length - 1 ].classList.add('hidden');
+
+				AdvSettingsTitleEl.classList.add( 'hidden' );
+				AdvSettingsTxtEl.classList.add( 'hidden' );
+				AdvSettingsFormEl.classList.add( 'hidden' );
 			}
 		};
 		showAdvanced();
@@ -74,5 +81,4 @@ window.onload = function () {
 			.getElementById( 'enable_advanced_settings' )
 			.addEventListener( 'click', showAdvanced );
 	}
-
 };

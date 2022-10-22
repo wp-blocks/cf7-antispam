@@ -6,16 +6,29 @@
  * @return mixed|string - the real ip address
  */
 function cf7a_get_real_ip() {
-	if ( isset( $_SERVER['HTTP_CLIENT_IP'] ) && filter_var( $_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP ) ) {
-		return $_SERVER['HTTP_CLIENT_IP'];
-	} elseif ( isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) && filter_var( $_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP ) ) {
-		return (string) rest_is_ip_address( trim( current( preg_split( '/,/', sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) ) ) ) );
-	} elseif ( isset( $_SERVER['HTTP_X_REAL_IP'] ) && filter_var( $_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP ) ) {
-		return $_SERVER['HTTP_X_REAL_IP'];
-	} elseif ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) && filter_var( $_SERVER['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP ) ) {
-		return $_SERVER['HTTP_CF_CONNECTING_IP'];
-	} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) && filter_var( $_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP ) ) {
-		return $_SERVER['REMOTE_ADDR'];
+	$http_client_ip = isset( $_SERVER['HTTP_CLIENT_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ), FILTER_VALIDATE_IP ) : false;
+	if ( ! empty( $http_client_ip ) ) {
+		return $http_client_ip;
+	}
+
+	$http_x_forwarded_for = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) : false;
+	if ( ! empty( $http_x_forwarded_for ) ) {
+		return (string) rest_is_ip_address( trim( current( explode( ',', sanitize_text_field( wp_unslash( $http_x_forwarded_for ) ) ) ) ) );
+	}
+
+	$http_x_real_ip = isset( $_SERVER['HTTP_X_REAL_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) ) : false;
+	if ( ! empty( $http_x_real_ip ) ) {
+		return $http_x_real_ip;
+	}
+
+	$http_cf_connecting_ip = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : false;
+	if ( ! empty( $http_cf_connecting_ip ) ) {
+		return $http_cf_connecting_ip;
+	}
+
+	$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
+	if ( ! empty( $remote_addr ) ) {
+		return $remote_addr;
 	}
 }
 
@@ -23,7 +36,7 @@ function cf7a_get_real_ip() {
 /**
  * It takes a string of comma-separated language codes, and returns an array of language codes
  *
- * @param string languages The Accept-Language header sent by the browser.
+ * @param string $languages The Accept-Language header sent by the browser.
  *
  * @return array the array of language codes
  */
@@ -52,18 +65,17 @@ function cf7a_get_browser_language_array( $languages ) {
 /**
  *
  * Converts HTTP_ACCEPT_LANGUAGE into an array of languages and nations
+ * this is a modified version of https://stackoverflow.com/a/33748742/5735847
  *
  * It takes a string like
  * `en-US,en;q=0.9,de;q=0.8,es;q=0.7,fr;q=0.6,it;q=0.5,pt;q=0.4,ru;q=0.3,ja;q=0.2,zh-CN;q=0.1,zh-TW;q=0.1` and returns an
  * array like `[ 'en', 'us', 'de', 'es', 'fr', 'it', 'pt', 'ru', 'ja', 'zh', 'cn', 'tw' ]`
  *
- * @param $string languages The Accept-Language header from the browser.
+ * @param string $languages The Accept-Language header from the browser.
  *
  * @return array An array of languages.
  */
 function cf7a_get_accept_language_array( $languages ) {
-
-	// a modified version of https://stackoverflow.com/a/33748742/5735847
 	return array_values(
 		array_reduce(
 			explode( ',', str_replace( ' ', '', $languages ) ),
@@ -169,27 +181,29 @@ function cf7a_decrypt( $value, $cipher = 'aes-256-cbc' ) {
  *
  * @return float The current time in microseconds.
  */
-function cf7a_microtimeFloat() {
-	list($usec, $sec) = explode( ' ', microtime() );
-	return (float) $usec + (float) $sec;
+function cf7a_microtime_float() {
+	$time = explode( ' ', microtime() );
+	return (float) $time[0] + (float) $time[1];
 }
 
 /**
  * Used to display formatted d8 rating into flamingo inbound
- * @param $rating int - the raw rating
+ *
+ * @param int $rating - the raw rating.
  *
  * @return string - html formatted rating
  */
-function cf7a_formatRating( $rating ) {
+function cf7a_format_rating( $rating ) {
 
 	if ( ! is_numeric( $rating ) ) {
-		return '<span class="flamingo-rating-label" style="background-color:rgb(100,100,100)"><b>' . __( 'none' ) . '</b></span>';
+		return '<span class="flamingo-rating-label" style="background-color: rgb(100,100,100)"><b>' . __( 'none' ) . '</b></span>';
 	}
 
 	$red   = floor( 200 * $rating );
 	$green = floor( 200 * ( 1 - $rating ) );
-	$color = "rgb($red,$green,0)";
-	return '<span class="flamingo-rating-label" style="background-color:' . $color . '" ><b>' . round( $rating * 100 ) . '% </b></span>';
+
+	$color = sprintf( '#%02x%02x%02x', $red, $green, 0 );
+	return '<span class="flamingo-rating-label" style="background-color: ' . $color . '"><b>' . round( $rating * 100 ) . '% </b></span>';
 }
 
 
@@ -197,11 +211,10 @@ function cf7a_formatRating( $rating ) {
  * It takes an array and returns a string with the array's keys and values separated by a colon and a space, and each
  * key/value pair separated by a semicolon and a space
  *
- * @param array $array - the array of reasons to ban
- * @param string $is_html - true to return a html string
+ * @param array  $array - the array of reasons to ban.
+ * @param string $is_html - true to return a html string.
  *
  * @return false|string Compress arrays into "key:value; " pair
- *
  */
 function cf7a_compress_array( $array, $is_html = 0 ) {
 
@@ -224,4 +237,22 @@ function cf7a_compress_array( $array, $is_html = 0 ) {
 			array_keys( $array )
 		)
 	);
+}
+
+/**
+ * If the string is not empty, and the log level is 0 or 1 and debug is on, or the log level is 2 and extended debug is
+ * on, then log the string
+ *
+ * @param string|array $string - The string to log.
+ * @param numeric      $log_level 0 = log always, 1 = logging, 2 = only extended logging.
+ *
+ * @return bool|void
+ */
+function cf7a_log( $string, $log_level = 0 ) {
+	if ( empty( $string ) ) {
+		return true;
+	}
+	if ( 0 === $log_level || 1 === $log_level && CF7ANTISPAM_DEBUG || 2 === $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
+		error_log( CF7ANTISPAM_LOG_PREFIX . is_array( $string ) ? print_r( $string, true ) : $string );
+	}
 }
