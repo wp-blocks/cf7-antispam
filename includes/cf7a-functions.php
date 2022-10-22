@@ -243,16 +243,19 @@ function cf7a_compress_array( $array, $is_html = 0 ) {
  * If the string is not empty, and the log level is 0 or 1 and debug is on, or the log level is 2 and extended debug is
  * on, then log the string
  *
- * @param string|array $string - The string/array to log.
+ * @param string|array $log_data - The string/array to log.
  * @param numeric      $log_level 0 = log always, 1 = logging, 2 = only extended logging.
  *
  * @return bool|void
  */
-function cf7a_log( $string, $log_level = 0 ) {
-	if ( empty( $string ) ) {
-		return true;
-	}
-	if ( 0 === $log_level || 1 === $log_level && CF7ANTISPAM_DEBUG || 2 === $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
-		error_log( CF7ANTISPAM_LOG_PREFIX . is_array( $string ) ? print_r( $string, true ) : $string );
+function cf7a_log( $log_data, $log_level = 0 ) {
+	if ( ! empty( $log_data ) ) {
+		if ( 0 === $log_level || 1 === $log_level && CF7ANTISPAM_DEBUG || 2 === $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
+			error_log(
+				is_string( $log_data )
+				? CF7ANTISPAM_LOG_PREFIX . $log_data
+				: CF7ANTISPAM_LOG_PREFIX . print_r( $log_data, true )
+			);
+		}
 	}
 }
