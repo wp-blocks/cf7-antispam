@@ -1,4 +1,6 @@
 {
-	"core": "WordPress/WordPress",
-	"plugins": ["."]
+  "core": "WordPress/WordPress",
+  "plugins": [
+	"WordPress/contact-form-7"
+  ]
 }
