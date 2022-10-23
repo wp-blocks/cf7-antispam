@@ -60,11 +60,13 @@ class CF7_AntiSpam_Admin_Display {
 				<h3 class="blink"><span class="dashicons dashicons-megaphone" aria-hidden="true"></span> <?php echo esc_html( __( "PLEASE don't forget to add ", 'cf7-antispam' ) ); ?></h3>
 				<b><code class="blink"><?php echo esc_html( __( 'flamingo_message: "[your-message]" ', 'cf7-antispam' ) ); ?></code></b>
 				<p>
-					<?php echo esc_html( __( 'Please replace ', 'cf7-antispam' ) ); ?>
-					<b><?php echo esc_attr( __( '[your-message]', 'cf7-antispam' ) ); ?></b>
-					<?php echo esc_html( __( ' with the message field used in your form because that is the field scanned with b8. You need add this string to each form ', 'cf7-antispam' ) ); ?>
-					<a href='https://contactform7.com/additional-settings/'><?php echo esc_attr( __( 'additional settings section', 'cf7-antispam' ) ); ?></a>
-					<?php echo esc_html( __( 'to enable the most advanced protection we can offer! Thank you!', 'cf7-antispam' ) ); ?>
+					<?php printf( "%s<b>%s</b>%s<a href='https://contactform7.com/additional-settings/'>%s</a>%s",
+							esc_html__( 'Please replace ', 'cf7-antispam' ),
+							esc_attr( __( '[your-message]', 'cf7-antispam' ) ),
+							esc_html__( ' with the message field used in your form because that is the field scanned with b8. You need add this string to each form ', 'cf7-antispam' ),
+							esc_attr__( 'additional settings section', 'cf7-antispam' ),
+							esc_html__( 'to enable the most advanced protection we can offer! Thank you!', 'cf7-antispam' )
+					); ?>
 				</p>
 			</div>
 		</div>
@@ -78,7 +80,6 @@ class CF7_AntiSpam_Admin_Display {
 			/* This prints out all hidden setting fields */
 			settings_fields( 'cf7_antispam_options' );
 			do_settings_sections( 'cf7a-settings' );
-
 			submit_button();
 
 			?>
