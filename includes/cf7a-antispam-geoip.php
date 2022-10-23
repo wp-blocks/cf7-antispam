@@ -24,7 +24,7 @@ class CF7_Antispam_Geoip {
 	 *
 	 * @since    0.3.1
 	 * @access   private
-	 * @var      string    $geo    the GeoIP class
+	 * @var      GeoIp2\Database\Reader|false    $geo    the GeoIP class
 	 */
 	private $geo;
 
@@ -53,13 +53,15 @@ class CF7_Antispam_Geoip {
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
 
+		$this->next_update = get_option( 'cf7a_geodb_update', 0 );
+
 		/* the GeoIP2 license key */
 		$this->license = $this->cf7a_geoip_set_license();
 
 		/* init the geocoder */
-		if ( $this->cf7a_can_enable_geoip() ) {
+		if ( $this->cf7a_can_enable_geoip() && $this->next_update ) {
 
-			if ( ! get_option( 'cf7a_geodb_update' ) ) {
+			if ( $this->cf7a_maybe_download_geoip_db() ) {
 				$this->cf7a_geoip_download_database();
 			}
 
@@ -67,10 +69,12 @@ class CF7_Antispam_Geoip {
 
 			/* if at this point there is still no this->geo, all has failed, and I'm unable to access to geo-ip database file, disabling */
 			if ( ! $this->geo ) {
-				update_option( 'cf7a_geodb_update', false );
+				delete_option( 'cf7a_geodb_update' );
 
 				CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'unable to access geoip database file', 'cf7-antispam' ) );
 			}
+		} else {
+			delete_option( 'cf7a_geodb_update' );
 		}
 
 		add_action( 'cf7a_geoip_update_db', array( $this, 'cf7a_geoip_download_database' ) );
@@ -103,7 +107,7 @@ class CF7_Antispam_Geoip {
 			return new Reader( $this->cf7a_get_upload_dir() . '/GeoLite2-Country.mmdb' );
 		} catch ( Exception $e ) {
 			cf7a_log( 'GeoIP Database init error, unable to read file' );
-			update_option( 'cf7a_geodb_update', false );
+			delete_option( 'cf7a_geodb_update' );
 			return false;
 		}
 	}
@@ -123,9 +127,7 @@ class CF7_Antispam_Geoip {
 	 * @return bool - true if the database needs to be uploaded
 	 */
 	public function cf7a_maybe_download_geoip_db() {
-		$next_db_update = get_option( 'cf7a_geodb_update' );
-		$now            = strtotime( 'now' );
-		return $now > $next_db_update;
+		return ! $this->next_update || strtotime( 'now' ) > $this->next_update;
 	}
 
 	/**
@@ -185,7 +187,7 @@ class CF7_Antispam_Geoip {
 	 */
 	public function cf7a_geoip_download_database() {
 
-		cf7a_log( 'GeoIP DB download start' );
+		cf7a_log( 'GeoIP DB download start', 1 );
 
 		$upload_dir        = wp_upload_dir();
 		$plugin_upload_dir = $this->cf7a_get_upload_dir();
@@ -193,18 +195,19 @@ class CF7_Antispam_Geoip {
 		$database_type = 'GeoLite2-Country';
 		$filename      = $database_type;
 		$ext           = '.tar.gz';
+		$key           = rawurlencode( $this->license );
 
 		$download_url = sprintf(
 			'https://download.maxmind.com/app/geoip_download?edition_id=%s&license_key=%s&suffix=tar.gz',
 			$database_type,
-			rawurlencode( $this->license )
+			$key
 		);
 
 		$destination_file_uri = $plugin_upload_dir . sanitize_file_name( $filename . '.mmdb' );
 
 		/* check if the plugin upload directory exist, otherwise create it */
 		if ( ! is_dir( $plugin_upload_dir ) && $this->cf7a_create_upload_dir( $plugin_upload_dir, 'Require local' ) ) {
-			cf7a_log( ' - geo-ip download folder created with success' );
+			cf7a_log( 'Geo-ip download folder created with success', 1 );
 		}
 
 		$file_content = '';
@@ -216,7 +219,9 @@ class CF7_Antispam_Geoip {
 			}
 			fclose( $stream );
 		} else {
-			cf7a_log( " unable to download GeoIp DataBase {$download_url}" );
+
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Unable to download the file with the geo-ip database, please check that the key provided is correct!', 'cf7-antispam' ) );
+			cf7a_log( "Unable to download the file with the geo-ip database, please check that the key provided is correct! key: $key - url: $download_url" );
 			return false;
 		}
 
@@ -256,14 +261,17 @@ class CF7_Antispam_Geoip {
 				/* remove the extracted directory */
 				rmdir( $plugin_upload_dir . $temp_file );
 
+				/* then update the database update only if needed  */
 				if ( update_option( 'cf7a_geodb_update', strtotime( '+1 month' ) ) ) {
 					return true;
 				}
 
-				/* then subscribe the update service */
-				$this->cf7a_geoip_schedule_update( true );
+				$this->cf7a_geoip_schedule_update();
+
+				cf7a_log( 'GeoIP DB downloaded with success ' . wp_date(get_option( 'date_format' )), 1 );
 			}
 
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'GEO-IP Database update failed', 'cf7-antispam' ) );
 			cf7a_log( 'GEO-IP Database copy failed ' . $plugin_upload_dir . $temp_database_file . ' to ' . $plugin_upload_dir );
 
 		}
@@ -285,7 +293,7 @@ class CF7_Antispam_Geoip {
 
 		wp_clear_scheduled_hook( 'cf7a_geoip_update_db' );
 
-		$next_event = strtotime( 'first day of next month 23:59:00' );
+		$next_event = strtotime( '+1 month' );
 
 		wp_schedule_single_event( $next_event, 'cf7a_geoip_update_db', array( 'Geoip_update_db' ) );
 

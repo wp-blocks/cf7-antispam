@@ -55,7 +55,7 @@ class CF7_AntiSpam_Activator {
 			'check_refer'                  => true,
 			'check_honeypot'               => true,
 			'check_honeyform'              => false,
-			'check_geoip'                  => false,
+			'enable_geoip_download'        => false,
 			'geoip_dbkey'                  => false,
 			'check_language'               => false,
 			'check_geo_location'           => false,
@@ -79,7 +79,7 @@ class CF7_AntiSpam_Activator {
 				'_bad_string'     => 0.5,
 				'_dnsbl'          => 0.1,
 				'_honeypot'       => 0.3,
-				'_detection'      => 1,
+				'_detection'      => 0.7,
 				'_warn'           => 0.3,
 			),
 		);
@@ -151,7 +151,7 @@ class CF7_AntiSpam_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$tables = $wpdb->get_results( 'SHOW TABLES FROM ' . $wpdb->dbname );
-		error_log(print_r($tables, true));
+		error_log( print_r( $tables, true ) );
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
@@ -193,7 +193,7 @@ class CF7_AntiSpam_Activator {
 		}
 
 		$tables = $wpdb->get_results( 'SHOW TABLES FROM ' . $wpdb->dbname );
-		error_log(print_r($tables, true));
+		error_log( print_r( $tables, true ) );
 	}
 
 	/**
