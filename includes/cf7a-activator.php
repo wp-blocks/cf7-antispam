@@ -151,7 +151,6 @@ class CF7_AntiSpam_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$tables = $wpdb->get_results( 'SHOW TABLES FROM ' . $wpdb->dbname );
-		error_log( print_r( $tables, true ) );
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
@@ -217,8 +216,7 @@ class CF7_AntiSpam_Activator {
 			/* merge previous options with the updated copy keeping the already selected option as default */
 			$new_options = array_merge( self::$default_cf7a_options, $options );
 
-			if ( CF7ANTISPAM_DEBUG ) {
-				cf7a_log( 'CF7-antispam plugin options updated', 1 );}
+			cf7a_log( 'CF7-antispam plugin options updated', 1 );
 
 			update_option( 'cf7a_options', $new_options );
 		} else {
@@ -228,9 +226,7 @@ class CF7_AntiSpam_Activator {
 			add_option( 'cf7a_options', $new_options );
 		}
 
-		if ( CF7ANTISPAM_DEBUG ) {
-			cf7a_log( $new_options );
-		}
+		cf7a_log( $new_options, 1 );
 
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
 
