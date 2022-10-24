@@ -62,10 +62,10 @@ class CF7_AntiSpam_Admin_Display {
 			<p>
 				<?php
 				printf(
-					"%s<b>%s</b>%s<a href='https://contactform7.com/additional-settings/'>%s</a>%s",
+					"%s <b>%s</b> %s <a href='https://contactform7.com/additional-settings/'>%s</a> %s",
 					esc_html__( 'Please replace ', 'cf7-antispam' ),
-					esc_attr( __( '[your-message]', 'cf7-antispam' ) ),
-					esc_html__( ' with the message field used in your form because that is the field scanned with b8. You need add this string to each form ', 'cf7-antispam' ),
+					'[your-message]',
+					esc_html__( 'with the message field used in your form because that is the field scanned with b8. You need add this string to each form', 'cf7-antispam' ),
 					esc_attr__( 'additional settings section', 'cf7-antispam' ),
 					esc_html__( 'to enable the most advanced protection we can offer! Thank you!', 'cf7-antispam' )
 				);

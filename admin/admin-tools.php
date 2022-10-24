@@ -376,7 +376,7 @@ class CF7_AntiSpam_Admin_Tools {
 					$microtime                  = cf7a_microtime_float();
 					$time_taken                 = strval( round( cf7a_microtime_float() - $microtime, 5 ) );
 					$performance_test[ $dnsbl ] = sprintf(
-						'<tr><td>%s</td><td>%s</td><td>%f</td></tr>',
+						'<tr><td>%s</td><td>%s</td><td>%f sec</td></tr>',
 						$dnsbl,
 						$is_spam ? 'SPAM' : 'OK',
 						$time_taken
@@ -425,7 +425,7 @@ class CF7_AntiSpam_Admin_Tools {
 				$server_data = 'Unable to retrieve geoip information for ' . $your_ip;
 			}
 
-			$html .= printf(
+			$html .= sprintf(
 				'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
 				esc_html__( 'GeoIP test', 'cf7-antispam' ),
 				wp_kses(
@@ -441,7 +441,7 @@ class CF7_AntiSpam_Admin_Tools {
 			);
 		} catch ( Exception $e ) {
 			$error_message = $e->getMessage();
-			$html         .= printf(
+			$html         .= sprintf(
 				'<p>%s</p><pre>%s</pre>',
 				esc_html__( 'GeoIP Error', 'cf7-antispam' ),
 				isset( $error_message ) && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error'
@@ -494,7 +494,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 			$html .= $this->cf7a_get_debug_info_geoip();
 
-			$this->cf7a_get_debug_info_dnsbl();
+			$html .= $this->cf7a_get_debug_info_dnsbl();
 
 			$html .= printf( '</div>' );
 
