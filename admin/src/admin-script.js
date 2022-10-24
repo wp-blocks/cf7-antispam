@@ -49,10 +49,12 @@ window.onload = function () {
 				document.querySelectorAll( '#cf7a_settings h2' );
 			const AdvSettingsTitleEl =
 				AdvSettingsTitle[ AdvSettingsTitle.length - 1 ];
+
 			const AdvSettingsTxt =
 				document.querySelectorAll( '#cf7a_settings p' );
 			const AdvSettingsTxtEl =
 				AdvSettingsTxt[ AdvSettingsTxt.length - 2 ];
+
 			const AdvSettingsForm = document.querySelectorAll(
 				'#cf7a_settings table'
 			);

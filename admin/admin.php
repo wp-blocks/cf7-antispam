@@ -1,7 +1,5 @@
 <?php
 
-require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-customizations.php';
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -48,18 +46,6 @@ class CF7_AntiSpam_Admin {
 		/* the menu item */
 		new CF7_AntiSpam_Admin_Customizations();
 
-		add_filter( 'admin_body_class', array( $this, 'cf7a_body_class' ) );
-
-		add_action( 'admin_notices', array( $this, 'cf7a_display_notices' ) );
-
-		add_action( 'admin_menu', array( $this, 'cf7a_admin_menu' ), 10, 0 );
-
-		add_action( 'plugin_action_links_' . CF7ANTISPAM_PLUGIN_BASENAME, array( $this, 'cf7a_plugin_settings_link' ), 10, 2 );
-
-		if ( defined( 'FLAMINGO_VERSION' ) ) {
-			add_action( 'wp_dashboard_setup', array( $this, 'cf7a_dashboard_widget' ) );
-		}
-
 	}
 
 	/**
@@ -104,7 +90,7 @@ class CF7_AntiSpam_Admin {
 	 * If the current admin page is not the plugin's admin page, return. Otherwise, if the settings have been updated, display
 	 * a success message. Otherwise, if there's a notice in the transient, display it and delete the transient
 	 *
-	 * @return null the current screen.
+	 * @return void
 	 */
 	public function cf7a_display_notices() {
 
@@ -122,7 +108,7 @@ class CF7_AntiSpam_Admin {
 
 		/* if there is a notice stored, print it then delete the transient */
 		$notice = get_transient( 'cf7a_notice' );
-		if ( false !== $notice ) {
+		if ( ! empty( $notice ) ) {
 			echo wp_kses(
 				$notice,
 				array(
@@ -162,9 +148,11 @@ class CF7_AntiSpam_Admin {
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
+	 * @param string $hook_suffix The dynamic portion of the hook name, $hook_suffix, refers to the hook suffix for the admin page.
+	 *
 	 * @since    0.1.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts( $hook_suffix ) {
 
 		/**
 		 *
@@ -177,16 +165,24 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/admin-script.js', array(), $this->version, true );
-		wp_enqueue_script( $this->plugin_name );
+		/* only 4 the dashboard */
+		if ( 'index.php' === $hook_suffix ) {
+			wp_enqueue_script( $this->plugin_name . '-dashboard', 'https://cdn.jsdelivr.net/npm/chart.js', array(), $this->version, true );
+		}
 
-		wp_localize_script(
-			$this->plugin_name,
-			'cf7a_admin_settings',
-			array(
-				'alertMessage' => esc_html__( 'Are you sure?', 'cf7-antispam' ),
-			)
-		);
+		/* only for cf7-antispam settings page */
+		if ( 'contact-1_page_cf7-antispam' === $hook_suffix ) {
+			wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/admin-script.js', array(), $this->version, true );
+			wp_enqueue_script( $this->plugin_name );
+
+			wp_localize_script(
+				$this->plugin_name,
+				'cf7a_admin_settings',
+				array(
+					'alertMessage' => esc_html__( 'Are you sure?', 'cf7-antispam' ),
+				)
+			);
+		}
 	}
 
 	/**
@@ -304,7 +300,6 @@ class CF7_AntiSpam_Admin {
 			}
 
 			?>
-			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 			<div id="antispam-widget">
 				<canvas id="lineChart" width="400" height="200"></canvas>
 				<hr>
@@ -314,101 +309,102 @@ class CF7_AntiSpam_Admin {
 				echo $html;
 				?>
 				<p class="community-events-footer">
-					<a href="<?php echo admin_url( 'admin.php?page=flamingo' ); ?>"><?php echo __( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>"><?php echo esc_html__( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 					|
-					<a href="<?php echo admin_url( 'admin.php?page=cf7-antispam' ); ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
 				<script>
+					window.onload = function() {
+						const lineLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_date'] ) ); ?>' ];
+						const pieLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_type'] ) ); ?>' ];
 
-					const lineLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_date'] ) ); ?>' ];
-					const pieLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_type'] ) ); ?>' ];
-
-					const lineData = {
-						labels: lineLabels,
-						datasets: [{
-							label: 'Ham',
-							backgroundColor: 'rgb(0,255,122)',
-							borderColor: 'rgb(3, 210, 106)',
-							tension: 0.25,
-							data: [
-							<?php
-							if ( isset( $ham ) ) {
-								echo implode( ',', $ham );
-							}
-							?>
-								],
-						},
-						{
-							label: 'Spam',
-							backgroundColor: 'rgb(255,4,0)',
-							borderColor: 'rgb(248, 49, 47)',
-							tension: 0.25,
-							data: [
-							<?php
-							if ( isset( $spam ) ) {
-								echo implode( ',', $spam );
-							}
-							?>
-							],
-						}]
-					};
-
-					const pieData = {
-						labels: pieLabels,
-						datasets: [{
-							data: [<?php echo $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam']; ?>],
-							backgroundColor: [
-								'rgb(15,199,107)',
-								'rgb(248,49,47)'
-							]
-						}]
-					};
-
-					const lineConfig = {
-						type: 'line',
-						data: lineData,
-						options: {
-							responsive: true,
-							plugins: {
-								legend: {display: false}
+						const lineData = {
+							labels: lineLabels,
+							datasets: [{
+								label: 'Ham',
+								backgroundColor: 'rgb(0,255,122)',
+								borderColor: 'rgb(3, 210, 106)',
+								tension: 0.25,
+								data: [
+								<?php
+								if ( isset( $ham ) ) {
+									echo implode( ',', $ham );}
+								?>
+									],
 							},
-							scales: {
-								y: {
-									ticks: {
-										min: 0,
-										precision: 0
+							{
+								label: 'Spam',
+								backgroundColor: 'rgb(255,4,0)',
+								borderColor: 'rgb(248, 49, 47)',
+								tension: 0.25,
+								data: [
+								<?php
+								if ( isset( $spam ) ) {
+									echo implode( ',', $spam );}
+								?>
+								],
+							}]
+						};
+
+						const pieData = {
+							labels: pieLabels,
+							datasets: [{
+								data: [<?php echo $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam']; ?>],
+								backgroundColor: [
+									'rgb(15,199,107)',
+									'rgb(248,49,47)'
+								]
+							}]
+						};
+
+						const lineConfig = {
+							type: 'line',
+							data: lineData,
+							options: {
+								responsive: true,
+								plugins: {
+									legend: {display: false}
+								},
+								scales: {
+									y: {
+										ticks: {
+											min: 0,
+											precision: 0
+										}
 									}
 								}
 							}
-						}
-					};
+						};
 
-					const PieConfig = {
-						type: 'pie',
-						data: pieData,
-						options: {
-							responsive: true,
-							plugins: {
-								legend: {display: false}
-							},
-						}
-					};
+						const PieConfig = {
+							type: 'pie',
+							data: pieData,
+							options: {
+								responsive: true,
+								plugins: {
+									legend: {display: false}
+								},
+							}
+						};
 
-					const lineChart = new Chart(
-						document.getElementById('lineChart'),
-						lineConfig
-					);
+						const lineChart = new Chart(
+							document.getElementById('lineChart'),
+							lineConfig
+						);
 
-					const pieChart = new Chart(
-						document.getElementById('pieChart'),
-						PieConfig
-					);
-
+						const pieChart = new Chart(
+							document.getElementById('pieChart'),
+							PieConfig
+						);
+					}
 				</script>
 			</div>
 			<?php
 		else :
-			echo '<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>' . esc_html__( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' ) . '</p></div>';
+			printf(
+				'<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>%s</p></div>',
+				esc_html__( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' )
+			);
 		endif;
 	}
 }

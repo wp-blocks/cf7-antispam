@@ -15,7 +15,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * The geoip utils
 	 *
 	 * @since    0.4.0
-	 * @var      array    $geo    the geo-ip class
+	 * @var      CF7_Antispam_Geoip    $geo    the geo-ip class
 	 * @access   public
 	 */
 	public $geo;
@@ -56,7 +56,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Section Bot Fingerprint */
 		add_settings_section(
 			'cf7a_subtitle',
-			false,
+			__( 'Settings', 'cf7-antispam' ),
 			array( $this, 'cf7a_print_section_main_subtitle' ),
 			'cf7a-settings'
 		);
@@ -141,7 +141,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Settings enable geoip */
 		add_settings_field(
-			'check_geoip',
+			'enable_geoip_download',
 			__( 'Enable GeoIP DB Download', 'cf7-antispam' ),
 			array( $this, 'cf7a_enable_geoip_callback' ),
 			'cf7a-settings',
@@ -187,7 +187,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		/* Settings enable geoip check (available only if the geoip is enabled) */
-		if ( $this->options['check_geoip'] ) {
+		if ( $this->options['enable_geoip_download'] ) {
 			add_settings_field(
 				'check_geo_location',
 				__( 'Detect location using GeoIP', 'cf7-antispam' ),
@@ -609,6 +609,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/**
+	 * It prints The main setting text below the title
+	 */
 	public function cf7a_print_section_main_subtitle() {
 		printf( '<p>' . esc_html__( 'In most cases the settings below are fine, but in case you want to customise or configure the plugin to have your own degree of protection, have fun!', 'cf7-antispam' ) . '</p>' );
 	}
@@ -746,7 +749,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				'_bad_string'     => 0.5,
 				'_dnsbl'          => 0.1,
 				'_honeypot'       => 0.3,
-				'_detection'      => 1,
+				'_detection'      => 0.7,
 				'_warn'           => 0.3,
 			),
 			'standard' => array(
@@ -778,19 +781,19 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_enable_geo( $enabled ) {
 		if ( 0 === $enabled ) {
-			update_option( 'cf7a_geodb_update', false );
-			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db', array( false ) );
+			/* delete the geo db next update stored option and the scheduled event */
+			delete_option( 'cf7a_geodb_update' );
+			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db', false );
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
 			}
-		} elseif ( $enabled ) {
-			$geo = new CF7_Antispam_Geoip();
-			if ( $geo->cf7a_can_enable_geoip() ) {
-				if ( $geo->cf7a_maybe_download_geoip_db() ) {
-					$geo->cf7a_geoip_download_database();
-				}
-			}
+
+			/* then return */
+			return;
 		}
+		/* Otherwise schedule update / download the database if needed */
+		$geo = new CF7_Antispam_Geoip();
+		$geo->cf7a_geoip_schedule_update( $geo->cf7a_can_enable_geoip() && $geo->cf7a_maybe_download_geoip_db() );
 	}
 
 	/**
@@ -815,10 +818,10 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
 		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : ( 60 * 60 * 25 ); /* a day + 1 hour of timeframe to send the mail seems fine :) */
 
-		$new_input['check_geoip'] = isset( $input['check_geoip'] ) ? 1 : 0;
-		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
+		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
+		$new_input['geoip_dbkey']           = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
-		$this->cf7a_enable_geo( $new_input['check_geoip'] );
+		$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
 
 		/* browser language check enabled */
 		$new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
@@ -865,7 +868,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* bad ip */
 		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
 		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
-		if ( isset( $input['bad_ip_list'] ) ) {
+		if ( isset( $input['bad_ip_list'] ) && is_string( $input['bad_ip_list'] ) ) {
 			$new_input['bad_ip_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['bad_ip_list'] ) ) );
 		}
 
@@ -873,30 +876,40 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_bad_words'] = isset( $input['check_bad_words'] ) ? 1 : 0;
 		if ( isset( $input['bad_words_list'] ) ) {
 			$new_input['bad_words_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['bad_words_list'] ) ) );
+		} else {
+			$new_input['bad_words_list'] = array();
 		}
 
 		/* email strings */
 		$new_input['check_bad_email_strings'] = isset( $input['check_bad_email_strings'] ) ? 1 : 0;
 		if ( isset( $input['bad_email_strings_list'] ) ) {
 			$new_input['bad_email_strings_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_email_strings_list'] ) );
+		} else {
+			$new_input['bad_email_strings_list'] = array();
 		}
 
 		/* user_agent */
 		$new_input['check_bad_user_agent'] = isset( $input['check_bad_user_agent'] ) ? 1 : 0;
 		if ( isset( $input['bad_user_agent_list'] ) ) {
 			$new_input['bad_user_agent_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_user_agent_list'] ) );
+		} else {
+			$new_input['bad_user_agent_list'] = array();
 		}
 
 		/* dnsbl */
 		$new_input['check_dnsbl'] = isset( $input['check_dnsbl'] ) ? 1 : 0;
 		if ( isset( $input['dnsbl_list'] ) ) {
 			$new_input['dnsbl_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['dnsbl_list'] ) ) );
+		} else {
+			$new_input['dnsbl_list'] = array();
 		}
 
 		/* honeypot */
 		$new_input['check_honeypot'] = isset( $input['check_honeypot'] ) ? 1 : 0;
 		if ( isset( $input['honeypot_input_names'] ) ) {
 			$new_input['honeypot_input_names'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['honeypot_input_names'] ) );
+		} else {
+			$new_input['honeypot_input_names'] = array();
 		}
 
 		/* honeyform */
@@ -1051,14 +1064,14 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_enable_geoip_callback() {
 		printf(
-			'<input type="checkbox" id="check_geoip" name="cf7a_options[check_geoip]" %s />',
-			! empty( $this->options['check_geoip'] ) ? 'checked="true"' : ''
+			'<input type="checkbox" id="enable_geoip_download" name="cf7a_options[enable_geoip_download]" %s />',
+			! empty( $this->options['enable_geoip_download'] ) ? 'checked="true"' : ''
 		);
 	}
 
 	public function cf7a_geoip_is_enabled_callback() {
-		$last_update = get_option( 'cf7a_geodb_update' );
-		printf( $last_update ? '✅ ' : '❌ ' );
+		$last_update = get_option( 'cf7a_geodb_update', 0 );
+		printf( 0 !== $last_update ? '✅ ' : '❌ ' );
 	}
 
 	/**
@@ -1116,6 +1129,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/**
+	 * It creates a textarea with the id of "bad_ip_list"
+	 */
 	public function cf7a_bad_ip_list_callback() {
 		printf(
 			'<textarea id="bad_ip_list" name="cf7a_options[bad_ip_list]" />%s</textarea>',
@@ -1124,6 +1140,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
+	/**
+	 * It creates a checkbox with the id of "check_bad_words"
+	 */
 	public function cf7a_bad_words_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_words" name="cf7a_options[check_bad_words]" %s />',
