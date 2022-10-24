@@ -285,10 +285,17 @@ class CF7_AntiSpam_Flamingo {
 
 		/* update post meta and add the cf7-antispam customized tags form_id and message_field */
 		$stored_fields = get_post_meta( $result['flamingo_inbound_id'], '_meta', true );
-		update_post_meta( $result['flamingo_inbound_id'], '_meta', array_merge( $stored_fields, array(
-			'form_id'       => $result['contact_form_id'],
-			'message_field' => $additional_settings['message']
-		) ) );
+		update_post_meta(
+			$result['flamingo_inbound_id'],
+			'_meta',
+			array_merge(
+				$stored_fields,
+				array(
+					'form_id'       => $result['contact_form_id'],
+					'message_field' => $additional_settings['message'],
+				)
+			)
+		);
 
 		/* then is time to classify the mail with b8 */
 		if ( ! empty( $additional_settings ) && isset( $posted_data[ $additional_settings['message'] ] ) ) {
