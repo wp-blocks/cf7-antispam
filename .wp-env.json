@@ -1,6 +1,7 @@
 {
   "core": "WordPress/WordPress",
   "plugins": [
-	"WordPress/contact-form-7"
+	"takayukister/contact-form-7",
+	"takayukister/flamingo"
   ]
 }

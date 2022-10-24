@@ -19,7 +19,8 @@
     "plugin-zip": "wp-scripts plugin-zip",
     "lint:css": "wp-scripts lint-style",
     "lint:js": "wp-scripts lint-js",
-    "packages-update": "wp-scripts packages-update"
+    "packages-update": "wp-scripts packages-update",
+	"wp-env": "wp-env start"
   },
   "repository": {
     "type": "git",
