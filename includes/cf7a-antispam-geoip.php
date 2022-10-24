@@ -10,6 +10,15 @@ use GeoIp2\Database\Reader;
 class CF7_Antispam_Geoip {
 
 	/**
+	 * The GeoIP2 reader
+	 *
+	 * @since    0.3.1
+	 * @access   private
+	 * @var      GeoIp2\Database\Reader|false    $reader    the GeoIP class
+	 */
+	public $reader;
+
+	/**
 	 * The GeoIP2 db license key
 	 *
 	 * @since    0.3.1
@@ -17,16 +26,6 @@ class CF7_Antispam_Geoip {
 	 * @var      string    $license    license key
 	 */
 	private $license;
-
-
-	/**
-	 * The GeoIP2 reader
-	 *
-	 * @since    0.3.1
-	 * @access   private
-	 * @var      GeoIp2\Database\Reader|false    $geo    the GeoIP class
-	 */
-	private $geo;
 
 	/**
 	 * The options of this plugin.
@@ -38,7 +37,16 @@ class CF7_Antispam_Geoip {
 	private $options;
 
 	/**
-	 * CF7_AntiSpam_filters constructor.
+	 * The next update of the geo-ip database
+	 *
+	 * @since    0.3.1
+	 * @access   private
+	 * @var      string    $next_update    the date of the next update in epoch.
+	 */
+	public $next_update;
+
+	/**
+	 * CF7_AntiSpam_Filters constructor.
 	 *
 	 * @since    0.3.1
 	 */
@@ -53,31 +61,15 @@ class CF7_Antispam_Geoip {
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
 
-		$this->next_update = get_option( 'cf7a_geodb_update', 0 );
-
 		/* the GeoIP2 license key */
 		$this->license = $this->cf7a_geoip_set_license();
 
-		/* init the geocoder */
-		if ( $this->cf7a_can_enable_geoip() && $this->next_update ) {
+		$this->next_update = get_option( 'cf7a_geodb_update', 0 );
 
-			if ( $this->cf7a_maybe_download_geoip_db() ) {
-				$this->cf7a_geoip_download_database();
-			}
+		$this->reader = $this->cf7a_geo_init();
 
-			$this->geo = $this->cf7a_geo_init();
+		return $this->reader;
 
-			/* if at this point there is still no this->geo, all has failed, and I'm unable to access to geo-ip database file, disabling */
-			if ( ! $this->geo ) {
-				delete_option( 'cf7a_geodb_update' );
-
-				CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'unable to access geoip database file', 'cf7-antispam' ) );
-			}
-		} else {
-			delete_option( 'cf7a_geodb_update' );
-		}
-
-		add_action( 'cf7a_geoip_update_db', array( $this, 'cf7a_geoip_download_database' ) );
 	}
 
 	/**
@@ -106,10 +98,25 @@ class CF7_Antispam_Geoip {
 		try {
 			return new Reader( $this->cf7a_get_upload_dir() . '/GeoLite2-Country.mmdb' );
 		} catch ( Exception $e ) {
-			cf7a_log( 'GeoIP Database init error, unable to read file' );
-			delete_option( 'cf7a_geodb_update' );
+			cf7a_log( 'GeoIP Database init error, unable to read file', 1 );
 			return false;
 		}
+	}
+
+	/**
+	 * If the user can enable the geo+ip, and it's time to update the database, download the database
+	 *
+	 * @return bool
+	 */
+	public function cf7a_geo_maybe_update() {
+		/* init the geocoder */
+		if ( $this->cf7a_can_enable_geoip() ) {
+			if ( $this->cf7a_maybe_download_geoip_db() ) {
+				$this->cf7a_geoip_download_database();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -159,7 +166,7 @@ class CF7_Antispam_Geoip {
 			WP_Filesystem();
 		}
 
-		/* Creates a directory */
+		/* Creates the upload/cf7-antispam directory */
 		wp_mkdir_p( $plugin_upload_dir );
 
 		if ( $htaccess_content ) {
@@ -185,7 +192,7 @@ class CF7_Antispam_Geoip {
 	 *
 	 * @return bool true when the database has been downloaded
 	 */
-	public function cf7a_geoip_download_database() {
+	private function cf7a_geoip_download_database() {
 
 		cf7a_log( 'GeoIP DB download start', 1 );
 
@@ -268,7 +275,7 @@ class CF7_Antispam_Geoip {
 
 				$this->cf7a_geoip_schedule_update();
 
-				cf7a_log( 'GeoIP DB downloaded with success ' . wp_date(get_option( 'date_format' )), 1 );
+				cf7a_log( 'GeoIP DB downloaded with success ' . wp_date( get_option( 'date_format' ) ), 1 );
 			}
 
 			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'GEO-IP Database update failed', 'cf7-antispam' ) );
@@ -287,16 +294,13 @@ class CF7_Antispam_Geoip {
 	 */
 	public function cf7a_geoip_schedule_update( $now = false ) {
 
-		if ( $now ) {
-			$this->cf7a_geoip_download_database();
+		if ( $now && $this->cf7a_geoip_download_database() ) {
+			wp_clear_scheduled_hook( 'cf7a_geoip_update_db' );
+
+			$next_event = strtotime( '+1 month' );
+
+			wp_schedule_single_event( $next_event, 'cf7a_geoip_update_db', array( 'Geoip_update_db' ) );
 		}
-
-		wp_clear_scheduled_hook( 'cf7a_geoip_update_db' );
-
-		$next_event = strtotime( '+1 month' );
-
-		wp_schedule_single_event( $next_event, 'cf7a_geoip_update_db', array( 'Geoip_update_db' ) );
-
 	}
 
 	/**
@@ -307,8 +311,8 @@ class CF7_Antispam_Geoip {
 	public function cf7a_geoip_check_ip( $ip ) {
 
 		try {
-			if ( $this->geo ) {
-				$ip_data = $this->geo->country( $ip );
+			if ( $this->reader ) {
+				$ip_data = $this->reader->country( $ip );
 
 				return array(
 					'continent'      => $ip_data->continent->code,
