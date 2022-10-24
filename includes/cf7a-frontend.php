@@ -232,7 +232,7 @@ class CF7_AntiSpam_Frontend {
 	 * It adds a CSS style to the page that hides the honeypot field
 	 */
 	public function cf7a_add_honeypot_css() {
-		$form_class = empty( $this->options['cf7a_customizations_class'] ) ? 'cf7a_' : sanitize_html_class($this->options['cf7a_customizations_class']);
+		$form_class = empty( $this->options['cf7a_customizations_class'] ) ? 'cf7a_' : sanitize_html_class( $this->options['cf7a_customizations_class'] );
 		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
 	}
 
@@ -346,7 +346,8 @@ class CF7_AntiSpam_Frontend {
 		 * class.
 		 */
 
-		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/script.js', array( 'jquery' ), $this->version, true );
+		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/includes/dist/script.asset.php';
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_DIR . '/includes/dist/script.js', $asset['dependencies'], $this->version, true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(

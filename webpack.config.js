@@ -7,7 +7,7 @@ const addModule = ( fileName, filePath ) => {
 		name: fileName,
 		entry: path.resolve( __dirname, filePath + fileName ),
 		output: {
-			path: path.resolve( __dirname, filePath + 'dist/' ),
+			path: path.resolve( __dirname, filePath + '../dist/' ),
 			filename: fileName,
 		},
 	};

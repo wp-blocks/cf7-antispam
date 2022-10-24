@@ -141,7 +141,7 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/style-main.css', array(), $this->version );
+		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/style-main.css', array(), $this->version );
 
 	}
 
@@ -170,19 +170,18 @@ class CF7_AntiSpam_Admin {
 			wp_enqueue_script( $this->plugin_name . '-dashboard', 'https://cdn.jsdelivr.net/npm/chart.js', array(), $this->version, true );
 		}
 
-		/* only for cf7-antispam settings page */
-		if ( 'contact-1_page_cf7-antispam' === $hook_suffix ) {
-			wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'src/dist/admin-script.js', array(), $this->version, true );
-			wp_enqueue_script( $this->plugin_name );
+		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-script.asset.php';
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-script.js', $asset['dependencies'], $this->version, true );
+		wp_enqueue_script( $this->plugin_name );
 
-			wp_localize_script(
-				$this->plugin_name,
-				'cf7a_admin_settings',
-				array(
-					'alertMessage' => esc_html__( 'Are you sure?', 'cf7-antispam' ),
-				)
-			);
-		}
+		wp_localize_script(
+			$this->plugin_name,
+			'cf7a_admin_settings',
+			array(
+				'alertMessage' => esc_html__( 'Are you sure?', 'cf7-antispam' ),
+			)
+		);
+
 	}
 
 	/**
