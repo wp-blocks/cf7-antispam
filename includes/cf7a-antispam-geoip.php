@@ -202,7 +202,11 @@ class CF7_Antispam_Geoip {
 		$database_type = 'GeoLite2-Country';
 		$filename      = $database_type;
 		$ext           = '.tar.gz';
-		$key           = rawurlencode( $this->license );
+		$key           = esc_url_raw( $this->license );
+
+		if ( empty( $key ) ) {
+			return;
+		}
 
 		$download_url = sprintf(
 			'https://download.maxmind.com/app/geoip_download?edition_id=%s&license_key=%s&suffix=tar.gz',

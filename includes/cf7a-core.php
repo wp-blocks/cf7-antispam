@@ -297,9 +297,9 @@ class CF7_AntiSpam {
 			}
 
 			/* It gets the form, formats it, and then echoes it out */
-			$hook = $this->options['honeyform_position'];
 			if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
-				if ( ! is_admin() && ( defined( 'REST_REQUEST' ) && ! REST_REQUEST ) ) {
+				$hook = $this->options['honeyform_position'];
+				if ( defined( 'REST_REQUEST' ) && ! REST_REQUEST ) {
 					$this->loader->add_action( $hook, $plugin_frontend, 'cf7a_honeyform', 99 );
 				}
 			}
@@ -390,7 +390,7 @@ class CF7_AntiSpam {
 	}
 
 	/**
-	 * CF7 AntiSpam update a function to a single option
+	 * CF7 AntiSpam a function to update a single option
 	 *
 	 * @since 0.4.0
 	 *
@@ -402,6 +402,8 @@ class CF7_AntiSpam {
 	public static function update_option( $option, $value ) {
 
 		$plugin_options = self::get_options();
+
+		cf7a_log( $plugin_options );
 
 		if ( isset( $plugin_options[ $option ] ) ) {
 
@@ -416,8 +418,11 @@ class CF7_AntiSpam {
 				}
 				$plugin_options[ $option ] = array_unique( array_merge( $plugin_options[ $option ], $new_values ) );
 			}
-
-			return self::update_options( $plugin_options );
+			cf7a_log( $plugin_options );
+			self::update_options( $plugin_options );
+			$plugin_options = self::get_options();
+			cf7a_log( $plugin_options );
+			return false;
 		}
 
 		return false;

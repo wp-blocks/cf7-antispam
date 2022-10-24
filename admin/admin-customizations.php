@@ -769,6 +769,8 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @param 1|0 $enabled input The input value.
 	 */
 	public function cf7a_enable_geo( $enabled ) {
+		$geo = new CF7_Antispam_Geoip();
+
 		if ( 0 === $enabled ) {
 			/* delete the geo db next update stored option and the scheduled event */
 			delete_option( 'cf7a_geodb_update' );
@@ -776,13 +778,10 @@ class CF7_AntiSpam_Admin_Customizations {
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
 			}
-
-			/* then return */
-			return;
+		} elseif ( $geo->cf7a_can_enable_geoip() ) {
+			/* Otherwise schedule update / download the database if needed */
+			$geo->cf7a_geoip_schedule_update( $geo->cf7a_maybe_download_geoip_db() );
 		}
-		/* Otherwise schedule update / download the database if needed */
-		$geo = new CF7_Antispam_Geoip();
-		$geo->cf7a_geoip_schedule_update( $geo->cf7a_can_enable_geoip() && $geo->cf7a_maybe_download_geoip_db() );
 	}
 
 	/**
