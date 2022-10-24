@@ -12,15 +12,6 @@ class CF7_AntiSpam_Admin_Customizations {
 	public $options;
 
 	/**
-	 * The geoip utils
-	 *
-	 * @since    0.4.0
-	 * @var      CF7_Antispam_Geoip    $geo    the geo-ip class
-	 * @access   public
-	 */
-	public $geo;
-
-	/**
 	 * The plugin main menu
 	 *
 	 * The function `__construct()` is called when the class is instantiated.
@@ -37,8 +28,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
 
-		/* the geo-ip class */
-		$this->geo = new CF7_Antispam_Geoip();
 	}
 
 	/**
@@ -1021,12 +1010,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates the input field "check_bot_fingerprint" */
 	public function cf7a_check_bot_fingerprint_callback() {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint" name="cf7a_options[check_bot_fingerprint]" %s />',
 			! empty( $this->options['check_bot_fingerprint'] ) ? 'checked="true"' : ''
 		);
 	}
+	/** It creates the input field "check_bot_fingerprint_extras" */
 	public function cf7a_check_bot_fingerprint_extras_callback() {
 		printf(
 			'<input type="checkbox" id="check_bot_fingerprint_extras" name="cf7a_options[check_bot_fingerprint_extras]" %s />',
