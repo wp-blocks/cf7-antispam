@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<psalm
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="https://getpsalm.org/schema/config"
+		xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+		xmlns:xi="http://www.w3.org/2001/XInclude"
+>
+	<projectFiles>
+		<file name="cf7-antispam.php" />
+		<directory name="admin" />
+		<directory name="includes" />
+		<directory name="libs" />
+		<ignoreFiles>
+			<directory name="vendor" />
+			<directory name="node_modules" />
+			<directory name="languages" />
+		</ignoreFiles>
+	</projectFiles>
+</psalm>

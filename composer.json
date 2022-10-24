@@ -16,13 +16,14 @@
 	"friendsofphp/php-cs-fixer": "3.*",
 	"squizlabs/php_codesniffer": "^3.6.2",
 	"phpmd/phpmd" : "@stable",
-    "phpstan/phpstan": "^1.8",
+    "phpstan/phpstan": "^1.8.10",
 	"phpcompatibility/php-compatibility": "*",
 	"wp-coding-standards/wpcs": "*",
 	"phpcompatibility/phpcompatibility-wp": "*",
 	"slevomat/coding-standard": "^7.2.1",
     "phpstan/extension-installer": "^1.2",
-    "szepeviktor/phpstan-wordpress": "^1.1"
+    "szepeviktor/phpstan-wordpress": "^1.1",
+    "vimeo/psalm": "^4.29"
   },
   "require": {
 	"geoip2/geoip2": "~2.0"
@@ -30,7 +31,8 @@
   "scripts": {
 	"lint": "vendor/bin/phpcs --standard=phpcs.xml.dist --report=summary,source",
 	"lint-fix": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
-	"phpstan": "vendor/bin/phpstan"
+	"phpstan": "vendor/bin/phpstan",
+	"psalm": "vendor/bin/psalm"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

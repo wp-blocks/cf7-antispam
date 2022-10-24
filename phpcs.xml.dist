@@ -25,11 +25,9 @@
 
 	<file>.</file>
 
-	<rule ref="WordPress">
-		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar" />
-	</rule>
+	<rule ref="WordPress" />
 	<rule ref="WordPress-Core"/>
-	<rule ref="WordPress.CodeAnalysis.EmptyStatement"/>
+    <rule ref="WordPress-Docs"/>
 
 	<rule ref="SlevomatCodingStandard.PHP"/>
 
