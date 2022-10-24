@@ -46,10 +46,10 @@ class CF7_AntiSpam_Admin_Tools {
 		$rank = intval( $rank );
 		switch ( true ) {
 			case $rank < 0:
-				$rank_clean = esc_html__('⚠️');
+				$rank_clean = esc_html__( '⚠️' );
 				break;
 			case $rank > 100:
-				$rank_clean = esc_html__('🏆');
+				$rank_clean = esc_html__( '🏆' );
 				break;
 			default:
 				$rank_clean = $rank;
@@ -384,7 +384,7 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 
 				if ( ! empty( $performance_test ) ) {
-					$html .=  printf(
+					$html .= printf(
 						'<hr/><h3><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><table class="dnsbl_table">%s</table>',
 						esc_html__( 'DNSBL performance test:' ),
 						esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers' ),
