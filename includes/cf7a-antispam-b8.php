@@ -1,0 +1,147 @@
+<?php
+
+class CF7_AntiSpam_B8 {
+
+	/**
+	 * The bayesian filter class
+	 *
+	 * @since    0.4.0
+	 * @access   private
+	 * @var      string $b8 the b8 filter
+	 */
+	private $b8;
+
+	/**
+	 * CF7_AntiSpam_b8 constructor.
+	 */
+	public function __construct() {
+		$this->b8 = $this->cf7a_b8_init();
+	}
+
+
+	/**
+	 * CF7_AntiSpam_Filters b8
+	 *
+	 * @return \b8\b8|false the B8 instance if it can be enabled, otherwise false
+	 */
+	private function cf7a_b8_init() {
+		/* the database */
+		global $wpdb;
+
+		$db         = explode( ':', DB_HOST );
+		$db_address = $db[0];
+		$db_port    = ! empty( $db[1] ) ? intval( $db[1] ) : 3306;
+
+		/* B8 config */
+		$mysql = new mysqli(
+			$db_address,
+			DB_USER,
+			DB_PASSWORD,
+			DB_NAME,
+			$db_port
+		);
+
+		$config_b8      = array( 'storage' => 'mysql' );
+		$config_storage = array(
+			'resource' => $mysql,
+			'table'    => $wpdb->prefix . 'cf7a_wordlist',
+		);
+
+		/* We use the default lexer settings */
+		$config_lexer = array();
+
+		/* We use the default degenerator configuration */
+		$config_degenerator = array();
+
+		/* Include the b8 code */
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/libs/b8/b8.php';
+
+		/* Create a new b8 instance */
+		try {
+			return new b8\b8( $config_b8, $config_storage, $config_lexer, $config_degenerator );
+		} catch ( Exception $e ) {
+			cf7a_log( 'error message: ' . $e->getMessage() );
+			return false;
+		}
+	}
+
+	/**
+	 * It takes a string, passes it to the b8 classifier, and returns the result
+	 *
+	 * @param string $message The message to be classified.
+	 * @param bool   $verbose Whetever to log  the stats for this mail analysis.
+	 *
+	 * @return float The rating of the message.
+	 */
+	public function cf7a_b8_classify( $message, $verbose = false ) {
+
+		if ( empty( $message ) ) {
+			return false;
+		}
+
+		$time_elapsed = cf7a_microtime_float();
+
+		$charset = get_option( 'blog_charset' );
+
+		$rating = $this->b8->classify( htmlspecialchars( $message, ENT_QUOTES, $charset ) );
+
+		if ( $verbose ) {
+			cf7a_log( 'd8 email classification: ' . $rating, 1 );
+
+			$mem_used      = round( memory_get_usage() / 1048576, 5 );
+			$peak_mem_used = round( memory_get_peak_usage() / 1048576, 5 );
+			$time_taken    = round( cf7a_microtime_float() - $time_elapsed, 5 );
+
+			/* translators: in order - the memory used by antispam process, the peak memory and the time elapsed */
+			cf7a_log( sprintf( 'stats : Memory: %s - Peak memory: %s - Time Elapsed: %s', $mem_used, $peak_mem_used, $time_taken ), 2 );
+		}
+
+		return $rating;
+	}
+
+	/**
+	 * It takes the message from the contact form, converts it to HTML, and then sends it to the b8 class to be learned as
+	 * spam
+	 *
+	 * @param string $message The message to learn as spam.
+	 */
+	public function cf7a_b8_learn_spam( $message ) {
+		if ( ! empty( $message ) ) {
+			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::SPAM );
+		}
+	}
+
+	/**
+	 * It takes the message from the contact form, converts it to HTML, and then unlearns it as spam
+	 *
+	 * @param string $message The message to unlearn.
+	 */
+	public function cf7a_b8_unlearn_spam( $message ) {
+		if ( ! empty( $message ) ) {
+			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::SPAM );
+		}
+	}
+
+	/**
+	 * It takes a message, converts it to HTML entities, and then learns it as ham
+	 *
+	 * @param string $message The message to learn as ham.
+	 */
+	public function cf7a_b8_learn_ham( $message ) {
+		if ( ! empty( $message ) ) {
+			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::HAM );
+		}
+	}
+
+	/**
+	 * It takes the message from the contact form, converts it to HTML entities, and then unlearns it as ham
+	 *
+	 * @param string $message The message to unlearn.
+	 */
+	public function cf7a_b8_unlearn_ham( $message ) {
+		if ( ! empty( $message ) ) {
+			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::HAM );
+		}
+	}
+
+}
