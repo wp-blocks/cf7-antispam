@@ -74,6 +74,7 @@ class CF7_AntiSpam {
 		/* the i18n */
 		$this->set_locale();
 
+		/* the update / install stuff */
 		if ( empty( $this->options['cf7a_version'] ) || $this->version !== $this->options['cf7a_version'] ) {
 
 			/* the php files */
@@ -81,12 +82,15 @@ class CF7_AntiSpam {
 
 			if ( get_transient( 'cf7a_activation' ) ) {
 				if ( defined( 'FLAMINGO_VERSION' ) ) {
-					$filters = new CF7_AntiSpam_filters();
-					$filters->cf7a_flamingo_on_install();
+					$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
+					$cf7a_flamingo->cf7a_flamingo_on_install();
 				}
 				delete_transient( 'cf7a_activation' );
 			}
 		}
+
+		/* the antispam service */
+		$this->load_antispam();
 
 		/* the admin area */
 		$this->load_admin();
@@ -136,16 +140,18 @@ class CF7_AntiSpam {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-frontend.php';
 
 		/**
-		 * The class responsible for defining antispam functionality and the related Geo-ip utility
+		 * The classes responsible for defining antispam functionality and the related filters
 		 * of the plugin.
 		 */
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-filters.php';
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geoip.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-flamingo.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-b8.php';
 
 		/**
-		 * The class responsible for defining admin backend functionality
-		 * of the plugin.
+		 * The classes responsible for defining admin backend functionality
 		 */
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-customizations.php';
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin.php';
@@ -177,38 +183,78 @@ class CF7_AntiSpam {
 	 * @since    0.1.0
 	 * @access   private
 	 */
-	private function load_admin() {
+	private function load_antispam() {
 
 		/* the spam filter */
-		$plugin_antispam = new CF7_AntiSpam_filters();
+		$plugin_antispam = new CF7_AntiSpam_Filters();
 
 		/* the spam filter */
-		add_filter( 'wpcf7_spam', array( $plugin_antispam, 'cf7a_spam_filter' ), 8, 1 );
+		$this->loader->add_filter( 'wpcf7_spam', $plugin_antispam, 'cf7a_spam_filter', 8 );
+
+		/* the unspam routine */
+		add_action( 'cf7a_cron', array( $plugin_antispam, 'cf7a_cron_unban' ) );
 
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
+
+			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
+
 			/* if flamingo is defined the mail will be analyzed after flamingo has stored */
-			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_store_additional_data' ), 11, 1 );
+			add_action( 'wpcf7_after_flamingo', array( $cf7a_flamingo, 'cf7a_flamingo_store_additional_data' ), 11 );
+
 			/* remove honeypot fields before store into database */
-			add_action( 'wpcf7_after_flamingo', array( $plugin_antispam, 'cf7a_flamingo_remove_honeypot' ), 12, 1 );
+			add_action( 'wpcf7_after_flamingo', array( $cf7a_flamingo, 'cf7a_flamingo_remove_honeypot' ), 12 );
 		}
 
-		if ( is_admin() ) {
+		if ( ! empty( $this->options['enable_geoip_download'] ) ) {
 
-			/* the GeoIP2 database */
-			new CF7_Antispam_Geoip();
+			$geo = new CF7_Antispam_Geoip();
+
+			add_action( 'cf7a_geoip_update_db', array( $geo, 'cf7a_geoip_download_database' ) );
+		}
+	}
+
+	/**
+	 * Register all the hooks related to the admin area functionality
+	 * of the plugin.
+	 *
+	 * @since    0.1.0
+	 * @access   private
+	 */
+	private function load_admin() {
+
+		if ( is_admin() ) {
 
 			/* the admin area */
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
+			/* add the admin menu */
+			$this->loader->add_action( 'admin_menu', $plugin_admin, 'cf7a_admin_menu', 10, 0 );
+
+			/* adds a class to the cf7-antispam admin area */
+			$this->loader->add_filter( 'admin_body_class', $plugin_admin, 'cf7a_body_class' );
+
+			/* scripts and styles enqueue */
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
+			/* in the plugin page add "go to settings" near the enable plugin button  */
+			$this->loader->add_action( 'plugin_action_links_' . CF7ANTISPAM_PLUGIN_BASENAME, $plugin_admin, 'cf7a_plugin_settings_link', 10, 2 );
+
+			/* displays admin notices */
+			$this->loader->add_action( 'admin_notices', $plugin_admin, 'cf7a_display_notices' );
+
 			/* if flamingo is enabled use submitted spam / ham to feed d8 */
 			if ( defined( 'FLAMINGO_VERSION' ) ) {
-				add_action( 'load-flamingo_page_flamingo_inbound', array( $plugin_antispam, 'cf7a_d8_flamingo_classify' ), 9, 0 );
-				add_filter( 'manage_flamingo_inbound_posts_columns', array( $plugin_antispam, 'flamingo_columns' ) );
-				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_d8_column' ), 10, 2 );
-				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $plugin_antispam, 'flamingo_resend_column' ), 11, 2 );
+				$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
+				/* the action that handles the spam and ham requests and pass the mail message to b8 */
+				add_action( 'load-flamingo_page_flamingo_inbound', array( $cf7a_flamingo, 'cf7a_d8_flamingo_classify' ), 9, 0 );
+
+				$this->loader->add_action( 'wp_dashboard_setup', $plugin_admin, 'cf7a_dashboard_widget' );
+
+				/* adds the custom table columns*/
+				add_filter( 'manage_flamingo_inbound_posts_columns', array( $cf7a_flamingo, 'flamingo_columns' ) );
+				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_d8_column' ), 10, 2 );
+				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_resend_column' ), 11, 2 );
 			}
 		}
 	}
@@ -224,8 +270,46 @@ class CF7_AntiSpam {
 		if ( ! is_admin() ) {
 			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
+			/* It adds hidden fields to the form */
+			$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_add_hidden_fields', 1 );
+
+			/* adds the javascript script to frontend */
 			$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );
 
+			/* It adds a hidden field to the form with a unique value that is encrypted with a cipher */
+			if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
+				$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_add_bot_fingerprinting', 100 );
+			}
+
+			/* It adds a new field to the form, which is a hidden field that will be populated with the bot fingerprinting extras */
+			if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval( $this->options['check_bot_fingerprint_extras'] ) === 1 ) {
+				$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_add_bot_fingerprinting_extras', 100 );
+			}
+
+			/* It adds a new field to the form, called `cf7a_append_on_submit`, and sets it to false */
+			if ( isset( $this->options['append_on_submit'] ) && intval( $this->options['append_on_submit'] ) === 1 ) {
+				$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_append_on_submit', 100 );
+			}
+
+			/* It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to the form */
+			if ( isset( $this->options['check_honeypot'] ) && intval( $this->options['check_honeypot'] ) === 1 ) {
+				$this->loader->add_filter( 'wpcf7_form_elements', $plugin_frontend, 'cf7a_honeypot_add' );
+			}
+
+			/* It gets the form, formats it, and then echoes it out */
+			$hook = $this->options['honeyform_position'];
+			if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
+				if ( ! is_admin() && ( defined( 'REST_REQUEST' ) && ! REST_REQUEST ) ) {
+					$this->loader->add_action( $hook, $plugin_frontend, 'cf7a_honeyform', 99 );
+				}
+			}
+
+			/* It adds a CSS style to the page that hides the honeypot field */
+			if (
+				( isset( $this->options['check_honeypot'] ) && 1 === intval( $this->options['check_honeypot'] ) ) || ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) )
+			) {
+				$this->loader->add_action( 'wp_footer', $plugin_frontend, 'cf7a_add_honeypot_css', 11 );
+			}
 		}
 	}
 
@@ -317,22 +401,23 @@ class CF7_AntiSpam {
 	 */
 	public static function update_option( $option, $value ) {
 
-		$options = self::get_options();
+		$plugin_options = self::get_options();
 
-		if ( isset( $options[ $option ] ) ) {
+		if ( isset( $plugin_options[ $option ] ) ) {
+
 			if ( is_string( $value ) ) {
 				/* if the value is a string sanitize and replace the option */
-				$options[ $option ] = sanitize_text_field( $value );
-			} elseif ( is_array( $value ) ) {
+				$plugin_options[ $option ] = sanitize_text_field( trim( $value ) );
+			} else {
 				/* if the value is an array sanitize each element then merge into option */
 				$new_values = array();
 				foreach ( $value as $array_value ) {
 					$new_values[] = sanitize_text_field( trim( (string) $array_value ) );
 				}
-				$options[ $option ] = array_unique( array_merge( $options[ $option ], $new_values ) );
+				$plugin_options[ $option ] = array_unique( array_merge( $plugin_options[ $option ], $new_values ) );
 			}
 
-			return self::update_options( $options );
+			return self::update_options( $plugin_options );
 		}
 
 		return false;

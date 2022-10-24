@@ -40,37 +40,9 @@ class CF7_AntiSpam_Frontend {
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 
-		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields' ), 100, 1 );
-
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
 
-		if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
-			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100, 1 );
-		}
-
-		if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval( $this->options['check_bot_fingerprint_extras'] ) === 1 ) {
-			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100, 1 );
-		}
-
-		if ( isset( $this->options['append_on_submit'] ) && intval( $this->options['append_on_submit'] ) === 1 ) {
-			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_append_on_submit' ), 100, 1 );
-		}
-
-		if ( isset( $this->options['check_honeypot'] ) && intval( $this->options['check_honeypot'] ) === 1 ) {
-			add_filter( 'wpcf7_form_elements', array( $this, 'cf7a_honeypot_add' ), 10, 1 );
-		}
-
-		$hook = $this->options['honeyform_position'];
-		if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
-			if ( ! is_admin() && ( defined( 'REST_REQUEST' ) && ! REST_REQUEST ) ) {
-				add_action( $hook, array( $this, 'cf7a_honeyform' ), 99 );
-			}
-		}
-
-		if ( ( isset( $this->options['check_honeypot'] ) && 1 === intval( $this->options['check_honeypot'] ) ) || ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) ) ) {
-			add_action( 'wp_footer', array( $this, 'cf7a_add_honeypot_css' ), 11 );
-		}
 	}
 
 	/**
@@ -247,19 +219,20 @@ class CF7_AntiSpam_Frontend {
 		<div>
 			<div class="wpcf7-form">
 				<div class="<?php echo esc_html( $form_class ); ?>">
-					<div><?php echo sanitize_text_field( $html ); ?></div>
+					<div><?php echo $html; ?></div>
 				</div>
 			</div>
 		</div>
+
 		<?php
-		echo sanitize_text_field( $content );
+		echo $content;
 	}
 
 	/**
 	 * It adds a CSS style to the page that hides the honeypot field
 	 */
 	public function cf7a_add_honeypot_css() {
-		$form_class = empty( $this->options['cf7a_customizations_class'] ) ? 'cf7a_' : $this->options['cf7a_customizations_class'];
+		$form_class = empty( $this->options['cf7a_customizations_class'] ) ? 'cf7a_' : sanitize_html_class($this->options['cf7a_customizations_class']);
 		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
 	}
 
