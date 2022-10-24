@@ -30,6 +30,8 @@ class CF7_AntiSpam_Flamingo {
 		while ( $query->have_posts() ) :
 			$query->the_post();
 
+			$post_id = get_the_ID();
+
 			$flamingo_post = new Flamingo_Inbound_Message( $query->queried_object_id );
 
 			$message = self::cf7a_get_mail_field( $flamingo_post, 'message' );
@@ -78,21 +80,20 @@ class CF7_AntiSpam_Flamingo {
 
 					$flamingo_post = new Flamingo_Inbound_Message( $post_id );
 
-					cf7a_log(get_the_terms($post_id, 'taxonomy'));
-					cf7a_log(get_the_terms($post_id, 'flamingo_inbound_channel'));
+					cf7a_log( get_the_terms( $post_id, 'taxonomy' ) );
+					cf7a_log( get_the_terms( $post_id, 'flamingo_inbound_channel' ) );
 
 					$results = get_post_meta( $post_id );
 
-					cf7a_log($results);
+					cf7a_log( $results );
 
 					/* get the form tax using the slug we find in the flamingo message */
 					$channel = isset( $post_meta['channel'] ) ?
 						get_term( $flamingo_post->channel, 'flamingo_inbound_channel' ) :
 						get_term_by( 'slug', $flamingo_post->channel, 'flamingo_inbound_channel' );
 
-					cf7a_log("channel");
-					cf7a_log($channel);
-
+					cf7a_log( 'channel' );
+					cf7a_log( $channel );
 
 					/* get the message from flamingo mail */
 					$message = $this->cf7a_get_mail_field( $flamingo_post, 'message' );
@@ -160,7 +161,7 @@ class CF7_AntiSpam_Flamingo {
 	private static function cf7a_get_mail_field( $flamingo_post, $field ) {
 
 		// if ( ! empty( $flamingo_post->fields ) && isset( $flamingo_post->meta['message_field'] ) && isset($flamingo_post->fields[ $flamingo_post->meta['message_field'] ])) {
-		// 	return $flamingo_post->fields[ $flamingo_post->meta['message_field'] ];
+		// return $flamingo_post->fields[ $flamingo_post->meta['message_field'] ];
 		// }
 
 		if ( isset( $form->slug ) ) {
