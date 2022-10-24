@@ -1,19 +1,14 @@
 <?php
 
 /**
- * Get the real ip address
+ * Get the real ip address (unescaped)
  *
  * @return mixed|string - the real ip address
  */
 function cf7a_get_real_ip() {
-	$http_client_ip = isset( $_SERVER['HTTP_CLIENT_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ), FILTER_VALIDATE_IP ) : false;
-	if ( ! empty( $http_client_ip ) ) {
-		return $http_client_ip;
-	}
-
 	$http_x_forwarded_for = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) : false;
 	if ( ! empty( $http_x_forwarded_for ) ) {
-		return (string) rest_is_ip_address( trim( current( explode( ',', sanitize_text_field( wp_unslash( $http_x_forwarded_for ) ) ) ) ) );
+		return trim( current( explode( ',', sanitize_text_field( wp_unslash( $http_x_forwarded_for ) ) ) ) );
 	}
 
 	$http_x_real_ip = isset( $_SERVER['HTTP_X_REAL_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) ) : false;
@@ -21,14 +16,19 @@ function cf7a_get_real_ip() {
 		return $http_x_real_ip;
 	}
 
-	$http_cf_connecting_ip = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : false;
-	if ( ! empty( $http_cf_connecting_ip ) ) {
-		return $http_cf_connecting_ip;
-	}
-
 	$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
 	if ( ! empty( $remote_addr ) ) {
 		return $remote_addr;
+	}
+
+	$http_client_ip = isset( $_SERVER['HTTP_CLIENT_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ), FILTER_VALIDATE_IP ) : false;
+	if ( ! empty( $http_client_ip ) ) {
+		return $http_client_ip;
+	}
+
+	$http_cf_connecting_ip = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : false;
+	if ( ! empty( $http_cf_connecting_ip ) ) {
+		return $http_cf_connecting_ip;
 	}
 }
 
@@ -193,7 +193,7 @@ function cf7a_microtime_float() {
 /**
  * Used to display formatted d8 rating into flamingo inbound
  *
- * @param int $rating - the raw rating.
+ * @param numeric $rating - the raw rating.
  *
  * @return string - html formatted rating
  */
@@ -215,12 +215,12 @@ function cf7a_format_rating( $rating ) {
  * It takes an array and returns a string with the array's keys and values separated by a colon and a space, and each
  * key/value pair separated by a semicolon and a space
  *
- * @param array  $array - the array of reasons to ban.
- * @param string $is_html - true to return a html string.
+ * @param array $array - the array of reasons to ban.
+ * @param bool  $is_html - true to return a html string.
  *
  * @return false|string Compress arrays into "key:value; " pair
  */
-function cf7a_compress_array( $array, $is_html = 0 ) {
+function cf7a_compress_array( $array, $is_html = false ) {
 
 	if ( ! is_array( $array ) ) {
 		return false;
