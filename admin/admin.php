@@ -141,7 +141,7 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/style-main.css', array(), $this->version );
+		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/style-main.css', array(), $this->version );
 
 	}
 
@@ -171,7 +171,7 @@ class CF7_AntiSpam_Admin {
 		}
 
 		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-script.asset.php';
-		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-script.js', $asset['dependencies'], $this->version, true );
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-script.js', $asset['dependencies'], $this->version, true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(

@@ -1,12 +1,12 @@
 <?php
-/*
+/**
 Plugin Name: AntiSpam for Contact Form 7
 Description: A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 Author: Codekraft
 Text Domain: cf7-antispam
 Domain Path: /languages/
 Version: 0.4.0
-*/
+ */
 
 /* If this file is called directly, abort. */
 if ( ! defined( 'WPINC' ) ) {
@@ -23,6 +23,8 @@ define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 define( 'CF7ANTISPAM_PLUGIN_BASENAME', plugin_basename( CF7ANTISPAM_PLUGIN ) );
 
 define( 'CF7ANTISPAM_PLUGIN_DIR', untrailingslashit( dirname( CF7ANTISPAM_PLUGIN ) ) );
+
+define( 'CF7ANTISPAM_PLUGIN_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
 
 define( 'CF7ANTISPAM_LOG_PREFIX', 'CF7A: ' );
 
