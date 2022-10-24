@@ -150,14 +150,14 @@ class CF7_AntiSpam_Activator {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$tables = $wpdb->get_results( 'SHOW TABLES FROM ' . $wpdb->dbname );
+		$tables = $wpdb->get_results( "SHOW TABLES" );
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		/* Create the term database */
 		if ( ! in_array( $wpdb->prefix . 'cf7a_wordlist', $tables, true ) ) {
 
-			$cf7a_wordlist = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "cf7a_wordlist (
+			$cf7a_wordlist = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "cf7a_wordlist` (
 			  `token` varchar(100) character set utf8 collate utf8_bin NOT NULL,
 			  `count_ham` int unsigned default NULL,
 			  `count_spam` int unsigned default NULL,
@@ -166,18 +166,18 @@ class CF7_AntiSpam_Activator {
 
 			dbDelta( $cf7a_wordlist );
 
-			$cf7a_wordlist_version = 'INSERT INTO ' . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
-			$cf7a_wordlist_texts   = 'INSERT INTO ' . $wpdb->prefix . "cf7a_wordlist (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
+			$cf7a_wordlist_version = "INSERT INTO `" . $wpdb->prefix . "cf7a_wordlist` (`token`, `count_ham`) VALUES ('b8*dbversion', '3');";
+			$cf7a_wordlist_texts   = "INSERT INTO `" . $wpdb->prefix . "cf7a_wordlist` (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');";
 
 			dbDelta( $cf7a_wordlist_version );
 			dbDelta( $cf7a_wordlist_texts );
 
-			add_option( 'cf7a_wordlist table creation succeeded', 2 );
+			cf7a_log( 'cf7a_wordlist table creation succeeded', 2 );
 		}
 
 		/* Create the blacklist database */
 		if ( ! in_array( $wpdb->prefix . 'cf7a_blacklist', $tables, true ) ) {
-			$cf7a_database = 'CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "cf7a_blacklist (
+			$cf7a_database = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "cf7a_blacklist` (
 				 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				 `ip` varchar(45) NOT NULL,
 				 `status` int(10) unsigned DEFAULT NULL,
@@ -188,11 +188,8 @@ class CF7_AntiSpam_Activator {
 
 			dbDelta( $cf7a_database );
 
-			add_option( 'cf7a_blacklist table creation succeeded', 2 );
+			cf7a_log( 'cf7a_blacklist table creation succeeded', 2 );
 		}
-
-		$tables = $wpdb->get_results( 'SHOW TABLES FROM ' . $wpdb->dbname );
-		error_log( print_r( $tables, true ) );
 	}
 
 	/**
