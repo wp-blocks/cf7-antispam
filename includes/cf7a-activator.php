@@ -227,8 +227,7 @@ class CF7_AntiSpam_Activator {
 
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
 
-		$notice = new CF7_AntiSpam_Admin_Tools();
-		$notice::cf7a_push_notice( esc_html__( 'CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'cf7-antispam' );
+		CF7_AntiSpam_Admin_Tools::cf7a_push_notice( esc_html__( 'CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'success cf7-antispam' );
 
 	}
 
