@@ -86,14 +86,16 @@ class CF7_AntiSpam_B8 {
 		$rating = $this->b8->classify( htmlspecialchars( $message, ENT_QUOTES, $charset ) );
 
 		if ( $verbose ) {
-			cf7a_log( 'd8 email classification: ' . $rating, 1 );
+			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
+				$mem_used      = round( memory_get_usage() / 1048576, 5 );
+				$peak_mem_used = round( memory_get_peak_usage() / 1048576, 5 );
+				$time_taken    = round( cf7a_microtime_float() - $time_elapsed, 5 );
 
-			$mem_used      = round( memory_get_usage() / 1048576, 5 );
-			$peak_mem_used = round( memory_get_peak_usage() / 1048576, 5 );
-			$time_taken    = round( cf7a_microtime_float() - $time_elapsed, 5 );
-
-			/* translators: in order - the memory used by antispam process, the peak memory and the time elapsed */
-			cf7a_log( sprintf( 'stats : Memory: %s - Peak memory: %s - Time Elapsed: %s', $mem_used, $peak_mem_used, $time_taken ), 2 );
+				/* translators: in order - the memory used by antispam process, the peak memory and the time elapsed */
+				cf7a_log( sprintf( 'd8 email classification: ' . $rating . ' - stats - Memory: %s - Peak memory: %s - Time Elapsed: %s', $mem_used, $peak_mem_used, $time_taken ) );
+			} else {
+				cf7a_log( 'd8 email classification: ' . $rating, 1 );
+			}
 		}
 
 		return $rating;
