@@ -385,7 +385,7 @@ class CF7_AntiSpam {
 	 * @param  array $options the plugin options.
 	 * @return bool
 	 */
-	public static function update_options( $options ) {
+	public static function update_plugin_options( $options ) {
 		return update_option( 'cf7a_options', $options );
 	}
 
@@ -399,11 +399,9 @@ class CF7_AntiSpam {
 	 *
 	 * @return bool
 	 */
-	public static function update_option( $option, $value ) {
+	public static function update_plugin_option( $option, $value ) {
 
 		$plugin_options = self::get_options();
-
-		cf7a_log( $plugin_options );
 
 		if ( isset( $plugin_options[ $option ] ) ) {
 
@@ -414,15 +412,12 @@ class CF7_AntiSpam {
 				/* if the value is an array sanitize each element then merge into option */
 				$new_values = array();
 				foreach ( $value as $array_value ) {
-					$new_values[] = sanitize_text_field( trim( (string) $array_value ) );
+					$new_values[] = trim( (string) $array_value );
 				}
 				$plugin_options[ $option ] = array_unique( array_merge( $plugin_options[ $option ], $new_values ) );
 			}
-			cf7a_log( $plugin_options );
-			self::update_options( $plugin_options );
-			$plugin_options = self::get_options();
-			cf7a_log( $plugin_options );
-			return false;
+
+			return self::update_plugin_options( $plugin_options );
 		}
 
 		return false;
