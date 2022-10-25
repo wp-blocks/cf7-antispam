@@ -176,15 +176,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		/* Settings enable geoip check (available only if the geoip is enabled) */
-		if ( ! empty( get_option( 'cf7a_geodb_update' ) ) ) {
-			add_settings_field(
-				'check_geo_location',
-				__( 'Detect location using GeoIP', 'cf7-antispam' ),
-				array( $this, 'cf7a_check_geo_location_callback' ),
-				'cf7a-settings',
-				'cf7a_check_language'
-			);
-		}
+		add_settings_field(
+			'check_geo_location',
+			__( 'Detect location using GeoIP', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_geo_location_callback' ),
+			'cf7a-settings',
+			'cf7a_check_language'
+		);
+
 
 		/* Settings allowed languages */
 		add_settings_field(
@@ -651,7 +650,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_check_language() {
 		printf( '<p>' . esc_html__( 'Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. ', 'cf7-antispam' ) . '</p>' );
-		printf( '<p>' . esc_html__( 'This method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>' . esc_html__( 'The browser language detection method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) . '</p>' );
 	}
 
 	public function cf7a_print_section_bad_ip() {
@@ -1097,9 +1096,11 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_check_geo_location_callback() {
+		$geo_enabled = empty( get_option( 'cf7a_geodb_update' ) ) ? ' disabled' : '';
 		printf(
-			'<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s />',
-			! empty( $this->options['check_geo_location'] ) ? 'checked="true"' : ''
+			'<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s %s />',
+			! empty( $this->options['check_geo_location'] ) ? 'checked="true"' : '',
+			$geo_enabled
 		);
 	}
 
