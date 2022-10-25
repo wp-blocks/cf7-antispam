@@ -131,7 +131,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Settings enable geoip */
 		add_settings_field(
 			'enable_geoip_download',
-			__( 'Enable GeoIP DB Download', 'cf7-antispam' ),
+			__( 'Enable automatic download', 'cf7-antispam' ),
 			array( $this, 'cf7a_enable_geoip_callback' ),
 			'cf7a-settings',
 			'cf7a_check_geoip'
@@ -140,7 +140,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Settings enable geoip */
 		add_settings_field(
 			'check_geoip_enabled',
-			__( 'GeoIP database available', 'cf7-antispam' ),
+			__( 'Database available', 'cf7-antispam' ),
 			array( $this, 'cf7a_geoip_is_enabled_callback' ),
 			'cf7a-settings',
 			'cf7a_check_geoip'
@@ -176,7 +176,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		/* Settings enable geoip check (available only if the geoip is enabled) */
-		if ( $this->options['enable_geoip_download'] ) {
+		if ( ! empty( get_option( 'cf7a_geodb_update' ) ) ) {
 			add_settings_field(
 				'check_geo_location',
 				__( 'Detect location using GeoIP', 'cf7-antispam' ),
@@ -600,9 +600,17 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/**
 	 * It prints The main setting text below the title
+	 *
+	 * TODO: some random tips to protect the website like don't use as page title "contacts" an so on
 	 */
 	public function cf7a_print_section_main_subtitle() {
-		printf( '<p>' . esc_html__( 'In most cases the settings below are fine, but in case you want to customise or configure the plugin to have your own degree of protection, have fun!', 'cf7-antispam' ) . '</p>' );
+		printf(
+			'<p>%s</p><p>%s</p><p><strong>%s</strong> %s</p>',
+			esc_html__( 'For most cases the following settings are fine, but you can have fun configuring the antispam to achieve the level of protection you prefer!', 'cf7-antispam' ),
+			esc_html__( 'In multiple text fields (the textarea) you can also enter values in comma-separated format and on saving, the strings will be broken up into one per line format.', 'cf7-antispam' ),
+			esc_html__( 'Tip:', 'cf7-antispam' ),
+			esc_html__( 'You can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' )
+		);
 	}
 
 	public function cf7a_print_section_auto_blacklist() {
@@ -773,12 +781,11 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		if ( 0 === $enabled ) {
 			/* delete the geo db next update stored option and the scheduled event */
-			delete_option( 'cf7a_geodb_update' );
-			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db', false );
+			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db' );
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
 			}
-		} elseif ( $geo->cf7a_can_enable_geoip() ) {
+		} elseif ( $geo->cf7a_geoip_has_license() ) {
 			/* Otherwise schedule update / download the database if needed */
 			$geo->cf7a_geoip_schedule_update( $geo->cf7a_maybe_download_geoip_db() );
 		}
@@ -806,10 +813,16 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
 		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : ( 60 * 60 * 25 ); /* a day + 1 hour of timeframe to send the mail seems fine :) */
 
+		/**
+		 * Checking if the enable_geoip_download is not set (note the name is $new_input but actually is the copy of the stored options)
+		 * and the user has chosen to enable the geoip, in this case download the database if needed
+		 */
+		if ( empty( $new_input['enable_geoip_download'] ) && isset( $input['enable_geoip_download'] ) ) {
+			$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
+		}
+
 		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
 		$new_input['geoip_dbkey']           = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
-
-		$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
 
 		/* browser language check enabled */
 		$new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
@@ -1061,7 +1074,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	public function cf7a_geoip_is_enabled_callback() {
 		$last_update = get_option( 'cf7a_geodb_update', 0 );
-		printf( 0 !== $last_update ? '✅ ' : '❌ ' );
+		printf( ! empty( $last_update ) ? '✅ ' : '❌ ' );
 	}
 
 	/**
