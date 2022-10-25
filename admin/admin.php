@@ -45,7 +45,6 @@ class CF7_AntiSpam_Admin {
 
 		/* the menu item */
 		new CF7_AntiSpam_Admin_Customizations();
-
 	}
 
 	/**
@@ -167,7 +166,7 @@ class CF7_AntiSpam_Admin {
 
 		/* only 4 the dashboard */
 		if ( 'index.php' === $hook_suffix ) {
-			wp_enqueue_script( $this->plugin_name . '-dashboard', 'https://cdn.jsdelivr.net/npm/chart.js', array(), $this->version, true );
+			wp_enqueue_script( $this->plugin_name . '-chart', 'https://cdn.jsdelivr.net/npm/chart.js', array(), $this->version );
 		}
 
 		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-script.asset.php';
@@ -271,6 +270,7 @@ class CF7_AntiSpam_Admin {
 			endwhile;
 
 			wp_reset_postdata();
+
 			$html .= '</ul></div>';
 
 			$count = array();
@@ -313,7 +313,7 @@ class CF7_AntiSpam_Admin {
 					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
 				<script>
-					window.onload = function() {
+					function spam_charts() {
 						const lineLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_date'] ) ); ?>' ];
 						const pieLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_type'] ) ); ?>' ];
 
@@ -324,24 +324,20 @@ class CF7_AntiSpam_Admin {
 								backgroundColor: 'rgb(0,255,122)',
 								borderColor: 'rgb(3, 210, 106)',
 								tension: 0.25,
-								data: [
-								<?php
+								data: [<?php
 								if ( isset( $ham ) ) {
 									echo implode( ',', $ham );}
-								?>
-									],
+								?>],
 							},
 							{
 								label: 'Spam',
 								backgroundColor: 'rgb(255,4,0)',
 								borderColor: 'rgb(248, 49, 47)',
 								tension: 0.25,
-								data: [
-								<?php
+								data: [<?php
 								if ( isset( $spam ) ) {
 									echo implode( ',', $spam );}
-								?>
-								],
+								?>],
 							}]
 						};
 
@@ -396,6 +392,7 @@ class CF7_AntiSpam_Admin {
 							PieConfig
 						);
 					}
+					window.onload = spam_charts();
 				</script>
 			</div>
 			<?php
