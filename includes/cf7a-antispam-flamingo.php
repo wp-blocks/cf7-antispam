@@ -32,7 +32,7 @@ class CF7_AntiSpam_Flamingo {
 
 			$post_id = get_the_ID();
 
-			$flamingo_post = new Flamingo_Inbound_Message( $query->queried_object_id );
+			$flamingo_post = new Flamingo_Inbound_Message( $post_id );
 
 			$message = self::cf7a_get_mail_field( $flamingo_post, 'message' );
 
@@ -51,6 +51,8 @@ class CF7_AntiSpam_Flamingo {
 			}
 
 		endwhile;
+
+			return true;
 	}
 
 	/**
@@ -80,21 +82,6 @@ class CF7_AntiSpam_Flamingo {
 
 					$flamingo_post = new Flamingo_Inbound_Message( $post_id );
 
-					cf7a_log( get_the_terms( $post_id, 'taxonomy' ) );
-					cf7a_log( get_the_terms( $post_id, 'flamingo_inbound_channel' ) );
-
-					$results = get_post_meta( $post_id );
-
-					cf7a_log( $results );
-
-					/* get the form tax using the slug we find in the flamingo message */
-					$channel = isset( $post_meta['channel'] ) ?
-						get_term( $flamingo_post->channel, 'flamingo_inbound_channel' ) :
-						get_term_by( 'slug', $flamingo_post->channel, 'flamingo_inbound_channel' );
-
-					cf7a_log( 'channel' );
-					cf7a_log( $channel );
-
 					/* get the message from flamingo mail */
 					$message = $this->cf7a_get_mail_field( $flamingo_post, 'message' );
 
@@ -107,7 +94,7 @@ class CF7_AntiSpam_Flamingo {
 
 					} else {
 
-						$rating = $b8->cf7a_b8_classify( $message );
+						$rating = ! empty( $flamingo_post->meta['_cf7a_b8_classification'] ) ? $flamingo_post->meta['_cf7a_b8_classification'] : $b8->cf7a_b8_classify( $message );
 
 						$filters = new CF7_AntiSpam_Filters();
 
@@ -160,20 +147,28 @@ class CF7_AntiSpam_Flamingo {
 	 */
 	private static function cf7a_get_mail_field( $flamingo_post, $field ) {
 
-		// if ( ! empty( $flamingo_post->fields ) && isset( $flamingo_post->meta['message_field'] ) && isset($flamingo_post->fields[ $flamingo_post->meta['message_field'] ])) {
-		// return $flamingo_post->fields[ $flamingo_post->meta['message_field'] ];
-		// }
+		/* get the form tax using the slug we find in the flamingo message */
+		$channel = isset( $flamingo_post->meta['channel'] ) ?
+			get_term( $flamingo_post->channel, 'flamingo_inbound_channel' ) :
+			get_term_by( 'slug', $flamingo_post->channel, 'flamingo_inbound_channel' );
 
-		if ( isset( $form->slug ) ) {
+		if ( isset( $channel->slug ) ) {
 			/* get the post where are stored the form data */
-			$form_post = get_page_by_path( $form->slug, '', 'wpcf7_contact_form' );
+			$form_post = get_page_by_path( $channel->slug, '', 'wpcf7_contact_form' );
 
 			/* get the additional setting of the form */
 			$additional_settings = isset( $form_post->ID ) ? self::cf7a_get_mail_additional_data( $form_post->ID ) : null;
 
 			/* if the field we are looking for return it */
-			if ( ! empty( $additional_settings ) && $flamingo_post->fields[ $additional_settings[ $field ] ] ) {
+			if ( ! empty( $additional_settings ) && ! empty( $additional_settings[ $field ] ) && ! empty( $flamingo_post->fields[ $additional_settings[ $field ] ] ) ) {
 				return stripslashes( $flamingo_post->fields[ $additional_settings[ $field ] ] );
+			}
+		}
+
+		if ( 'message' === $field ) {
+			cf7a_log( 'Original contact form slug not found for flamingo post id ' . $flamingo_post->id() . '. please check your contact form 7 shortcode / settings', 2 );
+			if ( ! empty( $flamingo_post->fields ) && isset( $flamingo_post->meta['message_field'] ) && isset( $flamingo_post->fields[ $flamingo_post->meta['message_field'] ] ) ) {
+				return $flamingo_post->fields[ $flamingo_post->meta['message_field'] ];
 			}
 		}
 
@@ -192,33 +187,23 @@ class CF7_AntiSpam_Flamingo {
 
 		$flamingo_data = new Flamingo_Inbound_Message( $mail_id );
 
-		/* get the meta fields */
-		$flamingo_meta = get_post_meta( $mail_id, '_meta', true );
-
-		/* get form fields data */
-		$flamingo_fields = get_post_meta( $mail_id, '_fields', true );
-		if ( ! empty( $flamingo_fields ) ) {
-			foreach ( (array) $flamingo_fields as $key => $value ) {
-				$meta_key = sanitize_key( '_field_' . $key );
-
-				if ( metadata_exists( 'post', $mail_id, $meta_key ) ) {
-					$value                   = get_post_meta( $mail_id, $meta_key, true );
-					$flamingo_fields[ $key ] = $value;
-				}
-			}
+		if ( ! empty( $flamingo_data->meta['message_field'] ) && ! empty( $flamingo_data->fields[ $flamingo_data->meta['message_field'] ] ) ) {
+			$message = $flamingo_data->fields[ $flamingo_data->meta['message_field'] ];
 		}
 
-		if ( ! $flamingo_meta['message_field'] || empty( $flamingo_fields[ $flamingo_meta['message_field'] ] ) ) {
-			return true;
+		if ( empty( $message ) ) {
+			$message = self::cf7a_get_mail_field( $flamingo_data, 'message' );
 		}
 
-		$post_data = get_post( $mail_id );
+		if ( empty( $body ) ) {
+			return 'empty';
+		}
 
 		/* init mail */
-		$subject   = $flamingo_meta['subject'];
+		$subject   = $flamingo_data->subject;
 		$sender    = $flamingo_data->from;
-		$body      = $flamingo_fields[ $flamingo_meta['message_field'] ];
-		$recipient = $flamingo_meta['recipient'];
+		$body      = $message; // TODO: add filter
+		$recipient = $flamingo_data->from_email;
 
 		$headers  = "From: $sender\n";
 		$headers .= "Content-Type: text/html\n";
@@ -380,7 +365,8 @@ class CF7_AntiSpam_Flamingo {
 		$classification = get_post_meta( $post_id, '_cf7a_b8_classification', true );
 		if ( 'd8' === $column ) {
 			echo wp_kses(
-				cf7a_format_rating( floatval( $classification ) ),
+				/* translators: none is a label, please keep it short! thanks! */
+				cf7a_format_rating( $classification === 'none' ? esc_html__( 'none', 'cf7-antispam' ) : floatval( $classification ) ),
 				array(
 					'span' => array(
 						'class' => true,
