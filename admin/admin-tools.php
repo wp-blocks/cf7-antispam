@@ -50,31 +50,6 @@ class CF7_AntiSpam_Admin_Tools {
 	}
 
 	/**
-	 * It takes a number and returns a color based on that number.
-	 *
-	 * @param numeric $rank The rank of the page.
-	 *
-	 * @return string an icon with a red color, that becomes greener when the rank is high
-	 */
-	public static function cf7a_format_status( $rank ) {
-		$rank = intval( $rank );
-		switch ( true ) {
-			case $rank < 0:
-				$rank_clean = esc_html__( '⚠️' );
-				break;
-			case $rank > 100:
-				$rank_clean = esc_html__( '🏆' );
-				break;
-			default:
-				$rank_clean = $rank;
-		}
-
-		$color = intval( max( 200 - ( $rank * 2 ), 0 ) );
-		$color = "rgba(250,$color,0)";
-		return "<span class='ico' style='background-color: $color'>$rank_clean</span>";
-	}
-
-	/**
 	 * It handles the actions that are triggered by the user
 	 */
 	public static function cf7a_handle_actions() {

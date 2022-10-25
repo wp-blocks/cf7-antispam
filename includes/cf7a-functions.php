@@ -210,6 +210,30 @@ function cf7a_format_rating( $rating ) {
 	return '<span class="flamingo-rating-label" style="background-color: ' . $color . '"><b>' . round( $rating * 100 ) . '% </b></span>';
 }
 
+/**
+ * It takes a number and returns a color based on that number.
+ *
+ * @param numeric $rank The rank of the page.
+ *
+ * @return string an icon with a red color, that becomes greener when the rank is high
+ */
+function cf7a_format_status( $rank ) {
+	$rank = intval( $rank );
+	switch ( true ) {
+		case $rank < 0:
+			$rank_clean = esc_html__( '⚠️' );
+			break;
+		case $rank > 100:
+			$rank_clean = esc_html__( '🏆' );
+			break;
+		default:
+			$rank_clean = $rank;
+	}
+
+	$color = intval( max( 200 - ( $rank * 2 ), 0 ) );
+	$color = "rgba(250,$color,0)";
+	return "<span class='ico' style='background-color: $color'>$rank_clean</span>";
+}
 
 /**
  * It takes an array and returns a string with the array's keys and values separated by a colon and a space, and each
