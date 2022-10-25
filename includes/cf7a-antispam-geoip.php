@@ -142,7 +142,7 @@ class CF7_Antispam_Geoip {
 	 */
 	public function cf7a_geo_maybe_download() {
 		/* if we have the license key */
-		if ( $this->cf7a_geoip_has_license() && $this->cf7a_geoip_can_be_enabled()) {
+		if ( $this->cf7a_geoip_has_license() && $this->cf7a_geoip_can_be_enabled() ) {
 			/*if we need to update the database */
 			if ( $this->cf7a_maybe_download_geoip_db() ) {
 				$this->cf7a_geoip_download_database();
@@ -327,7 +327,7 @@ class CF7_Antispam_Geoip {
 		}
 
 		/* Update the geoip next update metadata */
-		$update_date =  strtotime( '+1 month' );
+		$update_date = strtotime( '+1 month' );
 		if ( ! $this->next_update ) {
 			add_option( 'cf7a_geodb_update', $update_date );
 		} else {
@@ -347,7 +347,9 @@ class CF7_Antispam_Geoip {
 	 */
 	public function cf7a_geoip_schedule_update( $now = false ) {
 
-		if ( $now ) $this->cf7a_geoip_download_database();
+		if ( $now ) {
+			$this->cf7a_geoip_download_database();
+		}
 
 		wp_clear_scheduled_hook( 'cf7a_geoip_update_db' );
 

@@ -224,11 +224,15 @@ class CF7_AntiSpam {
 
 		if ( is_admin() ) {
 
+			/* It handles the actions that are triggered by the user */
+			$tools = new CF7_AntiSpam_Admin_Tools();
+			add_action( 'admin_init', array( $tools, 'cf7a_handle_actions' ), 1 );
+
 			/* the admin area */
 			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
 
 			/* add the admin menu */
-			$this->loader->add_action( 'admin_menu', $plugin_admin, 'cf7a_admin_menu', 10, 0 );
+			$this->loader->add_action( 'admin_menu', $plugin_admin, 'cf7a_admin_menu' );
 
 			/* adds a class to the cf7-antispam admin area */
 			$this->loader->add_filter( 'admin_body_class', $plugin_admin, 'cf7a_body_class' );

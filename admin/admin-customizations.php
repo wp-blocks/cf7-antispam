@@ -842,7 +842,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			: array();
 
 		/* max attempts before ban */
-		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 2;
+		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 3;
 
 		/* auto-ban */
 		$new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
@@ -1353,7 +1353,10 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * It generates a select box with the options 'weak', 'standard', 'secure', and 'custom'
 	 */
 	public function cf7a_score_preset_callback() {
-		$options = 1 === $this->options['enable_advanced_settings'] || ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] ) ? array( 'weak', 'standard', 'secure', 'custom' ) : array( 'weak', 'standard', 'secure' );
+		$options = ! empty( $this->options['enable_advanced_settings'] )
+				   || ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] )
+			? array( 'weak', 'standard', 'secure', 'custom' )
+			: array( 'weak', 'standard', 'secure' );
 		printf(
 			'<select id="cf7a_score_preset" name="cf7a_options[cf7a_score_preset]">%s</select>',
 			wp_kses(

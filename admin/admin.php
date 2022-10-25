@@ -40,12 +40,20 @@ class CF7_AntiSpam_Admin {
 	 */
 	public function __construct( $plugin_name, $version ) {
 
+		/* Setting the value of the $plugin_name */
 		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
 
-		/* the menu item */
+		/* Setting the version of the plugin */
+		$this->version = $version;
+
+		/* The menu item */
 		new CF7_AntiSpam_Admin_Customizations();
+
+		$this->geoip = new CF7_Antispam_Geoip();
+		$this->geoip->cf7a_geo_maybe_download();
 	}
+
+
 
 	/**
 	 * It adds a submenu page to the Contact Form 7 menu in the admin dashboard

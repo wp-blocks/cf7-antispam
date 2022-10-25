@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Fired during plugin deactivation.
  *
@@ -7,9 +8,33 @@
 class CF7_AntiSpam_Uninstaller {
 
 	/**
+	 * It deletes all the blacklisted ip
+	 *
+	 * @return bool - The result of the query.
+	 */
+	public static function cf7a_clean_blacklist() {
+		global $wpdb;
+		$r = $wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}cf7a_blacklist`" );
+		return ! is_wp_error( $r );
+	}
+
+	/**
+	 * It uninstalls the plugin, then reinstall it
+	 */
+	public static function cf7a_full_reset() {
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
+		self::uninstall( true );
+
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
+		CF7_AntiSpam_Activator::install();
+
+		return true;
+	}
+
+	/**
 	 * It deletes the plugin's database tables and options
 	 *
-	 * @param string $force If set to true, the cf7-antispam database and options tables delete will be forced.
+	 * @param bool $force If set to true, the cf7-antispam database and options tables delete will be forced.
 	 */
 	public static function uninstall( $force = false ) {
 

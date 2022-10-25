@@ -52,7 +52,7 @@ class CF7_AntiSpam_Flamingo {
 
 		endwhile;
 
-			return true;
+		return true;
 	}
 
 	/**
@@ -139,6 +139,10 @@ class CF7_AntiSpam_Flamingo {
 
 	/**
 	 * It gets the message content from a Flamingo post
+	 *
+	 * @warning this work only if the flamingo message has the channel stored,
+	 * usually the contact form the contact form and its shortcode must be
+	 * configured properly (you can figure out from how in flamingo inbound you have two items e.g. Contact Form 7 / form name).
 	 *
 	 * @param Flamingo_Inbound_Message $flamingo_post - a flamingo post id.
 	 * @param string                   $field - the field we are looking for.
@@ -394,5 +398,47 @@ class CF7_AntiSpam_Flamingo {
 				esc_html__( 'Resend Email', 'cf7-antispam' )
 			);
 		}
+	}
+
+
+
+	/**
+	 * It resets the database table that stores the spam and ham words
+	 *
+	 * @return bool - The result of the query.
+	 */
+	public static function cf7a_reset_dictionary() {
+		global $wpdb;
+		$r = $wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}cf7a_wordlist`" );
+
+		if ( ! is_wp_error( $r ) ) {
+			$wpdb->query( 'INSERT INTO `' . $wpdb->prefix . "cf7a_wordlist` (`token`, `count_ham`) VALUES ('b8*dbversion', '3');" );
+			$wpdb->query( 'INSERT INTO `' . $wpdb->prefix . "cf7a_wordlist` (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');" );
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * It deletes all the _cf7a_b8_classification metadata from the database
+	 */
+	public static function cf7a_reset_b8_classification() {
+		global $wpdb;
+		$r = $wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
+		return ( ! is_wp_error( $r ) );
+	}
+
+	/**
+	 * It resets the dictionary and classification, then analyzes all the stored mails
+	 *
+	 * @return bool - The return value is the number of mails that were analyzed.
+	 */
+	public static function cf7a_rebuild_dictionary() {
+		if ( self::cf7a_reset_dictionary() ) {
+			if ( self::cf7a_reset_b8_classification() ) {
+				return self::cf7a_flamingo_analyze_stored_mails();
+			}
+		}
+		return false;
 	}
 }
