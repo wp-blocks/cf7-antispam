@@ -72,12 +72,12 @@ class CF7_AntiSpam_Admin_Tools {
 
 		if ( $req_nonce ) {
 
-			$filter = new CF7_AntiSpam_Filters();
-
 			/* Ban a single ID (related to ip) */
 			if ( substr( $action, 0, 6 ) === 'unban_' ) {
 
 				$unban_id = intval( substr( $action, 6 ) );
+
+				$filter = new CF7_AntiSpam_Filters();
 
 				$r = $filter->cf7a_unban_by_id( $unban_id );
 
@@ -95,13 +95,23 @@ class CF7_AntiSpam_Admin_Tools {
 			/* Ban forever a single ID */
 			if ( substr( $action, 0, 12 ) === 'ban_forever_' ) {
 
+				$filter = new CF7_AntiSpam_Filters();
+
 				$ban_id = intval( substr( $action, 12 ) );
 				$ban_ip = $filter->cf7a_blacklist_get_id( $ban_id );
 
 				if ( $ban_ip ) {
-					if ( CF7_AntiSpam::update_option( 'bad_ip_list', array( $ban_ip->ip ) ) ) {
+					if ( CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array( $ban_ip->ip ) ) ) {
 						$filter->cf7a_unban_by_id( $ban_id );
 					}
+					self::cf7a_push_notice(
+						sprintf(
+						/* translators: the %1$s is the user id and %2$s is the ip address. */
+							__( 'Ban forever id %1$s (ip %2$s) successful', 'cf7-antispam' ),
+							$ban_id,
+							isset( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
+						)
+					);
 				} else {
 					self::cf7a_push_notice(
 						sprintf(
@@ -122,7 +132,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 				$r = self::cf7a_clean_blacklist();
 
-				if ( ! is_wp_error( $r ) ) {
+				if ( $r ) {
 					self::cf7a_push_notice( __( 'Success: ip blacklist cleaned', 'cf7-antispam' ), 'success' );
 				} else {
 					self::cf7a_push_notice( __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' ) );
@@ -134,9 +144,9 @@ class CF7_AntiSpam_Admin_Tools {
 			/* Reset Dictionary */
 			if ( 'reset-dictionary' === $action ) {
 
-				$r = $filter->cf7a_reset_dictionary();
+				$r = self::cf7a_reset_dictionary();
 
-				if ( ! is_wp_error( $r ) ) {
+				if ( $r ) {
 					self::cf7a_push_notice( __( 'b8 dictionary reset successful', 'cf7-antispam' ), 'success' );
 				} else {
 					self::cf7a_push_notice( __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
@@ -150,7 +160,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 				$r = self::cf7a_rebuild_dictionary();
 
-				if ( ! is_wp_error( $r ) ) {
+				if ( $r ) {
 					self::cf7a_push_notice( __( 'b8 dictionary rebuild successful', 'cf7-antispam' ), 'success' );
 				} else {
 					self::cf7a_push_notice( __( 'Something goes wrong while rebuilding b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
@@ -164,7 +174,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 				$r = self::cf7a_full_reset();
 
-				if ( ! is_wp_error( $r ) ) {
+				if ( $r ) {
 					self::cf7a_push_notice( __( 'CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 manually if needed', 'cf7-antispam' ), 'success' );
 				} else {
 					self::cf7a_push_notice( __( 'Ops! something went wrong... Please refresh and try again!', 'cf7-antispam' ) );
@@ -185,15 +195,16 @@ class CF7_AntiSpam_Admin_Tools {
 					$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 					$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
-					if ( ! is_wp_error( $r ) ) {
+					if ( $r ) {
 						/* translators: %s is the mail id. */
-						self::cf7a_push_notice( sprintf( __( 'CF7 AntiSpam email %s sent with success', 'cf7-antispam' ), $mail_id ) );
+						self::cf7a_push_notice( sprintf( __( 'Email id %s sent with success', 'success cf7-antispam' ), $mail_id ) );
 						wp_safe_redirect( $refer );
+						exit();
 					}
 				}
 
 				/* translators: %s is the mail id. */
-				self::cf7a_push_notice( sprintf( __( 'Ops! something went wrong... unable to resend %s email', 'cf7-antispam' ), $mail_id ) );
+				self::cf7a_push_notice( sprintf( __( 'Ops! something went wrong... unable to resend %s email', 'error cf7-antispam' ), $mail_id ) );
 				wp_safe_redirect( $refer );
 				exit();
 			}
