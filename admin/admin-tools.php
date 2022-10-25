@@ -88,6 +88,7 @@ class CF7_AntiSpam_Admin_Tools {
 					/* translators: %s is the ip address. */
 					self::cf7a_push_notice( sprintf( __( 'Error: unable to unban %s', 'cf7-antispam' ), $unban_id ) );
 				}
+
 				wp_safe_redirect( $url );
 				exit();
 			}
@@ -239,7 +240,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 				/* the row */
 				$html .= '<div class="row">';
-				$html .= sprintf( "<div class='status'>%s</div>", self::cf7a_format_status( $row->status - $max_attempts ) );
+				$html .= sprintf( "<div class='status'>%s</div>", cf7a_format_status( $row->status - $max_attempts ) );
 				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">%s</a> <a href="%s">%s</a></small></p>', $row->ip, esc_url( $unban_url ), __( '[unban ip]' ), esc_url( $ban_url ), __( '[ban forever]' ) );
 				$html .= sprintf( "<span class='data'>%s</span></div>", cf7a_compress_array( $meta['reason'], true ) );
 				$html .= '</div>';
@@ -397,13 +398,13 @@ class CF7_AntiSpam_Admin_Tools {
 
 			$cf7a_geo = new CF7_Antispam_Geoip();
 
-			$geoip_update =$cf7a_geo->next_update ? date_i18n( get_option( 'date_format' ), $cf7a_geo->next_update ) : esc_html__( 'not set', 'cf7-antispam' );
+			$geoip_update = $cf7a_geo->next_update ? date_i18n( get_option( 'date_format' ), $cf7a_geo->next_update ) : esc_html__( 'not set', 'cf7-antispam' );
 
 			$html_update_schedule = sprintf(
 				'<p class="debug"><code>%s</code> %s</p>',
 				esc_html__( 'Geo-IP', 'cf7-antispam' ),
 				! empty( $cf7a_geo->next_update )
-					? esc_html__( 'Enabled', 'cf7-antispam' ) . ' - '  . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
+					? esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
 					: esc_html__( 'Disabled', 'cf7-antispam' ) . get_option( 'cf7a_geodb_update', 0 )
 			);
 
@@ -415,20 +416,22 @@ class CF7_AntiSpam_Admin_Tools {
 			}
 
 			/* The recap of Geo-ip test */
-			if ( ! empty( $cf7a_geo->next_update ) ) printf(
-				'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
-				esc_html__( 'Geo-IP test', 'cf7-antispam' ),
-				wp_kses(
-					$html_update_schedule,
-					array(
-						'p'    => array( 'class' => array() ),
-						'code' => array(),
-					)
-				),
-				esc_html__( 'Your IP address', 'cf7-antispam' ),
-				filter_var( $your_ip, FILTER_VALIDATE_IP ),
-				print_r( $server_data, true )
-			);
+			if ( ! empty( $cf7a_geo->next_update ) ) {
+				printf(
+					'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
+					esc_html__( 'Geo-IP test', 'cf7-antispam' ),
+					wp_kses(
+						$html_update_schedule,
+						array(
+							'p'    => array( 'class' => array() ),
+							'code' => array(),
+						)
+					),
+					esc_html__( 'Your IP address', 'cf7-antispam' ),
+					filter_var( $your_ip, FILTER_VALIDATE_IP ),
+					print_r( $server_data, true )
+				);
+			}
 		} catch ( Exception $e ) {
 			$error_message = $e->getMessage();
 			printf(
@@ -493,7 +496,7 @@ class CF7_AntiSpam_Admin_Tools {
 	 *
 	 * @return bool - The result of the query.
 	 */
-	public function cf7a_clean_blacklist() {
+	private static function cf7a_clean_blacklist() {
 		global $wpdb;
 		$r = $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}cf7a_blacklist" );
 		return ! is_wp_error( $r );
@@ -519,7 +522,7 @@ class CF7_AntiSpam_Admin_Tools {
 	/**
 	 * It deletes all the _cf7a_b8_classification metadata from the database
 	 */
-	public static function cf7a_reset_b8_classification() {
+	private static function cf7a_reset_b8_classification() {
 		global $wpdb;
 		$r = $wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
 		return ( ! is_wp_error( $r ) );
@@ -530,7 +533,7 @@ class CF7_AntiSpam_Admin_Tools {
 	 *
 	 * @return bool - The return value is the number of mails that were analyzed.
 	 */
-	public static function cf7a_rebuild_dictionary() {
+	private static function cf7a_rebuild_dictionary() {
 		if ( self::cf7a_reset_dictionary() ) {
 			if ( self::cf7a_reset_b8_classification() ) {
 				CF7_AntiSpam_Flamingo::cf7a_flamingo_analyze_stored_mails();
@@ -542,7 +545,7 @@ class CF7_AntiSpam_Admin_Tools {
 	/**
 	 * It uninstalls the plugin, then reinstall it
 	 */
-	public function cf7a_full_reset() {
+	private static function cf7a_full_reset() {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
 		CF7_AntiSpam_Uninstaller::uninstall( true );
 

@@ -324,20 +324,24 @@ class CF7_AntiSpam_Admin {
 								backgroundColor: 'rgb(0,255,122)',
 								borderColor: 'rgb(3, 210, 106)',
 								tension: 0.25,
-								data: [<?php
+								data: [
+								<?php
 								if ( isset( $ham ) ) {
 									echo implode( ',', $ham );}
-								?>],
+								?>
+								],
 							},
 							{
 								label: 'Spam',
 								backgroundColor: 'rgb(255,4,0)',
 								borderColor: 'rgb(248, 49, 47)',
 								tension: 0.25,
-								data: [<?php
+								data: [
+								<?php
 								if ( isset( $spam ) ) {
 									echo implode( ',', $spam );}
-								?>],
+								?>
+								],
 							}]
 						};
 

@@ -23,10 +23,15 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * The class `CF7_Antispam_geoip` is instantiated.
 	 */
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return 'Administrators only';
+		}
 
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
+
+		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
 
 	}
 
@@ -183,7 +188,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings',
 			'cf7a_check_language'
 		);
-
 
 		/* Settings allowed languages */
 		add_settings_field(
@@ -794,7 +798,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * Sanitize each setting field as needed
 	 *
 	 * @param array $input Contains all settings fields as array keys.
-	 * @return array sanitized input
+	 * @return array $options sanitized
 	 */
 	public function cf7a_sanitize_options( $input ) {
 
@@ -869,13 +873,13 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
 		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
 		if ( isset( $input['bad_ip_list'] ) && is_string( $input['bad_ip_list'] ) ) {
-			$new_input['bad_ip_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['bad_ip_list'] ) ) );
+			$new_input['bad_ip_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_ip_list'] ) );
 		}
 
 		/* bad words */
 		$new_input['check_bad_words'] = isset( $input['check_bad_words'] ) ? 1 : 0;
 		if ( isset( $input['bad_words_list'] ) ) {
-			$new_input['bad_words_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['bad_words_list'] ) ) );
+			$new_input['bad_words_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_words_list'] ) );
 		} else {
 			$new_input['bad_words_list'] = array();
 		}
@@ -899,7 +903,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* dnsbl */
 		$new_input['check_dnsbl'] = isset( $input['check_dnsbl'] ) ? 1 : 0;
 		if ( isset( $input['dnsbl_list'] ) ) {
-			$new_input['dnsbl_list'] = $this->cf7a_remove_empty_from_array( preg_split( '/\R/', sanitize_textarea_field( $input['dnsbl_list'] ) ) );
+			$new_input['dnsbl_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['dnsbl_list'] ) );
 		} else {
 			$new_input['dnsbl_list'] = array();
 		}
@@ -1096,11 +1100,11 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	public function cf7a_check_geo_location_callback() {
-		$geo_enabled = empty( get_option( 'cf7a_geodb_update' ) ) ? ' disabled' : '';
+		$geo_disabled = empty( get_option( 'cf7a_geodb_update' ) ) ? ' disabled' : '';
 		printf(
 			'<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s %s />',
 			! empty( $this->options['check_geo_location'] ) ? 'checked="true"' : '',
-			$geo_enabled
+			$geo_disabled
 		);
 	}
 
