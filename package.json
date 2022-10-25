@@ -21,7 +21,8 @@
     "lint:js": "wp-scripts lint-js",
     "packages-update": "wp-scripts packages-update",
 	"wp-env:start": "wp-env start",
-	"wp-env:stop": "wp-env stop"
+	"wp-env:stop": "wp-env stop",
+	"wp-env:destroy": "wp-env destroy"
   },
   "repository": {
     "type": "git",
