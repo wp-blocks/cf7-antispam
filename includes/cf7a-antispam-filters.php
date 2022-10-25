@@ -922,10 +922,6 @@ class CF7_AntiSpam_Filters {
 			}
 		}
 
-		if ( $spam_score >= 1 ) {
-			$spam = true;
-		}
-
 		/**
 		 * Filter with the antispam results (before ban).
 		 *
@@ -935,33 +931,34 @@ class CF7_AntiSpam_Filters {
 		 */
 		$spam = apply_filters( 'cf7a_additional_spam_filters', $spam, $message, $submission );
 
+		/* if the spam score is lower than 1 the mail is ham so return the value as this is a filter */
+		if ( $spam_score < 1 ) {
+			return $spam;
+		}
+
+		/* ...otherwise the mail is spam, taking the array $reason and compressing it into a string. */
+		$reasons_for_ban = cf7a_compress_array( $reason );
+
 		/* If the auto-store ip is enabled (and NOT in extended debug mode) */
-		if ( $options['autostore_bad_ip'] && $spam ) {
+		if ( $options['autostore_bad_ip'] ) {
 			if ( self::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
-				cf7a_log( "ban for $remote_ip", 2 );
+				/* Log the antispam result in extended debug mode */
+				cf7a_log( "Ban for $remote_ip - results - " . $reasons_for_ban, 2 );
 			} else {
-				cf7a_log( "unable to ban $remote_ip" );
+				cf7a_log( "Unable to ban $remote_ip" );
 			}
 		}
 
-		/* Taking the array $reason and compressing it into a string. */
-		$reasons_for_ban = cf7a_compress_array( $reason );
-
-		/* Log the antispam result in extended debug mode */
-		cf7a_log( "$remote_ip result - " . $reasons_for_ban, 2 );
-
-		/* Combines all the reasons for banning in one string */
-		if ( $spam ) {
-			$submission->add_spam_log(
-				array(
-					'agent'  => 'CF7-AntiSpam',
-					'reason' => $reasons_for_ban,
-				)
-			);
-		}
+		/* Store the ban reason into mail post metadata */
+		$submission->add_spam_log(
+			array(
+				'agent'  => 'CF7-AntiSpam',
+				'reason' => $reasons_for_ban,
+			)
+		);
 
 		/* case closed */
-		return $spam;
+		return true;
 	}
 
 }
