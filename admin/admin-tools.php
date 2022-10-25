@@ -14,11 +14,25 @@ class CF7_AntiSpam_Admin_Tools {
 	 */
 	private $options;
 
+
+	/**
+	 * The GeoIP2 reader
+	 *
+	 * @since    0.3.1
+	 * @access   private
+	 * @var      GeoIp2\Database\Reader|false    $reader    the GeoIP class
+	 */
+	private $geoip;
+
 	/**
 	 * The class that handles the for frontend antispam functionalities
 	 */
 	public function __construct() {
 		$this->options = CF7_AntiSpam::get_options();
+
+		$this->geoip = new CF7_Antispam_Geoip();
+
+		$this->geoip->cf7a_geo_maybe_download();
 	}
 
 	/**
@@ -193,8 +207,8 @@ class CF7_AntiSpam_Admin_Tools {
 
 				if ( $mail_id > 1 ) {
 
-					$flamingo = new CF7_AntiSpam_Flamingo();
-					$r        = $flamingo->cf7a_resend_mail( $mail_id );
+					$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
+					$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
 					if ( ! is_wp_error( $r ) ) {
 						/* translators: %s is the mail id. */
@@ -326,12 +340,12 @@ class CF7_AntiSpam_Admin_Tools {
 	/**
 	 * It returns a string containing a formatted HTML table with the plugin's options
 	 *
-	 * @return string the HTML for the debug info options.
+	 * @return void the HTML for the debug info options.
 	 */
 	private function cf7a_get_debug_info_options() {
 
-		$html  = printf( '<hr/><h3>%s</h3>', esc_html__( 'Options debug', 'cf7-antispam' ) );
-		$html .= printf(
+		printf( '<hr/><h3>%s</h3>', esc_html__( 'Options debug', 'cf7-antispam' ) );
+		printf(
 			'<p>%s</p><pre>%s</pre>',
 			esc_html__( 'Those are the options of this plugin', 'cf7-antispam' ),
 			esc_html(
@@ -340,18 +354,12 @@ class CF7_AntiSpam_Admin_Tools {
 				)
 			)
 		);
-
-		return $html;
 	}
 
 	/**
 	 * It checks if the GeoIP database is enabled, and if so, it checks the next update date and displays it
-	 *
-	 * @return string the dnsbl test
 	 */
 	private function cf7a_get_debug_info_dnsbl() {
-
-		$html = '';
 
 		if ( $this->options['check_dnsbl'] || ! empty( $this->options['dnsbl_list'] ) ) {
 
@@ -384,7 +392,7 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 
 				if ( ! empty( $performance_test ) ) {
-					$html .= printf(
+					printf(
 						'<hr/><h3><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><table class="dnsbl_table">%s</table>',
 						esc_html__( 'DNSBL performance test:' ),
 						esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers' ),
@@ -393,29 +401,24 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 			}
 		}
-
-		return $html;
 	}
 
 	/**
 	 * It checks if the GeoIP database is enabled, and if so, it checks the next update date and displays it
-	 *
-	 * @return string the html
 	 */
 	private static function cf7a_get_debug_info_geoip() {
-		$html = '';
-
 		try {
+
 			$cf7a_geo = new CF7_Antispam_Geoip();
 
-			$geoip        = $cf7a_geo->cf7a_can_enable_geoip() && $cf7a_geo->next_update;
-			$geoip_update = $geoip ? date_i18n( get_option( 'date_format' ), get_option( 'cf7a_geodb_update', 0 ) ) : esc_html__( 'update not set', 'cf7-antispam' );
+			$geoip_update =$cf7a_geo->next_update ? date_i18n( get_option( 'date_format' ), $cf7a_geo->next_update ) : esc_html__( 'not set', 'cf7-antispam' );
 
 			$html_update_schedule = sprintf(
-				'<p class="debug"><code>GEOIP</code> %s</p>',
-				$geoip
-					? esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
-					: esc_html__( 'Disabled', 'cf7-antispam' )
+				'<p class="debug"><code>%s</code> %s</p>',
+				esc_html__( 'Geo-IP', 'cf7-antispam' ),
+				! empty( $cf7a_geo->next_update )
+					? esc_html__( 'Enabled', 'cf7-antispam' ) . ' - '  . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
+					: esc_html__( 'Disabled', 'cf7-antispam' ) . get_option( 'cf7a_geodb_update', 0 )
 			);
 
 			$your_ip     = cf7a_get_real_ip();
@@ -425,9 +428,10 @@ class CF7_AntiSpam_Admin_Tools {
 				$server_data = 'Unable to retrieve geoip information for ' . $your_ip;
 			}
 
-			$html .= sprintf(
+			/* The recap of Geo-ip test */
+			if ( ! empty( $cf7a_geo->next_update ) ) printf(
 				'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
-				esc_html__( 'GeoIP test', 'cf7-antispam' ),
+				esc_html__( 'Geo-IP test', 'cf7-antispam' ),
 				wp_kses(
 					$html_update_schedule,
 					array(
@@ -441,48 +445,44 @@ class CF7_AntiSpam_Admin_Tools {
 			);
 		} catch ( Exception $e ) {
 			$error_message = $e->getMessage();
-			$html         .= sprintf(
+			printf(
 				'<p>%s</p><pre>%s</pre>',
-				esc_html__( 'GeoIP Error', 'cf7-antispam' ),
-				isset( $error_message ) && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error'
+				esc_html__( 'Geo-IP Test Error', 'cf7-antispam' ),
+				$error_message && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error'
 			);
 		}
-
-		return $html;
 	}
 
 	/**
 	 * It outputs a debug panel if WP_DEBUG or CF7ANTISPAM_DEBUG are true
-	 *
-	 * @return string.
 	 */
 	public function cf7a_get_debug_info() {
 
 		if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) {
 
 			/* the header */
-			$html = printf(
+			printf(
 				'<div id="debug-info" class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
 				esc_html__( 'Debug info', 'cf7-antispam' ),
 				esc_html__( 'If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true', 'cf7-antispam' )
 			);
 
 			if ( CF7ANTISPAM_DEBUG ) {
-				$html .= printf(
+				printf(
 					'<p class="debug">%s</p>',
 					'<code>CF7ANTISPAM_DEBUG</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
 				);
 			}
 
 			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
-				$html .= printf(
+				printf(
 					'<p class="debug">%s</p>',
 					'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
 				);
 			}
 
 			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
-				$html .= printf(
+				printf(
 					'<p class="debug"><code>%s</code> %s</p>',
 					esc_html__( 'Your ip address', 'cf7-antispam' ),
 					filter_var( cf7a_get_real_ip(), FILTER_VALIDATE_IP )
@@ -490,15 +490,13 @@ class CF7_AntiSpam_Admin_Tools {
 			}
 
 			/* output the options */
-			$html .= $this->cf7a_get_debug_info_options();
+			$this->cf7a_get_debug_info_options();
 
-			$html .= $this->cf7a_get_debug_info_geoip();
+			$this->cf7a_get_debug_info_geoip();
 
-			$html .= $this->cf7a_get_debug_info_dnsbl();
+			$this->cf7a_get_debug_info_dnsbl();
 
-			$html .= printf( '</div>' );
-
-			return $html;
+			printf( '</div>' );
 		}
 	}
 
