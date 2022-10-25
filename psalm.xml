@@ -4,6 +4,7 @@
 		xmlns="https://getpsalm.org/schema/config"
 		xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
 		xmlns:xi="http://www.w3.org/2001/XInclude"
+		phpVersion="5.6"
 >
 	<projectFiles>
 		<file name="cf7-antispam.php" />

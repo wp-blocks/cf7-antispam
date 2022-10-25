@@ -32,7 +32,8 @@
 	"lint": "vendor/bin/phpcs --standard=phpcs.xml.dist --report=summary,source",
 	"lint-fix": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
 	"phpstan": "vendor/bin/phpstan",
-	"psalm": "vendor/bin/psalm"
+	"psalm": "vendor/bin/psalm",
+	"psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
