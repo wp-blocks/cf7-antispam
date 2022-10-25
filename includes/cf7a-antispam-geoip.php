@@ -2,21 +2,11 @@
 
 use GeoIp2\Database\Reader;
 
-
 /**
  * It checks if the CF7ANTISPAM_GEOIP_KEY constant is set, and if it is, it uses that as the license key. Otherwise, it
  * checks if the geoip_dbkey option is set, and if it is, it uses that as the license key. Otherwise, it sets the license key to false
  */
 class CF7_Antispam_Geoip {
-
-	/**
-	 * The GeoIP2 reader
-	 *
-	 * @since    0.3.1
-	 * @access   private
-	 * @var      GeoIp2\Database\Reader|false    $reader    the GeoIP class
-	 */
-	public $reader;
 
 	/**
 	 * The GeoIP2 db license key
@@ -46,17 +36,21 @@ class CF7_Antispam_Geoip {
 	public $next_update;
 
 	/**
+	 * The GeoIP2 reader
+	 *
+	 * @since    0.3.1
+	 * @access   private
+	 * @var      GeoIp2\Database\Reader|false    $reader    the GeoIP class
+	 */
+	public $reader = false;
+
+	/**
 	 * CF7_AntiSpam_Filters constructor.
 	 *
 	 * @since    0.3.1
+	 * @return GeoIp2\Database\Reader|false
 	 */
 	public function __construct() {
-
-		// zlib and phar php modules are mandatory to unpack database.
-		if ( ! extension_loaded( 'zlib' ) || ! extension_loaded( 'phar' ) ) {
-			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( esc_html__( 'to activate geo-ip you must necessarily have the zlib and phar php modules enabled' ) );
-			return false;
-		}
 
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
@@ -66,17 +60,14 @@ class CF7_Antispam_Geoip {
 
 		$this->next_update = get_option( 'cf7a_geodb_update', 0 );
 
-		$this->reader = $this->cf7a_geo_init();
-
-		return $this->reader;
-
+		return $this->cf7a_geoip_get_reader();
 	}
 
 	/**
 	 * If the CF7ANTISPAM_GEOIP_KEY constant is set, use that. Otherwise, if the geoip_dbkey option is set, use that.
 	 * Otherwise, return false
 	 *
-	 * @return bool the value of the CF7ANTISPAM_GEOIP_KEY constant if it is set, or the value of the geoip_dbkey option if it is
+	 * @return string the value of the CF7ANTISPAM_GEOIP_KEY constant if it is set, or the value of the geoip_dbkey option if it is
 	 * set, or false if neither is set.
 	 */
 	private function cf7a_geoip_set_license() {
@@ -89,6 +80,44 @@ class CF7_Antispam_Geoip {
 	}
 
 	/**
+	 * If the license is valid and the database has been updated, then the plugin can enable GeoIP
+	 *
+	 * @return bool true geo-ip can be enabled
+	 */
+	public function cf7a_geoip_has_license() {
+		return ! empty( $this->license );
+	}
+
+	/**
+	 *
+	 * if the zlib or phar extensions are loaded, the geo-ip can be enabled, return true and otherwise return false
+	 *
+	 * @return bool true geo-ip can be enabled
+	 */
+	public function cf7a_geoip_can_be_enabled() {
+		if ( extension_loaded( 'zlib' ) || extension_loaded( 'phar' ) ) {
+			return true;
+		}
+		return false;
+	}
+
+
+	/**
+	 * If the zlib and phar php modules are enabled, then if the geoip database is enabled, then if the geoip database is
+	 * initialized, then return the geoip database, else download the geoip database
+	 *
+	 * @return GeoIp2\Database\Reader|false
+	 */
+	private function cf7a_geoip_get_reader() {
+
+		if ( $this->next_update ) {
+			$this->reader = $this->cf7a_geo_init();
+		}
+
+		return $this->reader;
+	}
+
+	/**
 	 * It creates a new Reader object, which should be reused across lookups.
 	 *
 	 * @return GeoIp2\Database\Reader|false The Reader object is being returned.
@@ -96,36 +125,31 @@ class CF7_Antispam_Geoip {
 	private function cf7a_geo_init() {
 		// This creates the Reader object, which should be reused across lookups.
 		try {
-			return new Reader( $this->cf7a_get_upload_dir() . '/GeoLite2-Country.mmdb' );
-		} catch ( Exception $e ) {
-			cf7a_log( 'GeoIP Database init error, unable to read file', 1 );
+			return new Reader( self::cf7a_get_upload_dir() . '/GeoLite2-Country.mmdb' );
+		} catch ( Exception $exception ) {
+			cf7a_log( 'GeoIP Database init error, unable to read the stored file ', 1 );
+			cf7a_log( $exception->getMessage(), 2 );
+			$this->next_update = false;
+			delete_option( 'cf7a_geodb_update' );
 			return false;
 		}
 	}
 
 	/**
-	 * If the user can enable the geo+ip, and it's time to update the database, download the database
+	 * If we have a license key, and we need to update the database, then download the database
 	 *
 	 * @return bool
 	 */
-	public function cf7a_geo_maybe_update() {
-		/* init the geocoder */
-		if ( $this->cf7a_can_enable_geoip() ) {
+	public function cf7a_geo_maybe_download() {
+		/* if we have the license key */
+		if ( $this->cf7a_geoip_has_license() && $this->cf7a_geoip_can_be_enabled()) {
+			/*if we need to update the database */
 			if ( $this->cf7a_maybe_download_geoip_db() ) {
 				$this->cf7a_geoip_download_database();
 			}
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * If the license is valid and the database has been updated, then the plugin can enable GeoIP
-	 *
-	 * @return bool true geo-ip can be enabled
-	 */
-	public function cf7a_can_enable_geoip() {
-		return ! empty( $this->license );
 	}
 
 	/**
@@ -142,7 +166,7 @@ class CF7_Antispam_Geoip {
 	 *
 	 * @return string The upload directory for the plugin.
 	 */
-	private function cf7a_get_upload_dir() {
+	private static function cf7a_get_upload_dir() {
 
 		$upload_dir = wp_upload_dir();
 
@@ -153,8 +177,8 @@ class CF7_Antispam_Geoip {
 	/**
 	 * It creates a directory, creates a .htaccess file in that directory, and writes "Deny from all" to the .htaccess file
 	 *
-	 * @param string $plugin_upload_dir The directory you want to create.
-	 * @param bool   $htaccess_content - if passed will create also a htaccess with the given content.
+	 * @param string       $plugin_upload_dir The directory you want to create.
+	 * @param string|false $htaccess_content - if passed will create also a htaccess with the given content.
 	 *
 	 * @return bool the value of the variable $plugin_upload_dir.
 	 */
@@ -196,98 +220,123 @@ class CF7_Antispam_Geoip {
 
 		cf7a_log( 'GeoIP DB download start', 1 );
 
-		$upload_dir        = wp_upload_dir();
-		$plugin_upload_dir = $this->cf7a_get_upload_dir();
-
-		$database_type = 'GeoLite2-Country';
-		$filename      = $database_type;
-		$ext           = '.tar.gz';
-		$key           = esc_url_raw( $this->license );
-
+		$key = sanitize_text_field( $this->license );
 		if ( empty( $key ) ) {
-			return;
+			return false;
 		}
 
-		$download_url = sprintf(
-			'https://download.maxmind.com/app/geoip_download?edition_id=%s&license_key=%s&suffix=tar.gz',
-			$database_type,
-			$key
-		);
-
-		$destination_file_uri = $plugin_upload_dir . sanitize_file_name( $filename . '.mmdb' );
-
 		/* check if the plugin upload directory exist, otherwise create it */
+		$plugin_upload_dir = $this::cf7a_get_upload_dir();
 		if ( ! is_dir( $plugin_upload_dir ) && $this->cf7a_create_upload_dir( $plugin_upload_dir, 'Require local' ) ) {
 			cf7a_log( 'Geo-ip download folder created with success', 1 );
 		}
 
-		$file_content = '';
+		/* Then download the geoip database */
+		$database_type = 'GeoLite2-Country';
+		$filename      = $database_type;
+		$ext           = '.tar.gz';
+
+		/* The maxmind directory link */
+		$download_url = esc_url_raw(
+			sprintf(
+				'https://download.maxmind.com/app/geoip_download?edition_id=%s&license_key=%s&suffix=tar.gz',
+				$database_type,
+				$key
+			)
+		);
+
+		/* Then final file name */
+		$destination_file_uri = $plugin_upload_dir . sanitize_file_name( $filename . '.mmdb' );
+
+		/* wp_filesystem */
+		global $wp_filesystem;
+
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
 
 		/* Download */
-		if ( ( $stream = fopen( $download_url, 'r' ) ) !== false ) {
-			while ( ! feof( $stream ) ) {
-				$file_content .= fgets( $stream );
-			}
-			fclose( $stream );
-		} else {
-
-			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Unable to download the file with the geo-ip database, please check that the key provided is correct!', 'cf7-antispam' ) );
-			cf7a_log( "Unable to download the file with the geo-ip database, please check that the key provided is correct! key: $key - url: $download_url" );
+		try {
+			$content = $wp_filesystem->get_contents(
+				$download_url
+			);
+			cf7a_log( "Unable to download the geo-ip database, please check that the key provided is correct! destination path: $destination_file_uri - url: $download_url", 1 );
+		} catch ( Exception $exception ) {
+			$message = __( 'Unable to download the geo-ip database, please check that the key provided is correct! ', 'cf7-antispam' );
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( $message );
+			cf7a_log( $message, 1 );
+			cf7a_log( $exception->getMessage(), 2 );
 			return false;
 		}
 
-		if ( ! empty( $file_content ) ) {
+		/* Copy */
+		try {
+			$wp_filesystem->put_contents(
+				$destination_file_uri . $ext,
+				$content,
+				770
+			);
+		} catch ( Exception $exception ) {
+			$message = __( 'Unable to download the geo-ip database, please check that the key provided is correct! ', 'cf7-antispam' );
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( $message );
+			cf7a_log( $message, 1 );
+			cf7a_log( $exception->getMessage(), 2 );
+			return false;
+		}
 
-			if ( file_exists( $destination_file_uri . $ext ) ) {
-				wp_delete_file( $destination_file_uri . $ext );
-			}
+		/* decompress */
+		try {
+			$p         = new PharData( $destination_file_uri . $ext );
+			$temp_file = $p->current()->getFilename();
 
-			if ( ! file_put_contents( $destination_file_uri . $ext, $file_content ) ) {
-				cf7a_log( sprintf( 'Unable to write geo-ip database at this path %s.', $destination_file_uri ) );
-				return false;
-			}
-
-			/* decompress */
-			$p = new PharData( $destination_file_uri . $ext );
-
-			$temp_file          = $p->current()->getFilename();
 			$temp_database_file = $temp_file . "/$database_type.mmdb";
 
 			$p->extractTo(
-				dirname( $destination_file_uri ),
+				$plugin_upload_dir,
 				$temp_database_file,
 				true
 			);
-
-			if ( copy(
-				$plugin_upload_dir . $temp_database_file,
-				$destination_file_uri
-			) ) {
-				/* remove original compressed file */
-				wp_delete_file( $destination_file_uri . $ext );
-
-				/* remove unpacked inside the folder */
-				wp_delete_file( $plugin_upload_dir . $temp_database_file );
-
-				/* remove the extracted directory */
-				rmdir( $plugin_upload_dir . $temp_file );
-
-				/* then update the database update only if needed  */
-				if ( update_option( 'cf7a_geodb_update', strtotime( '+1 month' ) ) ) {
-					return true;
-				}
-
-				$this->cf7a_geoip_schedule_update();
-
-				cf7a_log( 'GeoIP DB downloaded with success ' . wp_date( get_option( 'date_format' ) ), 1 );
-			}
-
-			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'GEO-IP Database update failed', 'cf7-antispam' ) );
-			cf7a_log( 'GEO-IP Database copy failed ' . $plugin_upload_dir . $temp_database_file . ' to ' . $plugin_upload_dir );
-
+		} catch ( Exception $exception ) {
+			$message = esc_html__( 'GEO-IP Database file decompression failed', 'cf7-antispam' );
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( $message );
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( $exception->getMessage() );
+			cf7a_log( $message, 1 );
+			cf7a_log( $exception->getMessage(), 2 );
+			return false;
 		}
 
-		return false;
+		try {
+			$wp_filesystem->copy( $plugin_upload_dir . $temp_database_file, $destination_file_uri );
+
+			/* remove original compressed file */
+			$wp_filesystem->delete( $destination_file_uri . $ext );
+
+			/* remove unpacked inside the folder */
+			$wp_filesystem->delete( $plugin_upload_dir . $temp_database_file );
+
+			/* remove the extracted directory */
+			$wp_filesystem->delete( $plugin_upload_dir . $temp_file );
+
+		} catch ( Exception $exception ) {
+			$message = __( 'GEO-IP decompressed database copy failed', 'cf7-antispam' );
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( $message );
+			cf7a_log( $message, 1 );
+			cf7a_log( $exception->getMessage(), 2 );
+			return false;
+		}
+
+		/* Update the geoip next update metadata */
+		$update_date =  strtotime( '+1 month' );
+		if ( ! $this->next_update ) {
+			add_option( 'cf7a_geodb_update', $update_date );
+		} else {
+			update_option( 'cf7a_geodb_update', $update_date );
+		}
+
+		cf7a_log( 'GeoIP DB downloaded with success ', 1 );
+
+		return $this->next_update = $update_date;
 
 	}
 
@@ -298,13 +347,13 @@ class CF7_Antispam_Geoip {
 	 */
 	public function cf7a_geoip_schedule_update( $now = false ) {
 
-		if ( $now && $this->cf7a_geoip_download_database() ) {
-			wp_clear_scheduled_hook( 'cf7a_geoip_update_db' );
+		if ( $now ) $this->cf7a_geoip_download_database();
 
-			$next_event = strtotime( '+1 month' );
+		wp_clear_scheduled_hook( 'cf7a_geoip_update_db' );
 
-			wp_schedule_single_event( $next_event, 'cf7a_geoip_update_db', array( 'Geoip_update_db' ) );
-		}
+		$next_event = strtotime( '+1 month' );
+
+		wp_schedule_single_event( $next_event, 'cf7a_geoip_update_db', array( 'Geoip_update_db' ) );
 	}
 
 	/**
