@@ -46,11 +46,7 @@
   "eslintConfig": {
     "extends": [
       "plugin:@wordpress/eslint-plugin/recommended"
-    ],
-    "globals": {
-      "jQuery": true,
-      "$": true
-    }
+    ]
   },
   "browserslist": [
     "extends @wordpress/browserslist-config"

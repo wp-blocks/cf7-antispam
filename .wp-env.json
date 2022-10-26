@@ -9,6 +9,7 @@
   "config": {
 	"WP_DEBUG": true,
 	"WP_DEBUG_DISPLAY": true,
-	"SCRIPT_DEBUG": true
+	"SCRIPT_DEBUG": true,
+	"FS_METHOD": "direct"
   }
 }
