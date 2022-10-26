@@ -42,7 +42,6 @@ class CF7_AntiSpam_Frontend {
 
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
-
 	}
 
 	/**
@@ -58,7 +57,7 @@ class CF7_AntiSpam_Frontend {
 		try {
 			$html = new DOMDocument( '1.0', 'UTF-8' );
 			libxml_use_internal_errors( true );
-			$html->loadHTML( $form_elements );
+			$html->loadHTML( $form_elements, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 			$xpath  = new DOMXpath( $html );
 			$inputs = $xpath->query( '//input' );
 
@@ -107,8 +106,9 @@ class CF7_AntiSpam_Frontend {
 					}
 				}
 			}
+			return $html->saveHTML();
 		}
-		return $html->saveHTML();
+		return $form_elements;
 	}
 
 	/**
