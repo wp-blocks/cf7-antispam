@@ -871,7 +871,7 @@ class CF7_AntiSpam_Filters {
 						}
 					}
 
-					if ( ! empty( $honeypot_found ) ) {
+					if ( ! empty( $reason['honeypot'] ) ) {
 						$reason['honeypot'] = implode( ', ', $reason['honeypot'] );
 
 						cf7a_log( "The $remote_ip has filled the input honeypot(s) {$reason['honeypot']}", 1 );
