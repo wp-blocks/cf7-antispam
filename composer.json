@@ -23,7 +23,10 @@
 	"slevomat/coding-standard": "^7.2.1",
     "phpstan/extension-installer": "^1.2",
     "szepeviktor/phpstan-wordpress": "^1.1",
-    "vimeo/psalm": "^4.29"
+    "vimeo/psalm": "^4.29",
+    "phpunit/phpunit": "^9",
+	"wp-phpunit/wp-phpunit": "^5.9.5",
+	"yoast/phpunit-polyfills": "^1.0.0"
   },
   "require": {
 	"geoip2/geoip2": "~2.0"
@@ -33,7 +36,8 @@
 	"lint-fix": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
 	"phpstan": "vendor/bin/phpstan",
 	"psalm": "vendor/bin/psalm",
-	"psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run"
+	"psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run",
+	"test": "vendor/bin/phpunit"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
