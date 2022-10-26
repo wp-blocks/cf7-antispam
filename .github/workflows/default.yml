@@ -1,9 +1,8 @@
-name: Continuous Integration Tests
-
+name: Continuous Integration
 on:
   pull_request:
     branches: [ main, develop ]
-
+    
 jobs:
   test:
     name: PHP ${{ matrix.php }} WP ${{ matrix.wp }}
