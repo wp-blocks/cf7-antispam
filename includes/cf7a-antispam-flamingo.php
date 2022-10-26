@@ -59,26 +59,29 @@ class CF7_AntiSpam_Flamingo {
 	 * It adds a column to the Flamingo spam folder, and when you mark a message as spam or ham, it learns from it
 	 */
 	public function cf7a_d8_flamingo_classify() {
-		$req_action = isset( $_REQUEST['action'] ) ? esc_attr( $_REQUEST['action'] ) : false;
-		$req_save   = isset( $_REQUEST['save'] ) ? esc_attr( $_REQUEST['save'] ) : false;
-		$req_status = isset( $_REQUEST['inbound']['status'] ) ? esc_attr( $_REQUEST['inbound']['status'] ) : false;
+		$req_action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
+		$req_save   = isset( $_REQUEST['save'] ) ? sanitize_key( wp_unslash( $_REQUEST['save'] ) ) : false;
+		$req_status = isset( $_REQUEST['inbound']['status'] ) ? sanitize_key( wp_unslash( $_REQUEST['inbound']['status'] ) ) : false;
+		$req_id     = isset( $_REQUEST['post'] ) ? intval( $_REQUEST['post'] ) : false;
 
 		if ( $req_action && ( 'spam' === $req_action || 'unspam' === $req_action || 'save' === $req_action ) ) {
 
 			if ( 'save' === $req_action && 'Update' === $req_save ) {
 				$action = 'spam' === $req_status ? 'spam' : 'ham';
-			} elseif ( 'spam' === $req_action ) {
+			}
+
+			if ( 'spam' === $req_action ) {
 				$action = 'spam';
 			} elseif ( 'unspam' === $req_action ) {
 				$action = 'ham';
 			}
 
-			$options = get_option( 'cf7a_options' );
-
-			$b8 = new CF7_AntiSpam_B8();
-
 			if ( isset( $action ) ) {
-				foreach ( (array) $_REQUEST['post'] as $post_id ) {
+
+				$options = get_option( 'cf7a_options' );
+
+				$b8 = new CF7_AntiSpam_B8();
+				foreach ( (array) $req_id as $post_id ) {
 
 					$flamingo_post = new Flamingo_Inbound_Message( $post_id );
 
@@ -199,20 +202,31 @@ class CF7_AntiSpam_Flamingo {
 			$message = self::cf7a_get_mail_field( $flamingo_data, 'message' );
 		}
 
-		if ( empty( $body ) ) {
+		if ( empty( $message ) ) {
 			return 'empty';
 		}
 
 		/* init mail */
 		$subject   = $flamingo_data->subject;
+		$recipient = $flamingo_data->meta['recipient'];
+		$body      = $message;
 		$sender    = $flamingo_data->from;
-		$body      = $message; // TODO: add filter
-		$recipient = $flamingo_data->from_email;
 
-		$headers  = "From: $sender\n";
+		/**
+		 * Filter cf7-antispam before resend an email who was spammed
+		 *
+		 * @param string $body the mail message content
+		 * @param string  $sender  the mail message sender
+		 * @param string  $subject  the mail message subject
+		 *
+		 * @returns string the mail body content
+		 */
+		$body = apply_filters( 'cf7a_before_resend_email', $body, $sender, $subject );
+
+		$headers  = "From: $recipient\n";
 		$headers .= "Content-Type: text/html\n";
 		$headers .= "X-WPCF7-Content-Type: text/html\n";
-		$headers .= "Reply-To: $sender <$recipient>\n";
+		$headers .= "Reply-To: $sender\n";
 
 		return wp_mail( $recipient, $subject, $body, $headers );
 	}
@@ -370,7 +384,7 @@ class CF7_AntiSpam_Flamingo {
 		if ( 'd8' === $column ) {
 			echo wp_kses(
 				/* translators: none is a label, please keep it short! thanks! */
-				cf7a_format_rating( $classification === 'none' ? esc_html__( 'none', 'cf7-antispam' ) : floatval( $classification ) ),
+				cf7a_format_rating( 'none' === $classification ? esc_html__( 'none', 'cf7-antispam' ) : floatval( $classification ) ),
 				array(
 					'span' => array(
 						'class' => true,

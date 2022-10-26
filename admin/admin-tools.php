@@ -24,7 +24,7 @@ class CF7_AntiSpam_Admin_Tools {
 	 */
 	public function cf7a_handle_actions() {
 
-		$action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : false;
+		$action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
 		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
 		if ( 'dismiss-banner' === $action ) {
@@ -175,6 +175,13 @@ class CF7_AntiSpam_Admin_Tools {
 
 					$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 					$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
+
+					if ( $r === 'empty' ) {
+						/* translators: %s is the mail id. */
+						self::cf7a_push_notice( sprintf( __( 'Email id %s has an empty body', 'success cf7-antispam' ), $mail_id ) );
+						wp_safe_redirect( $refer );
+						exit();
+					}
 
 					if ( $r ) {
 						/* translators: %s is the mail id. */
