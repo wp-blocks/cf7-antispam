@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Get the real ip address (unescaped)
+ * If the user is behind a proxy, get the IP address from the HTTP_CF_CONNECTING_IP header, otherwise get the IP address
+ * from the REMOTE_ADDR header
  *
  * @return mixed|string - the real ip address
  */
@@ -153,8 +154,8 @@ add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 /**
  * It encrypts a string using the WordPress salt as the key
  *
- * @param string $value The value to encrypt.
- * @param string $cipher The cipher method to use.
+ * @param string|int $value The value to encrypt.
+ * @param string     $cipher The cipher method to use.
  *
  * @return string The encrypted value.
  */
