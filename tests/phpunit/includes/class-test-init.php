@@ -1,7 +1,11 @@
 <?php
 
-class Test_init {
+use PHPUnit\Framework\TestCase;
 
-	public function true() {
-		return true; }
+class test extends TestCase {
+
+	public function is_true() {
+
+		$this->assertTrue( true );
+	}
 }
