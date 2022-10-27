@@ -24,13 +24,18 @@ if ( false !== $_phpunit_polyfills_path ) {
 	define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', $_phpunit_polyfills_path );
 }
 
+// Give access to tests_add_filter() function.
+require_once "{$_tests_dir}/functions.php";
+
 if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 	echo "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	exit( 1 );
 }
 
-// Give access to tests_add_filter() function.
-require_once "{$_tests_dir}/includes/functions.php";
+/*
+* Load PHPUnit Polyfills for the WP testing suite.
+*/
+define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', dirname( dirname( __FILE__ ) ) . '/vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php' );
 
 /**
  * Manually load the plugin being tested.
@@ -54,11 +59,6 @@ function handle_wp_setup_failure( $message ) {
 	throw new Exception( 'WordPress died: ' . $message );
 }
 tests_add_filter( 'wp_die_handler', 'handle_wp_setup_failure' );
-
-/*
-* Load PHPUnit Polyfills for the WP testing suite.
-*/
-define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', __DIR__ . '/../../../vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php' );
 
 /*
  * Start up the WP testing environment.
