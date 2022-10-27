@@ -192,6 +192,20 @@ function cf7a_microtime_float() {
 }
 
 /**
+ * It takes three numbers (red, green, and blue) and returns a hexadecimal color code
+ *
+ * @param int r red
+ * @param int g The green value.
+ * @param int b brightness
+ *
+ * @return string A hexadecimal color code.
+ */
+function cf7a_rgb2hex( $r, $g, $b ) {
+	return sprintf( '#%02x%02x%02x', (int) $r, (int) $g, (int) $b );
+}
+
+
+/**
  * Used to display formatted d8 rating into flamingo inbound
  *
  * @param numeric $rating - the raw rating.
@@ -207,7 +221,7 @@ function cf7a_format_rating( $rating ) {
 	$red   = floor( 200 * $rating );
 	$green = floor( 200 * ( 1 - $rating ) );
 
-	$color = sprintf( '#%02x%02x%02x', $red, $green, 0 );
+	$color = cf7a_rgb2hex( $red, $green, 0 );
 	return '<span class="flamingo-rating-label" style="background-color: ' . $color . '"><b>' . round( $rating * 100 ) . '% </b></span>';
 }
 
@@ -222,18 +236,21 @@ function cf7a_format_status( $rank ) {
 	$rank = intval( $rank );
 	switch ( true ) {
 		case $rank < 0:
+			/* translators: warn because not yet banned but already listed */
 			$rank_clean = esc_html__( '⚠️' );
 			break;
 		case $rank > 100:
+			/* translators: champion of spammer (>100 mail) */
 			$rank_clean = esc_html__( '🏆' );
 			break;
 		default:
 			$rank_clean = $rank;
 	}
 
-	$color = intval( max( 200 - ( $rank * 2 ), 0 ) );
-	$color = "rgba(250,$color,0)";
-	return "<span class='ico' style='background-color: $color'>$rank_clean</span>";
+	$green = intval( max( 200 - ( $rank * 2 ), 0 ) );
+	$color = cf7a_rgb2hex( 250, $green, 0 );
+
+	return sprintf( '<span class="ico" style="background-color: %s">%s</span>', $color, $rank_clean );
 }
 
 /**
