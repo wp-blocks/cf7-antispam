@@ -3,9 +3,7 @@
 	bootstrap="tests/phpunit/includes/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
 	>
 	<testsuites>
 		<testsuite name="Php tests">

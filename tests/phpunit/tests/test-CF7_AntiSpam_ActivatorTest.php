@@ -1,7 +1,6 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-require_once '../cf7-antispam.php';
 
 class CF7_AntiSpam_ActivatorTest extends TestCase {
 
