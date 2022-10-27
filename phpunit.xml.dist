@@ -11,8 +11,5 @@
 		<testsuite name="testing">
 			<directory prefix="test-" suffix=".php">./tests/</directory>
 		</testsuite>
-		<php>
-			<env name="WP_PHPUNIT__TESTS_CONFIG" value="tests/wp-config.php" />
-		</php>
 	</testsuites>
 </phpunit>
