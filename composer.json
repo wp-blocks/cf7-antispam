@@ -24,7 +24,7 @@
     "phpstan/extension-installer": "^1.2",
     "szepeviktor/phpstan-wordpress": "^1.1",
     "vimeo/psalm": "^4.29",
-    "phpunit/phpunit": "^9",
+    "phpunit/phpunit": "^7.5.20",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
 	"yoast/phpunit-polyfills": "^1.0.0"
   },
