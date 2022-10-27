@@ -126,23 +126,6 @@ install_test_suite() {
 
 }
 
-recreate_db() {
-	shopt -s nocasematch
-	if [[ $1 =~ ^(y|yes)$ ]]
-	then
-		mysqladmin drop $DB_NAME -f --user="$DB_USER" --password="$DB_PASS"$EXTRA
-		create_db
-		echo "Recreated the database ($DB_NAME)."
-	else
-		echo "Leaving the existing database ($DB_NAME) in place."
-	fi
-	shopt -u nocasematch
-}
-
-create_db() {
-	eval "mysqladmin create ${DB_NAME} --user=${DB_USER} --password=${DB_PASS} ${EXTRA}"
-}
-
 install_db() {
 
 	if [ ${SKIP_DB_CREATE} = "true" ]; then
@@ -150,31 +133,23 @@ install_db() {
 	fi
 
 	# parse DB_HOST for port or socket references
-	IFS=':'; read -r -a PARTS <<< "$DB_HOST"; unset IFS;
-
+	local PARTS=(${DB_HOST//\:/ })
 	local DB_HOSTNAME=${PARTS[0]};
 	local DB_SOCK_OR_PORT=${PARTS[1]};
 	local EXTRA=""
 
-	if [ -n "$DB_HOSTNAME" ] ; then
-		if echo "$DB_SOCK_OR_PORT" | grep -q '^[0-9]\{1,\}$' ; then
-			EXTRA="--host=$DB_HOSTNAME --port=$DB_SOCK_OR_PORT --protocol=tcp"
-		elif [ -n "$DB_SOCK_OR_PORT" ] ; then
-			EXTRA="--socket=\"${DB_SOCK_OR_PORT}\""
-		elif [ -n "$DB_HOSTNAME" ] ; then
-			EXTRA="--host=$DB_HOSTNAME --protocol=tcp"
+	if ! [ -z $DB_HOSTNAME ] ; then
+		if [ $(echo $DB_SOCK_OR_PORT | grep -e '^[0-9]\{1,\}$') ]; then
+			EXTRA=" --host=$DB_HOSTNAME --port=$DB_SOCK_OR_PORT --protocol=tcp"
+		elif ! [ -z $DB_SOCK_OR_PORT ] ; then
+			EXTRA=" --socket=$DB_SOCK_OR_PORT"
+		elif ! [ -z $DB_HOSTNAME ] ; then
+			EXTRA=" --host=$DB_HOSTNAME --protocol=tcp"
 		fi
 	fi
 
 	# create database
-	if [ $(mysql --user="$DB_USER" --password="$DB_PASS"$EXTRA --execute='show databases;' | grep ^$DB_NAME$) ]
-	then
-		echo "Reinstalling will delete the existing test database ($DB_NAME)"
-		read -p 'Are you sure you want to proceed? [y/N]: ' DELETE_EXISTING_DB
-		recreate_db $DELETE_EXISTING_DB
-	else
-		create_db
-	fi
+	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
 }
 
 install_wp
