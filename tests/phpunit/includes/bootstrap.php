@@ -2,7 +2,7 @@
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-require_once 'wp-tests-config.php';
+$table_prefix = 'wptests_';
 
 $tests_dir = getenv( 'WP_TESTS_DIR' );
 
