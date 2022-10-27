@@ -131,7 +131,7 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 
 = 0.4.0 =
 * Adds geoip antispam filter
-* Updated widgets
+* Updated dashboard widget
 * Updated settings and frontend scripts
 * Improved honeypot (fixes 2 bugs)
 
@@ -227,13 +227,6 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the LICENSE file for more details.
-
-== TODOs ==
-* Enhance user agent specific checks (especially for apple-devices, lately bots are using this user agent to try to escape the scans)
-* Banned ip and dictionary CSV Export/import settings
-* Remove mail duplicates if users sent multiple
-* Optimise the mail analysis function using filters (actually is a long script that execute sequentially checks)
-* Extend the blacklisted with the antispam also the WordPress comment form and the login panel (https://developer.wordpress.org/reference/functions/wp_filter_comment/#hooks - https://developer.wordpress.org/reference/hooks/login_init/)
 
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)

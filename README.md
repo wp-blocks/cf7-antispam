@@ -39,7 +39,7 @@ $ npm i && composer install
 All ready for development in 2 minutes! If you have docker installed, you only need to run the wp-env command to start a server with WordPress, this CF7-Antispam (this plugin), Flamingo and, of course, Contact Form 7.
 
 ```bash
-$ npm run wp-env:start
+$ wp-env start
 ```
 
 Special Thanks
