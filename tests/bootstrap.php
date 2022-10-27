@@ -24,9 +24,21 @@ if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 	echo "Could not find {$_tests_dir}/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	exit( 1 );
 }
+
 // Give access to tests_add_filter() function.
 require_once "{$_tests_dir}/includes/functions.php";
 
+/**
+ * Manually load the plugin being tested.
+ */
+function _manually_load_plugin() {
+	require dirname( dirname( __FILE__ ) ) . '/cf7-antispam.php';
+}
+/**
+ * If WordPress dies, throw an exception.
+ *
+ * @param message The message to display to the user.
+ */
 
 function handle_wp_setup_failure( $message ) {
 	if ( is_wp_error( $message ) ) {
@@ -37,25 +49,19 @@ function handle_wp_setup_failure( $message ) {
 }
 tests_add_filter( 'wp_die_handler', 'handle_wp_setup_failure' );
 
-/**
- * Manually load the plugin being tested.
- */
-function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/cf7-antispam.php';
-}
 
 /*
 * Load PHPUnit Polyfills for the WP testing suite.
 */
 define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', __DIR__ . '/../../../vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php' );
 
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
-
-remove_filter( 'wp_die_handler', 'handle_wp_setup_failure' );
-
 /*
  * Start up the WP testing environment.
  */
 require "{$_tests_dir}/includes/bootstrap.php";
+
+tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+
+remove_filter( 'wp_die_handler', 'handle_wp_setup_failure' );
 
 require "{$_tests_dir}/includes/test-CF7_AntiSpam_ActivatorTest.php";
