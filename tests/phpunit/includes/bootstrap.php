@@ -6,7 +6,7 @@
  */
 
 // Composer autoloader must be loaded before WP_PHPUNIT__DIR will be available
-require_once dirname( dirname( __FILE__ ) ) . '/../../vendor/autoload.php';
+require_once dirname( dirname( __FILE__ ) ) . '/vendor/autoload.php';
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
@@ -51,7 +51,7 @@ function handle_wp_setup_failure( $message ) {
 tests_add_filter( 'wp_die_handler', 'handle_wp_setup_failure' );
 
 /* Start up the WP testing environment. */
-require dirname( dirname( __FILE__ ) ) . '/tests/phpunit/includes/bootstrap.php';
+require "{$_tests_dir}/includes/bootstrap.php";
 
 remove_filter( 'wp_die_handler', 'handle_wp_setup_failure' );
 

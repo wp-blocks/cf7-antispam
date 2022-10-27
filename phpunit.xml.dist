@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <phpunit
-	bootstrap="tests/phpunit/bootstrap.php"
+	bootstrap="tests/phpunit/includes/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
 	convertErrorsToExceptions="true"
@@ -8,8 +8,8 @@
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite name="testing">
-			<directory prefix="test-" suffix=".php">./tests/phpunit/tests</directory>
+		<testsuite name="Php tests">
+			<directory suffix=".php" phpVersion="*">tests/phpunit/tests</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>
