@@ -379,6 +379,32 @@ class CF7_AntiSpam_Filters {
 		}
 
 		/**
+		 * Checks if the emails IP is filtered by user
+		 */
+		if ( intval( $options['check_bad_ip'] ) === 1 ) {
+
+			foreach ( $bad_ip_list as $bad_ip ) {
+
+				$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
+
+				if ( false !== stripos( (string) $remote_ip, (string) $bad_ip ) ) {
+
+					$spam_score        += $score_bad_string;
+					$reason['bad_ip'][] = $bad_ip;
+
+				}
+			}
+
+			if ( ! empty( $reason['bad_ip'] ) ) {
+				$reason['bad_ip'] = implode( ', ', $reason['bad_ip'] );
+
+				if ( CF7ANTISPAM_DEBUG ) {
+					cf7a_log( "The ip address $remote_ip is listed into bad ip list (contains {$reason['bad_ip']})" );
+				}
+			}
+		}
+
+		/**
 		 * Checking if the IP address was already blacklisted - no mercy 😎
 		 */
 		if ( $remote_ip && $options['max_attempts'] ) {
@@ -389,8 +415,8 @@ class CF7_AntiSpam_Filters {
 			if ( $ip_data_status >= $options['max_attempts'] ) {
 
 				$spam                  = true;
-				$spam_score           += $score_detection;
-				$reason['blacklisted'] = 'Score: ' . ( $ip_data_status + $spam_score );
+				$spam_score           = $ip_data_status + 1;
+				$reason['blacklisted'] = "Score: $spam_score";
 
 				cf7a_log( "The $remote_ip is already blacklisted, status $ip_data_status", 1 );
 			} elseif ( $ip_data_status > 0 ) {
@@ -701,32 +727,6 @@ class CF7_AntiSpam_Filters {
 						if ( CF7ANTISPAM_DEBUG ) {
 							cf7a_log( "The $remote_ip ip took too much time to fill in the form - elapsed $time_elapsed seconds > $submission_maximum_time_elapsed seconds expected", 1 );
 						}
-					}
-				}
-			}
-
-			/**
-			 * Checks if the emails IP is filtered by user
-			 */
-			if ( intval( $options['check_bad_ip'] ) === 1 ) {
-
-				foreach ( $bad_ip_list as $bad_ip ) {
-
-					$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
-
-					if ( false !== stripos( (string) $remote_ip, (string) $bad_ip ) ) {
-
-						$spam_score        += $score_bad_string;
-						$reason['bad_ip'][] = $bad_ip;
-
-					}
-				}
-
-				if ( ! empty( $reason['bad_ip'] ) ) {
-					$reason['bad_ip'] = implode( ', ', $reason['bad_ip'] );
-
-					if ( CF7ANTISPAM_DEBUG ) {
-						cf7a_log( "The ip address $remote_ip is listed into bad ip list (contains {$reason['bad_ip']})" );
 					}
 				}
 			}
