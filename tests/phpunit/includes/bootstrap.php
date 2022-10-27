@@ -2,13 +2,13 @@
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
+require_once 'wp-tests-config.php';
+
 $tests_dir = getenv( 'WP_TESTS_DIR' );
 
 if ( ! $tests_dir ) {
 	$tests_dir = '/tmp/wordpress-tests-lib';
 }
-
-require_once $tests_dir . '/includes/wp-tests-config.php';
 
 require_once $tests_dir . '/includes/functions.php';
 
