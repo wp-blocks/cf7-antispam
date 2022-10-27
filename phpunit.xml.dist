@@ -1,18 +1,13 @@
 <?xml version="1.0"?>
 <phpunit
-	bootstrap="tests/bootstrap.php"
+	bootstrap="tests/phpunit/includes/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
 	>
 	<testsuites>
-		<testsuite name="testing">
-			<directory prefix="test-" suffix=".php">./tests/</directory>
+		<testsuite name="Php tests">
+			<directory suffix=".php" phpVersion="*">tests/phpunit/tests</directory>
 		</testsuite>
-		<php>
-			<env name="WP_PHPUNIT__TESTS_CONFIG" value="tests/wp-config.php" />
-		</php>
 	</testsuites>
 </phpunit>
