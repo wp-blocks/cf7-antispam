@@ -8,6 +8,8 @@ if ( ! $tests_dir ) {
 	$tests_dir = '/tmp/wordpress-tests-lib';
 }
 
+require_once $tests_dir . '/includes/wp-tests-config.php';
+
 require_once $tests_dir . '/includes/functions.php';
 
 function manually_load_plugin() {
