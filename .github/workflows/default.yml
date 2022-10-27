@@ -51,7 +51,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Install WordPress and initialize database
-        run: ./bin/install-wp-tests.sh cf7_antispam_tests root wordpress 127.0.0.1 latest
+        run: ./tests/bin/install-wp-tests.sh cf7_antispam_tests root wordpress 127.0.0.1 latest
 
       - name: Run PHP Unit tests
         run: composer run test
