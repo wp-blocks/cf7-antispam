@@ -312,9 +312,6 @@ class CF7_AntiSpam_Admin {
 					$ham[]  = $date['ham'];
 					$spam[] = $date['spam'];
 				}
-
-				$email_by_date_headers = sprintf( '[\'%s\'];', implode( "','", array_keys( $mail_collection['by_date'] ) ) );
-				$email_by_type_headers = sprintf( '[\'%s\'];', implode( "','", array_keys( $mail_collection['by_type'] ) ) );
 				?>
 				</ul></div>
 				<p class="community-events-footer">
@@ -324,8 +321,8 @@ class CF7_AntiSpam_Admin {
 				</p>
 				<script>
 					function spam_charts() {
-						const lineLabels = <?php echo esc_html( $email_by_date_headers ); ?>
-						const pieLabels = <?php echo esc_html( $email_by_type_headers ); ?>
+						const lineLabels = ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_date'] ) ), array() ); ?>"]
+						const pieLabels = ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_type'] ) ), array() ); ?>"]
 						const lineData = {
 							labels: lineLabels,
 							datasets: [{
