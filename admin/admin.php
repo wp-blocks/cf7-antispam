@@ -148,18 +148,16 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/style-main.css', array(), $this->version );
+		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/main.css', array(), $this->version );
 
 	}
 
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
-	 * @param string $hook_suffix The dynamic portion of the hook name, $hook_suffix, refers to the hook suffix for the admin page.
-	 *
 	 * @since    0.1.0
 	 */
-	public function enqueue_scripts( $hook_suffix ) {
+	public function enqueue_scripts() {
 
 		/**
 		 *
@@ -172,13 +170,8 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		/* only 4 the dashboard */
-		if ( 'index.php' === $hook_suffix ) {
-			wp_enqueue_script( $this->plugin_name . '-chart', 'https://cdn.jsdelivr.net/npm/chart.js', array(), $this->version );
-		}
-
-		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-script.asset.php';
-		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-script.js', $asset['dependencies'], $this->version, true );
+		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-scripts.asset.php';
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-scripts.js', $asset['dependencies'], $this->version, true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(
@@ -250,9 +243,9 @@ class CF7_AntiSpam_Admin {
 			/* this is needed to parse and create a list of emails. */
 			?>
 			<div id="antispam-widget">
-				<canvas id="lineChart" width="400" height="200"></canvas>
+				<canvas id="line-chart" width="400" height="200"></canvas>
 				<hr>
-				<canvas id="pieChart" width="50" height="50"></canvas>
+				<canvas id="pie-chart" width="50" height="50"></canvas>
 				<div id="antispam-widget-list" class="activity-block"><h3> <?php esc_html_e( 'Last Week Emails', 'cf7-antispam' ); ?></h3><ul>
 				<?php
 				/* print the received mail list */
@@ -320,21 +313,19 @@ class CF7_AntiSpam_Admin {
 					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>"><?php esc_html__( 'CF7-Antispam setup', 'cf7-antispam' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
 				<script>
-					function spam_charts() {
-						const lineLabels = ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_date'] ) ), array() ); ?>"]
-						const pieLabels = ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_type'] ) ), array() ); ?>"]
-						const lineData = {
-							labels: lineLabels,
+					var spamChartData = {
+						lineData: {
+							labels: ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_date'] ) ), array() ); ?>"],
 							datasets: [{
 								label: 'Ham',
 								backgroundColor: 'rgb(0,255,122)',
 								borderColor: 'rgb(3, 210, 106)',
 								tension: 0.25,
 								data: [
-								<?php
-								if ( isset( $ham ) ) {
-									echo esc_html( implode( ',', $ham ) );}
-								?>
+									<?php
+									if ( isset( $ham ) ) {
+										echo esc_html( implode( ',', $ham ) );}
+									?>
 								],
 							},
 							{
@@ -343,17 +334,16 @@ class CF7_AntiSpam_Admin {
 								borderColor: 'rgb(248, 49, 47)',
 								tension: 0.25,
 								data: [
-								<?php
-								if ( isset( $spam ) ) {
-									echo esc_html( implode( ',', $spam ) );
-								}
-								?>
+									<?php
+									if ( isset( $spam ) ) {
+										echo esc_html( implode( ',', $spam ) );
+									}
+									?>
 								],
 							}]
-						};
-
-						const pieData = {
-							labels: pieLabels,
+						},
+						pieData: {
+							labels: ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_type'] ) ), array() ); ?>"],
 							datasets: [{
 								data: [<?php echo esc_html( $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam'] ); ?>],
 								backgroundColor: [
@@ -361,53 +351,8 @@ class CF7_AntiSpam_Admin {
 									'rgb(248,49,47)'
 								]
 							}]
-						};
-
-						const lineConfig = {
-							type: 'line',
-							data: lineData,
-							options: {
-								responsive: true,
-								plugins: {
-									legend: {display: false}
-								},
-								scales: {
-									y: {
-										ticks: {
-											min: 0,
-											precision: 0
-										}
-									}
-								}
-							}
-						};
-
-						const PieConfig = {
-							type: 'pie',
-							data: pieData,
-							options: {
-								responsive: true,
-								plugins: {
-									legend: {display: false}
-								},
-							}
-						};
-
-						const cf7aCharts = {};
-
-						cf7aCharts.lineChart = new Chart(
-							document.getElementById('lineChart'),
-							lineConfig
-						);
-
-						cf7aCharts.pieChart = new Chart(
-							document.getElementById('pieChart'),
-							PieConfig
-						);
-
-						return cf7aCharts;
+						}
 					}
-					window.onload = spam_charts();
 				</script>
 			</div>
 			<?php

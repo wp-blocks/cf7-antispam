@@ -1,5 +1,3 @@
-import './style/style.scss';
-
 window.onload = function () {
 	/* This is the code that adds the confirmation alert to the delete buttons on the settings page. */
 	if (
@@ -7,7 +5,7 @@ window.onload = function () {
 		document.body.classList.contains( 'flamingo_page_flamingo_inbound' )
 	) {
 		// eslint-disable-next-line
-		const alertMessage = cf7a_admin_settings.alertMessage;
+    const alertMessage = cf7a_admin_settings.alertMessage;
 
 		// the confirmation alert script
 		const alerts = document.querySelectorAll( '.cf7a_alert' );
@@ -26,8 +24,8 @@ window.onload = function () {
 	}
 
 	/* This is the code that hides the welcome panel,
-	adds the ctrl-s keypress to save the settings,
-	and shows the advanced settings. */
+  adds the ctrl-s keypress to save the settings,
+  and shows the advanced settings. */
 	if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
 		// save on ctrl-s keypress
 		document.addEventListener( 'keydown', ( e ) => {
