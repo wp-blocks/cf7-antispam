@@ -948,7 +948,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* honeyform */
 		$new_input['check_honeyform']    = isset( $input['check_honeyform'] ) ? 1 : 0;
-		$new_input['honeyform_position'] = ! empty( $input['honeyform_position'] ) ? sanitize_html_class( $input['honeyform_position'] ) : 'wp_body_open';
+		$new_input['honeyform_position'] = ! empty( $input['honeyform_position'] ) ? sanitize_title( $input['honeyform_position'] ) : 'wp_body_open';
 
 		/* b8 */
 		$new_input['enable_b8']    = isset( $input['enable_b8'] ) ? 1 : 0;
@@ -1012,7 +1012,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		foreach ( $values as $value ) {
 			$html .= sprintf(
 				'<option value="%s" %s>%s</option>',
-				$value,
+				sanitize_title($value),
 				$value === $selected ? 'selected' : '',
 				$value
 			);
@@ -1289,7 +1289,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
 			wp_kses(
-				$this->cf7a_generate_options( array( 'wp_body_open', 'the_content', 'wp_footer' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
+				$this->cf7a_generate_options( array( 'before content', 'below content' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
 				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
 			)
 		);
