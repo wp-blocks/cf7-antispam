@@ -78,7 +78,7 @@ class CF7_AntiSpam_Admin {
 	 * @return array Modified array of plugin action links.
 	 */
 	public function cf7a_plugin_settings_link( array $links ) {
-		$settings_page_link = '<a href="' . admin_url( 'admin.php?page=cf7-antispam' ) . '">' . esc_attr__( 'Antispam Settings', 'cf7-antispam' ) . '</a>';
+		$settings_page_link = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=cf7-antispam' ), esc_html__( 'Antispam Settings', 'cf7-antispam' ) );
 		array_unshift( $links, $settings_page_link );
 
 		return $links;
@@ -253,7 +253,7 @@ class CF7_AntiSpam_Admin {
 				<canvas id="lineChart" width="400" height="200"></canvas>
 				<hr>
 				<canvas id="pieChart" width="50" height="50"></canvas>
-				<div id="antispam-widget-list" class="activity-block"><h3> <?php esc_html__( 'Last Week Emails', 'cf7-antispam' ); ?></h3><ul>
+				<div id="antispam-widget-list" class="activity-block"><h3> <?php esc_html_e( 'Last Week Emails', 'cf7-antispam' ); ?></h3><ul>
 				<?php
 				/* print the received mail list */
 
@@ -270,17 +270,19 @@ class CF7_AntiSpam_Admin {
 							admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
 							$post->ID,
 							$is_ham ? '✅️' : '⛔',
-							htmlentities( get_post_meta( $post->ID, '_from' )[0] ),
-							$post->post_title
+							esc_html( get_post_meta( $post->ID, '_from' )[0] ),
+							esc_html( $post->post_title )
 						);
 					}
 
+					$today = esc_html( get_the_date( 'Y-m-d' ) );
+
 					// for each post collect the main information like spam/ham or date.
-					if ( ! isset( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] ) ) {
-						$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] = array();
+					if ( ! isset( $mail_collection['by_date'][ $today ] ) ) {
+						$mail_collection['by_date'][ $today ] = array();
 					}
 					$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
-					$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ][] = array( 'status' => $is_ham ? 'ham' : 'spam' );
+					$mail_collection['by_date'][ $today ][] = array( 'status' => $is_ham ? 'ham' : 'spam' );
 
 				endwhile;
 
@@ -310,6 +312,9 @@ class CF7_AntiSpam_Admin {
 					$ham[]  = $date['ham'];
 					$spam[] = $date['spam'];
 				}
+
+				$email_by_date_headers = sprintf( '[\'%s\'];', implode( "','", array_keys( $mail_collection['by_date'] ) ) );
+				$email_by_type_headers = sprintf( '[\'%s\'];', implode( "','", array_keys( $mail_collection['by_type'] ) ) );
 				?>
 				</ul></div>
 				<p class="community-events-footer">
@@ -319,8 +324,8 @@ class CF7_AntiSpam_Admin {
 				</p>
 				<script>
 					function spam_charts() {
-						const lineLabels = <?php printf( '[\'%s\'];', implode( '\',\'', array_keys( $mail_collection['by_date'] ) ) ); ?>
-						const pieLabels = <?php printf( '[\'%s\'];', implode( '\',\'', array_keys( $mail_collection['by_type'] ) ) ); ?>
+						const lineLabels = <?php echo esc_html( $email_by_date_headers ); ?>
+						const pieLabels = <?php echo esc_html( $email_by_type_headers ); ?>
 						const lineData = {
 							labels: lineLabels,
 							datasets: [{
@@ -353,7 +358,7 @@ class CF7_AntiSpam_Admin {
 						const pieData = {
 							labels: pieLabels,
 							datasets: [{
-								data: [<?php echo $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam']; ?>],
+								data: [<?php echo esc_html( $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam'] ); ?>],
 								backgroundColor: [
 									'rgb(15,199,107)',
 									'rgb(248,49,47)'

@@ -7,27 +7,29 @@
  * @return mixed|string - the real ip address
  */
 function cf7a_get_real_ip() {
-	$http_x_forwarded_for = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) : false;
+	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___HTTP_X_FORWARDED_FOR__
+	$http_x_forwarded_for = ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) : false;
 	if ( ! empty( $http_x_forwarded_for ) ) {
-		return trim( current( explode( ',', sanitize_text_field( wp_unslash( $http_x_forwarded_for ) ) ) ) );
+		return filter_var( trim( current( explode( ',', $http_x_forwarded_for ) ) ), FILTER_VALIDATE_IP );
 	}
 
-	$http_x_real_ip = isset( $_SERVER['HTTP_X_REAL_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) ) : false;
+	$http_x_real_ip = ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ), FILTER_VALIDATE_IP ) : false;
 	if ( ! empty( $http_x_real_ip ) ) {
 		return $http_x_real_ip;
 	}
 
-	$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : false;
+	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__
+	$remote_addr = ! empty( $_SERVER['REMOTE_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) : false;
 	if ( ! empty( $remote_addr ) ) {
 		return $remote_addr;
 	}
 
-	$http_client_ip = isset( $_SERVER['HTTP_CLIENT_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ), FILTER_VALIDATE_IP ) : false;
+	$http_client_ip = ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ), FILTER_VALIDATE_IP ) : false;
 	if ( ! empty( $http_client_ip ) ) {
 		return $http_client_ip;
 	}
 
-	$http_cf_connecting_ip = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : false;
+	$http_cf_connecting_ip = ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ), FILTER_VALIDATE_IP ) : false;
 	if ( ! empty( $http_cf_connecting_ip ) ) {
 		return $http_cf_connecting_ip;
 	}
@@ -195,9 +197,9 @@ function cf7a_microtime_float() {
 /**
  * It takes three numbers (red, green, and blue) and returns a hexadecimal color code
  *
- * @param int r red
- * @param int g The green value.
- * @param int b brightness
+ * @param int $r red
+ * @param int $g green
+ * @param int $b blue
  *
  * @return string A hexadecimal color code.
  */
@@ -298,9 +300,11 @@ function cf7a_compress_array( $array, $is_html = false ) {
 function cf7a_log( $log_data, $log_level = 0 ) {
 	if ( ! empty( $log_data ) ) {
 		if ( 0 === $log_level || 1 === $log_level && CF7ANTISPAM_DEBUG || 2 === $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
+			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log(
 				is_string( $log_data )
 				? CF7ANTISPAM_LOG_PREFIX . $log_data
+				// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				: CF7ANTISPAM_LOG_PREFIX . print_r( $log_data, true )
 			);
 		}

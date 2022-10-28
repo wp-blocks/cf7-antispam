@@ -56,7 +56,7 @@ jobs:
       - name: Run PHP Unit tests
         run: composer run test
 
-  lint:
+  phpcs:
     name: Check Coding Standards
     runs-on: ubuntu-latest
     steps:
@@ -64,8 +64,9 @@ jobs:
       - name: WPCS check
         uses: 10up/wpcs-action@stable
         with:
-          standard: 'WordPress-VIP-Go'
+          standard: 'WordPress'
           extra_args: '--report-json=./phpcs.json'
+          excludes: '.github/ tests/ libs/'
       - name: Update summary
         run: |
           npx --yes github:10up/phpcs-json-to-md --path ./phpcs.json --output ./phpcs.md
