@@ -37,7 +37,8 @@
     "@wordpress/babel-preset-default": "^7.3.0",
     "@wordpress/browserslist-config": "^5.2.0",
     "@wordpress/eslint-plugin": "^13.3.0",
-    "@wordpress/scripts": "^24.3.0"
+    "@wordpress/scripts": "^24.3.0",
+    "chart.js": "^3.9.1"
   },
   "engines": {
     "node": ">=16.0.0",
