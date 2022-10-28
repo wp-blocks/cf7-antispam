@@ -112,16 +112,17 @@ class CF7_AntiSpam_Frontend {
 	}
 
 	/**
-	 * It gets the form, formats it, and then echoes it out
+	 * It get the content of the page and appends a fake form at the end or at the beginning
 	 *
 	 * @param string $content The content of the post.
 	 */
 	public function cf7a_honeyform( $content ) {
 		global $post;
-		$post_id = $post->ID;
+
+		/* $html will store the honeyform html */
+		$html = '';
 
 		$form_class   = sanitize_html_class( $this->options['cf7a_customizations_class'] );
-		$form_post_id = 0;
 
 		$args = array(
 			'post_type'      => 'wpcf7_contact_form',
@@ -131,98 +132,96 @@ class CF7_AntiSpam_Frontend {
 		$loop = new WP_Query( $args );
 		while ( $loop->have_posts() ) :
 			$loop->the_post();
-			$form_post_id = get_the_ID();
+
+			$wpcf7 = WPCF7_ContactForm::get_template();
+
+			static $global_count = 0;
+			++ $global_count;
+
+			$unit_tag = sprintf(
+				'wpcf7-f%1$d-p%2$d-o%3$d',
+				$wpcf7->id(),
+				$post->ID,
+				$global_count
+			);
+
+			$url  = add_query_arg( array() );
+			$frag = strstr( $url, '#' );
+			if ( $frag ) {
+				$url = substr( $url, 0, -strlen( $frag ) );
+			}
+			$url .= '#' . $unit_tag;
+
+			$hidden_fields = array(
+				'_wpcf7'                  => $wpcf7->id(),
+				'_wpcf7_version'          => WPCF7_VERSION,
+				'_wpcf7_locale'           => $wpcf7->locale(),
+				'_wpcf7_unit_tag'         => $unit_tag,
+				'_wpcf7_posted_data_hash' => '',
+				'_wpcf7_' . $form_class   => '',
+			);
+
+			if ( in_the_loop() ) {
+				$hidden_fields['_wpcf7_container_post'] = (int) get_the_ID();
+			}
+
+			if ( $wpcf7->nonce_is_active() && is_user_logged_in() ) {
+				$hidden_fields['_wpnonce'] = wpcf7_create_nonce();
+			}
+
+			$hidden_fields_html = '';
+
+			foreach ( $hidden_fields as $name => $value ) {
+				$hidden_fields_html .= sprintf(
+					'<input type="hidden" name="%1$s" value="%2$s" />',
+					esc_attr( $name ),
+					esc_attr( $value )
+				) . "\n";
+			}
+
+			$atts = array(
+				'action'       => esc_url_raw( $url ),
+				'method'       => 'post',
+				'class'        => 'wpcf7-form init',
+				'enctype'      => wpcf7_enctype_value( '' ),
+				'autocomplete' => true,
+				'novalidate'   => wpcf7_support_html5() ? 'novalidate' : '',
+				'data-status'  => 'init',
+				'locale'       => $wpcf7->locale(),
+			);
+
+			$atts = wpcf7_format_atts( $atts );
+
+			$html .= sprintf(
+				'<div %s><div><div class="wpcf7-form"><div class="%s"><div>%s<form %s><div style="display: block;">%s</div>%s%s</form></div></div></div></div></div>',
+				wpcf7_format_atts(
+					array(
+						'role'  => 'form',
+						'class' => 'wpcf7',
+						'id'    => $unit_tag,
+						get_option( 'html_type' ) === 'text/html' ? 'lang' : 'xml:lang'
+								=> str_replace( '_', '-', $wpcf7->locale() ),
+						'dir'   => wpcf7_is_rtl( $wpcf7->locale() ) ? 'rtl' : 'ltr',
+					)
+				),
+				esc_html( $form_class ),
+				$wpcf7->screen_reader_response(),
+				$atts,
+				$hidden_fields_html,
+				$wpcf7->replace_all_form_tags(),
+				$wpcf7->form_response_output()
+			);
+
+			$html = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
+
 		endwhile;
-
-		$wpcf7 = WPCF7_ContactForm::get_template();
-
-		static $global_count = 0;
-		++ $global_count;
-
-		$unit_tag = sprintf(
-			'wpcf7-f%1$d-p%2$d-o%3$d',
-			$wpcf7->id(),
-			$post_id,
-			$global_count
-		);
-
-		$url  = add_query_arg( array() );
-		$frag = strstr( $url, '#' );
-		if ( $frag ) {
-			$url = substr( $url, 0, -strlen( $frag ) );
-		}
-		$url .= '#' . $unit_tag;
-
-		$hidden_fields = array(
-			'_wpcf7'                  => $wpcf7->id(),
-			'_wpcf7_version'          => WPCF7_VERSION,
-			'_wpcf7_locale'           => $wpcf7->locale(),
-			'_wpcf7_unit_tag'         => $unit_tag,
-			'_wpcf7_posted_data_hash' => '',
-			'_wpcf7_' . $form_class   => '',
-		);
-
-		if ( in_the_loop() ) {
-			$hidden_fields['_wpcf7_container_post'] = (int) get_the_ID();
-		}
-
-		if ( $wpcf7->nonce_is_active() && is_user_logged_in() ) {
-			$hidden_fields['_wpnonce'] = wpcf7_create_nonce();
-		}
-
-		$hidden_fields_html = '';
-
-		foreach ( $hidden_fields as $name => $value ) {
-			$hidden_fields_html .= sprintf(
-				'<input type="hidden" name="%1$s" value="%2$s" />',
-				esc_attr( $name ),
-				esc_attr( $value )
-			) . "\n";
-		}
-
-		$atts = array(
-			'action'       => esc_url_raw( $url ),
-			'method'       => 'post',
-			'class'        => 'wpcf7-form init',
-			'enctype'      => wpcf7_enctype_value( '' ),
-			'autocomplete' => true,
-			'novalidate'   => wpcf7_support_html5() ? 'novalidate' : '',
-			'data-status'  => 'init',
-			'locale'       => $wpcf7->locale(),
-		);
-
-		$atts = wpcf7_format_atts( $atts );
-
-		$html = sprintf(
-			'<div %s><div><div class="wpcf7-form"><div class="%s"><div>%s<form %s><div style="display: block;">%s</div>%s%s</form></div></div></div></div></div>',
-			wpcf7_format_atts(
-				array(
-					'role'  => 'form',
-					'class' => 'wpcf7',
-					'id'    => $unit_tag,
-					get_option( 'html_type' ) === 'text/html' ? 'lang' : 'xml:lang'
-							=> str_replace( '_', '-', $wpcf7->locale() ),
-					'dir'   => wpcf7_is_rtl( $wpcf7->locale() ) ? 'rtl' : 'ltr',
-				)
-			),
-			esc_html( $form_class ),
-			$wpcf7->screen_reader_response(),
-			$atts,
-			$hidden_fields_html,
-			$wpcf7->replace_all_form_tags(),
-			$wpcf7->form_response_output()
-		);
-
-		$html = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
 
 		wp_reset_postdata();
 
-		$honeyform_position = $this->options['honeyform_position'];
-		$content            = isset( $this->options['honeyform_position'] ) && 'body_open' !== $honeyform_position
+		/* long story, but thinking about the way these bots work the best thing is to have the fake form before the 'real' one */
+		return isset( $this->options['honeyform_position'] ) && 'before-content' === sanitize_title($this->options['honeyform_position'])
 			? sprintf( '%s%s', $html, $content )
 			: sprintf( '%s%s', $content, $html );
-
-		return $content;
 	}
 
 	/**
