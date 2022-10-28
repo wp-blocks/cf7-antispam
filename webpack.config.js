@@ -14,6 +14,6 @@ const addModule = ( fileName, filePath ) => {
 };
 
 const mainScript = addModule( 'script.js', 'includes/src/' );
-const adminScript = addModule( 'admin-script.js', 'admin/src/' );
+const adminScript = addModule( 'admin-scripts.js', 'admin/src/' );
 
 module.exports = [ mainScript, adminScript ];
