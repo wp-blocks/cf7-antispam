@@ -248,83 +248,79 @@ class CF7_AntiSpam_Admin {
 
 		if ( $query->have_posts() ) :
 			/* this is needed to parse and create a list of emails. */
-			$html = '<div id="antispam-widget-list" class="activity-block"><h3>' . __( 'Last Week Emails', 'cf7-antispam' ) . '</h3><ul>';
-
-			while ( $query->have_posts() ) :
-				$query->the_post();
-				global $post;
-
-				$is_ham = 'flamingo-spam' !== $post->post_status;
-
-				if ( wp_date( 'Y-m-d' ) > wp_date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
-					$html .= sprintf(
-						'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
-						get_the_date( 'Y-m-d' ),
-						admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
-						$post->ID,
-						$is_ham ? '✅️' : '⛔',
-						htmlentities( get_post_meta( $post->ID, '_from' )[0] ),
-						$post->post_title
-					);
-				}
-
-				// for each post collect the main information like spam/ham or date.
-				if ( ! isset( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] ) ) {
-					$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] = array();
-				}
-				$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
-				$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ][] = array( 'status' => $is_ham ? 'ham' : 'spam' );
-
-			endwhile;
-
-			wp_reset_postdata();
-
-			$html .= '</ul></div>';
-
-			$count = array();
-
-			$mail_collection['by_date'] = array_reverse( $mail_collection['by_date'] );
-
-			/* for each date */
-			foreach ( $mail_collection['by_date'] as $date => $items ) {
-
-				/* add the date to the list if not yet added */
-				if ( ! isset( $count[ $date ] ) ) {
-					$count[ $date ] = array(
-						'ham'  => 0,
-						'spam' => 0,
-					); }
-
-				/* for each item of that date feed the count by email type */
-				foreach ( $items as $item ) {
-					'spam' === $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
-			}
-
-			/* Create two lists where the key is the date and the value is the number of mails of that type */
-			foreach ( $count as $date ) {
-				$ham[]  = $date['ham'];
-				$spam[] = $date['spam'];
-			}
-
 			?>
 			<div id="antispam-widget">
 				<canvas id="lineChart" width="400" height="200"></canvas>
 				<hr>
 				<canvas id="pieChart" width="50" height="50"></canvas>
+				<div id="antispam-widget-list" class="activity-block"><h3> <?php esc_html__( 'Last Week Emails', 'cf7-antispam' ); ?></h3><ul>
 				<?php
 				/* print the received mail list */
-				echo $html;
+
+				while ( $query->have_posts() ) :
+					$query->the_post();
+					global $post;
+
+					$is_ham = 'flamingo-spam' !== $post->post_status;
+
+					if ( wp_date( 'Y-m-d' ) > wp_date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
+						printf(
+							'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
+							get_the_date( 'Y-m-d' ),
+							admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
+							$post->ID,
+							$is_ham ? '✅️' : '⛔',
+							htmlentities( get_post_meta( $post->ID, '_from' )[0] ),
+							$post->post_title
+						);
+					}
+
+					// for each post collect the main information like spam/ham or date.
+					if ( ! isset( $mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] ) ) {
+						$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ] = array();
+					}
+					$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
+					$mail_collection['by_date'][ get_the_date( 'Y-m-d' ) ][] = array( 'status' => $is_ham ? 'ham' : 'spam' );
+
+				endwhile;
+
+				wp_reset_postdata();
+
+				$count = array();
+
+				$mail_collection['by_date'] = array_reverse( $mail_collection['by_date'] );
+
+				/* for each date */
+				foreach ( $mail_collection['by_date'] as $date => $items ) {
+
+					/* add the date to the list if not yet added */
+					if ( ! isset( $count[ $date ] ) ) {
+						$count[ $date ] = array(
+							'ham'  => 0,
+							'spam' => 0,
+						); }
+
+					/* for each item of that date feed the count by email type */
+					foreach ( $items as $item ) {
+						'spam' === $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
+				}
+
+				/* Create two lists where the key is the date and the value is the number of mails of that type */
+				foreach ( $count as $date ) {
+					$ham[]  = $date['ham'];
+					$spam[] = $date['spam'];
+				}
 				?>
+				</ul></div>
 				<p class="community-events-footer">
 					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>"><?php echo esc_html__( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 					|
-					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>">CF7-Antispam setup <span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>"><?php esc_html__( 'CF7-Antispam setup', 'cf7-antispam' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
 				<script>
 					function spam_charts() {
-						const lineLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_date'] ) ); ?>' ];
-						const pieLabels = [ '<?php echo implode( "','", array_keys( $mail_collection['by_type'] ) ); ?>' ];
-
+						const lineLabels = <?php printf( '[\'%s\'];', implode( '\',\'', array_keys( $mail_collection['by_date'] ) ) ); ?>
+						const pieLabels = <?php printf( '[\'%s\'];', implode( '\',\'', array_keys( $mail_collection['by_type'] ) ) ); ?>
 						const lineData = {
 							labels: lineLabels,
 							datasets: [{
@@ -335,7 +331,7 @@ class CF7_AntiSpam_Admin {
 								data: [
 								<?php
 								if ( isset( $ham ) ) {
-									echo implode( ',', $ham );}
+									echo esc_html( implode( ',', $ham ) );}
 								?>
 								],
 							},
@@ -347,7 +343,8 @@ class CF7_AntiSpam_Admin {
 								data: [
 								<?php
 								if ( isset( $spam ) ) {
-									echo implode( ',', $spam );}
+									echo esc_html( implode( ',', $spam ) );
+								}
 								?>
 								],
 							}]
@@ -394,15 +391,19 @@ class CF7_AntiSpam_Admin {
 							}
 						};
 
-						const lineChart = new Chart(
+						const cf7aCharts = {};
+
+						cf7aCharts.lineChart = new Chart(
 							document.getElementById('lineChart'),
 							lineConfig
 						);
 
-						const pieChart = new Chart(
+						cf7aCharts.pieChart = new Chart(
 							document.getElementById('pieChart'),
 							PieConfig
 						);
+
+						return cf7aCharts;
 					}
 					window.onload = spam_charts();
 				</script>

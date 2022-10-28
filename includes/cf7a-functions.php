@@ -136,18 +136,19 @@ function get_honeypot_input_names( $custom_names = array() ) {
  * @param array $schedules This is the name of the hook that we're adding a schedule to.
  */
 function cf7a_add_cron_steps( $schedules ) {
-	$schedules = array(
-		'5min'  => array(
-			'interval' => 300,
-			'display'  => __( 'Every 5 Minutes', 'cf7-antispam' ),
-		),
-		'60sec' => array(
-			'interval' => 60,
-			'display'  => __( 'Every 60 seconds', 'cf7-antispam' ),
-		),
+	return array_merge(
+		$schedules,
+		array(
+			'5min'  => array(
+				'interval' => 300,
+				'display'  => __( 'Every 5 Minutes', 'cf7-antispam' ),
+			),
+			'60sec' => array(
+				'interval' => 60,
+				'display'  => __( 'Every 60 seconds', 'cf7-antispam' ),
+			),
+		)
 	);
-
-	return $schedules;
 }
 add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 

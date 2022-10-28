@@ -9,16 +9,16 @@ class CF7_AntiSpam_ActivatorTest extends TestCase {
 
 	public function testInstall() {
 		$res = CF7_AntiSpam_Activator::install();
-		$this->assertTrue($res);
+		$this->assertTrue( $res );
 	}
 
 	public function testActivate() {
 		$res = CF7_AntiSpam_Activator::activate();
-		$this->assertTrue($res);
+		$this->assertTrue( $res );
 	}
 
 	public function testUpdate_options() {
 		$res = CF7_AntiSpam_Activator::update_options();
-		$this->assertTrue($res);
+		$this->assertTrue( $res );
 	}
 }

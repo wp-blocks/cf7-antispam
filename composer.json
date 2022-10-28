@@ -14,19 +14,19 @@
   "require-dev": {
 	"php": ">=7.2",
 	"friendsofphp/php-cs-fixer": "3.*",
-	"squizlabs/php_codesniffer": "^3.6.2",
+	"squizlabs/php_codesniffer": "^3.6",
 	"phpmd/phpmd" : "@stable",
-    "phpstan/phpstan": "^1.8.10",
+    "phpstan/phpstan": "^1.8",
 	"phpcompatibility/php-compatibility": "*",
 	"wp-coding-standards/wpcs": "*",
 	"phpcompatibility/phpcompatibility-wp": "*",
-	"slevomat/coding-standard": "^7.2.1",
+	"slevomat/coding-standard": "^7.2",
     "phpstan/extension-installer": "^1.2",
     "szepeviktor/phpstan-wordpress": "^1.1",
     "vimeo/psalm": "^4.29",
 	"phpunit/phpunit": "^7",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
-	"yoast/phpunit-polyfills": "^1.0.0"
+	"yoast/phpunit-polyfills": "*"
   },
   "require": {
 	"geoip2/geoip2": "~2.0"

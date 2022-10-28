@@ -1,11 +1,13 @@
 <?php
 /**
-Plugin Name: AntiSpam for Contact Form 7
-Description: A trustworthy antispam plugin for Contact Form 7. Simple but effective.
-Author: Codekraft
-Text Domain: cf7-antispam
-Domain Path: /languages/
-Version: 0.4.0
+ * Plugin Name: AntiSpam for Contact Form 7
+ * Description: A trustworthy antispam plugin for Contact Form 7. Simple but effective.
+ * Author: Codekraft
+ * Text Domain: cf7-antispam
+ * Domain Path: /languages/
+ * Version: 0.4.0
+ *
+ * @package cf7-antispam
  */
 
 /* If this file is called directly, abort. */

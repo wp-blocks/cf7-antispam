@@ -302,10 +302,9 @@ class CF7_AntiSpam {
 
 			/* It gets the form, formats it, and then echoes it out */
 			if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
-				$hook = $this->options['honeyform_position'];
 				if ( defined( 'REST_REQUEST' ) && ! REST_REQUEST ) {
-					$this->loader->add_action( $hook, $plugin_frontend, 'cf7a_honeyform', 99 );
 				}
+				$this->loader->add_filter( 'the_content', $plugin_frontend, 'cf7a_honeyform' );
 			}
 
 			/* It adds a CSS style to the page that hides the honeypot field */
@@ -332,7 +331,7 @@ class CF7_AntiSpam {
 					printf(
 						'<div class="notice notice-info"><p>%s<a href="%s">%s</a>%s</p></div>',
 						esc_html__( 'CF7 AntiSpam need ', 'cf7-antispam' ),
-						esc_url( 'https://wordpress.org/plugins/contact-form-7/' ),
+						esc_url_raw( 'https://wordpress.org/plugins/contact-form-7/' ),
 						esc_html__( 'Contact Form 7', 'cf7-antispam' ),
 						esc_html__( ' installed and enabled in order to work.', 'cf7-antispam' )
 					);

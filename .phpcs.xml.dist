@@ -4,11 +4,13 @@
 
 	<!-- What to scan -->
 	<file>.</file>
-	<exclude-pattern>/node_modules/*</exclude-pattern>
-	<exclude-pattern>/vendor/*</exclude-pattern>
-	<exclude-pattern>/languages/*</exclude-pattern>
+	<exclude-pattern>/.github/*</exclude-pattern>
 	<exclude-pattern>/assets/*</exclude-pattern>
+	<exclude-pattern>/languages/*</exclude-pattern>
 	<exclude-pattern>/libs/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/tests/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
 	<exclude-pattern>*.asset.php</exclude-pattern>
 	<exclude-pattern>*.js</exclude-pattern>
 
@@ -41,8 +43,24 @@
 	<config name="minimum_supported_wp_version" value="5.6"/>
 
 	<rule ref="WordPress" />
-	<rule ref="WordPress-Core"/>
 	<rule ref="WordPress-Docs"/>
+	<rule ref="WordPress-Extra"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="cf7-antispam"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="cf7a_"/>
+			</property>
+		</properties>
+	</rule>
 
 	<rule ref="SlevomatCodingStandard.PHP"/>
 

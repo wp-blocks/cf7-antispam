@@ -117,6 +117,8 @@ class CF7_AntiSpam_Frontend {
 	 * @param string $content The content of the post.
 	 */
 	public function cf7a_honeyform( $content ) {
+		global $post;
+		$post_id = $post->ID;
 
 		$form_class   = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 		$form_post_id = 0;
@@ -125,6 +127,7 @@ class CF7_AntiSpam_Frontend {
 			'post_type'      => 'wpcf7_contact_form',
 			'posts_per_page' => 1,
 		);
+
 		$loop = new WP_Query( $args );
 		while ( $loop->have_posts() ) :
 			$loop->the_post();
@@ -138,8 +141,8 @@ class CF7_AntiSpam_Frontend {
 
 		$unit_tag = sprintf(
 			'wpcf7-f%1$d-p%2$d-o%3$d',
-			$form_post_id,
-			get_the_ID(),
+			$wpcf7->id(),
+			$post_id,
 			$global_count
 		);
 
@@ -150,10 +153,8 @@ class CF7_AntiSpam_Frontend {
 		}
 		$url .= '#' . $unit_tag;
 
-		$lang_tag = str_replace( '_', '-', $wpcf7->locale() );
-
 		$hidden_fields = array(
-			'_wpcf7'                  => $form_post_id,
+			'_wpcf7'                  => $wpcf7->id(),
 			'_wpcf7_version'          => WPCF7_VERSION,
 			'_wpcf7_locale'           => $wpcf7->locale(),
 			'_wpcf7_unit_tag'         => $unit_tag,
@@ -179,24 +180,8 @@ class CF7_AntiSpam_Frontend {
 			) . "\n";
 		}
 
-		$html = sprintf(
-			'<div %s>',
-			wpcf7_format_atts(
-				array(
-					'role'  => 'form',
-					'class' => 'wpcf7',
-					'id'    => $unit_tag,
-					get_option( 'html_type' ) === 'text/html' ? 'lang' : 'xml:lang'
-					=> $lang_tag,
-					'dir'   => wpcf7_is_rtl( $wpcf7->locale() ) ? 'rtl' : 'ltr',
-				)
-			)
-		);
-
-		$html .= $wpcf7->screen_reader_response();
-
 		$atts = array(
-			'action'       => esc_url( $url ),
+			'action'       => esc_url_raw( $url ),
 			'method'       => 'post',
 			'class'        => 'wpcf7-form init',
 			'enctype'      => wpcf7_enctype_value( '' ),
@@ -205,27 +190,39 @@ class CF7_AntiSpam_Frontend {
 			'data-status'  => 'init',
 			'locale'       => $wpcf7->locale(),
 		);
+
 		$atts = wpcf7_format_atts( $atts );
 
-		$html .= sprintf( '<form %s>', $atts ) . "\n";
-		$html .= sprintf( "<div style=\"display: none;\">\n%s</div>\n", $hidden_fields_html );
-		$html .= $wpcf7->replace_all_form_tags();
-		$html .= $wpcf7->form_response_output();
-		$html .= '</form></div>';
-		$html  = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
+		$html = sprintf(
+			'<div %s><div><div class="wpcf7-form"><div class="%s"><div>%s<form %s><div style="display: block;">%s</div>%s%s</form></div></div></div></div></div>',
+			wpcf7_format_atts(
+				array(
+					'role'  => 'form',
+					'class' => 'wpcf7',
+					'id'    => $unit_tag,
+					get_option( 'html_type' ) === 'text/html' ? 'lang' : 'xml:lang'
+							=> str_replace( '_', '-', $wpcf7->locale() ),
+					'dir'   => wpcf7_is_rtl( $wpcf7->locale() ) ? 'rtl' : 'ltr',
+				)
+			),
+			esc_html( $form_class ),
+			$wpcf7->screen_reader_response(),
+			$atts,
+			$hidden_fields_html,
+			$wpcf7->replace_all_form_tags(),
+			$wpcf7->form_response_output()
+		);
+
+		$html = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
 
 		wp_reset_postdata();
-		?>
-		<div>
-			<div class="wpcf7-form">
-				<div class="<?php echo esc_html( $form_class ); ?>">
-					<div><?php echo $html; ?></div>
-				</div>
-			</div>
-		</div>
 
-		<?php
-		echo $content;
+		$honeyform_position = $this->options['honeyform_position'];
+		$content            = isset( $this->options['honeyform_position'] ) && 'body_open' !== $honeyform_position
+			? sprintf( '%s%s', $html, $content )
+			: sprintf( '%s%s', $content, $html );
+
+		return $content;
 	}
 
 	/**
@@ -260,7 +257,7 @@ class CF7_AntiSpam_Frontend {
 		}
 
 		/* add the default hidden fields */
-		$referrer = ! empty( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( $_SERVER['HTTP_REFERER'] ) : false;
+		$referrer = ! empty( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : false;
 		return array_merge(
 			$fields,
 			array(

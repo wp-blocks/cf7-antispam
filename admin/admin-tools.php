@@ -80,7 +80,7 @@ class CF7_AntiSpam_Admin_Tools {
 						/* translators: the %1$s is the user id and %2$s is the ip address. */
 							__( 'Ban forever id %1$s (ip %2$s) successful', 'cf7-antispam' ),
 							$ban_id,
-							isset( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
+							! empty( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
 						)
 					);
 				} else {
@@ -89,7 +89,7 @@ class CF7_AntiSpam_Admin_Tools {
 							/* translators: the %1$s is the user id and %2$s is the ip address. */
 							__( 'Error: unable to ban forever id %1$s (ip %2$s)', 'cf7-antispam' ),
 							$ban_id,
-							isset( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
+							! empty( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
 						)
 					);
 				}
@@ -103,7 +103,6 @@ class CF7_AntiSpam_Admin_Tools {
 
 				/* uninstall class contains the database utility functions */
 				require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
-
 				$r = CF7_AntiSpam_Uninstaller::cf7a_clean_blacklist();
 
 				if ( $r ) {
@@ -119,7 +118,6 @@ class CF7_AntiSpam_Admin_Tools {
 			if ( 'reset-dictionary' === $action ) {
 
 				/* uninstall class contains the database utility functions */
-				require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
 				$r = CF7_AntiSpam_Flamingo::cf7a_reset_dictionary();
 
 				if ( $r ) {
@@ -137,7 +135,7 @@ class CF7_AntiSpam_Admin_Tools {
 
 				/* uninstall class contains the database utility functions */
 				require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
-				$r = CF7_AntiSpam_Flamingo::cf7a_full_reset();
+				$r = CF7_AntiSpam_Uninstaller::cf7a_full_reset();
 
 				if ( $r ) {
 					self::cf7a_push_notice( __( 'CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 manually if needed', 'cf7-antispam' ), 'success' );
@@ -176,7 +174,7 @@ class CF7_AntiSpam_Admin_Tools {
 					$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 					$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
-					if ( $r === 'empty' ) {
+					if ( 'empty' === $r ) {
 						/* translators: %s is the mail id. */
 						self::cf7a_push_notice( sprintf( __( 'Email id %s has an empty body', 'success cf7-antispam' ), $mail_id ) );
 						wp_safe_redirect( $refer );

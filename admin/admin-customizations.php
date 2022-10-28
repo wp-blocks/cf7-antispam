@@ -25,7 +25,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function __construct() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			return 'Administrators only';
+			return esc_html__( 'Administrators only', 'cf7-antispam' );
 		}
 
 		/* the plugin options */
@@ -616,22 +616,33 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/**
+	 * It prints a paragraph with a description of the section
+	 */
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__( 'How many failed attempts before being banned', 'cf7-antispam' ) . '</p>' );
 		if ( wp_next_scheduled( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG ) {
-			printf( sprintf( '<small class="monospace">%s%s <br/>Server time %s</small>', esc_html__( 'Next scheduled unban event: ', 'cf7-antispam' ), wp_date( 'Y-m-d H:i:s', wp_next_scheduled( 'cf7a_cron' ) ), wp_date( 'Y-m-d H:i:s', time() ) ) );
+			printf(
+				'<small class="monospace">%s %s <br/>Server time %s</small>',
+				esc_html__( 'Next scheduled unban event:', 'cf7-antispam' ),
+				esc_html( wp_date( 'Y-m-d H:i:s', wp_next_scheduled( 'cf7a_cron' ) ) ),
+				esc_html( wp_date( 'Y-m-d H:i:s', time() ) )
+			);
 		}
 	}
 
+	/** It prints the bot_fingerprint info text */
 	public function cf7a_print_section_bot_fingerprint() {
-		printf( '<p>' . esc_html__( "Fingerprinting is a way of exploiting certain data that the browser can provide to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) . '</p>' );
-		printf( '<p>' . esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( "Fingerprinting is a way of exploiting certain data that the browser can provide to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' ) );
 	}
 
+	/** It prints the check_time info text */
 	public function cf7a_print_section_check_time() {
-		printf( '<p>' . esc_html__( "Check that the e-mail is sent in the 'right' time frame. If the e-mail was sent too quickly or too slowly, the sender is probably not human. Values in seconds", 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( "Check that the e-mail is sent in the 'right' time frame. If the e-mail was sent too quickly or too slowly, the sender is probably not human. Values in seconds", 'cf7-antispam' ) );
 	}
 
+	/** It prints the geoip info text */
 	public function cf7a_check_geoip() {
 		printf(
 			'<p>%s</p><p>%s <a href="https://www.maxmind.com/en/geolite2/eula">%s</a> %s <a href="https://www.maxmind.com/en/geolite2/signup">%s</a></p> <p>%s</p>',
@@ -652,54 +663,73 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 	}
 
+	/** It prints the language info text */
 	public function cf7a_check_language() {
-		printf( '<p>' . esc_html__( 'Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. ', 'cf7-antispam' ) . '</p>' );
-		printf( '<p>' . esc_html__( 'The browser language detection method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. ', 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( 'The browser language detection method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) );
 	}
 
+	/** It prints the bad_ip info text */
 	public function cf7a_print_section_bad_ip() {
-		printf( '<p>' . esc_html__( 'Adding a list of forbidden senders per IP address, one "bad" ip each line', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'Adding a list of forbidden senders per IP address, one "bad" ip each line', 'cf7-antispam' ) );
 	}
 
+	/** It prints the bad_words info text */
 	public function cf7a_print_section_bad_words() {
-		printf( '<p>' . esc_html__( 'Check if the mail message contains "bad" words, all e-mails containing one of these words in the text will be flagged. A bad string per line', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'Check if the mail message contains "bad" words, all e-mails containing one of these words in the text will be flagged. A bad string per line', 'cf7-antispam' ) );
 	}
 
+	/** It prints the bad_email_strings info text */
 	public function cf7a_print_section_bad_email_strings() {
-		printf( '<p>' . esc_html__( 'Check if the mail content contains a word and in this case flag this mail, one forbidden word per line', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'Check if the mail content contains a word and in this case flag this mail, one forbidden word per line', 'cf7-antispam' ) );
 	}
 
+	/** It prints the user_agent info text */
 	public function cf7a_print_user_agent() {
-		printf( '<p>' . esc_html__( 'Enter a list of forbidden user agents, one per line. When the string match the user agent (or a part of) the mail will be flagged', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'Enter a list of forbidden user agents, one per line. When the string match the user agent (or a part of) the mail will be flagged', 'cf7-antispam' ) );
 	}
 
+	/** It prints the dnsbl info text */
 	public function cf7a_print_dnsbl() {
-		printf( '<p>' . esc_html__( 'Check sender ip on DNS Blacklists, DNSBL are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers, BUT they could also be users behind a proxy and that is why the method is no longer 100 per cent reliable. Add a DSNBL server url each line ', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'Check sender ip on DNS Blacklists, DNSBL are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers, BUT they could also be users behind a proxy and that is why the method is no longer 100 per cent reliable. Add a DSNBL server url each line ', 'cf7-antispam' ) );
 	}
 
+	/** It prints the honeypot info text */
 	public function cf7a_print_honeypot() {
-		printf( '<p>' . esc_html__( 'the honeypot is a "trap" field that is hidden with css or js from the user but remains visible to bots. Since this fields are automatically added and appended inside the forms with standard names.', 'cf7-antispam' ) . " <p class='info monospace'>[*] " . esc_html__( 'Please check the list below because the name MUST differ from the cf7 tag class names', 'cf7-antispam' ) . '</p></p>' );
+		printf(
+			'<p>%s<p class="info monospace">[*] %s</p></p>',
+			esc_html__( 'the honeypot is a "trap" field that is hidden with css or js from the user but remains visible to bots. Since this fields are automatically added and appended inside the forms with standard names.', 'cf7-antispam' ),
+			esc_html__( 'Please check the list below because the name MUST differ from the cf7 tag class names', 'cf7-antispam' )
+		);
 	}
 
+	/** It prints the honeyform info text */
 	public function cf7a_print_honeyform() {
-		printf( '<p>' . esc_html__( "I'm actually going to propose the honey-form for the first time! Instead of creating trap fields that even my grandfather knows about, I directly create a trap form (much less detectable for bots)", 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( "I'm actually going to propose the honey-form for the first time! Instead of serving the bot a form with trap fields we directly serve it a form that is entirely a trap", 'cf7-antispam' ) );
 	}
 
+	/** It prints the b8 info text */
 	public function cf7a_print_b8() {
-		printf( '<p>' . esc_html__( 'Tells you whether a text is spam or not, using statistical text analysis of the text message', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'Tells you whether a text is spam or not, using statistical text analysis of the text message', 'cf7-antispam' ) );
 	}
 
+	/** It prints the customizations info */
 	public function cf7a_print_customizations() {
-		printf( '<p>' . esc_html__( 'RECOMMENDED: create your own and unique css class and customized fields name', 'cf7-antispam' ) . '</p>' );
-		printf( '<p>' . esc_html__( "You can also choose in encryption method. But, After changing cypher do a couple of tests because a small amount of them aren't compatible with the format of the form data.", 'cf7-antispam' ) . '</p>' );
+		printf(
+			'<p>%s</p><p>%s</p>',
+			esc_html__( 'RECOMMENDED: create your own and unique css class and customized fields name', 'cf7-antispam' ),
+			esc_html__( "You can also choose in encryption method. But, After changing cypher do a couple of tests because a small amount of them aren't compatible with the format of the form data.", 'cf7-antispam' )
+		);
 	}
 
+	/** It prints the scoring settings info */
 	public function cf7a_print_scoring_settings() {
-		printf( '<p>' . esc_html__( 'The calculation system of antispam for contact form 7 works like this: each failed test has its own score (shown below where you can refine it to your liking). If the mail at the end of all tests exceeds a value of 1, the mail is considered spam, and is consequently processed by b8, which analyses the text and learns the words of a spam mail.', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'The calculation system of antispam for contact form 7 works like this: each failed test has its own score (shown below where you can refine it to your liking). If the mail at the end of all tests exceeds a value of 1, the mail is considered spam, and is consequently processed by b8, which analyses the text and learns the words of a spam mail.', 'cf7-antispam' ) );
 	}
 
+	/** It prints the advanced settings info */
 	public function cf7a_print_advanced_settings() {
-		printf( '<p>' . esc_html__( 'In this section you will find some advanced settings to manage the database', 'cf7-antispam' ) . '</p>' );
+		printf( '<p>%s</p>', esc_html__( 'In this section you will find some advanced settings to manage the database', 'cf7-antispam' ) );
 	}
 
 	/**
@@ -980,8 +1010,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	private function cf7a_generate_options( $values, $selected = '' ) {
 		$html = '';
 		foreach ( $values as $value ) {
-			$sel   = $value === $selected ? 'selected' : '';
-			$html .= sprintf( '<option value="%s" %s>%s</option>', $value, $sel, $value );
+			$html .= sprintf(
+				'<option value="%s" %s>%s</option>',
+				$value,
+				$value === $selected ? 'selected' : '',
+				$value
+			);
 		}
 		return $html;
 	}
@@ -1039,6 +1073,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			! empty( $this->options['check_bot_fingerprint_extras'] ) ? 'checked="true"' : ''
 		);
 	}
+	/** It creates the input field "cf7a_append_on_submit_callback" */
 	public function cf7a_append_on_submit_callback() {
 		printf(
 			'<input type="checkbox" id="append_on_submit" name="cf7a_options[append_on_submit]" %s />',
@@ -1046,20 +1081,21 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
+	/** It creates the input field "cf7a_check_time_callback" */
 	public function cf7a_check_time_callback() {
 		printf(
 			'<input type="checkbox" id="check_time" name="cf7a_options[check_time]" %s />',
 			! empty( $this->options['check_time'] ) ? 'checked="true"' : ''
 		);
 	}
+	/** It creates the input field "cf7a_check_time_min_callback" */
 	public function cf7a_check_time_min_callback() {
 		printf(
 			'<input type="number" id="check_time_min" name="cf7a_options[check_time_min]" value="%s" step="1" />',
 			! empty( $this->options['check_time_min'] ) ? esc_attr( $this->options['check_time_min'] ) : 6
 		);
 	}
-
+	/** It creates the input field "cf7a_check_time_max_callback" */
 	public function cf7a_check_time_max_callback() {
 		printf(
 			'<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />',
@@ -1067,7 +1103,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
+	/** It creates the input field "cf7a_enable_geoip_callback" */
 	public function cf7a_enable_geoip_callback() {
 		printf(
 			'<input type="checkbox" id="enable_geoip_download" name="cf7a_options[enable_geoip_download]" %s />',
@@ -1075,6 +1111,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates the input field "cf7a_geodb_update" */
 	public function cf7a_geoip_is_enabled_callback() {
 		$last_update = get_option( 'cf7a_geodb_update', 0 );
 		printf( ! empty( $last_update ) ? '✅ ' : '❌ ' );
@@ -1088,10 +1125,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>',
 			! empty( $this->options['geoip_dbkey'] ) ? 'value="' . esc_textarea( $this->options['geoip_dbkey'] ) . '"' : '',
-			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : ' disabled placeholder="KEY provided"'
+			! empty( CF7ANTISPAM_GEOIP_KEY ) ? 'disabled placeholder="KEY provided"' : ''
 		);
 	}
 
+	/** It creates the input field "cf7a_check_browser_language" */
 	public function cf7a_check_browser_language_callback() {
 		printf(
 			'<input type="checkbox" id="check_language" name="cf7a_options[check_language]" %s />',
@@ -1099,15 +1137,17 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates the input field "cf7a_check_geo_location" */
 	public function cf7a_check_geo_location_callback() {
-		$geo_disabled = empty( get_option( 'cf7a_geodb_update' ) ) ? ' disabled' : '';
+		$geo_disabled = empty( get_option( 'cf7a_geodb_update' ) ) ? 'disabled' : '';
 		printf(
 			'<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s %s />',
-			! empty( $this->options['check_geo_location'] ) ? 'checked="true"' : '',
-			$geo_disabled
+			! empty( $this->options['check_geo_location'] ) ? esc_html( 'checked="true"' ) : '',
+			esc_attr( $geo_disabled )
 		);
 	}
 
+	/** It creates the input field "cf7a_language_allowed" */
 	public function cf7a_language_allowed() {
 		printf(
 			'<textarea id="languages_allowed" name="cf7a_options[languages][allowed]" />%s</textarea>',
@@ -1115,6 +1155,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates the input field "cf7a_language_disallowed" */
 	public function cf7a_language_disallowed() {
 		printf(
 			'<textarea id="languages_disallowed" name="cf7a_options[languages][disallowed]" />%s</textarea>',
@@ -1122,7 +1163,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
+	/** It creates the input field "cf7a_print_check_refer" */
 	public function cf7a_print_check_refer() {
 		printf(
 			'<input type="checkbox" id="check_refer" name="cf7a_options[check_refer]" %s />',
@@ -1130,6 +1171,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates the input field "cf7a_check_bad_ip" */
 	public function cf7a_check_bad_ip_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />',
@@ -1147,10 +1189,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
-	/**
-	 * It creates a checkbox with the id of "check_bad_words"
-	 */
+	/** It creates a checkbox with the id of "check_bad_words" */
 	public function cf7a_bad_words_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_words" name="cf7a_options[check_bad_words]" %s />',
@@ -1158,6 +1197,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_bad_words_list" */
 	public function cf7a_bad_words_list_callback() {
 		printf(
 			'<textarea id="bad_words_list" name="cf7a_options[bad_words_list]" />%s</textarea>',
@@ -1165,7 +1205,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
+	/** It creates a checkbox with the id of "cf7a_check_bad_email_strings_callback" */
 	public function cf7a_check_bad_email_strings_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_email_strings" name="cf7a_options[check_bad_email_strings]" %s />',
@@ -1173,6 +1213,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_bad_email_strings_list_callback" */
 	public function cf7a_bad_email_strings_list_callback() {
 		printf(
 			'<textarea id="bad_email_strings_list" name="cf7a_options[bad_email_strings_list]" />%s</textarea>',
@@ -1180,7 +1221,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
+	/** It creates a checkbox with the id of "cf7a_check_user_agent_callback" */
 	public function cf7a_check_user_agent_callback() {
 		printf(
 			'<input type="checkbox" id="check_bad_user_agent" name="cf7a_options[check_bad_user_agent]" %s />',
@@ -1188,20 +1229,25 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_user_agent_list_callback" */
 	public function cf7a_user_agent_list_callback() {
 		printf(
 			'<textarea id="bad_user_agent_list" name="cf7a_options[bad_user_agent_list]" />%s</textarea>',
-			isset( $this->options['bad_user_agent_list'] ) && is_array( $this->options['bad_user_agent_list'] ) ? esc_textarea( implode( "\r\n", $this->options['bad_user_agent_list'] ) ) : ''
+			isset( $this->options['bad_user_agent_list'] ) && is_array( $this->options['bad_user_agent_list'] )
+				? esc_textarea( implode( "\r\n", $this->options['bad_user_agent_list'] ) )
+				: ''
 		);
 	}
 
-
+	/** It creates a checkbox with the id of "cf7a_check_dnsbl_callback" */
 	public function cf7a_check_dnsbl_callback() {
 		printf(
 			'<input type="checkbox" id="check_dnsbl" name="cf7a_options[check_dnsbl]" %s />',
 			! empty( $this->options['check_dnsbl'] ) ? 'checked="true"' : ''
 		);
 	}
+
+	/** It creates a checkbox with the id of "cf7a_dnsbl_list_callback" */
 	public function cf7a_dnsbl_list_callback() {
 		printf(
 			'<textarea id="dnsbl_list" name="cf7a_options[dnsbl_list]" />%s</textarea>',
@@ -1210,13 +1256,15 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
-
+	/** It creates a checkbox with the id of "cf7a_enable_honeypot_callback" */
 	public function cf7a_enable_honeypot_callback() {
 		printf(
 			'<input type="checkbox" id="check_honeypot" name="cf7a_options[check_honeypot]" %s />',
 			! empty( $this->options['check_honeypot'] ) ? 'checked="true"' : ''
 		);
 	}
+
+	/** It creates a checkbox with the id of "cf7a_honeypot_input_names_callback" */
 	public function cf7a_honeypot_input_names_callback() {
 		printf(
 			'<textarea id="honeypot_input_names" name="cf7a_options[honeypot_input_names]" />%s</textarea>',
@@ -1225,7 +1273,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
-
+	/** It creates a checkbox with the id of "cf7a_enable_honeyform_callback" */
 	public function cf7a_enable_honeyform_callback() {
 		printf(
 			'<input type="checkbox" id="check_honeyform" name="cf7a_options[check_honeyform]" %s />',
@@ -1233,6 +1281,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_honeyform_position_callback" */
 	public function cf7a_honeyform_position_callback() {
 		printf(
 			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
@@ -1240,6 +1289,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_enable_b8_callback" */
 	public function cf7a_enable_b8_callback() {
 		printf(
 			'<input type="checkbox" id="enable_b8" name="cf7a_options[enable_b8]" %s />',
@@ -1247,6 +1297,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_b8_threshold_callback" */
 	public function cf7a_b8_threshold_callback() {
 		printf(
 			'<input type="number" id="b8_threshold" name="cf7a_options[b8_threshold]" value="%s" min="0" max="1" step="0.01" /> <small>(0-1)</small>',
@@ -1255,15 +1306,14 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
-
-
+	/** It creates a checkbox with the id of "cf7a_disable_reload_callback" */
 	public function cf7a_disable_reload_callback() {
 		printf(
 			'<input type="checkbox" id="cf7a_disable_reload" name="cf7a_options[cf7a_disable_reload]" %s />',
 			! empty( $this->options['cf7a_disable_reload'] ) ? 'checked="true"' : ''
 		);
 	}
-
+	/** It creates a checkbox with the id of "cf7a_customizations_class_callback" */
 	public function cf7a_customizations_class_callback() {
 		printf(
 			'<input type="text" id="cf7a_customizations_class" name="cf7a_options[cf7a_customizations_class]" value="%s"/>',
@@ -1271,6 +1321,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_customizations_prefix_callback" */
 	public function cf7a_customizations_prefix_callback() {
 		printf(
 			'<input type="text" id="cf7a_customizations_prefix" name="cf7a_options[cf7a_customizations_prefix]" value="%s"/>',
@@ -1278,6 +1329,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_customizations_cipher_callback" */
 	public function cf7a_customizations_cipher_callback() {
 		if ( ! extension_loaded( 'openssl' ) ) {
 			echo 'error: php extension openssl not enabled';
@@ -1292,7 +1344,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
-
+	/** It creates a checkbox with the id of "cf7a_score_fingerprinting_callback" */
 	public function cf7a_score_fingerprinting_callback() {
 		printf(
 			'<input type="number" id="score_fingerprinting" name="cf7a_options[score][_fingerprinting]" value="%s" min="0" max="10" step="0.01" />',
@@ -1300,6 +1352,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_score_time_callback" */
 	public function cf7a_score_time_callback() {
 		printf(
 			'<input type="number" id="score_time" name="cf7a_options[score][_time]" value="%s" min="0" max="10" step="0.01" />',
@@ -1307,6 +1360,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_score_bad_string_callback" */
 	public function cf7a_score_bad_string_callback() {
 		printf(
 			'<input type="number" id="score_bad_string" name="cf7a_options[score][_bad_string]" value="%s" min="0" max="10" step="0.01" />',
@@ -1314,6 +1368,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_score_dnsbl_callback" */
 	public function cf7a_score_dnsbl_callback() {
 		printf(
 			'<input type="number" id="score_dnsbl" name="cf7a_options[score][_dnsbl]" value="%s" min="0" max="10" step="0.01" />',
@@ -1321,13 +1376,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_score_honeypot_callback" */
 	public function cf7a_score_honeypot_callback() {
 		printf(
 			'<input type="number" id="score_honeypot" name="cf7a_options[score][_honeypot]" value="%s" min="0" max="10" step="0.01" />',
 			isset( $this->options['score']['_honeypot'] ) ? floatval( $this->options['score']['_honeypot'] ) : 1
 		);
 	}
-
+	/** It creates a checkbox with the id of "cf7a_score_warn_callback" */
 	public function cf7a_score_warn_callback() {
 		printf(
 			'<input type="number" id="score_warn" name="cf7a_options[score][_warn]" value="%s" min="0" max="10" step="0.01" />',
@@ -1335,6 +1391,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_score_detection_callback" */
 	public function cf7a_score_detection_callback() {
 		printf(
 			'<input type="number" id="score_detection" name="cf7a_options[score][_detection]" value="%s" min="0" max="100" step="0.01" />',
@@ -1342,6 +1399,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It creates a checkbox with the id of "cf7a_enable_advanced_settings_callback" */
 	public function cf7a_enable_advanced_settings_callback() {
 		printf(
 			'<input type="checkbox" id="enable_advanced_settings" name="cf7a_options[enable_advanced_settings]" %s />',

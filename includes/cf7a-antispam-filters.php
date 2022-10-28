@@ -431,7 +431,7 @@ class CF7_AntiSpam_Filters {
 		}
 
 		/**
-		 * Checking if the honeypot field is empty. If it is not empty, then it is a bot.
+		 * Checking if the honeyForm field is empty. If it is not empty, then it is a bot.
 		 */
 		if ( intval( $options['check_honeyform'] ) !== 0 ) {
 

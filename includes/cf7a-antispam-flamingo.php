@@ -84,6 +84,7 @@ class CF7_AntiSpam_Flamingo {
 				foreach ( (array) $req_id as $post_id ) {
 
 					$flamingo_post = new Flamingo_Inbound_Message( $post_id );
+					wp_verify_nonce( 'flamingo-update-inbound_' . $flamingo_post->id() );
 
 					/* get the message from flamingo mail */
 					$message = $this->cf7a_get_mail_field( $flamingo_post, 'message' );

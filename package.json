@@ -40,7 +40,7 @@
     "@wordpress/scripts": "^24.3.0"
   },
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=16.0.0",
     "npm": ">=6.9.0 <7"
   },
   "eslintConfig": {
