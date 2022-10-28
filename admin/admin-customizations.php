@@ -878,7 +878,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
 
 		/* auto-unban delay */
-		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array( '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' ), true ) ) {
+		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array( '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' ) ) ) {
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
 				/* delete previous scheduled events */
@@ -1047,14 +1047,16 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * the default value is 'disabled'
 	 */
 	public function cf7a_unban_after_callback() {
+		/* the list of available schedules */
+		$schedules = array_keys(wp_get_schedules());
 		printf(
 			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
 			wp_kses(
 				$this->cf7a_generate_options(
-					array( 'disabled', '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' ),
-					! empty( $this->options['unban_after'] ) ? esc_attr( $this->options['unban_after'] ) : 'disabled'
+					$schedules,
+					! empty( $this->options['unban_after'] ) ? $this->options['unban_after'] : ''
 				),
-				array( 'option' => array() )
+				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
 			)
 		);
 	}
@@ -1288,7 +1290,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
 			wp_kses(
 				$this->cf7a_generate_options( array( 'wp_body_open', 'the_content', 'wp_footer' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
-				array( 'option' => array() )
+				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
 			)
 		);
 	}
@@ -1345,7 +1347,7 @@ class CF7_AntiSpam_Admin_Customizations {
 					openssl_get_cipher_methods(),
 					isset( $this->options['cf7a_cipher'] ) ? esc_attr( $this->options['cf7a_cipher'] ) : 'aes-128-cbc'
 				),
-				array( 'option' => array() )
+				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
 			)
 		);
 	}
@@ -1429,7 +1431,7 @@ class CF7_AntiSpam_Admin_Customizations {
 					$options,
 					isset( $this->options['cf7a_score_preset'] ) ? esc_attr( $this->options['cf7a_score_preset'] ) : 'custom'
 				),
-				array( 'option' => array() )
+				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
 			)
 		);
 	}
