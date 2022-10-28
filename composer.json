@@ -26,7 +26,8 @@
     "vimeo/psalm": "^4.29",
 	"phpunit/phpunit": "^7",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
-	"yoast/phpunit-polyfills": "*"
+	"yoast/phpunit-polyfills": "*",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
   },
   "require": {
 	"geoip2/geoip2": "~2.0"
