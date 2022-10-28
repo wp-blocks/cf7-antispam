@@ -20,9 +20,16 @@ class CF7_AntiSpam_Admin_Display {
 	 * It adds actions to the `cf7a_dashboard` hook
 	 */
 	public function display_dashboard() {
-		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_header' ) );
-		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
-		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_footer' ), 23 );
+		?>
+		<div class="wrap">
+			<div class="cf7-antispam">
+			<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂ ' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
+			<?php
+			add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
+			?>
+			</div>
+		</div>
+		<?php
 
 		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_debug' ), 30 );
 
@@ -53,10 +60,11 @@ class CF7_AntiSpam_Admin_Display {
 			<p><?php echo esc_html( __( 'Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.', 'contact-form-7' ) ); ?></p>
 			<p>
 				<?php
-				echo sprintf( /* translators: %s: link labeled 'Flamingo' */
-					esc_html( __( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ) ),
-					wpcf7_link( __( 'https://contactform7.com/save-submitted-messages-with-flamingo/', 'contact-form-7' ), __( 'Flamingo', 'contact-form-7' ) )
-				);
+				printf( /* translators: %s: link labeled 'Flamingo' */
+					esc_html__( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ),
+					esc_html__( 'https://contactform7.com/save-submitted-messages-with-flamingo/', 'contact-form-7' ),
+					esc_html__( 'Flamingo', 'contact-form-7' )
+				)
 				?>
 			</p>
 			<hr />
@@ -79,9 +87,9 @@ class CF7_AntiSpam_Admin_Display {
 	</div>
 
 	<div class="card main-options">
-	  <h3><?php esc_html__( 'Options', 'cf7-antispam' ); ?></h3>
-	  <form method="post" action="options.php" id="cf7a_settings">
-		  <?php
+		<h3><?php esc_html__( 'Options', 'cf7-antispam' ); ?></h3>
+		<form method="post" action="options.php" id="cf7a_settings">
+			<?php
 
 			/* This prints out all hidden setting fields */
 			settings_fields( 'cf7_antispam_options' );
@@ -89,7 +97,7 @@ class CF7_AntiSpam_Admin_Display {
 			submit_button();
 
 			?>
-	  </form>
+		</form>
 	</div>
 		<?php
 	}
@@ -131,8 +139,7 @@ class CF7_AntiSpam_Admin_Display {
 		if ( $blacklisted ) {
 
 			$count = count( $blacklisted );
-
-			$html = sprintf( '<div id="blacklist-section"  class="cf7-antispam card"><h3>%s<small> (%s)</small></h3><div class="widefat blacklist-table">', __( 'Blacklist' ), $count . __( ' ip banned' ) );
+			$rows  = '';
 
 			foreach ( $blacklisted as $row ) {
 
@@ -146,16 +153,38 @@ class CF7_AntiSpam_Admin_Display {
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
 				/* the row */
-				$html .= '<div class="row">';
-				$html .= sprintf( "<div class='status'>%s</div>", cf7a_format_status( $row->status - $max_attempts ) );
-				$html .= sprintf( '<div><p class="ip">%s<small class="actions"> <a href="%s">%s</a> <a href="%s">%s</a></small></p>', $row->ip, esc_url( $unban_url ), __( '[unban ip]' ), esc_url( $ban_url ), __( '[ban forever]' ) );
-				$html .= sprintf( "<span class='data'>%s</span></div>", cf7a_compress_array( $meta['reason'], true ) );
-				$html .= '</div>';
-
+				$rows .=
+					sprintf(
+						'<div class="row"><div class="status">%s</div><div><p class="ip">%s<small class="actions"><a href="%s">%s</a> <a href="%s">%s</a></small></p><span class="data">%s</span></div></div>',
+						cf7a_format_status( $row->status - $max_attempts ),
+						esc_html( $row->ip ),
+						esc_url( $unban_url ),
+						esc_html__( '[unban ip]' ),
+						esc_url( $ban_url ),
+						esc_html__( '[ban forever]' ),
+						cf7a_compress_array( $meta['reason'], true )
+					);
 			}
-			$html .= '</div></div>';
 
-			echo $html;
+			printf(
+				'<div id="blacklist-section"  class="cf7-antispam card"><h3>%s<small> (%s)</small></h3><div class="widefat blacklist-table">%s</div></div>',
+				esc_html( 'Blacklist' ),
+				intval( $count ) . esc_html__( ' ip banned' ),
+				wp_kses(
+					$rows,
+					array(
+						'div'   => array( 'class' => array() ),
+						'small' => array( 'class' => array() ),
+						'p'     => array( 'class' => array() ),
+						'a'     => array( 'href' => array() ),
+						'b'     => array(),
+						'span'  => array(
+							'class' => array(),
+							'style' => array(),
+						),
+					)
+				)
+			);
 		}
 	}
 
@@ -326,12 +355,13 @@ class CF7_AntiSpam_Admin_Display {
 				$is_spam                    = CF7_AntiSpam_Filters::cf7a_check_dnsbl( $reverse_ip, $dnsbl );
 				$microtime                  = cf7a_microtime_float();
 				$time_taken                 = strval( round( cf7a_microtime_float() - $microtime, 5 ) );
-				$performance_test[ $dnsbl ] = sprintf(
-					'<tr><td>%s</td><td>%s</td><td>%f sec</td></tr>',
-					$dnsbl,
-					$is_spam ? 'SPAM' : 'OK',
-					$time_taken
-				);
+				$performance_test[ $dnsbl ] =
+					sprintf(
+						'<tr><td>%s</td><td>%s</td><td>%f sec</td></tr>',
+						$dnsbl,
+						$is_spam ? esc_html__( 'spam' ) : esc_html__( 'ham' ),
+						$time_taken
+					);
 			}
 
 			if ( ! empty( $performance_test ) ) {
@@ -339,7 +369,13 @@ class CF7_AntiSpam_Admin_Display {
 					'<hr/><h3><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><table class="dnsbl_table">%s</table>',
 					esc_html__( 'DNSBL performance test:' ),
 					esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers' ),
-					implode( '', $performance_test )
+					wp_kses(
+						implode( '', $performance_test ),
+						array(
+							'tr' => array(),
+							'td' => array(),
+						)
+					)
 				);
 			}
 		}
@@ -353,7 +389,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			$cf7a_geo = new CF7_Antispam_Geoip();
 
-			$geoip_update = $cf7a_geo->next_update ? date_i18n( get_option( 'date_format' ), $cf7a_geo->next_update ) : esc_html__( 'not set', 'cf7-antispam' );
+			$geoip_update = $cf7a_geo->next_update ? esc_html( date_i18n( get_option( 'date_format' ), $cf7a_geo->next_update ) ) : esc_html__( 'not set', 'cf7-antispam' );
 
 			$html_update_schedule = sprintf(
 				'<p class="debug"><code>%s</code> %s</p>',
@@ -384,6 +420,7 @@ class CF7_AntiSpam_Admin_Display {
 					),
 					esc_html__( 'Your IP address', 'cf7-antispam' ),
 					filter_var( $your_ip, FILTER_VALIDATE_IP ),
+					// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
 					print_r( $server_data, true )
 				);
 			}
