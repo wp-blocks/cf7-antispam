@@ -1,15 +1,15 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: AntiSpam for Contact Form 7\n"
 "POT-Creation-Date: 2022-10-28 13:07+0200\n"
-"PO-Revision-Date: 2022-10-17 12:03+0200\n"
+"PO-Revision-Date: 2022-10-28 13:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 3.1.1\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
@@ -25,261 +25,268 @@ msgstr ""
 
 #: admin/admin-customizations.php:28
 msgid "Administrators only"
-msgstr ""
+msgstr "Somente administradores"
 
 #: admin/admin-customizations.php:53
 msgid "Settings"
-msgstr ""
+msgstr "Configurações"
 
 #: admin/admin-customizations.php:61
 msgid "Ban automatically spammers"
-msgstr ""
+msgstr "Proibir automaticamente os spammers"
 
 #: admin/admin-customizations.php:69
 msgid "Automatic spammer IP Blacklist"
-msgstr ""
+msgstr "Lista negra automática de IP para spammer"
 
 #: admin/admin-customizations.php:78
 msgid "Mail blocked before Ban"
-msgstr ""
+msgstr "Correio bloqueado antes da proibição"
 
 #: admin/admin-customizations.php:87
 msgid "Automatic Unban"
-msgstr ""
+msgstr "Desbanimento automático"
 
 #: admin/admin-customizations.php:96
 msgid "Bot Fingerprinting"
-msgstr ""
+msgstr "Impressão digital do frasco"
 
 #: admin/admin-customizations.php:104
 msgid "Enable anti-bot checks"
-msgstr ""
+msgstr "Permitir verificações anti-lote"
 
 #: admin/admin-customizations.php:113
 msgid "Enable anti-bot extra checks"
-msgstr ""
+msgstr "Permitir verificações extras anti-lote"
 
 #: admin/admin-customizations.php:122
 msgid "Append hidden fields on submit"
-msgstr ""
+msgstr "Anexar campos ocultos ao enviar"
 
 #: admin/admin-customizations.php:131
 msgid "GeoIP"
-msgstr ""
+msgstr "GeoIP"
 
 #: admin/admin-customizations.php:139
 msgid "Enable automatic download"
-msgstr ""
+msgstr "Habilitar download automático"
 
 #: admin/admin-customizations.php:148
 msgid "Database available"
-msgstr ""
+msgstr "Base de dados disponível"
 
 #: admin/admin-customizations.php:160
 msgid "MaxMind Update Key"
-msgstr ""
+msgstr "Chave de atualização do MaxMind"
 
 #: admin/admin-customizations.php:169
 msgid "Language Checks"
-msgstr ""
+msgstr "Verificações de idiomas"
 
 #: admin/admin-customizations.php:177
 msgid "Check Browser Language"
-msgstr ""
+msgstr "Verifique o Idioma do Navegador"
 
 #: admin/admin-customizations.php:186
 msgid "Detect location using GeoIP"
-msgstr ""
+msgstr "Detectar localização usando GeoIP"
 
 #: admin/admin-customizations.php:195
 msgid "Allowed browser Languages"
-msgstr ""
+msgstr "Idiomas permitidos do navegador"
 
 #: admin/admin-customizations.php:204
 msgid "Disallowed browser Languages"
-msgstr ""
+msgstr "Idiomas do navegador não permitidos"
 
 #: admin/admin-customizations.php:213
 msgid "Time checks"
-msgstr ""
+msgstr "Verificações de tempo"
 
 #: admin/admin-customizations.php:221
 msgid "Check the elapsed time"
-msgstr ""
+msgstr "Verifique o tempo transcorrido"
 
 #: admin/admin-customizations.php:230
 msgid "Minimum elapsed time"
-msgstr ""
+msgstr "Tempo mínimo transcorrido"
 
 #: admin/admin-customizations.php:239
 msgid "Maximum elapsed time"
-msgstr ""
+msgstr "Tempo máximo transcorrido"
 
 #: admin/admin-customizations.php:248
 msgid "Bad IP Address"
-msgstr ""
+msgstr "Endereço IP ruim"
 
 #: admin/admin-customizations.php:256
 msgid "Check HTTP referrer"
-msgstr ""
+msgstr "Verificar HTTP referrer"
 
 #: admin/admin-customizations.php:265
 msgid "Check the sender IP Address"
-msgstr ""
+msgstr "Verifique o endereço IP do remetente"
 
 #: admin/admin-customizations.php:274
 msgid "Bad IP Address List"
-msgstr ""
+msgstr "Lista de endereços IP ruins"
 
 #: admin/admin-customizations.php:283
 msgid "Bad words"
-msgstr ""
+msgstr "Palavras ruins"
 
 #: admin/admin-customizations.php:291
 msgid "Check the message for prohibited words"
-msgstr ""
+msgstr "Verifique a mensagem para palavras proibidas"
 
 #: admin/admin-customizations.php:300
 msgid "Bad words List"
-msgstr ""
+msgstr "Lista de palavras ruins"
 
 #: admin/admin-customizations.php:309
 msgid "Bad email strings"
-msgstr ""
+msgstr "Maus strings de e-mail"
 
 #: admin/admin-customizations.php:317
 msgid "Check the email for prohibited words"
-msgstr ""
+msgstr "Verifique o e-mail para palavras proibidas"
 
 #: admin/admin-customizations.php:326
 msgid "Email prohibited words"
-msgstr ""
+msgstr "Palavras proibidas por e-mail"
 
 #: admin/admin-customizations.php:335
 msgid "User Agent blacklist"
-msgstr ""
+msgstr "Lista negra de agentes de usuários"
 
 #: admin/admin-customizations.php:343
 msgid "Enable User Agent blacklist"
-msgstr ""
+msgstr "Habilitar a lista negra de agentes de usuário"
 
 #: admin/admin-customizations.php:352
 msgid "Disallowed user agents"
-msgstr ""
+msgstr "Agentes de usuário não autorizados"
 
 #: admin/admin-customizations.php:361
 msgid "DNS Blacklists"
-msgstr ""
+msgstr "Listas negras DNS"
 
 #: admin/admin-customizations.php:369
 msgid "Check IP on DNS blocklist"
-msgstr ""
+msgstr "Verificar IP na lista de blocos DNS"
 
 #: admin/admin-customizations.php:378
 msgid "DNS blocklist servers"
-msgstr ""
+msgstr "Servidores de lista de blocos DNS"
 
 #: admin/admin-customizations.php:387
 msgid "Honeypot"
-msgstr ""
+msgstr "Honeypot"
 
 #: admin/admin-customizations.php:395
 msgid "Add some fake input inside the form"
-msgstr ""
+msgstr "Adicione alguma entrada falsa dentro do formulário"
 
 #: admin/admin-customizations.php:404
 msgid "Name for the honeypots inputs[*]"
-msgstr ""
+msgstr "Nome para as entradas dos honeypots[*]"
 
 #: admin/admin-customizations.php:413
 msgid "Honeyform <span class=\"label alert monospace\">[experimental]</span>"
 msgstr ""
+"Forma de mel <span class=\"label alert monospace\">[experimental]</span>"
 
 #: admin/admin-customizations.php:421
 msgid "Add an hidden form inside the page content"
-msgstr ""
+msgstr "Adicionar uma forma oculta dentro do conteúdo da página"
 
 #: admin/admin-customizations.php:430
 msgid "Select where the honeyform will be placed"
-msgstr ""
+msgstr "Selecione onde a forma de mel será colocada"
 
 #: admin/admin-customizations.php:439
 msgid "B8 statistical \"Bayesian\" spam filter"
-msgstr ""
+msgstr "B8 filtro estatístico \"Bayesiano\" de spam"
 
 #: admin/admin-customizations.php:447
 msgid "Enable B8"
-msgstr ""
+msgstr "Habilitar B8"
 
 #: admin/admin-customizations.php:456
 msgid "B8 spam threshold"
-msgstr ""
+msgstr "Limiar B8 de spam"
 
 #: admin/admin-customizations.php:465
 msgid "Spam filter customizations"
-msgstr ""
+msgstr "Personalizações do filtro de spam"
 
 #: admin/admin-customizations.php:473
 msgid "Disable cf7 form reload if the page is cached"
-msgstr ""
+msgstr "Desativar a recarga do formulário cf7 se a página estiver em cache"
 
 #: admin/admin-customizations.php:482
 msgid "Your unique css class"
-msgstr ""
+msgstr "Sua classe única de css"
 
 #: admin/admin-customizations.php:491
 msgid "Your unique fields prefix"
-msgstr ""
+msgstr "Seu prefixo exclusivo de campos"
 
 #: admin/admin-customizations.php:500
 msgid "The encryption method"
-msgstr ""
+msgstr "O método de criptografia"
 
 #: admin/admin-customizations.php:509 admin/admin-customizations.php:526
 msgid "Enable advanced settings"
-msgstr ""
+msgstr "Habilitar configurações avançadas"
 
 #: admin/admin-customizations.php:517
 msgid "Severity of anti-spam control"
-msgstr ""
+msgstr "Severidade do controle anti-spam"
 
 #: admin/admin-customizations.php:535
 msgid "Scoring Tweaks (1 = Ban)"
-msgstr ""
+msgstr "Ajustes de pontuação (1 = Ban)"
 
 #: admin/admin-customizations.php:543
 msgid "Bot fingerprinting score <small>(for each failed test)</small>"
 msgstr ""
+"Nota de impressão digital da garrafa <small>(para cada teste reprovado)</"
+"small>"
 
 #: admin/admin-customizations.php:552
 msgid "Time checks score"
-msgstr ""
+msgstr "Pontuação das verificações de tempo"
 
 #: admin/admin-customizations.php:561
 msgid "String found"
-msgstr ""
+msgstr "Corda encontrada"
 
 #: admin/admin-customizations.php:570
 msgid "DNSBL score <small>(for each server)</small>"
-msgstr ""
+msgstr "Pontuação DNSBL <small>(para cada servidor)</small>"
 
 #: admin/admin-customizations.php:579
 msgid "Honeypot fill score <small>(for each fail)</small>"
 msgstr ""
+"Pontuação de preenchimento do Honeypot <small>(para cada falha)</small>"
 
 #: admin/admin-customizations.php:588
 msgid "Bot detected"
-msgstr ""
+msgstr "Garrafa detectada"
 
 #: admin/admin-customizations.php:597
 msgid "Bot warn"
-msgstr ""
+msgstr "Bot avisa"
 
 #: admin/admin-customizations.php:612
 msgid ""
 "For most cases the following settings are fine, but you can have fun "
 "configuring the antispam to achieve the level of protection you prefer!"
 msgstr ""
+"Na maioria dos casos, as seguintes configurações estão bem, mas você pode se "
+"divertir configurando o antispam para atingir o nível de proteção que você "
+"prefere!"
 
 #: admin/admin-customizations.php:613
 msgid ""
@@ -287,22 +294,26 @@ msgid ""
 "separated format and on saving, the strings will be broken up into one per "
 "line format."
 msgstr ""
+"Em campos de texto múltiplos (a área de texto) você também pode inserir "
+"valores em formato separado por vírgula e ao salvar, as cordas serão "
+"quebradas em um formato por linha."
 
 #: admin/admin-customizations.php:614
 msgid "Tip:"
-msgstr ""
+msgstr "Dica:"
 
 #: admin/admin-customizations.php:615
 msgid "You can save settings simply using the shortcut [Ctrl + S]."
 msgstr ""
+"Você pode salvar as configurações simplesmente usando o atalho [Ctrl + S]."
 
 #: admin/admin-customizations.php:623
 msgid "How many failed attempts before being banned"
-msgstr ""
+msgstr "Quantas tentativas fracassadas antes de serem proibidas"
 
 #: admin/admin-customizations.php:627
 msgid "Next scheduled unban event:"
-msgstr ""
+msgstr "Próximo evento não-bancário programado:"
 
 #: admin/admin-customizations.php:636
 msgid ""
@@ -311,6 +322,11 @@ msgid ""
 "hardware configuration like screen resolution, 3d support, available fonts "
 "and OS version, that usually aren't available for bots."
 msgstr ""
+"A impressão digital é uma forma de explorar certos dados que o navegador "
+"pode fornecer para verificar se é um navegador real. Um script verifica a "
+"configuração de software e hardware como resolução de tela, suporte 3d, "
+"fontes disponíveis e versão do SO, que normalmente não estão disponíveis "
+"para bots."
 
 #: admin/admin-customizations.php:637
 msgid ""
@@ -318,6 +334,9 @@ msgid ""
 "the submit button has been pressed, making it even more difficult for a bot "
 "to circumvent the protection."
 msgstr ""
+"A última opção, anexada ao submeter, faz com que a impressão digital ocorra "
+"após o botão submeter ter sido pressionado, tornando ainda mais difícil para "
+"um bot contornar a proteção."
 
 #: admin/admin-customizations.php:642
 msgid ""
@@ -325,26 +344,30 @@ msgid ""
 "sent too quickly or too slowly, the sender is probably not human. Values in "
 "seconds"
 msgstr ""
+"Verifique se o e-mail é enviado no prazo 'certo'. Se o e-mail foi enviado "
+"muito rápido ou muito lentamente, o remetente provavelmente não é humano. "
+"Valores em segundos"
 
 #: admin/admin-customizations.php:649
 msgid "Detect user location using MaxMind GeoIP2 database."
 msgstr ""
+"Detectar a localização do usuário usando o banco de dados MaxMind GeoIP2."
 
 #: admin/admin-customizations.php:650
 msgid "In order to enable this functionality you need to agree at  "
-msgstr ""
+msgstr "A fim de habilitar esta funcionalidade, você precisa concordar em "
 
 #: admin/admin-customizations.php:651
 msgid "GeoLite2 End User License Agreement"
-msgstr ""
+msgstr "Contrato de Licença do Usuário Final GeoLite2"
 
 #: admin/admin-customizations.php:652
 msgid "and sign up "
-msgstr ""
+msgstr "e inscreva-se "
 
 #: admin/admin-customizations.php:653
 msgid "GeoLite2 Downloadable Databases"
-msgstr ""
+msgstr "Bancos de dados GeoLite2 para download"
 
 #: admin/admin-customizations.php:654
 msgid ""
@@ -352,10 +375,13 @@ msgid ""
 "Antispam will be able to automatically download the updated GeoIP database "
 "every month."
 msgstr ""
+"Após o registro você receberá uma chave, cole-a na entrada abaixo e o CF7-"
+"Antispam poderá baixar automaticamente o banco de dados GeoIP atualizado a "
+"cada mês."
 
 #: admin/admin-customizations.php:660
 msgid "Recommended - define a key your config.php the key in this way: "
-msgstr ""
+msgstr "Recomendado - defina uma chave seu config.php a chave desta maneira "
 
 #: admin/admin-customizations.php:668
 msgid ""
@@ -364,6 +390,10 @@ msgid ""
 "denies a state while the language enables or denies all language codes "
 "beginning with that language. "
 msgstr ""
+"Verifique o idioma do navegador / teclado do usuário. Adicione um código de "
+"idioma (en-US) ou idioma (en) por linha, o código de idioma habilita ou nega "
+"especificamente um estado enquanto o idioma habilita ou nega todos os "
+"códigos de idioma que comecem com esse idioma. "
 
 #: admin/admin-customizations.php:669
 msgid ""
@@ -371,29 +401,43 @@ msgid ""
 "it is based on what is provided by the browser and can easily be bypassed "
 "(however, less sophisticated bots do not pass this test)"
 msgstr ""
+"O método de detecção de linguagem do navegador não é tão preciso quanto o "
+"geo ip porque se baseia no que é fornecido pelo navegador e pode ser "
+"facilmente contornado (no entanto, os bots menos sofisticados não passam "
+"neste teste)"
 
 #: admin/admin-customizations.php:674
 msgid ""
 "Adding a list of forbidden senders per IP address, one \"bad\" ip each line"
 msgstr ""
+"Acrescentando uma lista de remetentes proibidos por endereço IP, um ip \"ruim"
+"\" cada linha"
 
 #: admin/admin-customizations.php:679
 msgid ""
 "Check if the mail message contains \"bad\" words, all e-mails containing one "
 "of these words in the text will be flagged. A bad string per line"
 msgstr ""
+"Verifique se a mensagem de correio contém palavras \"ruins\", todos os e-"
+"mails contendo uma dessas palavras no texto serão sinalizados. Uma corda "
+"ruim por linha"
 
 #: admin/admin-customizations.php:684
 msgid ""
 "Check if the mail content contains a word and in this case flag this mail, "
 "one forbidden word per line"
 msgstr ""
+"Verificar se o conteúdo do correio contém uma palavra e, neste caso, "
+"sinalizar este correio, uma palavra proibida por linha"
 
 #: admin/admin-customizations.php:689
 msgid ""
 "Enter a list of forbidden user agents, one per line. When the string match "
 "the user agent (or a part of) the mail will be flagged"
 msgstr ""
+"Digite uma lista de agentes de usuários proibidos, um por linha. Quando a "
+"linha corresponder ao agente do usuário (ou parte dele), o correio será "
+"sinalizado"
 
 #: admin/admin-customizations.php:694
 msgid ""
@@ -404,6 +448,13 @@ msgid ""
 "proxy and that is why the method is no longer 100 per cent reliable. Add a "
 "DSNBL server url each line "
 msgstr ""
+"Verifique o IP do remetente nas listas negras do DNS, DNSBL são listas em "
+"tempo real de endereços de spam comprovados/reconhecidos. Estas podem "
+"incluir listas de endereços de computadores zumbis ou outras máquinas usadas "
+"para enviar spam, provedores de serviços de Internet (ISPs) que hospedam "
+"voluntariamente spammers, MAS eles também podem ser usuários por trás de um "
+"proxy e é por isso que o método não é mais 100 por cento confiável. "
+"Adicionar um servidor DSNBL url a cada linha "
 
 #: admin/admin-customizations.php:701
 msgid ""
@@ -411,12 +462,18 @@ msgid ""
 "but remains visible to bots. Since this fields are automatically added and "
 "appended inside the forms with standard names."
 msgstr ""
+"o pote de mel é um campo \"armadilha\" que é escondido com css ou js do "
+"usuário, mas permanece visível para os bots. Como estes campos são "
+"automaticamente adicionados e anexados dentro dos formulários com nomes "
+"padrão."
 
 #: admin/admin-customizations.php:702
 msgid ""
 "Please check the list below because the name MUST differ from the cf7 tag "
 "class names"
 msgstr ""
+"Favor verificar a lista abaixo porque o nome DEVE diferir dos nomes das "
+"classes de etiquetas cf7"
 
 #: admin/admin-customizations.php:708
 msgid ""
@@ -424,17 +481,24 @@ msgid ""
 "serving the bot a form with trap fields we directly serve it a form that is "
 "entirely a trap"
 msgstr ""
+"Vou propor a forma de mel pela primeira vez! Em vez de servir ao bot uma "
+"forma com campos de armadilha, servimos diretamente uma forma que é "
+"inteiramente uma armadilha"
 
 #: admin/admin-customizations.php:713
 msgid ""
 "Tells you whether a text is spam or not, using statistical text analysis of "
 "the text message"
 msgstr ""
+"Diz se um texto é ou não spam, utilizando análise estatística do texto da "
+"mensagem de texto"
 
 #: admin/admin-customizations.php:720
 msgid ""
 "RECOMMENDED: create your own and unique css class and customized fields name"
 msgstr ""
+"RECOMENDADADO: crie seu próprio e exclusivo nome de classe css e campos "
+"personalizados"
 
 #: admin/admin-customizations.php:721
 msgid ""
@@ -442,6 +506,9 @@ msgid ""
 "couple of tests because a small amount of them aren't compatible with the "
 "format of the form data."
 msgstr ""
+"Você também pode escolher no método de criptografia. Mas, depois de trocar o "
+"cypher, faça alguns testes porque uma pequena quantidade deles não é "
+"compatível com o formato dos dados do formulário."
 
 #: admin/admin-customizations.php:727
 msgid ""
@@ -451,19 +518,27 @@ msgid ""
 "is considered spam, and is consequently processed by b8, which analyses the "
 "text and learns the words of a spam mail."
 msgstr ""
+"O sistema de cálculo do antispam para o formulário de contato 7 funciona "
+"assim: cada teste reprovado tem sua própria pontuação (mostrada abaixo, onde "
+"você pode refiná-la a seu gosto). Se o e-mail no final de todos os testes "
+"exceder um valor de 1, o e-mail é considerado spam, e consequentemente é "
+"processado pelo b8, que analisa o texto e aprende as palavras de um e-mail "
+"de spam."
 
 #: admin/admin-customizations.php:732
 msgid ""
 "In this section you will find some advanced settings to manage the database"
 msgstr ""
+"Nesta seção você encontrará algumas configurações avançadas para gerenciar o "
+"banco de dados"
 
 #: admin/admin-display.php:57
 msgid "Dismiss"
-msgstr ""
+msgstr "Dispensar"
 
 #: admin/admin-display.php:59
 msgid "Before you cry over spilt mail&#8230;"
-msgstr ""
+msgstr "Before you cry over spilt mail&#8230;"
 
 #: admin/admin-display.php:60
 msgid ""
@@ -471,6 +546,9 @@ msgid ""
 "you may lose important messages forever if your mail server has issues or "
 "you make a mistake in mail configuration."
 msgstr ""
+"Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, "
+"you may lose important messages forever if your mail server has issues or "
+"you make a mistake in mail configuration."
 
 #. translators: %s: link labeled 'Flamingo'
 #: admin/admin-display.php:64
@@ -480,314 +558,339 @@ msgid ""
 "messages through contact forms into the database. Flamingo is a free "
 "WordPress plugin created by the same author as Contact Form 7."
 msgstr ""
+"Install a message storage plugin before this happens to you. %s saves all "
+"messages through contact forms into the database. Flamingo is a free "
+"WordPress plugin created by the same author as Contact Form 7."
 
 #: admin/admin-display.php:65
 msgid "https://contactform7.com/save-submitted-messages-with-flamingo/"
-msgstr ""
+msgstr "https://contactform7.com/save-submitted-messages-with-flamingo/"
 
 #: admin/admin-display.php:66
 msgid "Flamingo"
-msgstr ""
+msgstr "Flamingo"
 
 #: admin/admin-display.php:72
 msgid "PLEASE don't forget to add "
-msgstr ""
+msgstr "POR FAVOR, não se esqueça de acrescentar "
 
 #: admin/admin-display.php:73
 msgid "flamingo_message: \"[your-message]\" "
-msgstr ""
+msgstr "flamingo_message: \"[sua-mensagem]\" "
 
 #: admin/admin-display.php:78
 msgid "Please replace "
-msgstr ""
+msgstr "Favor substituir "
 
 #: admin/admin-display.php:80
 msgid ""
 "with the message field used in your form because that is the field scanned "
 "with b8. You need add this string to each form"
 msgstr ""
+"com o campo de mensagem usado em seu formulário, pois esse é o campo "
+"escaneado com b8. Você precisa adicionar esta cadeia a cada formulário"
 
 #: admin/admin-display.php:81
 msgid "additional settings section"
-msgstr ""
+msgstr "seção de configurações adicionais"
 
 #: admin/admin-display.php:82
 msgid "to enable the most advanced protection we can offer! Thank you!"
-msgstr ""
+msgstr "para permitir a proteção mais avançada que podemos oferecer! Obrigado!"
 
 #: admin/admin-display.php:90
 msgid "Options"
-msgstr ""
+msgstr "Opções"
 
 #: admin/admin-display.php:162
 msgid "[unban ip]"
-msgstr ""
+msgstr "[unban ip]"
 
 #: admin/admin-display.php:164
 msgid "[ban forever]"
-msgstr ""
+msgstr "[proibição para sempre]"
 
 #: admin/admin-display.php:172
 msgid " ip banned"
-msgstr ""
+msgstr " proibido ip"
 
 #: admin/admin-display.php:201
 msgid "Advanced settings"
-msgstr ""
+msgstr "Configurações avançadas"
 
 #: admin/admin-display.php:202
 msgid ""
 "This section contains features that completely change what is stored in the "
 "cf7-antispam database, use them with caution!"
 msgstr ""
+"Esta seção contém características que mudam completamente o que está "
+"armazenado no banco de dados cf7-antispam, use-os com cautela!"
 
 #: admin/admin-display.php:208
 msgid "Blacklist Reset"
-msgstr ""
+msgstr "Redefinição da lista negra"
 
 #: admin/admin-display.php:209
 msgid "If you need to remove or reset the whole blacklist data on your server."
 msgstr ""
+"Se você precisar remover ou redefinir todos os dados da lista negra em seu "
+"servidor."
 
 #: admin/admin-display.php:215
 msgid "Remove all blacklisted IP"
-msgstr ""
+msgstr "Remover todos os IPs da lista negra"
 
 #: admin/admin-display.php:221
 msgid "Dictionary Reset"
-msgstr ""
+msgstr "Reinicialização do dicionário"
 
 #: admin/admin-display.php:222
 msgid "Use only if you need to reset the whole b8 dictionary."
-msgstr ""
+msgstr "Use somente se você precisar reiniciar todo o dicionário do b8."
 
 #: admin/admin-display.php:228
 msgid "Reset b8 dictionary"
-msgstr ""
+msgstr "Reiniciar o dicionário b8"
 
 #: admin/admin-display.php:234
 msgid "Rebuid Dictionary"
-msgstr ""
+msgstr "Dicionário Rebuid"
 
 #: admin/admin-display.php:235
 msgid ""
 "Reanalyze all the Flamingo inbound emails (you may need to reset dictionary "
 "before)."
 msgstr ""
+"Reanalisar todos os e-mails de entrada do Flamingo (talvez seja necessário "
+"reiniciar o dicionário antes)."
 
 #: admin/admin-display.php:241
 msgid "Rebuild b8 dictionary"
-msgstr ""
+msgstr "Reconstruir o dicionário b8"
 
 #: admin/admin-display.php:247
 msgid "Full Reset"
-msgstr ""
+msgstr "Reset Completo"
 
 #: admin/admin-display.php:248
 msgid "Fully reinitialize cf7-antispam plugin database and options"
 msgstr ""
+"Reinicializar totalmente o banco de dados e opções de plugins cf7-antispam"
 
 #: admin/admin-display.php:254
 msgid "FULL RESET"
-msgstr ""
+msgstr "RESET COMPLETO"
 
 #: admin/admin-display.php:273
 msgid "Debug info"
-msgstr ""
+msgstr "Informações sobre depuração"
 
 #: admin/admin-display.php:274
 msgid "If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true"
 msgstr ""
+"Se você pode ver este painel WP_DEBUG ou CF7ANTISPAM_DEBUG são verdadeiros"
 
 #: admin/admin-display.php:280 admin/admin-display.php:287
 msgid "is enabled"
-msgstr ""
+msgstr "está habilitado"
 
 #: admin/admin-display.php:294
 msgid "Your ip address"
-msgstr ""
+msgstr "Seu endereço ip"
 
 #: admin/admin-display.php:321
 msgid "Options debug"
-msgstr ""
+msgstr "Opções de depuração"
 
 #: admin/admin-display.php:324
 msgid "Those are the options of this plugin"
-msgstr ""
+msgstr "Essas são as opções deste plugin"
 
 #: admin/admin-display.php:362
 msgid "spam"
-msgstr ""
+msgstr "spam"
 
 #: admin/admin-display.php:362
 msgid "ham"
-msgstr ""
+msgstr "presunto"
 
 #: admin/admin-display.php:370
 msgid "DNSBL performance test:"
-msgstr ""
+msgstr "Teste de desempenho DNSBL:"
 
 #: admin/admin-display.php:371
 msgid ""
 "Results below 0.01 are fine, OK/Spam indicates the status of your ip on "
 "DNSBL servers"
 msgstr ""
+"Resultados abaixo de 0,01 são bons, OK/Spam indica o status de seu ip em "
+"servidores DNSBL"
 
 #: admin/admin-display.php:392
 msgid "not set"
-msgstr ""
+msgstr "sem informação"
 
 #: admin/admin-display.php:396
 msgid "Geo-IP"
-msgstr ""
+msgstr "Geo-IP"
 
 #: admin/admin-display.php:398
 msgid "Enabled"
-msgstr ""
+msgstr "Ativado"
 
 #: admin/admin-display.php:398
 msgid "Geo-ip database next scheduled update: "
-msgstr ""
+msgstr "Próxima atualização programada do banco de dados Geo-ip "
 
 #: admin/admin-display.php:399
 msgid "Disabled"
-msgstr ""
+msgstr "Desativado"
 
 #: admin/admin-display.php:413
 msgid "Geo-IP test"
-msgstr ""
+msgstr "Teste Geo-IP"
 
 #: admin/admin-display.php:421
 msgid "Your IP address"
-msgstr ""
+msgstr "Seu endereço IP"
 
 #: admin/admin-display.php:431
 msgid "Geo-IP Test Error"
-msgstr ""
+msgstr "Erro no Teste Geo-IP"
 
 #. translators: %s is the ip address.
 #: admin/admin-tools.php:56
 #, php-format
 msgid "Success: ip %s unbanned"
-msgstr ""
+msgstr "Sucesso: ip %s não-distribuído"
 
 #. translators: %s is the ip address.
 #: admin/admin-tools.php:59
 #, php-format
 msgid "Error: unable to unban %s"
-msgstr ""
+msgstr "Erro: incapaz de desbloquear %s"
 
 #. translators: the %1$s is the user id and %2$s is the ip address.
 #: admin/admin-tools.php:81
 #, php-format
 msgid "Ban forever id %1$s (ip %2$s) successful"
-msgstr ""
+msgstr "Banimento para sempre %1$s (ip %2$s) bem sucedido"
 
 #. translators: the %1$s is the user id and %2$s is the ip address.
 #: admin/admin-tools.php:90
 #, php-format
 msgid "Error: unable to ban forever id %1$s (ip %2$s)"
-msgstr ""
+msgstr "Erro: incapaz de proibir para sempre id %1$s (ip %2$s)"
 
 #: admin/admin-tools.php:109
 msgid "Success: ip blacklist cleaned"
-msgstr ""
+msgstr "Sucesso: lista negra de ip limpa"
 
 #: admin/admin-tools.php:111
 msgid "Error: unable to clean blacklist. Please refresh and try again!"
 msgstr ""
+"Erro: impossibilidade de limpar a lista negra. Por favor, atualize e tente "
+"novamente!"
 
 #: admin/admin-tools.php:124
 msgid "b8 dictionary reset successful"
-msgstr ""
+msgstr "b8 dicionário resetado com sucesso"
 
 #: admin/admin-tools.php:126
 msgid ""
 "Something goes wrong while deleting b8 dictionary. Please refresh and try "
 "again!"
 msgstr ""
+"Algo dá errado ao apagar o dicionário b8. Por favor, atualize e tente "
+"novamente!"
 
 #: admin/admin-tools.php:141
 msgid ""
 "CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 "
 "manually if needed"
 msgstr ""
+"CF7 AntiSpam totalmente reinicializado com sucesso. Você precisa reconstruir "
+"o B8 manualmente, se necessário"
 
 #: admin/admin-tools.php:143
 msgid "Ops! something went wrong... Please refresh and try again!"
-msgstr ""
+msgstr "Ops! algo correu mal... Por favor, atualize-se e tente novamente!"
 
 #: admin/admin-tools.php:156
 msgid "b8 dictionary rebuild successful"
-msgstr ""
+msgstr "b8 reconstruir com sucesso o dicionário"
 
 #: admin/admin-tools.php:158
 msgid ""
 "Something goes wrong while rebuilding b8 dictionary. Please refresh and try "
 "again!"
 msgstr ""
+"Algo dá errado durante a reconstrução do dicionário b8. Por favor, atualize "
+"e tente novamente!"
 
 #. translators: %s is the mail id.
 #: admin/admin-tools.php:179
 #, php-format
 msgid "Email id %s has an empty body"
-msgstr ""
+msgstr "O e-mail id %s tem um corpo vazio"
 
 #. translators: %s is the mail id.
 #: admin/admin-tools.php:186
 #, php-format
 msgid "Email id %s sent with success"
-msgstr ""
+msgstr "E-mail id %s enviado com sucesso"
 
 #. translators: %s is the mail id.
 #: admin/admin-tools.php:193
 #, php-format
 msgid "Ops! something went wrong... unable to resend %s email"
-msgstr ""
+msgstr "Ops! algo deu errado... incapaz de reenviar %s e-mail"
 
 #: admin/admin.php:64 admin/admin.php:65
 msgid "Antispam"
-msgstr ""
+msgstr "Antispam"
 
 #: admin/admin.php:81
 msgid "Antispam Settings"
-msgstr ""
+msgstr "Configurações anti-spam"
 
 #: admin/admin.php:113
 msgid "Antispam setting updated with success"
-msgstr ""
+msgstr "Configuração anti-spam atualizada com sucesso"
 
 #: admin/admin.php:188 includes/cf7a-antispam-flamingo.php:412
 msgid "Are you sure?"
-msgstr ""
+msgstr "Você tem certeza?"
 
 #: admin/admin.php:256
 msgid "Last Week Emails"
-msgstr ""
+msgstr "E-mails da semana passada"
 
 #: admin/admin.php:316
 msgid "Flamingo Inbound Messages"
-msgstr ""
+msgstr "Mensagens recebidas do Flamingo"
 
 #: admin/admin.php:318
 msgid "CF7-Antispam setup"
-msgstr ""
+msgstr "CF7-Antispam configuração"
 
 #: admin/admin.php:415
 msgid "You have not received any e-mails in the last 7 days."
-msgstr ""
+msgstr "Você não recebeu nenhum e-mail nos últimos 7 dias."
 
 #: includes/cf7a-activator.php:230
 msgid ""
 "CF7 AntiSpam updated successful! Please flush cache to refresh hidden form "
 "data"
 msgstr ""
+"CF7 AntiSpam atualizado com sucesso! Por favor, limpe o cache para atualizar "
+"os dados do formulário oculto"
 
 #. translators: %s - the post id.
 #: includes/cf7a-antispam-flamingo.php:97
 #, php-format
 msgid "%s has no message text so can't be analyzed"
-msgstr ""
+msgstr "%s não tem texto de mensagem, portanto não pode ser analisado"
 
 #. translators: %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email
 #: includes/cf7a-antispam-flamingo.php:130
@@ -795,76 +898,82 @@ msgstr ""
 msgid ""
 "b8 has learned this e-mail from %1$s was %2$s - score before/after: %3$f/%4$f"
 msgstr ""
+"b8 tomou conhecimento deste e-mail com %1$s foi %2$s - pontuação antes/"
+"depois: %3$f/%4$f"
 
 #: includes/cf7a-antispam-flamingo.php:370
 msgid "D8 classification"
-msgstr ""
+msgstr "Classificação D8"
 
 #: includes/cf7a-antispam-flamingo.php:371
 msgid "CF7-AntiSpam actions"
-msgstr ""
+msgstr "Ações da CF7-AntiSpam"
 
 #. translators: none is a label, please keep it short! thanks!
 #: includes/cf7a-antispam-flamingo.php:388 includes/cf7a-functions.php:219
 msgid "none"
-msgstr ""
+msgstr "nenhum"
 
 #: includes/cf7a-antispam-flamingo.php:413
 msgid "Resend Email"
-msgstr ""
+msgstr "Reenviar email"
 
 #: includes/cf7a-antispam-geoip.php:266 includes/cf7a-antispam-geoip.php:281
 msgid ""
 "Unable to download the geo-ip database, please check that the key provided "
 "is correct! "
 msgstr ""
+"Não foi possível baixar o banco de dados do geo-ip, por favor verifique se a "
+"chave fornecida está correta! "
 
 #: includes/cf7a-antispam-geoip.php:301
 msgid "GEO-IP Database file decompression failed"
-msgstr ""
+msgstr "Falha na descompressão do arquivo de banco de dados GEO-IP"
 
 #: includes/cf7a-antispam-geoip.php:322
 msgid "GEO-IP decompressed database copy failed"
-msgstr ""
+msgstr "A cópia do banco de dados descompactado GEO-IP falhou"
 
 #: includes/cf7a-core.php:333
 msgid "CF7 AntiSpam need "
-msgstr ""
+msgstr "Necessidade do CF7 AntiSpam "
 
 #: includes/cf7a-core.php:335
 msgid "Contact Form 7"
-msgstr ""
+msgstr "Contact Form 7"
 
 #: includes/cf7a-core.php:336
 msgid " installed and enabled in order to work."
-msgstr ""
+msgstr " instalado e habilitado para funcionar."
 
 #: includes/cf7a-functions.php:144
 msgid "Every 5 Minutes"
-msgstr ""
+msgstr "A cada 5 minutos"
 
 #: includes/cf7a-functions.php:148
 msgid "Every 60 seconds"
-msgstr ""
+msgstr "A cada 60 segundos"
 
 #. translators: warn because not yet banned but already listed
 #: includes/cf7a-functions.php:241
 msgid "⚠️"
-msgstr ""
+msgstr "⚠️"
 
 #. translators: champion of spammer (>100 mail)
 #: includes/cf7a-functions.php:245
 msgid "🏆"
-msgstr ""
+msgstr "🏆"
 
 #. Plugin Name of the plugin/theme
 msgid "AntiSpam for Contact Form 7"
-msgstr ""
+msgstr "AntiSpam para Formulário de Contato 7"
 
 #. Description of the plugin/theme
 msgid "A trustworthy antispam plugin for Contact Form 7. Simple but effective."
 msgstr ""
+"Um plugin antispam de confiança para o Formulário de Contato 7. Simples, mas "
+"eficaz."
 
 #. Author of the plugin/theme
 msgid "Codekraft"
-msgstr ""
+msgstr "Codekraft"

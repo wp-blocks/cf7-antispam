@@ -1,15 +1,15 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: AntiSpam for Contact Form 7\n"
 "POT-Creation-Date: 2022-10-28 13:07+0200\n"
-"PO-Revision-Date: 2022-10-17 12:03+0200\n"
+"PO-Revision-Date: 2022-10-28 13:18+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.1.1\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
@@ -25,261 +25,263 @@ msgstr ""
 
 #: admin/admin-customizations.php:28
 msgid "Administrators only"
-msgstr ""
+msgstr "仅管理员"
 
 #: admin/admin-customizations.php:53
 msgid "Settings"
-msgstr ""
+msgstr "设置"
 
 #: admin/admin-customizations.php:61
 msgid "Ban automatically spammers"
-msgstr ""
+msgstr "自动禁止垃圾邮件发送者"
 
 #: admin/admin-customizations.php:69
 msgid "Automatic spammer IP Blacklist"
-msgstr ""
+msgstr "自动垃圾邮件发送者IP黑名单"
 
 #: admin/admin-customizations.php:78
 msgid "Mail blocked before Ban"
-msgstr ""
+msgstr "禁令前被封锁的邮件"
 
 #: admin/admin-customizations.php:87
 msgid "Automatic Unban"
-msgstr ""
+msgstr "自动解禁"
 
 #: admin/admin-customizations.php:96
 msgid "Bot Fingerprinting"
-msgstr ""
+msgstr "机器人指纹识别"
 
 #: admin/admin-customizations.php:104
 msgid "Enable anti-bot checks"
-msgstr ""
+msgstr "启用反僵尸检查"
 
 #: admin/admin-customizations.php:113
 msgid "Enable anti-bot extra checks"
-msgstr ""
+msgstr "启用反僵尸的额外检查"
 
 #: admin/admin-customizations.php:122
 msgid "Append hidden fields on submit"
-msgstr ""
+msgstr "提交时追加隐藏字段"
 
 #: admin/admin-customizations.php:131
 msgid "GeoIP"
-msgstr ""
+msgstr "Geo IP"
 
 #: admin/admin-customizations.php:139
 msgid "Enable automatic download"
-msgstr ""
+msgstr "启用自动下载"
 
 #: admin/admin-customizations.php:148
 msgid "Database available"
-msgstr ""
+msgstr "可用的数据库"
 
 #: admin/admin-customizations.php:160
 msgid "MaxMind Update Key"
-msgstr ""
+msgstr "MaxMind更新密钥"
 
 #: admin/admin-customizations.php:169
 msgid "Language Checks"
-msgstr ""
+msgstr "语言检查"
 
 #: admin/admin-customizations.php:177
 msgid "Check Browser Language"
-msgstr ""
+msgstr "检查浏览器语言"
 
 #: admin/admin-customizations.php:186
 msgid "Detect location using GeoIP"
-msgstr ""
+msgstr "使用GeoIP检测位置"
 
 #: admin/admin-customizations.php:195
 msgid "Allowed browser Languages"
-msgstr ""
+msgstr "允许的浏览器语言"
 
 #: admin/admin-customizations.php:204
 msgid "Disallowed browser Languages"
-msgstr ""
+msgstr "不允许的浏览器语言"
 
 #: admin/admin-customizations.php:213
 msgid "Time checks"
-msgstr ""
+msgstr "时间检查"
 
 #: admin/admin-customizations.php:221
 msgid "Check the elapsed time"
-msgstr ""
+msgstr "检查已过的时间"
 
 #: admin/admin-customizations.php:230
 msgid "Minimum elapsed time"
-msgstr ""
+msgstr "最小耗时"
 
 #: admin/admin-customizations.php:239
 msgid "Maximum elapsed time"
-msgstr ""
+msgstr "最大耗时"
 
 #: admin/admin-customizations.php:248
 msgid "Bad IP Address"
-msgstr ""
+msgstr "坏的IP地址"
 
 #: admin/admin-customizations.php:256
 msgid "Check HTTP referrer"
-msgstr ""
+msgstr "检查HTTP推荐人"
 
 #: admin/admin-customizations.php:265
 msgid "Check the sender IP Address"
-msgstr ""
+msgstr "检查发件人的IP地址"
 
 #: admin/admin-customizations.php:274
 msgid "Bad IP Address List"
-msgstr ""
+msgstr "坏的IP地址列表"
 
 #: admin/admin-customizations.php:283
 msgid "Bad words"
-msgstr ""
+msgstr "坏话"
 
 #: admin/admin-customizations.php:291
 msgid "Check the message for prohibited words"
-msgstr ""
+msgstr "检查信息中是否有违禁词语"
 
 #: admin/admin-customizations.php:300
 msgid "Bad words List"
-msgstr ""
+msgstr "坏话列表"
 
 #: admin/admin-customizations.php:309
 msgid "Bad email strings"
-msgstr ""
+msgstr "坏的电子邮件字符串"
 
 #: admin/admin-customizations.php:317
 msgid "Check the email for prohibited words"
-msgstr ""
+msgstr "检查电子邮件中的违禁词语"
 
 #: admin/admin-customizations.php:326
 msgid "Email prohibited words"
-msgstr ""
+msgstr "电子邮件禁止使用的词语"
 
 #: admin/admin-customizations.php:335
 msgid "User Agent blacklist"
-msgstr ""
+msgstr "用户代理黑名单"
 
 #: admin/admin-customizations.php:343
 msgid "Enable User Agent blacklist"
-msgstr ""
+msgstr "启用用户代理黑名单"
 
 #: admin/admin-customizations.php:352
 msgid "Disallowed user agents"
-msgstr ""
+msgstr "不允许的用户代理"
 
 #: admin/admin-customizations.php:361
 msgid "DNS Blacklists"
-msgstr ""
+msgstr "DNS黑名单"
 
 #: admin/admin-customizations.php:369
 msgid "Check IP on DNS blocklist"
-msgstr ""
+msgstr "检查DNS封锁名单上的IP"
 
 #: admin/admin-customizations.php:378
 msgid "DNS blocklist servers"
-msgstr ""
+msgstr "DNS封锁名单服务器"
 
 #: admin/admin-customizations.php:387
 msgid "Honeypot"
-msgstr ""
+msgstr "Honeypot"
 
 #: admin/admin-customizations.php:395
 msgid "Add some fake input inside the form"
-msgstr ""
+msgstr "在表单中添加一些假的输入"
 
 #: admin/admin-customizations.php:404
 msgid "Name for the honeypots inputs[*]"
-msgstr ""
+msgstr "蜜罐输入的名称[*] 。"
 
 #: admin/admin-customizations.php:413
 msgid "Honeyform <span class=\"label alert monospace\">[experimental]</span>"
-msgstr ""
+msgstr "Honeyform<span class=\"label alert monospace\">[实验性]</span>"
 
 #: admin/admin-customizations.php:421
 msgid "Add an hidden form inside the page content"
-msgstr ""
+msgstr "在页面内容中添加一个隐藏的表单"
 
 #: admin/admin-customizations.php:430
 msgid "Select where the honeyform will be placed"
-msgstr ""
+msgstr "选择将放置蜜罐的位置"
 
 #: admin/admin-customizations.php:439
 msgid "B8 statistical \"Bayesian\" spam filter"
-msgstr ""
+msgstr "B8统计学 \"贝叶斯 \"垃圾邮件过滤器"
 
 #: admin/admin-customizations.php:447
 msgid "Enable B8"
-msgstr ""
+msgstr "启用B8"
 
 #: admin/admin-customizations.php:456
 msgid "B8 spam threshold"
-msgstr ""
+msgstr "B8 垃圾邮件阈值"
 
 #: admin/admin-customizations.php:465
 msgid "Spam filter customizations"
-msgstr ""
+msgstr "垃圾邮件过滤器的定制"
 
 #: admin/admin-customizations.php:473
 msgid "Disable cf7 form reload if the page is cached"
-msgstr ""
+msgstr "如果页面被缓存，禁用cf7表单重新加载"
 
 #: admin/admin-customizations.php:482
 msgid "Your unique css class"
-msgstr ""
+msgstr "你独特的css类"
 
 #: admin/admin-customizations.php:491
 msgid "Your unique fields prefix"
-msgstr ""
+msgstr "你独特的字段前缀"
 
 #: admin/admin-customizations.php:500
 msgid "The encryption method"
-msgstr ""
+msgstr "加密方法"
 
 #: admin/admin-customizations.php:509 admin/admin-customizations.php:526
 msgid "Enable advanced settings"
-msgstr ""
+msgstr "启用高级设置"
 
 #: admin/admin-customizations.php:517
 msgid "Severity of anti-spam control"
-msgstr ""
+msgstr "反垃圾邮件控制的严重性"
 
 #: admin/admin-customizations.php:535
 msgid "Scoring Tweaks (1 = Ban)"
-msgstr ""
+msgstr "计分调整（1=禁止）。"
 
 #: admin/admin-customizations.php:543
 msgid "Bot fingerprinting score <small>(for each failed test)</small>"
-msgstr ""
+msgstr "僵尸指纹得分<small>（对每个失败的测试</small>）"
 
 #: admin/admin-customizations.php:552
 msgid "Time checks score"
-msgstr ""
+msgstr "时间检查得分"
 
 #: admin/admin-customizations.php:561
 msgid "String found"
-msgstr ""
+msgstr "找到的字符串"
 
 #: admin/admin-customizations.php:570
 msgid "DNSBL score <small>(for each server)</small>"
-msgstr ""
+msgstr "DNSBL得分<small>（针对每个服务器）</small>"
 
 #: admin/admin-customizations.php:579
 msgid "Honeypot fill score <small>(for each fail)</small>"
-msgstr ""
+msgstr "蜜罐填充得分<small>（每次失败）</small>"
 
 #: admin/admin-customizations.php:588
 msgid "Bot detected"
-msgstr ""
+msgstr "检测到Bot"
 
 #: admin/admin-customizations.php:597
 msgid "Bot warn"
-msgstr ""
+msgstr "僵尸警告"
 
 #: admin/admin-customizations.php:612
 msgid ""
 "For most cases the following settings are fine, but you can have fun "
 "configuring the antispam to achieve the level of protection you prefer!"
 msgstr ""
+"对于大多数情况下，以下设置是好的，但你可以尽情地配置反垃圾邮件，以达到你喜欢"
+"的保护水平!"
 
 #: admin/admin-customizations.php:613
 msgid ""
@@ -287,22 +289,24 @@ msgid ""
 "separated format and on saving, the strings will be broken up into one per "
 "line format."
 msgstr ""
+"在多个文本字段（textarea）中，你也可以以逗号分隔的格式输入数值，在保存时，这"
+"些字符串将被分解成每行一个的格式。"
 
 #: admin/admin-customizations.php:614
 msgid "Tip:"
-msgstr ""
+msgstr "提示："
 
 #: admin/admin-customizations.php:615
 msgid "You can save settings simply using the shortcut [Ctrl + S]."
-msgstr ""
+msgstr "你可以简单地使用快捷键[Ctrl + S]来保存设置。"
 
 #: admin/admin-customizations.php:623
 msgid "How many failed attempts before being banned"
-msgstr ""
+msgstr "被禁止前有多少次失败的尝试"
 
 #: admin/admin-customizations.php:627
 msgid "Next scheduled unban event:"
-msgstr ""
+msgstr "下一个预定解禁事件:"
 
 #: admin/admin-customizations.php:636
 msgid ""
@@ -311,6 +315,9 @@ msgid ""
 "hardware configuration like screen resolution, 3d support, available fonts "
 "and OS version, that usually aren't available for bots."
 msgstr ""
+"指纹识别是一种利用浏览器可以提供的某些数据来检查它是否是一个真正的浏览器。脚"
+"本检查软件和硬件配置，如屏幕分辨率、3D支持、可用字体和操作系统版本，这些通常"
+"对机器人来说是不可用的。"
 
 #: admin/admin-customizations.php:637
 msgid ""
@@ -318,6 +325,8 @@ msgid ""
 "the submit button has been pressed, making it even more difficult for a bot "
 "to circumvent the protection."
 msgstr ""
+"最后一个选项，在提交时追加，使指纹识别发生在提交按钮被按下之后，使机器人更难"
+"以规避保护。"
 
 #: admin/admin-customizations.php:642
 msgid ""
@@ -325,26 +334,28 @@ msgid ""
 "sent too quickly or too slowly, the sender is probably not human. Values in "
 "seconds"
 msgstr ""
+"检查电子邮件是否在 \"正确 \"的时间范围内发送。如果电子邮件发送得太快或太慢，"
+"发件人可能不是人类。数值以秒为单位"
 
 #: admin/admin-customizations.php:649
 msgid "Detect user location using MaxMind GeoIP2 database."
-msgstr ""
+msgstr "使用MaxMind GeoIP2数据库检测用户位置。"
 
 #: admin/admin-customizations.php:650
 msgid "In order to enable this functionality you need to agree at  "
-msgstr ""
+msgstr "为了启用这一功能，你需要同意在 "
 
 #: admin/admin-customizations.php:651
 msgid "GeoLite2 End User License Agreement"
-msgstr ""
+msgstr "GeoLite2终端用户许可协议"
 
 #: admin/admin-customizations.php:652
 msgid "and sign up "
-msgstr ""
+msgstr "并报名参加 "
 
 #: admin/admin-customizations.php:653
 msgid "GeoLite2 Downloadable Databases"
-msgstr ""
+msgstr "GeoLite2可下载的数据库"
 
 #: admin/admin-customizations.php:654
 msgid ""
@@ -352,10 +363,12 @@ msgid ""
 "Antispam will be able to automatically download the updated GeoIP database "
 "every month."
 msgstr ""
+"注册后，您会得到一个密钥，把它粘贴到下面的输入中，CF7-Antispam就能每月自动下"
+"载更新的GeoIP数据库。"
 
 #: admin/admin-customizations.php:660
 msgid "Recommended - define a key your config.php the key in this way: "
-msgstr ""
+msgstr "建议--定义一个密钥，你的config.php中的密钥就是这样 "
 
 #: admin/admin-customizations.php:668
 msgid ""
@@ -364,6 +377,8 @@ msgid ""
 "denies a state while the language enables or denies all language codes "
 "beginning with that language. "
 msgstr ""
+"检查用户浏览器语言/用户键盘。每行添加一个语言代码（en-US）或语言（en），语言"
+"代码专门启用或拒绝一种状态，而语言则启用或拒绝以该语言开头的所有语言代码 "
 
 #: admin/admin-customizations.php:669
 msgid ""
@@ -371,29 +386,35 @@ msgid ""
 "it is based on what is provided by the browser and can easily be bypassed "
 "(however, less sophisticated bots do not pass this test)"
 msgstr ""
+"浏览器语言检测方法不像地理IP那样准确，因为它是基于浏览器提供的内容，很容易被"
+"绕过（然而，不太复杂的机器人不能通过这个测试）。"
 
 #: admin/admin-customizations.php:674
 msgid ""
 "Adding a list of forbidden senders per IP address, one \"bad\" ip each line"
-msgstr ""
+msgstr "为每个IP地址添加一个禁止发送者列表，每行一个 \"坏 \"IP"
 
 #: admin/admin-customizations.php:679
 msgid ""
 "Check if the mail message contains \"bad\" words, all e-mails containing one "
 "of these words in the text will be flagged. A bad string per line"
 msgstr ""
+"检查邮件中是否包含 \"坏 \"字，所有文本中包含这些字之一的邮件都将被标记。每行"
+"有一个坏的字符串"
 
 #: admin/admin-customizations.php:684
 msgid ""
 "Check if the mail content contains a word and in this case flag this mail, "
 "one forbidden word per line"
-msgstr ""
+msgstr "检查邮件内容是否包含一个词，在这种情况下，标记此邮件，每行一个禁忌词"
 
 #: admin/admin-customizations.php:689
 msgid ""
 "Enter a list of forbidden user agents, one per line. When the string match "
 "the user agent (or a part of) the mail will be flagged"
 msgstr ""
+"输入一个被禁止的用户代理列表，每行一个。当字符串与用户代理（或其一部分）匹配"
+"时，邮件将被标记为"
 
 #: admin/admin-customizations.php:694
 msgid ""
@@ -404,6 +425,10 @@ msgid ""
 "proxy and that is why the method is no longer 100 per cent reliable. Add a "
 "DSNBL server url each line "
 msgstr ""
+"检查DNS黑名单上的发件人IP，DNSBL是被证明/认可的垃圾邮件地址的实时列表。这些可"
+"能包括用于发送垃圾邮件的僵尸计算机或其他机器的地址列表，自愿接纳垃圾邮件的互"
+"联网服务提供商（ISP），但他们也可能是代理背后的用户，这就是为什么该方法不再是"
+"100％可靠。每行添加一个DSNBL服务器的网址 "
 
 #: admin/admin-customizations.php:701
 msgid ""
@@ -411,12 +436,14 @@ msgid ""
 "but remains visible to bots. Since this fields are automatically added and "
 "appended inside the forms with standard names."
 msgstr ""
+"蜜罐是一个 \"陷阱 \"字段，用css或js对用户进行隐藏，但对机器人来说仍然是可见"
+"的。由于这个字段是自动添加的，并以标准名称附加在表单内。"
 
 #: admin/admin-customizations.php:702
 msgid ""
 "Please check the list below because the name MUST differ from the cf7 tag "
 "class names"
-msgstr ""
+msgstr "请检查以下列表，因为名称必须与cf7标签类名称不同"
 
 #: admin/admin-customizations.php:708
 msgid ""
@@ -424,17 +451,19 @@ msgid ""
 "serving the bot a form with trap fields we directly serve it a form that is "
 "entirely a trap"
 msgstr ""
+"实际上，我将首次提出蜜糖形式的建议!我们不向机器人提供带有陷阱字段的表单，而是"
+"直接向它提供一个完全是陷阱的表单"
 
 #: admin/admin-customizations.php:713
 msgid ""
 "Tells you whether a text is spam or not, using statistical text analysis of "
 "the text message"
-msgstr ""
+msgstr "利用对文本信息的统计分析，告诉你一个文本是否是垃圾邮件"
 
 #: admin/admin-customizations.php:720
 msgid ""
 "RECOMMENDED: create your own and unique css class and customized fields name"
-msgstr ""
+msgstr "建议：创建你自己的、独特的css类和自定义字段名"
 
 #: admin/admin-customizations.php:721
 msgid ""
@@ -442,6 +471,8 @@ msgid ""
 "couple of tests because a small amount of them aren't compatible with the "
 "format of the form data."
 msgstr ""
+"你也可以在加密方法中选择。但是，在改变加密方式后，要做几次测试，因为有少量的"
+"加密方式与表格数据的格式不兼容。"
 
 #: admin/admin-customizations.php:727
 msgid ""
@@ -451,19 +482,22 @@ msgid ""
 "is considered spam, and is consequently processed by b8, which analyses the "
 "text and learns the words of a spam mail."
 msgstr ""
+"联系表7的反垃圾邮件的计算系统是这样的：每个失败的测试都有自己的分数（如下图所"
+"示，你可以根据自己的喜好进行细化）。如果所有测试结束后的邮件超过了1的值，该邮"
+"件被认为是垃圾邮件，并因此被b8处理，b8会分析文本并学习垃圾邮件的字句。"
 
 #: admin/admin-customizations.php:732
 msgid ""
 "In this section you will find some advanced settings to manage the database"
-msgstr ""
+msgstr "在本节中，你会发现一些管理数据库的高级设置"
 
 #: admin/admin-display.php:57
 msgid "Dismiss"
-msgstr ""
+msgstr "忽略"
 
 #: admin/admin-display.php:59
 msgid "Before you cry over spilt mail&#8230;"
-msgstr ""
+msgstr "在你哭泣溢出的邮件之前&#8230;"
 
 #: admin/admin-display.php:60
 msgid ""
@@ -471,6 +505,8 @@ msgid ""
 "you may lose important messages forever if your mail server has issues or "
 "you make a mistake in mail configuration."
 msgstr ""
+"联系表格7不会在任何地方存储提交的邮件&#8217。 因此，如果您的邮件服务器出现问"
+"题或邮件配置错误，您可能会永远丢失重要邮件。"
 
 #. translators: %s: link labeled 'Flamingo'
 #: admin/admin-display.php:64
@@ -480,391 +516,431 @@ msgid ""
 "messages through contact forms into the database. Flamingo is a free "
 "WordPress plugin created by the same author as Contact Form 7."
 msgstr ""
+"在发生这种情况之前安装一个消息存储插件。 %s 通过联系表单将所有消息保存到数据"
+"库中。 Flamingo是由Contact Form 7创建的免费WordPress插件。"
 
 #: admin/admin-display.php:65
 msgid "https://contactform7.com/save-submitted-messages-with-flamingo/"
-msgstr ""
+msgstr "https://contactform7.com/save-submitted-messages-with-flamingo/"
 
 #: admin/admin-display.php:66
 msgid "Flamingo"
-msgstr ""
+msgstr "Flamingo"
 
 #: admin/admin-display.php:72
 msgid "PLEASE don't forget to add "
-msgstr ""
+msgstr "请不要忘记添加 "
 
 #: admin/admin-display.php:73
 msgid "flamingo_message: \"[your-message]\" "
-msgstr ""
+msgstr "flamingo_message:\"[你的信息]\" "
 
 #: admin/admin-display.php:78
 msgid "Please replace "
-msgstr ""
+msgstr "请更换 "
 
 #: admin/admin-display.php:80
 msgid ""
 "with the message field used in your form because that is the field scanned "
 "with b8. You need add this string to each form"
 msgstr ""
+"与你的表单中使用的消息字段一起，因为那是用b8扫描的字段。你需要在每个表单中添"
+"加这个字符串"
 
 #: admin/admin-display.php:81
 msgid "additional settings section"
-msgstr ""
+msgstr "附加设置部分"
 
 #: admin/admin-display.php:82
 msgid "to enable the most advanced protection we can offer! Thank you!"
-msgstr ""
+msgstr "以使我们能够提供最先进的保护!谢谢您!"
 
 #: admin/admin-display.php:90
 msgid "Options"
-msgstr ""
+msgstr "选项"
 
 #: admin/admin-display.php:162
 msgid "[unban ip]"
-msgstr ""
+msgstr "[解禁IP]"
 
 #: admin/admin-display.php:164
 msgid "[ban forever]"
-msgstr ""
+msgstr "[永远禁止]"
 
 #: admin/admin-display.php:172
 msgid " ip banned"
-msgstr ""
+msgstr " 禁止的IP"
 
 #: admin/admin-display.php:201
 msgid "Advanced settings"
-msgstr ""
+msgstr "高级设置"
 
 #: admin/admin-display.php:202
 msgid ""
 "This section contains features that completely change what is stored in the "
 "cf7-antispam database, use them with caution!"
-msgstr ""
+msgstr "本节包含的功能完全改变了cf7-antispam数据库中的存储内容，请谨慎使用!"
 
 #: admin/admin-display.php:208
 msgid "Blacklist Reset"
-msgstr ""
+msgstr "重置黑名单"
 
 #: admin/admin-display.php:209
 msgid "If you need to remove or reset the whole blacklist data on your server."
-msgstr ""
+msgstr "如果你需要删除或重置你服务器上的整个黑名单数据。"
 
 #: admin/admin-display.php:215
 msgid "Remove all blacklisted IP"
-msgstr ""
+msgstr "删除所有被列入黑名单的IP"
 
 #: admin/admin-display.php:221
 msgid "Dictionary Reset"
-msgstr ""
+msgstr "词典重设"
 
 #: admin/admin-display.php:222
 msgid "Use only if you need to reset the whole b8 dictionary."
-msgstr ""
+msgstr "只有当你需要重置整个b8字典时才使用。"
 
 #: admin/admin-display.php:228
 msgid "Reset b8 dictionary"
-msgstr ""
+msgstr "重置b8字典"
 
 #: admin/admin-display.php:234
 msgid "Rebuid Dictionary"
-msgstr ""
+msgstr "瑞布德词典"
 
 #: admin/admin-display.php:235
 msgid ""
 "Reanalyze all the Flamingo inbound emails (you may need to reset dictionary "
 "before)."
-msgstr ""
+msgstr "重新分析所有Flamingo的入站邮件（你可能需要在之前重置字典）。"
 
 #: admin/admin-display.php:241
 msgid "Rebuild b8 dictionary"
-msgstr ""
+msgstr "重建b8字典"
 
 #: admin/admin-display.php:247
 msgid "Full Reset"
-msgstr ""
+msgstr "完全重置"
 
 #: admin/admin-display.php:248
 msgid "Fully reinitialize cf7-antispam plugin database and options"
-msgstr ""
+msgstr "全面重新初始化cf7-antispam插件数据库和选项"
 
 #: admin/admin-display.php:254
 msgid "FULL RESET"
-msgstr ""
+msgstr "完全重设"
 
 #: admin/admin-display.php:273
 msgid "Debug info"
-msgstr ""
+msgstr "调试信息"
 
 #: admin/admin-display.php:274
 msgid "If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true"
-msgstr ""
+msgstr "如果你能看到这个面板WP_DEBUG或CF7ANTISPAM_DEBUG为真"
 
 #: admin/admin-display.php:280 admin/admin-display.php:287
 msgid "is enabled"
-msgstr ""
+msgstr "已启用"
 
 #: admin/admin-display.php:294
 msgid "Your ip address"
-msgstr ""
+msgstr "你的ip地址"
 
 #: admin/admin-display.php:321
 msgid "Options debug"
-msgstr ""
+msgstr "选项debug"
 
 #: admin/admin-display.php:324
 msgid "Those are the options of this plugin"
-msgstr ""
+msgstr "这些是这个插件的选项"
 
 #: admin/admin-display.php:362
 msgid "spam"
-msgstr ""
+msgstr "垃圾邮件"
 
 #: admin/admin-display.php:362
 msgid "ham"
-msgstr ""
+msgstr "火火腿"
 
 #: admin/admin-display.php:370
 msgid "DNSBL performance test:"
-msgstr ""
+msgstr "DNSBL性能测试:"
 
 #: admin/admin-display.php:371
 msgid ""
 "Results below 0.01 are fine, OK/Spam indicates the status of your ip on "
 "DNSBL servers"
-msgstr ""
+msgstr "低于0.01的结果是好的，OK/Spam表示你的IP在DNSBL服务器上的状态"
 
 #: admin/admin-display.php:392
 msgid "not set"
-msgstr ""
+msgstr "未设置"
 
 #: admin/admin-display.php:396
 msgid "Geo-IP"
-msgstr ""
+msgstr "地理-IP"
 
 #: admin/admin-display.php:398
 msgid "Enabled"
-msgstr ""
+msgstr "启用"
 
 #: admin/admin-display.php:398
 msgid "Geo-ip database next scheduled update: "
-msgstr ""
+msgstr "Geo-ip数据库的下一次预定更新。 "
 
 #: admin/admin-display.php:399
 msgid "Disabled"
-msgstr ""
+msgstr "禁用"
 
 #: admin/admin-display.php:413
 msgid "Geo-IP test"
-msgstr ""
+msgstr "地理-IP测试"
 
 #: admin/admin-display.php:421
 msgid "Your IP address"
-msgstr ""
+msgstr "坏的IP地址"
 
 #: admin/admin-display.php:431
 msgid "Geo-IP Test Error"
-msgstr ""
+msgstr "地理-IP测试错误"
 
 #. translators: %s is the ip address.
 #: admin/admin-tools.php:56
 #, php-format
 msgid "Success: ip %s unbanned"
-msgstr ""
+msgstr "成功：ip %s 解禁"
 
 #. translators: %s is the ip address.
 #: admin/admin-tools.php:59
 #, php-format
 msgid "Error: unable to unban %s"
-msgstr ""
+msgstr "错误：无法解禁%s"
 
 #. translators: the %1$s is the user id and %2$s is the ip address.
 #: admin/admin-tools.php:81
 #, php-format
 msgid "Ban forever id %1$s (ip %2$s) successful"
-msgstr ""
+msgstr "永远禁止ID %1$s (IP %2$s) 成功"
 
 #. translators: the %1$s is the user id and %2$s is the ip address.
 #: admin/admin-tools.php:90
 #, php-format
 msgid "Error: unable to ban forever id %1$s (ip %2$s)"
-msgstr ""
+msgstr "错误：无法永远禁止ID%1$s（IP%2$s）。"
 
 #: admin/admin-tools.php:109
 msgid "Success: ip blacklist cleaned"
-msgstr ""
+msgstr "成功：清除了IP黑名单"
 
 #: admin/admin-tools.php:111
 msgid "Error: unable to clean blacklist. Please refresh and try again!"
-msgstr ""
+msgstr "错误：无法清理黑名单。请刷新并重试!"
 
 #: admin/admin-tools.php:124
 msgid "b8 dictionary reset successful"
-msgstr ""
+msgstr "b8 词典重置成功"
 
 #: admin/admin-tools.php:126
 msgid ""
 "Something goes wrong while deleting b8 dictionary. Please refresh and try "
 "again!"
-msgstr ""
+msgstr "删除b8字典时出了问题。请刷新并重试!"
 
 #: admin/admin-tools.php:141
 msgid ""
 "CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 "
 "manually if needed"
-msgstr ""
+msgstr "CF7 AntiSpam完全重新初始化成功。如果需要，你需要手动重建B8"
 
 #: admin/admin-tools.php:143
 msgid "Ops! something went wrong... Please refresh and try again!"
-msgstr ""
+msgstr "Ops！出错了...请刷新并重试!"
 
 #: admin/admin-tools.php:156
 msgid "b8 dictionary rebuild successful"
-msgstr ""
+msgstr "b8字典重建成功"
 
 #: admin/admin-tools.php:158
 msgid ""
 "Something goes wrong while rebuilding b8 dictionary. Please refresh and try "
 "again!"
-msgstr ""
+msgstr "重建b8字典时出了问题。请刷新并重试!"
 
 #. translators: %s is the mail id.
 #: admin/admin-tools.php:179
 #, php-format
 msgid "Email id %s has an empty body"
-msgstr ""
+msgstr "邮件ID%s有一个空的正文"
 
 #. translators: %s is the mail id.
 #: admin/admin-tools.php:186
 #, php-format
 msgid "Email id %s sent with success"
-msgstr ""
+msgstr "成功发送电子邮件ID%s"
 
 #. translators: %s is the mail id.
 #: admin/admin-tools.php:193
 #, php-format
 msgid "Ops! something went wrong... unable to resend %s email"
-msgstr ""
+msgstr "Ops！出错了...无法重新发送%s电子邮件"
 
 #: admin/admin.php:64 admin/admin.php:65
 msgid "Antispam"
-msgstr ""
+msgstr "反垃圾邮件"
 
 #: admin/admin.php:81
 msgid "Antispam Settings"
-msgstr ""
+msgstr "反垃圾邮件设置"
 
 #: admin/admin.php:113
 msgid "Antispam setting updated with success"
-msgstr ""
+msgstr "反垃圾邮件设置更新成功"
 
 #: admin/admin.php:188 includes/cf7a-antispam-flamingo.php:412
 msgid "Are you sure?"
-msgstr ""
+msgstr "你确定？"
 
 #: admin/admin.php:256
 msgid "Last Week Emails"
-msgstr ""
+msgstr "最后一周的电子邮件"
 
 #: admin/admin.php:316
 msgid "Flamingo Inbound Messages"
-msgstr ""
+msgstr "留言消息"
 
 #: admin/admin.php:318
 msgid "CF7-Antispam setup"
-msgstr ""
+msgstr "CF7-反垃圾邮件设置"
 
 #: admin/admin.php:415
 msgid "You have not received any e-mails in the last 7 days."
-msgstr ""
+msgstr "你在过去7天内没有收到任何电子邮件。"
 
 #: includes/cf7a-activator.php:230
 msgid ""
 "CF7 AntiSpam updated successful! Please flush cache to refresh hidden form "
 "data"
-msgstr ""
+msgstr "CF7反垃圾邮件更新成功!请刷新缓存以刷新隐藏的表单数据"
 
 #. translators: %s - the post id.
 #: includes/cf7a-antispam-flamingo.php:97
 #, php-format
 msgid "%s has no message text so can't be analyzed"
-msgstr ""
+msgstr "%s没有信息文本，所以无法分析"
 
 #. translators: %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email
 #: includes/cf7a-antispam-flamingo.php:130
 #, php-format
 msgid ""
 "b8 has learned this e-mail from %1$s was %2$s - score before/after: %3$f/%4$f"
-msgstr ""
+msgstr "b8从%1$s得知这封电子邮件是%2$s - 之前/之后的得分。%3$f/%4$f"
 
 #: includes/cf7a-antispam-flamingo.php:370
 msgid "D8 classification"
-msgstr ""
+msgstr "D8分类"
 
 #: includes/cf7a-antispam-flamingo.php:371
 msgid "CF7-AntiSpam actions"
-msgstr ""
+msgstr "CF7-反垃圾邮件行动"
 
 #. translators: none is a label, please keep it short! thanks!
 #: includes/cf7a-antispam-flamingo.php:388 includes/cf7a-functions.php:219
 msgid "none"
-msgstr ""
+msgstr "无"
 
 #: includes/cf7a-antispam-flamingo.php:413
 msgid "Resend Email"
-msgstr ""
+msgstr "重发电子邮件"
 
 #: includes/cf7a-antispam-geoip.php:266 includes/cf7a-antispam-geoip.php:281
 msgid ""
 "Unable to download the geo-ip database, please check that the key provided "
 "is correct! "
-msgstr ""
+msgstr "无法下载geo-ip数据库，请检查提供的密钥是否正确! "
 
 #: includes/cf7a-antispam-geoip.php:301
 msgid "GEO-IP Database file decompression failed"
-msgstr ""
+msgstr "GEO-IP数据库文件解压失败"
 
 #: includes/cf7a-antispam-geoip.php:322
 msgid "GEO-IP decompressed database copy failed"
-msgstr ""
+msgstr "GEO-IP解压缩数据库拷贝失败"
 
 #: includes/cf7a-core.php:333
 msgid "CF7 AntiSpam need "
-msgstr ""
+msgstr "CF7反垃圾邮件需要 "
 
 #: includes/cf7a-core.php:335
 msgid "Contact Form 7"
-msgstr ""
+msgstr "Contact Form 7"
 
 #: includes/cf7a-core.php:336
 msgid " installed and enabled in order to work."
-msgstr ""
+msgstr " 安装并启用，以便工作。"
 
 #: includes/cf7a-functions.php:144
 msgid "Every 5 Minutes"
-msgstr ""
+msgstr "每5分钟"
 
 #: includes/cf7a-functions.php:148
 msgid "Every 60 seconds"
-msgstr ""
+msgstr "每60秒"
 
 #. translators: warn because not yet banned but already listed
 #: includes/cf7a-functions.php:241
 msgid "⚠️"
-msgstr ""
+msgstr "⚠️"
 
 #. translators: champion of spammer (>100 mail)
 #: includes/cf7a-functions.php:245
 msgid "🏆"
-msgstr ""
+msgstr "🏆"
 
 #. Plugin Name of the plugin/theme
 msgid "AntiSpam for Contact Form 7"
-msgstr ""
+msgstr "联系表7的反垃圾邮件"
 
 #. Description of the plugin/theme
 msgid "A trustworthy antispam plugin for Contact Form 7. Simple but effective."
-msgstr ""
+msgstr "一个值得信赖的联系表格7的反垃圾邮件插件。简单但有效。"
 
 #. Author of the plugin/theme
 msgid "Codekraft"
-msgstr ""
+msgstr "编码技术"
+
+#~ msgid "Enable GeoIP"
+#~ msgstr "启用GeoIP"
+
+#~ msgid "Honeyform fill score"
+#~ msgstr "蜂窝状填充物得分"
+
+#~ msgid "[your-message]"
+#~ msgstr "[你的信息]"
+
+#~ msgid "CF7 AntiSpam email "
+#~ msgstr "CF7反垃圾电子邮件"
+
+#~ msgid "IP Blacklist"
+#~ msgstr "IP黑名单"
+
+#~ msgid "The Server GeoIP information"
+#~ msgstr "服务器的GeoIP信息"
+
+#, php-format
+#~ msgid "Database could not be written (%s)."
+#~ msgstr "数据库无法写入（%s）。"
+
+#~ msgid "flamingo ban"
+#~ msgstr "火烈鸟禁令"
+
+#~ msgid ""
+#~ "CF7-Antispam: I cannot parse this form correctly, please double check "
+#~ "that the code is correct, thank you! (this message is only displayed to "
+#~ "admins)"
+#~ msgstr ""
+#~ "CF7-反垃圾邮件。我不能正确解析这个表格，请仔细检查代码是否正确，谢谢!(此信"
+#~ "息只显示给管理员)"
+
+#~ msgid "Use them if you know what you are doing!"
+#~ msgstr "如果你知道自己在做什么，就使用它们吧!"
