@@ -32,6 +32,10 @@ class CF7_AntiSpam_ActivatorTest extends TestCase {
 
 	/**
 	 * @depends testEmpty
+	 *
+	 * @param array $stack
+	 *
+	 * @return array
 	 */
 	public function testPush( array $stack ) {
 		array_push( $stack, 'foo' );

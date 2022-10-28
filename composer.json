@@ -27,11 +27,11 @@
 	"phpunit/phpunit": "^7",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
 	"yoast/phpunit-polyfills": "*",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+	"automattic/vipwpcs": "^2.3"
   },
   "require": {
-	"geoip2/geoip2": "~2.0",
-    "automattic/vipwpcs": "^2.3"
+	"geoip2/geoip2": "~2.0"
   },
   "scripts": {
 	"PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist  -s --report=full --report=source",
