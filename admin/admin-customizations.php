@@ -1285,7 +1285,10 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_honeyform_position_callback() {
 		printf(
 			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
-			$this->cf7a_generate_options( array( 'wp_body_open', 'the_content', 'wp_footer' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' )
+			wp_kses(
+				$this->cf7a_generate_options( array( 'wp_body_open', 'the_content', 'wp_footer' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
+				array( 'option' => array() )
+			)
 		);
 	}
 
@@ -1336,9 +1339,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 		printf(
 			'<select id="cipher" name="cf7a_options[cf7a_cipher]">%s</select>',
-			$this->cf7a_generate_options(
-				openssl_get_cipher_methods(),
-				isset( $this->options['cf7a_cipher'] ) ? esc_attr( $this->options['cf7a_cipher'] ) : 'aes-128-cbc'
+			wp_kses(
+				$this->cf7a_generate_options(
+					openssl_get_cipher_methods(),
+					isset( $this->options['cf7a_cipher'] ) ? esc_attr( $this->options['cf7a_cipher'] ) : 'aes-128-cbc'
+				),
+				array( 'option' => array() )
 			)
 		);
 	}

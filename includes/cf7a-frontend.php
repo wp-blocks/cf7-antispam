@@ -62,9 +62,9 @@ class CF7_AntiSpam_Frontend {
 			$inputs = $xpath->query( '//input' );
 
 		} catch ( Exception $e ) {
-			error_log( 'CF7-Antispam: I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)' );
 			if ( is_admin() ) {
-				print_r( $e );
+				esc_html_e( 'I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)' );
+				cf7a_log( $e );
 			}
 			return $form_elements;
 		}

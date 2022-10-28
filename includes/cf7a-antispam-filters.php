@@ -261,6 +261,8 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function cf7a_spam_filter( $spam ) {
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+
 		/* Get the submitted data */
 		$submission = WPCF7_Submission::get_instance();
 
@@ -299,21 +301,21 @@ class CF7_AntiSpam_Filters {
 		 */
 
 		/* IP */
-		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'address' ] ), $options['cf7a_cipher'] ) : false;
+		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'address' ] ) ), $options['cf7a_cipher'] ) : false;
 		$remote_ip      = $real_remote_ip ? filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) : false;
 		$cf7_remote_ip  = filter_var( $submission->get_meta( 'remote_ip' ), FILTER_VALIDATE_IP );
 
 		/* CF7A version */
-		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'version' ] ), $options['cf7a_cipher'] ) : false;
+		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'version' ] ) ), $options['cf7a_cipher'] ) : false;
 
 		/* client referer */
-		$cf7a_referer = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . 'referer' ] ), $options['cf7a_cipher'] ) : false;
+		$cf7a_referer = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'referer' ] ) ), $options['cf7a_cipher'] ) : false;
 
 		/* CF7 user agent */
 		$user_agent = sanitize_text_field( $submission->get_meta( 'user_agent' ) );
 
 		/* Timestamp checks */
-		$timestamp = isset( $_POST[ $prefix . '_timestamp' ] ) ? intval( cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_timestamp' ] ), $options['cf7a_cipher'] ) ) : 0;
+		$timestamp = isset( $_POST[ $prefix . '_timestamp' ] ) ? intval( cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . '_timestamp' ] ) ), $options['cf7a_cipher'] ) ) : 0;
 
 		/* Can be cached so isn't safe to use -> $submission->get_meta( 'timestamp' ); */
 		$timestamp_submitted             = time();
@@ -480,17 +482,17 @@ class CF7_AntiSpam_Filters {
 			 */
 			if ( intval( $options['check_bot_fingerprint'] ) === 1 ) {
 				$bot_fingerprint = array(
-					'timezone'             => ! empty( $_POST[ $prefix . 'timezone' ] ) ? sanitize_text_field( $_POST[ $prefix . 'timezone' ] ) : null,
-					'platform'             => ! empty( $_POST[ $prefix . 'platform' ] ) ? sanitize_text_field( $_POST[ $prefix . 'platform' ] ) : null,
-					'screens'              => ! empty( $_POST[ $prefix . 'screens' ] ) ? sanitize_text_field( $_POST[ $prefix . 'screens' ] ) : null,
+					'timezone'             => ! empty( $_POST[ $prefix . 'timezone' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'timezone' ] ) ) : null,
+					'platform'             => ! empty( $_POST[ $prefix . 'platform' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'platform' ] ) ) : null,
+					'screens'              => ! empty( $_POST[ $prefix . 'screens' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'screens' ] ) ) : null,
 					'hardware_concurrency' => ! empty( $_POST[ $prefix . 'hardware_concurrency' ] ) ? intval( $_POST[ $prefix . 'hardware_concurrency' ] ) : null,
-					'memory'               => ! empty( $_POST[ $prefix . 'memory' ] ) ? floatval( $_POST[ $prefix . 'memory' ] ) : null,
-					'user_agent'           => ! empty( $_POST[ $prefix . 'user_agent' ] ) ? sanitize_text_field( $_POST[ $prefix . 'user_agent' ] ) : null,
-					'app_version'          => ! empty( $_POST[ $prefix . 'app_version' ] ) ? sanitize_text_field( $_POST[ $prefix . 'app_version' ] ) : null,
-					'webdriver'            => ! empty( $_POST[ $prefix . 'webdriver' ] ) ? sanitize_text_field( $_POST[ $prefix . 'webdriver' ] ) : null,
+					'memory'               => ! empty( $_POST[ $prefix . 'memory' ] ) ? intval( $_POST[ $prefix . 'memory' ] ) : null,
+					'user_agent'           => ! empty( $_POST[ $prefix . 'user_agent' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'user_agent' ] ) ) : null,
+					'app_version'          => ! empty( $_POST[ $prefix . 'app_version' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'app_version' ] ) ) : null,
+					'webdriver'            => ! empty( $_POST[ $prefix . 'webdriver' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webdriver' ] ) ) : null,
 					'session_storage'      => ! empty( $_POST[ $prefix . 'session_storage' ] ) ? intval( $_POST[ $prefix . 'session_storage' ] ) : null,
-					'bot_fingerprint'      => ! empty( $_POST[ $prefix . 'bot_fingerprint' ] ) ? sanitize_text_field( $_POST[ $prefix . 'bot_fingerprint' ] ) : null,
-					'touch'                => ! empty( $_POST[ $prefix . 'touch' ] ) ? true : null,
+					'bot_fingerprint'      => ! empty( $_POST[ $prefix . 'bot_fingerprint' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'bot_fingerprint' ] ) ) : null,
+					'touch'                => ! empty( $_POST[ $prefix . 'touch' ] ),
 				);
 
 				$fails = array();
@@ -568,27 +570,27 @@ class CF7_AntiSpam_Filters {
 
 				$bot_fingerprint_extras = array(
 					'activity'               => ! empty( $_POST[ $prefix . 'activity' ] ) ? intval( $_POST[ $prefix . 'activity' ] ) : 0,
-					'mouseclick_activity'    => ! empty( $_POST[ $prefix . 'mouseclick_activity' ] ) && sanitize_text_field( $_POST[ $prefix . 'mouseclick_activity' ] ) === 'passed' ? 'passed' : 0,
-					'mousemove_activity'     => ! empty( $_POST[ $prefix . 'mousemove_activity' ] ) && sanitize_text_field( $_POST[ $prefix . 'mousemove_activity' ] ) === 'passed' ? 'passed' : 0,
-					'webgl'                  => ! empty( $_POST[ $prefix . 'webgl' ] ) && sanitize_text_field( $_POST[ $prefix . 'webgl' ] ) === 'passed' ? 'passed' : 0,
-					'webgl_render'           => ! empty( $_POST[ $prefix . 'webgl_render' ] ) && sanitize_text_field( $_POST[ $prefix . 'webgl_render' ] ) === 'passed' ? 'passed' : 0,
-					'bot_fingerprint_extras' => ! empty( $_POST[ $prefix . 'bot_fingerprint_extras' ] ) ? sanitize_text_field( $_POST[ $prefix . 'bot_fingerprint_extras' ] ) : 0,
+					'mouseclick_activity'    => ! empty( $_POST[ $prefix . 'mouseclick_activity' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'mouseclick_activity' ] ) ) === 'passed',
+					'mousemove_activity'     => ! empty( $_POST[ $prefix . 'mousemove_activity' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'mousemove_activity' ] ) ) === 'passed',
+					'webgl'                  => ! empty( $_POST[ $prefix . 'webgl' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webgl' ] ) ) === 'passed',
+					'webgl_render'           => ! empty( $_POST[ $prefix . 'webgl_render' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webgl_render' ] ) ) === 'passed',
+					'bot_fingerprint_extras' => ! empty( $_POST[ $prefix . 'bot_fingerprint_extras' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'bot_fingerprint_extras' ] ) ) : 0,
 				);
 
 				$fails = array();
 				if ( $bot_fingerprint_extras['activity'] < 3 ) {
 					$fails[] = "activity {$bot_fingerprint_extras["activity"]}";
 				}
-				if ( 'passed' !== $bot_fingerprint_extras['mouseclick_activity'] ) {
+				if ( ! empty( $bot_fingerprint_extras['mouseclick_activity'] ) ) {
 					$fails[] = 'mouseclick_activity';
 				}
-				if ( 'passed' !== $bot_fingerprint_extras['mousemove_activity'] ) {
+				if ( ! empty( $bot_fingerprint_extras['mousemove_activity'] ) ) {
 					$fails[] = 'mousemove_activity';
 				}
-				if ( 'passed' !== $bot_fingerprint_extras['webgl'] ) {
+				if ( ! empty( $bot_fingerprint_extras['webgl'] ) ) {
 					$fails[] = 'webgl';
 				}
-				if ( 'passed' !== $bot_fingerprint_extras['webgl_render'] ) {
+				if ( ! empty( $bot_fingerprint_extras['webgl_render'] ) ) {
 					$fails[] = 'webgl_render';
 				}
 				if ( ! empty( $bot_fingerprint_extras['bot_fingerprint_extras'] ) ) {
@@ -616,8 +618,8 @@ class CF7_AntiSpam_Filters {
 				$languages_disallowed = isset( $options['languages']['disallowed'] ) ? $options['languages']['disallowed'] : array();
 
 				$languages                     = array();
-				$languages['browser_language'] = ! empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( $_POST[ $prefix . 'browser_language' ] ) : null;
-				$languages['accept_language']  = isset( $_POST[ $prefix . '_language' ] ) ? cf7a_decrypt( sanitize_text_field( $_POST[ $prefix . '_language' ] ), $options['cf7a_cipher'] ) : null;
+				$languages['browser_language'] = ! empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'browser_language' ] ) ) : null;
+				$languages['accept_language']  = isset( $_POST[ $prefix . '_language' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . '_language' ] ) ), $options['cf7a_cipher'] ) : null;
 
 				/**
 				 * Language checks

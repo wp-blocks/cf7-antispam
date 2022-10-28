@@ -421,7 +421,7 @@ class CF7_AntiSpam_Admin_Display {
 					esc_html__( 'Your IP address', 'cf7-antispam' ),
 					filter_var( $your_ip, FILTER_VALIDATE_IP ),
 					// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
-					print_r( $server_data, true )
+					wp_kses( print_r( $server_data, true ), array( 'pre' => array() ) )
 				);
 			}
 		} catch ( Exception $e ) {
