@@ -14,7 +14,7 @@
   "require-dev": {
 	"php": ">=7.2",
 	"friendsofphp/php-cs-fixer": "3.*",
-	"squizlabs/php_codesniffer": "^3.6",
+	"squizlabs/php_codesniffer": "^3",
 	"phpmd/phpmd" : "@stable",
     "phpstan/phpstan": "^1.8",
 	"phpcompatibility/php-compatibility": "*",
@@ -30,11 +30,13 @@
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
   },
   "require": {
-	"geoip2/geoip2": "~2.0"
+	"geoip2/geoip2": "~2.0",
+    "automattic/vipwpcs": "^2.3"
   },
   "scripts": {
-	"lint": "vendor/bin/phpcs --standard=.phpcs.xml.dist --report=summary,source",
-	"lint-fix": "vendor/bin/phpcbf --standard=.phpcs.xml.dist",
+	"PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist  -s --report=full --report=source",
+	"PHPCS-dev": "vendor/bin/phpcs --standard=phpcs.ruleset.xml -s --report=full --report=source",
+	"PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml  -s --report=full --report=source",
 	"phpstan": "vendor/bin/phpstan",
 	"psalm": "vendor/bin/psalm",
 	"psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run",

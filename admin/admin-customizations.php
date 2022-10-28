@@ -1124,8 +1124,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_geoip_key_callback() {
 		printf(
 			'<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>',
-			! empty( $this->options['geoip_dbkey'] ) ? 'value="' . esc_textarea( $this->options['geoip_dbkey'] ) . '"' : '',
-			! empty( CF7ANTISPAM_GEOIP_KEY ) ? 'disabled placeholder="KEY provided"' : ''
+			empty( $this->options['geoip_dbkey'] ) ? '' : 'value="' . esc_attr( $this->options['geoip_dbkey'] ) . '"',
+			// phpcs:ignore WordPress.Security.EscapeOutput
+			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="KEY provided"'
 		);
 	}
 
