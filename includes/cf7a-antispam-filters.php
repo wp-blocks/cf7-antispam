@@ -549,7 +549,7 @@ class CF7_AntiSpam_Filters {
 				/* navigator deviceMemory isn't available with Ios and firefox - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory */
 				if ( empty( $_POST[ $prefix . 'isIos' ] ) && empty( $_POST[ $prefix . 'isFFox' ] ) ) {
 					/* memory need to be a float > 0.25 to be valid */
-					if ( ! $bot_fingerprint['memory'] >= 0.25 ) {
+					if ( ! $bot_fingerprint['memory'] > 0 ) {
 						$fails[] = 'memory';
 					}
 				} else {
