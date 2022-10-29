@@ -122,7 +122,7 @@ class CF7_AntiSpam_Frontend {
 		/* $html will store the honeyform html */
 		$html = '';
 
-		$form_class   = sanitize_html_class( $this->options['cf7a_customizations_class'] );
+		$form_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 
 		$args = array(
 			'post_type'      => 'wpcf7_contact_form',
@@ -219,7 +219,7 @@ class CF7_AntiSpam_Frontend {
 		wp_reset_postdata();
 
 		/* long story, but thinking about the way these bots work the best thing is to have the fake form before the 'real' one */
-		return isset( $this->options['honeyform_position'] ) && 'before-content' === sanitize_title($this->options['honeyform_position'])
+		return isset( $this->options['honeyform_position'] ) && 'before-content' === sanitize_title( $this->options['honeyform_position'] )
 			? sprintf( '%s%s', $html, $content )
 			: sprintf( '%s%s', $content, $html );
 	}

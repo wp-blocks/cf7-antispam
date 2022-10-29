@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* global cf7a_settings, wpcf7 */
 'use strict';
 
@@ -138,7 +139,8 @@ window.onload = function () {
 	 * @param {string} key      - the name of the field
 	 * @param {string} value    - The value of the field.
 	 * @param {string} [prefix] - The prefix for the field name.
-	 * @return A new input element with the type of hidden, name of the key, and value of the value.
+	 *
+	 * @return {HTMLElement} A new input element with the type of hidden, name of the key, and value of the value.
 	 */
 	const createCF7Afield = ( key, value, prefix = cf7aPrefix ) => {
 		const e = document.createElement( 'input' );
@@ -207,9 +209,17 @@ window.onload = function () {
 					botFingerprintKey.getAttribute( 'value' ).slice( 0, 5 )
 				);
 
-				// then append the fields on submit
-				// not supported in safari https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
-				if ( ! appendOnSubmit || tests.isIos || tests.isIE ) {
+				/**
+				 * then append the fields on submit
+				 * not supported in safari <11.3 https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/formdata_event#browser_compatibility
+				 * update 2022/10: finally safari seems to support decently and widely formData! adding anyway a check to avoid failures with old browsers
+				 */
+				if (
+					! appendOnSubmit ||
+					tests.isIos ||
+					tests.isIE ||
+					! typeof window.FormData
+				) {
 					// or add them directly to hidden input container
 					for ( const key in tests ) {
 						hiddenInputsContainer.appendChild(
@@ -218,14 +228,14 @@ window.onload = function () {
 					}
 				} else {
 					const formElem = wpcf7Form.querySelector( 'form' );
-					let formData = new FormData( formElem.formData );
+					new window.FormData( formElem.formData );
 
 					formElem.addEventListener( 'formdata', ( e ) => {
 						const data = e.formData;
 						for ( const key in tests ) {
 							data.append( cf7aPrefix + key, tests[ key ] );
 						}
-						formData = data;
+						return data;
 					} );
 				}
 			}
@@ -233,7 +243,7 @@ window.onload = function () {
 			// 2) Bot fingerprint extra checks
 			if ( botFingerprintExtra ) {
 				// 2.1) check for mouse clicks
-				const activity = function ( e ) {
+				const activity = function () {
 					const botActivity = hiddenInputsContainer.querySelector(
 						'input[name=' + cf7aPrefix + 'activity]'
 					);

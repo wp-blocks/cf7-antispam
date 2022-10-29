@@ -1012,7 +1012,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		foreach ( $values as $value ) {
 			$html .= sprintf(
 				'<option value="%s" %s>%s</option>',
-				sanitize_title($value),
+				sanitize_title( $value ),
 				$value === $selected ? 'selected' : '',
 				$value
 			);
@@ -1048,7 +1048,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_unban_after_callback() {
 		/* the list of available schedules */
-		$schedules = array_keys(wp_get_schedules());
+		$schedules = array_keys( wp_get_schedules() );
 		printf(
 			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
 			wp_kses(
@@ -1056,7 +1056,12 @@ class CF7_AntiSpam_Admin_Customizations {
 					$schedules,
 					! empty( $this->options['unban_after'] ) ? $this->options['unban_after'] : ''
 				),
-				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
+				array(
+					'option' => array(
+						'value'    => array(),
+						'selected' => array(),
+					),
+				)
 			)
 		);
 	}
@@ -1290,7 +1295,12 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
 			wp_kses(
 				$this->cf7a_generate_options( array( 'before content', 'below content' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
-				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
+				array(
+					'option' => array(
+						'value'    => array(),
+						'selected' => array(),
+					),
+				)
 			)
 		);
 	}
@@ -1347,7 +1357,12 @@ class CF7_AntiSpam_Admin_Customizations {
 					openssl_get_cipher_methods(),
 					isset( $this->options['cf7a_cipher'] ) ? esc_attr( $this->options['cf7a_cipher'] ) : 'aes-128-cbc'
 				),
-				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
+				array(
+					'option' => array(
+						'value'    => array(),
+						'selected' => array(),
+					),
+				)
 			)
 		);
 	}
@@ -1431,7 +1446,12 @@ class CF7_AntiSpam_Admin_Customizations {
 					$options,
 					isset( $this->options['cf7a_score_preset'] ) ? esc_attr( $this->options['cf7a_score_preset'] ) : 'custom'
 				),
-				array( 'option' => array( 'value' => array(), 'selected' => array() ) )
+				array(
+					'option' => array(
+						'value'    => array(),
+						'selected' => array(),
+					),
+				)
 			)
 		);
 	}

@@ -18,11 +18,12 @@
     "build": "wp-scripts build",
     "plugin-zip": "wp-scripts plugin-zip",
     "lint:css": "wp-scripts lint-style",
-    "lint:js": "wp-scripts lint-js",
+    "lint:js": "wp-scripts lint-js  ./includes/src ./admin/src",
     "packages-update": "wp-scripts packages-update",
     "wp-env:start": "wp-env start",
     "wp-env:stop": "wp-env stop",
-    "wp-env:destroy": "wp-env destroy"
+    "wp-env:destroy": "wp-env destroy",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -38,7 +39,8 @@
     "@wordpress/browserslist-config": "^5.2.0",
     "@wordpress/eslint-plugin": "^13.3.0",
     "@wordpress/scripts": "^24.3.0",
-    "chart.js": "^3.9.1"
+    "chart.js": "^3.9.1",
+    "husky": "^8.0.1"
   },
   "engines": {
     "node": ">=16.0.0",

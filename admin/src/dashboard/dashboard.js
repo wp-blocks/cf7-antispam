@@ -35,9 +35,6 @@ function spamCharts() {
 			},
 		};
 
-		console.log( spamChartData );
-		console.log( document.getElementById( 'line-chart' ) );
-
 		cf7aCharts.lineChart = new Chart(
 			document.getElementById( 'line-chart' ),
 			lineConfig
