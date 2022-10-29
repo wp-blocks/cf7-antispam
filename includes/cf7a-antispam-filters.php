@@ -580,26 +580,26 @@ class CF7_AntiSpam_Filters {
 					'mousemove_activity'     => ! empty( $_POST[ $prefix . 'mousemove_activity' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'mousemove_activity' ] ) ) === 'passed',
 					'webgl'                  => ! empty( $_POST[ $prefix . 'webgl' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webgl' ] ) ) === 'passed',
 					'webgl_render'           => ! empty( $_POST[ $prefix . 'webgl_render' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webgl_render' ] ) ) === 'passed',
-					'bot_fingerprint_extras' => ! empty( $_POST[ $prefix . 'bot_fingerprint_extras' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'bot_fingerprint_extras' ] ) ) : 0,
+					'bot_fingerprint_extras' => empty( $_POST[ $prefix . 'bot_fingerprint_extras' ] ), // has to be empty!
 				);
 
 				$fails = array();
 				if ( $bot_fingerprint_extras['activity'] < 3 ) {
 					$fails[] = "activity {$bot_fingerprint_extras["activity"]}";
 				}
-				if ( ! empty( $bot_fingerprint_extras['mouseclick_activity'] ) ) {
+				if ( empty( $bot_fingerprint_extras['mouseclick_activity'] ) ) {
 					$fails[] = 'mouseclick_activity';
 				}
-				if ( ! empty( $bot_fingerprint_extras['mousemove_activity'] ) ) {
+				if ( empty( $bot_fingerprint_extras['mousemove_activity'] ) ) {
 					$fails[] = 'mousemove_activity';
 				}
-				if ( ! empty( $bot_fingerprint_extras['webgl'] ) ) {
+				if ( empty( $bot_fingerprint_extras['webgl'] ) ) {
 					$fails[] = 'webgl';
 				}
-				if ( ! empty( $bot_fingerprint_extras['webgl_render'] ) ) {
+				if ( empty( $bot_fingerprint_extras['webgl_render'] ) ) {
 					$fails[] = 'webgl_render';
 				}
-				if ( ! empty( $bot_fingerprint_extras['bot_fingerprint_extras'] ) ) {
+				if ( empty( $bot_fingerprint_extras['bot_fingerprint_extras'] ) ) {
 					$fails[] = 'bot_fingerprint_extras';
 				}
 
