@@ -2,18 +2,6 @@
 <ruleset name="WordPress Coding Standards based custom ruleset for your plugin">
 	<description>Generally-applicable sniffs for WordPress plugins.</description>
 
-	<!-- What to scan -->
-	<file>.</file>
-	<exclude-pattern>/.github/*</exclude-pattern>
-	<exclude-pattern>/assets/*</exclude-pattern>
-	<exclude-pattern>/languages/*</exclude-pattern>
-	<exclude-pattern>/libs/*</exclude-pattern>
-	<exclude-pattern>/node_modules/*</exclude-pattern>
-	<exclude-pattern>/tests/*</exclude-pattern>
-	<exclude-pattern>/vendor/*</exclude-pattern>
-	<exclude-pattern>*.asset.php</exclude-pattern>
-	<exclude-pattern>*.js</exclude-pattern>
-
 	<!-- How to scan -->
 	<!-- Usage instructions: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage -->
 	<!-- Annotated ruleset: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml -->
@@ -31,5 +19,18 @@
 	<rule ref="WordPress-VIP-Go"/>
 	<rule ref="WordPressVIPMinimum"/>
 	<rule ref="VariableAnalysis"/>
+
+	<!-- What to scan -->
+	<file>.</file>
+	<exclude-pattern>/.github/*</exclude-pattern>
+	<exclude-pattern>/.husky/*</exclude-pattern>
+	<exclude-pattern>/assets/*</exclude-pattern>
+	<exclude-pattern>/languages/*</exclude-pattern>
+	<exclude-pattern>/libs/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/tests/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>*.asset.php</exclude-pattern>
+	<exclude-pattern>*.js</exclude-pattern>
 
 </ruleset>

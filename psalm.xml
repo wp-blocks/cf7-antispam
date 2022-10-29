@@ -12,9 +12,12 @@
 		<directory name="includes" />
 		<directory name="libs" />
 		<ignoreFiles>
+			<directory name="tests" />
 			<directory name="vendor" />
 			<directory name="node_modules" />
 			<directory name="languages" />
+			<directory name=".husky" />
+			<directory name=".github" />
 		</ignoreFiles>
 	</projectFiles>
 </psalm>
