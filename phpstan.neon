@@ -12,18 +12,18 @@ parameters:
         - ../flamingo/flamingo.php
         - ../flamingo/admin/
         - ../flamingo/includes/
-	ignoreErrors:
-		message: Constant CF7ANTISPAM_NAME not found.
-        message: Constant CF7ANTISPAM_VERSION not found.
-        message: Constant CF7ANTISPAM_PLUGIN not found.
-        message: Constant CF7ANTISPAM_PLUGIN_BASENAME not found.
-        message: Constant CF7ANTISPAM_PLUGIN_DIR not found.
-        message: Constant CF7ANTISPAM_PLUGIN_URL not found.
-        message: Constant CF7ANTISPAM_LOG_PREFIX not found.
-        message: Constant CF7ANTISPAM_DEBUG not found.
-        message: Constant CF7ANTISPAM_DEBUG_EXTENDED not found.
-        message: Constant CF7ANTISPAM_DNSBL_BENCHMARK not found.
-        message: Constant CF7ANTISPAM_PREFIX not found.
-        message: Constant CF7ANTISPAM_HONEYPOT_CLASS not found.
-        message: Constant CF7ANTISPAM_CYPHER not found.
-        message: Constant CF7ANTISPAM_GEOIP_KEY not found.
+    ignoreErrors:
+        - 'Constant CF7ANTISPAM_NAME not found.'
+        - 'Constant CF7ANTISPAM_VERSION not found.'
+        - 'Constant CF7ANTISPAM_PLUGIN not found.'
+        - 'Constant CF7ANTISPAM_PLUGIN_BASENAME not found.'
+        - 'Constant CF7ANTISPAM_PLUGIN_DIR not found.'
+        - 'Constant CF7ANTISPAM_PLUGIN_URL not found.'
+        - 'Constant CF7ANTISPAM_LOG_PREFIX not found.'
+        - 'Constant CF7ANTISPAM_DEBUG not found.'
+        - 'Constant CF7ANTISPAM_DEBUG_EXTENDED not found.'
+        - 'Constant CF7ANTISPAM_DNSBL_BENCHMARK not found.'
+        - 'Constant CF7ANTISPAM_PREFIX not found.'
+        - 'Constant CF7ANTISPAM_HONEYPOT_CLASS not found.'
+        - 'Constant CF7ANTISPAM_CYPHER not found.'
+        - 'Constant CF7ANTISPAM_GEOIP_KEY not found.'
