@@ -1296,7 +1296,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
 			wp_kses(
-				$this->cf7a_generate_options( array( 'before content', 'below content' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
+				$this->cf7a_generate_options( array( 'before content', 'after content' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
 				array(
 					'option' => array(
 						'value'    => array(),
