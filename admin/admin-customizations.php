@@ -878,23 +878,24 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['autostore_bad_ip'] = isset( $input['autostore_bad_ip'] ) ? 1 : 0;
 
 		/* auto-unban delay */
-		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array( '60sec', '5min', 'hourly', 'twicedaily', 'daily', 'weekly' ) ) ) {
+		$schedule = wp_get_schedules();
+		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array_keys( $schedule ) ) ) {
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
 				/* delete previous scheduled events */
-				$timestamp = wp_next_scheduled( 'cf7a_cron', array( false ) );
+				$timestamp = wp_next_scheduled( 'cf7a_cron' );
 				if ( $timestamp ) {
-					wp_unschedule_event( $timestamp, 'cf7a_cron' );
+					wp_clear_scheduled_hook( 'cf7a_cron' );
 				}
 
 				/* add the new scheduled event */
-				wp_schedule_event( time(), $new_input['unban_after'], 'cf7a_cron' );
+				wp_schedule_event( time() + $schedule[ $new_input['unban_after'] ]['interval'], $new_input['unban_after'], 'cf7a_cron' );
 			}
 		} else {
-			// Get the timestamp for the next event.
-			$timestamp = wp_next_scheduled( 'cf7a_cron', array( false ) );
+			/* Get the timestamp for the next event. */
+			$timestamp = wp_next_scheduled( 'cf7a_cron' );
 			if ( $timestamp ) {
-				wp_unschedule_event( $timestamp, 'cf7a_cron' );
+				wp_clear_scheduled_hook( 'cf7a_cron' );
 			}
 			$new_input['unban_after'] = 'disabled';
 		}
@@ -1048,7 +1049,8 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_unban_after_callback() {
 		/* the list of available schedules */
-		$schedules = array_keys( wp_get_schedules() );
+		$schedules   = array_keys( wp_get_schedules() );
+		$schedules[] = 'disabled';
 		printf(
 			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
 			wp_kses(

@@ -61,7 +61,7 @@ class CF7_AntiSpam_Uninstaller {
 			/* unschedule cf7a events */
 			$timestamp = wp_next_scheduled( 'cf7a_cron' );
 			if ( $timestamp ) {
-				wp_unschedule_event( $timestamp, 'cf7a_cron' );
+				wp_clear_scheduled_hook( 'cf7a_cron' );
 			}
 
 			cf7a_log( 'plugin uninstalled' );
