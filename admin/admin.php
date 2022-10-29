@@ -205,7 +205,7 @@ class CF7_AntiSpam_Admin {
 	 */
 	public function cf7a_dashboard_widget() {
 		global $wp_meta_boxes;
-		wp_add_dashboard_widget( 'cf7a-widget', 'Contact Form 7 Antispam - Recap', array( $this, 'cf7a_flamingo_recap' ) );
+		wp_add_dashboard_widget( 'cf7a-widget', __( 'Stats for CF7 Antispam', 'cf7-antispam' ), array( $this, 'cf7a_flamingo_recap' ) );
 	}
 
 	/**
