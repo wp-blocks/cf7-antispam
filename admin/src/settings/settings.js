@@ -23,9 +23,7 @@ window.onload = function () {
 		} );
 	}
 
-	/* This is the code that hides the welcome panel,
-  adds the ctrl-s keypress to save the settings,
-  and shows the advanced settings. */
+	/* This is the code that saves the settings when the user presses ctrl-s. */
 	if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
 		// save on ctrl-s keypress
 		document.addEventListener( 'keydown', ( e ) => {
@@ -34,8 +32,12 @@ window.onload = function () {
 				document.getElementById( 'submit' ).click();
 			}
 		} );
+	}
 
-		// show the advanced section
+	/* This is the code that hides the welcome panel,
+    and shows the advanced settings. */
+	if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
+		// shows the advanced section
 		const showAdvanced = () => {
 			const advancedCheckbox = document.getElementById(
 				'enable_advanced_settings'
@@ -75,10 +77,10 @@ window.onload = function () {
 				AdvSettingsFormEl.classList.add( 'hidden' );
 			}
 		};
-		showAdvanced();
-
+		/* on click show advanced options */
 		document
 			.getElementById( 'enable_advanced_settings' )
 			.addEventListener( 'click', showAdvanced );
+		showAdvanced();
 	}
 };

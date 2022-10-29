@@ -2,7 +2,7 @@
 import Chart from 'chart.js/auto';
 
 function spamCharts() {
-	if ( spamChartData ) {
+	if ( typeof spamChartData !== 'undefined' ) {
 		const cf7aCharts = {};
 
 		const lineConfig = {
