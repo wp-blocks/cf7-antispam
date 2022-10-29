@@ -302,7 +302,7 @@ class CF7_AntiSpam {
 
 			/* It gets the form, formats it, and then echoes it out */
 			if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
-				$this->loader->add_filter( sanitize_key( $this->options['honeyform_position'] ), $plugin_frontend, 'cf7a_honeyform' );
+				$this->loader->add_filter( 'the_content', $plugin_frontend, 'cf7a_honeyform' );
 			}
 
 			/* It adds a CSS style to the page that hides the honeypot field */
