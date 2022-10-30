@@ -111,9 +111,8 @@ class CF7_AntiSpam_Activator {
 				'bl.spamcop.net',
 				'b.barracudacentral.org',
 				'dnsbl.dronebl.org',
-				/* ipv6 dnsbl */
-				'dnsbl.spfbl.net',
-				'bogons.cymru.com',
+				'all.spamrats.com',
+				/* ipv6 dnsbl but due to the unlimited number of ipv6 dnsl will have a lower impact */
 				'bl.ipv6.spameatingmonkey.net',
 			),
 			'honeypot_input_names'   => array(
