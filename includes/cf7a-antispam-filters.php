@@ -396,7 +396,8 @@ class CF7_AntiSpam_Filters {
 
 				if ( false !== stripos( (string) $remote_ip, (string) $bad_ip ) ) {
 
-					$spam_score        += 1;
+					++ $spam_score;
+					$spam               = true;
 					$reason['bad_ip'][] = $bad_ip;
 
 				}
@@ -421,8 +422,8 @@ class CF7_AntiSpam_Filters {
 
 			if ( $ip_data_status >= $options['max_attempts'] ) {
 
+				++ $spam_score;
 				$spam                  = true;
-				$spam_score           += 1;
 				$reason['blacklisted'] = "Score: $spam_score";
 
 				cf7a_log( "The $remote_ip is already blacklisted, status $ip_data_status", 1 );
