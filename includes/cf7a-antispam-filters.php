@@ -396,7 +396,7 @@ class CF7_AntiSpam_Filters {
 
 				if ( false !== stripos( (string) $remote_ip, (string) $bad_ip ) ) {
 
-					$spam_score        += $score_bad_string;
+					$spam_score        += 1;
 					$reason['bad_ip'][] = $bad_ip;
 
 				}
