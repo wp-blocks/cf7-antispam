@@ -633,7 +633,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the bot_fingerprint info text */
 	public function cf7a_print_section_bot_fingerprint() {
-		printf( '<p>%s</p>', esc_html__( "Fingerprinting is a way of exploiting certain data that the browser can provide to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( "Fingerprinting is a method used for exploiting data from browser in order to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) );
 		printf( '<p>%s</p>', esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' ) );
 	}
 

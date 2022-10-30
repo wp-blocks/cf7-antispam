@@ -21,16 +21,16 @@ CF7-AntiSpam adds some functionalities also to [Flamingo](https://wordpress.org/
 So the only thing you need to do is add to (for each contact form) 'flamingo_message: "[your-message]"' in the same way you do for [flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/).
 This is **required for advanced text statistical analysis**, without this B8 filter will couldn't be enabled.
 
-==Antispam Available Test==
-- It is verified that the mail is sent through the cf7 module protecting the form with a encrypted unique hash
-- Browser Fingerprinting (check if is a real browser or a bot that camouflaging as such)
-- Blacklist bots after a customizable number of attempts (with the possibility to schedule unban)
-- Time elapsed (a form is not filled out in a few seconds as bots do)
-- IP check (you set a list of banned IP's, ipv6 compatible)
+==Antispam Available Tests==
+- It is verified that the mail is sent through the cf7 module protecting the form with an encrypted unique hash
+- Browser Fingerprinting
+- Language checks (Geo-ip, http headers and browser - crosschecked)
+- Blacklists (with autoban after N failed attempts and user defined)
+- Time elapsed (with min/max values)
 - Prohibited words in message/email and user agent
 - DNS Blacklists
 - Honeypot
-- Honeyform
+- Honeyform*
 - B8 statistical "Bayesian" spam filter
 
 ==Install Flamingo to unlock the spam manager!==
@@ -132,6 +132,7 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 = 0.4.1 =
 * Honeyform updated and enhanced
 * updated dnsbl servers (removed spfbl.net, bogons.cymru.com - added spamrats.com)
+* improved iOS detection
 
 = 0.4.0 =
 * Adds geoip antispam filter
