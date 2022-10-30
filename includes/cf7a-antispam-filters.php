@@ -323,9 +323,9 @@ class CF7_AntiSpam_Filters {
 		$timestamp = isset( $_POST[ $prefix . '_timestamp' ] ) ? intval( cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . '_timestamp' ] ) ), $options['cf7a_cipher'] ) ) : 0;
 
 		/* Can be cached so isn't safe to use -> $submission->get_meta( 'timestamp' ); */
-		$timestamp_submitted             = time();
-		$submission_minimum_time_elapsed = intval( $options['check_time_min'] );
-		$submission_maximum_time_elapsed = intval( $options['check_time_max'] );
+		$time_now         = time();
+		$time_elapsed_min = intval( $options['check_time_min'] );
+		$time_elapsed_max = intval( $options['check_time_max'] );
 
 		/* Checks sender has a blacklisted ip address */
 		$bad_ip_list = isset( $options['bad_ip_list'] ) ? $options['bad_ip_list'] : array();
@@ -694,29 +694,28 @@ class CF7_AntiSpam_Filters {
 
 				} else {
 
-					$time_now = $timestamp_submitted;
-
 					$time_elapsed = $time_now - $timestamp;
 
-					if ( $time_elapsed < $submission_minimum_time_elapsed ) {
+					/**
+					 * Check if the time to submit the email il lower than expected
+					 */
+					if ( 0 !== $time_elapsed_min && $time_elapsed < $time_elapsed_min ) {
 
 						$spam_score                += $score_time;
 						$reason['min_time_elapsed'] = $time_elapsed;
 
-						cf7a_log( "The $remote_ip ip took too little time to fill in the form - elapsed $time_elapsed seconds < $submission_minimum_time_elapsed seconds expected", 1 );
+						cf7a_log( "The $remote_ip ip took too little time to fill in the form - elapsed $time_elapsed seconds < $time_elapsed_min seconds expected", 1 );
 					}
 
 					/**
 					 * Check if the time to submit the email il higher than expected
 					 */
-					if ( $time_elapsed > $submission_maximum_time_elapsed ) {
+					if ( 0 !== $time_elapsed_max && $time_elapsed > $time_elapsed_max ) {
 
 						$spam_score                += $score_time;
 						$reason['max_time_elapsed'] = $time_elapsed;
 
-						if ( CF7ANTISPAM_DEBUG ) {
-							cf7a_log( "The $remote_ip ip took too much time to fill in the form - elapsed $time_elapsed seconds > $submission_maximum_time_elapsed seconds expected", 1 );
-						}
+						cf7a_log( "The $remote_ip ip took too much time to fill in the form - elapsed $time_elapsed seconds > $time_elapsed_max seconds expected", 1 );
 					}
 				}
 			}

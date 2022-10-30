@@ -639,7 +639,11 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the check_time info text */
 	public function cf7a_print_section_check_time() {
-		printf( '<p>%s</p>', esc_html__( "Check that the e-mail is sent in the 'right' time frame. If the e-mail was sent too quickly or too slowly, the sender is probably not human. Values in seconds", 'cf7-antispam' ) );
+		printf(
+			'<p>%s</p><p>%s</p>',
+			esc_html__( 'Checks that the form has been submitted within a reasonable period of time.', 'cf7-antispam' ),
+			esc_html__( 'If the e-mail was sent too quickly or too slowly, the sender is probably not human! But not everything is perfect and this check may fail if you set a cache with a very high lease time (in this case I recommend that you set the maximum time at least equal to that of cache regeneration ). Values in seconds, 0 to disable', 'cf7-antispam' )
+		);
 	}
 
 	/** It prints the geoip info text */
