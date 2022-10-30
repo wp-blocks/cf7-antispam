@@ -225,12 +225,13 @@ class CF7_AntiSpam_Filters {
 
 
 	/**
+	 * Check the languages list for allowed and not allowed.
 	 * If the language is not allowed, return the language.
 	 * TODO: actually this function is case-sensitive, but maybe this is not wanted
 	 *
 	 * @param array $languages The languages to check.
 	 * @param array $disalloweds An array of languages that are not allowed.
-	 * @param array $alloweds An array of allowed languages. If the user's language is in this array, the form will be shown.
+	 * @param array $alloweds An array of allowed languages (has the precedence over the not allowed if specified).
 	 */
 	public function cf7a_check_language_allowed( $languages, $disalloweds = array(), $alloweds = array() ) {
 
@@ -441,14 +442,14 @@ class CF7_AntiSpam_Filters {
 		/**
 		 * Checking if the honeyForm field is empty. If it is not empty, then it is a bot.
 		 */
-		if ( intval( $options['check_honeyform'] ) !== 0 ) {
+		if ( intval( $options['check_honeyform'] ) === 1 ) {
 
 			$form_class = sanitize_html_class( $options['cf7a_customizations_class'] );
 
 			/* get the "marker" field */
 			if ( ! empty( $_POST[ '_wpcf7_' . $form_class ] ) ) {
-				$spam_score               += $score_warn;
-				$reason['bot_fingerprint'] = 'honeyform';
+				$spam_score         += $score_warn;
+				$reason['honeyform'] = 'true';
 			}
 		}
 
@@ -488,17 +489,17 @@ class CF7_AntiSpam_Filters {
 			 */
 			if ( intval( $options['check_bot_fingerprint'] ) === 1 ) {
 				$bot_fingerprint = array(
-					'timezone'             => ! empty( $_POST[ $prefix . 'timezone' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'timezone' ] ) ) : null,
-					'platform'             => ! empty( $_POST[ $prefix . 'platform' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'platform' ] ) ) : null,
-					'screens'              => ! empty( $_POST[ $prefix . 'screens' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'screens' ] ) ) : null,
-					'hardware_concurrency' => ! empty( $_POST[ $prefix . 'hardware_concurrency' ] ) ? intval( $_POST[ $prefix . 'hardware_concurrency' ] ) : null,
-					'memory'               => ! empty( $_POST[ $prefix . 'memory' ] ) ? intval( $_POST[ $prefix . 'memory' ] ) : null,
-					'user_agent'           => ! empty( $_POST[ $prefix . 'user_agent' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'user_agent' ] ) ) : null,
-					'app_version'          => ! empty( $_POST[ $prefix . 'app_version' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'app_version' ] ) ) : null,
-					'webdriver'            => ! empty( $_POST[ $prefix . 'webdriver' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webdriver' ] ) ) : null,
-					'session_storage'      => ! empty( $_POST[ $prefix . 'session_storage' ] ) ? intval( $_POST[ $prefix . 'session_storage' ] ) : null,
-					'bot_fingerprint'      => ! empty( $_POST[ $prefix . 'bot_fingerprint' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'bot_fingerprint' ] ) ) : null,
-					'touch'                => ! empty( $_POST[ $prefix . 'touch' ] ),
+					'timezone'        => ! empty( $_POST[ $prefix . 'timezone' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'timezone' ] ) ) : null,
+					'platform'        => ! empty( $_POST[ $prefix . 'platform' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'platform' ] ) ) : null,
+					'screens'         => ! empty( $_POST[ $prefix . 'screens' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'screens' ] ) ) : null,
+					'memory'          => ! empty( $_POST[ $prefix . 'memory' ] ) ? intval( $_POST[ $prefix . 'memory' ] ) : null,
+					'user_agent'      => ! empty( $_POST[ $prefix . 'user_agent' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'user_agent' ] ) ) : null,
+					/* deprecated 👇 TODO: replace with a user agent parser */
+					'app_version'     => ! empty( $_POST[ $prefix . 'app_version' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'app_version' ] ) ) : null,
+					'webdriver'       => ! empty( $_POST[ $prefix . 'webdriver' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webdriver' ] ) ) : null,
+					'session_storage' => ! empty( $_POST[ $prefix . 'session_storage' ] ) ? intval( $_POST[ $prefix . 'session_storage' ] ) : null,
+					'bot_fingerprint' => ! empty( $_POST[ $prefix . 'bot_fingerprint' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'bot_fingerprint' ] ) ) : null,
+					'touch'           => ! empty( $_POST[ $prefix . 'touch' ] ),
 				);
 
 				$fails = array();
@@ -527,35 +528,18 @@ class CF7_AntiSpam_Filters {
 					$fails[] = 'bot_fingerprint';
 				}
 
-				/* navigator hardware_concurrency isn't available under Ios - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency */
-				if ( empty( $_POST[ $prefix . 'isIos' ] ) ) {
-					/* hardware concurrency need to be an integer > 1 to be valid */
-					if ( ! $bot_fingerprint['hardware_concurrency'] >= 1 ) {
-						$fails[] = 'hardware_concurrency';
+				/* navigator deviceMemory isn't available with Ios, FireFox and ie - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory */
+				if ( isset( $_POST[ $prefix . 'isIos' ] ) || isset( $_POST[ $prefix . 'isFFox' ] ) || isset( $_POST[ $prefix . 'isIE' ] ) ) {
+					if ( $bot_fingerprint['memory'] ) {
+						$fails[] = 'memory_supported';
 					}
-				} else {
-					/* but in ios isn't provided, so we expect a null value */
-					if ( null !== $bot_fingerprint['hardware_concurrency'] ) {
-						$fails[] = 'hardware_concurrency_Ios';
-					}
+				} elseif ( ! $bot_fingerprint['memory'] ) {
+					$fails[] = 'memory';
 				}
 
-				if ( ! empty( $_POST[ $prefix . 'isIos' ] ) || ! empty( $_POST[ $prefix . 'isAndroid' ] ) ) {
+				if ( isset( $_POST[ $prefix . 'isIos' ] ) || isset( $_POST[ $prefix . 'isAndroid' ] ) ) {
 					if ( ! $bot_fingerprint['touch'] ) {
 						$fails[] = 'touch';
-					}
-				}
-
-				/* navigator deviceMemory isn't available with Ios and firefox - https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory */
-				if ( empty( $_POST[ $prefix . 'isIos' ] ) && empty( $_POST[ $prefix . 'isFFox' ] ) ) {
-					/* memory need to be a float > 0.25 to be valid */
-					if ( ! $bot_fingerprint['memory'] > 0 ) {
-						$fails[] = 'memory';
-					}
-				} else {
-					/* but in ios and firefox isn't provided, so we expect a null value */
-					if ( null !== $bot_fingerprint['memory'] ) {
-						$fails[] = 'memory_Ios';
 					}
 				}
 
