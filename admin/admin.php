@@ -171,7 +171,7 @@ class CF7_AntiSpam_Admin {
 		 */
 
 		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-scripts.asset.php';
-		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-scripts.js', $asset['dependencies'], $this->version, true );
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-scripts.js', $asset['dependencies'], $asset['version'], true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(

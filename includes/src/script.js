@@ -3,7 +3,7 @@
 'use strict';
 
 window.onload = function () {
-	// disable cf7a script if contact form is not loaded in this page
+	// disable cf7 antispam script if contact form is not loaded in this page
 	if ( ! window.wpcf7 ) return;
 
 	const cf7aPrefix = cf7a_settings.prefix;
