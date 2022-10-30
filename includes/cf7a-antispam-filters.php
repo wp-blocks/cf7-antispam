@@ -597,7 +597,7 @@ class CF7_AntiSpam_Filters {
 			}
 
 			/**
-			 * Bot fingerprints extras
+			 * Check the browser / headers language
 			 */
 			if ( intval( $options['check_language'] ) === 1 ) {
 
@@ -645,43 +645,43 @@ class CF7_AntiSpam_Filters {
 						$reason['browser_language'] = implode( ', ', $client_languages );
 					}
 				}
+			}
 
-				/**
-				 * Geo-ip verification
-				 */
-				if ( 1 === intval( $options['check_geo_location'] ) ) {
+			/**
+			 * Geo-ip verification
+			 */
+			if ( 1 === intval( $options['check_geo_location'] ) ) {
 
-					$geoip = new CF7_Antispam_Geoip();
+				$geoip = new CF7_Antispam_Geoip();
 
-					if ( ! empty( $geoip ) ) {
+				if ( ! empty( $geoip ) ) {
 
-						try {
-							/* check if the ip is available into geo-ip database, then create an array with county and continent */
-							$geoip_data      = $geoip->cf7a_geoip_check_ip( $remote_ip );
-							$geoip_continent = isset( $geoip_data['continent'] ) ? strtolower( $geoip_data['continent'] ) : false;
-							$geoip_country   = isset( $geoip_data['country'] ) ? strtolower( $geoip_data['country'] ) : false;
-							$geo_data        = array_filter( array( $geoip_continent, $geoip_country ) );
+					try {
+						/* check if the ip is available into geo-ip database, then create an array with county and continent */
+						$geoip_data      = $geoip->cf7a_geoip_check_ip( $remote_ip );
+						$geoip_continent = isset( $geoip_data['continent'] ) ? strtolower( $geoip_data['continent'] ) : false;
+						$geoip_country   = isset( $geoip_data['country'] ) ? strtolower( $geoip_data['country'] ) : false;
+						$geo_data        = array_filter( array( $geoip_continent, $geoip_country ) );
 
-							if ( ! empty( $geo_data ) ) {
-								/* then check if the detected country is among the allowed and disallowed languages */
-								if ( false === $this->cf7a_check_language_allowed( $geo_data, $languages_disallowed, $languages_allowed ) ) {
-									$reason['geo_ip'] = $geoip_continent . '-' . $geoip_country;
-									$spam_score      += $score_warn;
+						if ( ! empty( $geo_data ) ) {
+							/* then check if the detected country is among the allowed and disallowed languages */
+							if ( false === $this->cf7a_check_language_allowed( $geo_data, $languages_disallowed, $languages_allowed ) ) {
+								$reason['geo_ip'] = $geoip_continent . '-' . $geoip_country;
+								$spam_score      += $score_warn;
 
-									cf7a_log( "The $remote_ip is not allowed by geoip" . $reason['geo_ip'], 1 );
-								}
-							} else {
-								$reason['no_geo_ip'] = 'unknown ip';
+								cf7a_log( "The $remote_ip is not allowed by geoip" . $reason['geo_ip'], 1 );
 							}
-						} catch ( Exception $e ) {
-							cf7a_log( "unable to check geoip for $remote_ip - " . $e->getMessage(), 1 );
+						} else {
+							$reason['no_geo_ip'] = 'unknown ip';
 						}
+					} catch ( Exception $e ) {
+						cf7a_log( "unable to check geoip for $remote_ip - " . $e->getMessage(), 1 );
 					}
 				}
 			}
 
 			/**
-			 * Check if the time to submit the email il lower than expected
+			 * Check if the time to submit the email
 			 */
 			if ( intval( $options['check_time'] ) === 1 ) {
 
