@@ -2,10 +2,35 @@
 
 use PHPUnit\Framework\TestCase;
 
-class test extends TestCase {
+class Test_init extends TestCase {
 
-	public function is_true() {
+	/**
+	 * Admin user object.
+	 *
+	 * @var WP_User
+	 */
+	public static $admin;
 
-		$this->assertTrue( true );
+	/**
+	 * Setup before class.
+	 *
+	 * @param WP_UnitTest_Factory $factory Factory.
+	 */
+	public static function wpSetUpBeforeClass( WP_UnitTest_Factory $factory ) {
+		static::$admin = $factory->user->create_and_get( array( 'role' => 'administrator' ) );
+	}
+
+	/**
+	 * Setup.
+	 */
+	public function set_up() {
+		parent::set_up();
+	}
+
+	/**
+	 * Teardown.
+	 */
+	public function tear_down() {
+		parent::tear_down();
 	}
 }
