@@ -19,6 +19,7 @@
     "phpstan/phpstan": "^1.8",
 	"phpcompatibility/php-compatibility": "*",
 	"wp-coding-standards/wpcs": "*",
+	"automattic/vipwpcs": "^2.3",
 	"phpcompatibility/phpcompatibility-wp": "*",
 	"slevomat/coding-standard": "^7.2",
     "phpstan/extension-installer": "^1.2",
@@ -27,8 +28,7 @@
 	"phpunit/phpunit": "^7",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
 	"yoast/phpunit-polyfills": "*",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-	"automattic/vipwpcs": "^2.3"
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
   },
   "require": {
 	"geoip2/geoip2": "~2.0",

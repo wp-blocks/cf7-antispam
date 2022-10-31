@@ -12,8 +12,6 @@ module.exports = {
 		requireConfigFile: false,
 		env: { es6: true },
 		ecmaFeatures: {
-			jsx: true,
-			modules: true,
 			experimentalObjectRestSpread: true,
 		},
 	},
