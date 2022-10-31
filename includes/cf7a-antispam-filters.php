@@ -379,7 +379,8 @@ class CF7_AntiSpam_Filters {
 
 			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
 
-			$spam_score     += $score_detection;
+			++ $spam_score;
+			$spam            = true;
 			$reason['no_ip'] = 'Address field empty';
 
 			cf7a_log( "ip address field of $remote_ip is empty, this means it has been modified, removed or hacked! (i'm getting the real ip from http header)", 1 );
@@ -406,9 +407,7 @@ class CF7_AntiSpam_Filters {
 			if ( ! empty( $reason['bad_ip'] ) ) {
 				$reason['bad_ip'] = implode( ', ', $reason['bad_ip'] );
 
-				if ( CF7ANTISPAM_DEBUG ) {
-					cf7a_log( "The ip address $remote_ip is listed into bad ip list (contains {$reason['bad_ip']})" );
-				}
+				cf7a_log( "The ip address $remote_ip is listed into bad ip list (contains {$reason['bad_ip']})", 1 );
 			}
 		}
 
@@ -446,8 +445,9 @@ class CF7_AntiSpam_Filters {
 			$form_class = sanitize_html_class( $options['cf7a_customizations_class'] );
 
 			/* get the "marker" field */
-			if ( ! empty( $_POST[ '_wpcf7_' . $form_class ] ) ) {
-				$spam_score         += $score_warn;
+			if ( isset( $_POST[ '_wpcf7_' . $form_class ] ) ) {
+				++ $spam_score;
+				$spam                = true;
 				$reason['honeyform'] = 'true';
 			}
 		}
@@ -651,7 +651,7 @@ class CF7_AntiSpam_Filters {
 			/**
 			 * Geo-ip verification
 			 */
-			if ( 1 === intval( $options['check_geo_location'] ) ) {
+			if ( intval( $options['check_geo_location'] ) === 1 ) {
 
 				$geoip = new CF7_Antispam_Geoip();
 
