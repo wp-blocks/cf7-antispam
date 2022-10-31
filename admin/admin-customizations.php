@@ -633,7 +633,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the bot_fingerprint info text */
 	public function cf7a_print_section_bot_fingerprint() {
-		printf( '<p>%s</p><p>%s</p>',
+		printf(
+			'<p>%s</p><p>%s</p>',
 			esc_html__( "Fingerprinting is a method used for exploiting data from browser in order to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ),
 			esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' )
 		);
@@ -674,7 +675,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the language info text */
 	public function cf7a_check_language() {
-		printf( '<p>%s</p><p>%s</p>',
+		printf(
+			'<p>%s</p><p>%s</p>',
 			esc_html__( 'Check the user browser language / user keyboard. Add a country code (us) or language (en) each line, you can insert them comma separated and when you save they will be formatted with the standard one per line.', 'cf7-antispam' ),
 			esc_html__( 'The browser language detection method is not as accurate as geo-ip because it relies on data provided by the browser and can easily bypassed however, less sophisticated bots do not pass this test', 'cf7-antispam' )
 		);

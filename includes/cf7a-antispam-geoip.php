@@ -336,7 +336,9 @@ class CF7_Antispam_Geoip {
 
 		cf7a_log( 'GeoIP DB downloaded with success ', 1 );
 
-		return $this->next_update = $update_date;
+		$this->next_update = $update_date;
+
+		return true;
 
 	}
 

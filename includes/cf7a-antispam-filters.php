@@ -283,7 +283,9 @@ class CF7_AntiSpam_Filters {
 		$mail_tags = $contact_form->scan_form_tags();
 
 		/* the email and the message from the email */
-		$email_tag   = substr( $contact_form->pref( 'flamingo_email' ), 2, -2 );
+		$email_tag = substr( $contact_form->pref( 'flamingo_email' ), 2, -2 );
+
+		// TODO: allow multiple fields (comma separated then join the content)
 		$message_tag = substr( $contact_form->pref( 'flamingo_message' ), 2, -2 );
 
 		$email   = isset( $posted_data[ $email_tag ] ) ? $posted_data[ $email_tag ] : false;
@@ -882,8 +884,9 @@ class CF7_AntiSpam_Filters {
 		/**
 		 * B8 is a statistical "Bayesian" spam filter
 		 * https://nasauber.de/opensource/b8/
+		 *
+		 * @var string $text the escaped version of message
 		 */
-
 		$text = stripslashes( $message );
 
 		if ( $options['enable_b8'] && $message && ! isset( $reason['blacklisted'] ) ) {
