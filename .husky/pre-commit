@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-php vendor/bin/phpcbf --standard=phpcs.ruleset.xml --report=summary
+php vendor/bin/phpcbf --standard=.phpcs.xml.dist --report=summary
 npm run lint:js

@@ -23,7 +23,7 @@
     "wp-env:start": "wp-env start",
     "wp-env:stop": "wp-env stop",
     "wp-env:destroy": "wp-env destroy",
-    "prepare": "husky install"
+    "postinstall": "husky install"
   },
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
     "@wordpress/babel-preset-default": "^7.3.0",
     "@wordpress/browserslist-config": "^5.2.0",
     "@wordpress/eslint-plugin": "^13.3.0",
-    "@wordpress/scripts": "^24.3.0",
+    "@wordpress/scripts": "^24.4.0",
     "chart.js": "^3.9.1",
     "husky": "^8.0.1"
   },
