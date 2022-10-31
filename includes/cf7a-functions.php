@@ -250,8 +250,12 @@ function cf7a_format_status( $rank ) {
 			$rank_clean = $rank;
 	}
 
-	$green = intval( max( 200 - ( $rank * 2 ), 0 ) );
-	$color = cf7a_rgb2hex( 250, $green, 0 );
+	if ($rank > 0) {
+		$green = intval( max( 200 - ( $rank * 2 ), 0 ) );
+		$color = cf7a_rgb2hex( 250, $green, 0 );
+	} else {
+		$color = '#aaa';
+	}
 
 	return sprintf( '<span class="ico" style="background-color: %s">%s</span>', $color, $rank_clean );
 }
