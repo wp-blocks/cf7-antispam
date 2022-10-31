@@ -674,8 +674,10 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the language info text */
 	public function cf7a_check_language() {
-		printf( '<p>%s</p>', esc_html__( 'Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. ', 'cf7-antispam' ) );
-		printf( '<p>%s</p>', esc_html__( 'The browser language detection method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) );
+		printf( '<p>%s</p><p>%s</p>',
+			esc_html__( 'Check the user browser language / user keyboard. Add a country code (us) or language (en) each line, you can insert them comma separated and when you save they will be formatted with the standard one per line.', 'cf7-antispam' ),
+			esc_html__( 'The browser language detection method is not as accurate as geo-ip because it relies on data provided by the browser and can easily bypassed however, less sophisticated bots do not pass this test', 'cf7-antispam' )
+		);
 	}
 
 	/** It prints the bad_ip info text */
