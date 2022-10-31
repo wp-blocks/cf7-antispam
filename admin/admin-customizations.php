@@ -642,10 +642,10 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It prints the check_time info text */
 	public function cf7a_print_section_check_time() {
 		printf(
-			'<p>%s</p><p>%s %s %s</p>',
-			esc_html__( 'Checks that the form has been submitted within a reasonable period of time.', 'cf7-antispam' ),
-			esc_html__( 'If the e-mail was sent too quickly or too slowly, the sender is probably not human!', 'cf7-antispam' ),
-			esc_html__( 'But Wait! A small note.... If you use a caching system for the contact page make sure you set you set the maximum elapsed time at least equal to the cache regeneration ).', 'cf7-antispam' ),
+			'<p>%s</p><p>%s<br/> %s</p><p>%s</p>',
+			esc_html__( 'Checks that the form has been submitted within a reasonable timeframe, timestamp is encrypted so any manipulation of the data will result in 0.', 'cf7-antispam' ),
+			esc_html__( 'Just set a few seconds as the minimum time (bots usually take 5 seconds at most, usually 3) and as the maximum time I recommend 1 year*.', 'cf7-antispam' ),
+			esc_html__( '* A small note.... If you use a caching system for the contact page make sure you set you set the maximum elapsed time at least equal to the cache regeneration.', 'cf7-antispam' ),
 			esc_html__( 'Values in seconds, 0 to disable', 'cf7-antispam' )
 		);
 	}
@@ -1117,7 +1117,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_time_max_callback() {
 		printf(
 			'<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />',
-			! empty( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : 3600 * 48
+			! empty( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : YEAR_IN_SECONDS
 		);
 	}
 
