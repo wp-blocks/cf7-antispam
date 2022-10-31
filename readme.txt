@@ -1,6 +1,6 @@
 === AntiSpam for Contact Form 7 ===
 Contributors: codekraft
-Tags: anti-spam, antispam, spam, bot, mail, blacklist, firewall, contact, form, security
+Tags: anti-spam, antispam, bot, mail, blacklist, form, security
 Requires at least: 5.4
 Tested up to: 6.1
 Requires PHP: 5.6
@@ -12,7 +12,7 @@ A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
 Antispam for Contact Form 7 is a free plugin for Contact Form 7, that without boring you with configurations, block bots from flood your email inbox.
-CF7A use several in and off page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called b8.
+CF7A use several in and off page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called B8.
 CF7-AntiSpam adds some functionalities also to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such a dashboard widget or a function to resend emails.
 
 == SETUP ==
@@ -25,7 +25,7 @@ This is **required for advanced text statistical analysis**, without this B8 fil
 - It is verified that the mail is sent through the cf7 module protecting the form with an encrypted unique hash
 - Browser Fingerprinting
 - Language checks (Geo-ip, http headers and browser - crosschecked)
-- Blacklists (with autoban after N failed attempts and user defined)
+- Blacklists (with automatic ban after N failed attempts, user defined ip exclusion list)
 - Time elapsed (with min/max values)
 - Prohibited words in message/email and user agent
 - DNS Blacklists
@@ -33,15 +33,17 @@ This is **required for advanced text statistical analysis**, without this B8 fil
 - Honeyform*
 - B8 statistical "Bayesian" spam filter
 
+But why are there so many tests? Because there are so many types of bots, e.g. the phantom-based bot fails with fingerprinting but is clever with honeypots or the python-written bot fails honeypots but is proficient with metadata forgery!
+
 ==Install Flamingo to unlock the spam manager!==
-Not using Flamingo? well i suggest you to install it, even if it is not essential. In this way from your wordpress installation you will be able to review emails and "re-teach" b8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
+Not using Flamingo? well I suggest you to install it, even if it is not essential. In this way from your wordpress installation you will be able to review emails and "re-teach" B8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
 And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation.
-While activating CF7A all previous collected mail will be parsed and b8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
+While activating CF7A all previous collected mail will be parsed and B8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
 Notes:
-- On the right side of Flamingo inbound page i've added a new column that show the mail spamminess level
+- On the right side of Flamingo inbound page I've added a new column that show the mail spamminess level
 - if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
-- Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the b8 algorithm will be auto-trained
-- Don't delete a spam message from ham if you receive it, rather put it in spam to teach b8 how to recognise the difference!
+- Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the B8 algorithm will be auto-trained
+- Don't delete a spam message from ham if you receive it, rather put it in spam to teach B8 how to recognise the difference!
 
 == Privacy Notices ==
 AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
@@ -72,7 +74,34 @@ By contributing, you agree that your contributions will be licensed under its GP
 My goal is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
 if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antispam) is the right place ;)
 
-== Debug / Plugin PHP Constants ==
+== Filters ==
+
+Before processing the email
+`add_filter('cf7a_message_before_processing', 'my_message_before_processing', 10, 2 );`
+provides  $message, $posted_data
+`$message` -  the mail message content
+`$submission` - the email metadata
+
+Before processing the email with bayesian filter
+`add_filter('cf7a_before_b8', 'my_before_b8', 10, 3 );`
+provides  $spam, $message, $submission
+`$spam` - true if the mail was detected as spam
+`$message` - the mail message content
+`$submission`  - the mail message submission instance
+
+Add your own spam filter
+`add_filter('cf7a_additional_spam_filters', 'my_additional_spam_filters', 10, 3 );`
+provides  $spam, $message, $submission
+same as the previous filter
+
+Add some content when resending a mail (useful to add a message like "this was spammed" or the original mail date/time)
+`add_filter('cf7a_before_resend_email', 'my_before_resend_email', 10, 3 );`
+provides  $body, $sender, $subject
+`$body` - the mail body
+`$sender` - the mail sender
+`$subject` - the mail subject
+
+== DEBUG ==
 
 Enable **debug mode** (wp-debug has to be enabled)
 - verbose mode
@@ -82,12 +111,8 @@ Enable **debug mode** (wp-debug has to be enabled)
 Enable **extended debug mode** (need "CF7ANTISPAM_DEBUG" to be enabled)
 - disable autoban
 - enable advanced logging (the result of each test for each email)
-if you uninstall this plugin with this option is enabled the cf7 options and the cf7 words database used by b8 will not be deleted. (Use it if you know what you are doing, because this way you do not delete/reset options and vocabulary)
+if you uninstall this plugin with this option is enabled the cf7 options and the cf7 words database used by B8 will not be deleted. (Use it if you know what you are doing, because this way you do not delete/reset options and vocabulary)
 `define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
-
-**Dnsbl benchmark**
-if the mail takes so long to be sent, maybe it is a dnsbl that is taking so long to reply. with this option active, the time that each dns took to reply is printed in the log.
-`define( 'CF7ANTISPAM_DNSBL_BENCHMARK', true);`
 
 == Frequently Asked Questions ==
 
@@ -95,17 +120,9 @@ if the mail takes so long to be sent, maybe it is a dnsbl that is taking so long
 
 NO, nobody can guarantee that, and anyone who tells you that is lying. But luckily, bots are limited by the fact that they don't use a real browser and they use fairly repetitive routes which can be recognised.
 
-=Mail spam test sequence explained=
+=How spam score works=
 
-Different checks are made to recognize different type of bots. This is a short list of the antispam tests
-* Get the IP address and if it has already been blacklisted
-* check if this mail was sent by a forbidden ip
-* The bot fingerprinting is a way to check the mail was sent with a real browser
-* Check the elapsed time to fill the form
-* Check the message, the user agent or the email if it contains any forbidden words/strings.
-* verify on dnsbl if the ip has already been reported
-* if the spam score is above 1 the mail is proposed to b8 as spam, then b8 ranks it and learns the spam words.
-* if the spam score is below 1 the mail will be passed to that b8 "decides" if it is spam or not.
+The system used to evaluate the e-mail is a non-proportional scoring system and each test have a different score (and can be customised with the advanced settings). When the mail score is equal to or greater than 1 it is considered spam.
 
 =What do you mean by Standard Spam Filters=
 
@@ -113,19 +130,19 @@ Some standard test are Elapsed time, Auto-Blacklisting, Prohibited IP/strings an
 
 =HoneyForm, or you mean Honeypot?=
 
-No I mean HoneyForm! It's a hidden and fake form that bots can't resist filling in, after all it's part of the page code for them and they rarely check the visibility of an element. This form is completely a trap and when the bot fills it he will be banned.
+No, I mean HoneyForm! This is a hidden, bogus form that bots cannot help but fill in, as it is part of the page code for them and they rarely check the visibility of an element. This form is completely a trap and when the bot fills it in, it is banned.
 
 =But the standard Honeypot?=
 
-We also have honeypots, to activate them just click on a checkbox and they will be generated automatically for each text field. The only thing you need to check in the CF7A options page is the name of the fields used that need to differ with the names used in contact form 7.
+We also have honeypots, to activate them just click on a checkbox, and they will be generated automatically for each text field. The only thing you need to check in the CF7A options page is the name of the fields used that need to differ with the names used in contact form 7.
 
 =DNSBL... What?=
 
-After that the sender ip will be searched into *DNS-based Blackhole server* to found if that ip is delisted for spam. 10 server already set as default but you can add or remove as you like, there are 50 server available (list below).
+After that the sender ip will be searched into *DNS-based Black-hole server* to found if that ip is delisted for spam. 10 server already set as default, but you can add or remove as you like, there are 50 server available (list below).
 
-=What is b8? How it works?=
+=What is B8? How it works?=
 
-b8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. b8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
+B8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. B8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
 
 == Changelog ==
 
@@ -193,7 +210,7 @@ b8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 * enhanced honeyform and honeypot style
 * fix dnsbl report message
 * enhanced hidden fields "append on submit" option
-* with the "extended debug option" on deactivate resets the b8 db
+* with the "extended debug option" on deactivate resets the B8 db
 
 = 0.2.0 =
 * adds HoneyForm to antispam checks
@@ -235,15 +252,18 @@ See the LICENSE file for more details.
 
 == Resources ==
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
-* b8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
+* B8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
 * GeoLite2 [license](https://www.maxmind.com/en/geolite2/eula)
 * GeoIP2 PHP API [GeoIP2-php](https://github.com/maxmind/GeoIP2-php)
 * chart.js https://www.chartjs.org/, © 2021 Chart.js [contributors](https://github.com/chartjs/Chart.js/graphs/contributors), [MIT](https://github.com/chartjs/Chart.js/blob/master/LICENSE.md)
 * Sudden Shower in the Summer, Public domain, Wikimedia Commons https://commons.wikimedia.org/wiki/File:Sudden_Shower_in_the_Summer_(5759500422).jpg
 
+== Special thanks ==
+This project is tested with BrowserStack. [Browserstack](https://www.browserstack.com/)
+
 == MaxMind GeoIP2 ==
 This plugin on demand can enable GeoLite2 created by MaxMind, available from [https://www.maxmind.com](https://www.maxmind.com)
-While enabled you **have to mention it in the privacy policy** of your site!
+While enabled you may **have to mention it in the privacy policy** of your site, depending on the law regulating privacy in your state!
 * GeoIP2 databases [GeoLite2 Country](https://www.maxmind.com/en/accounts/current/geoip/downloads)
 
 == DNSBL servers privacy policies ==
