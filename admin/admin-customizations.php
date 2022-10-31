@@ -633,16 +633,20 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the bot_fingerprint info text */
 	public function cf7a_print_section_bot_fingerprint() {
-		printf( '<p>%s</p>', esc_html__( "Fingerprinting is a method used for exploiting data from browser in order to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) );
-		printf( '<p>%s</p>', esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' ) );
+		printf( '<p>%s</p><p>%s</p>',
+			esc_html__( "Fingerprinting is a method used for exploiting data from browser in order to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ),
+			esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' )
+		);
 	}
 
 	/** It prints the check_time info text */
 	public function cf7a_print_section_check_time() {
 		printf(
-			'<p>%s</p><p>%s</p>',
+			'<p>%s</p><p>%s %s %s</p>',
 			esc_html__( 'Checks that the form has been submitted within a reasonable period of time.', 'cf7-antispam' ),
-			esc_html__( 'If the e-mail was sent too quickly or too slowly, the sender is probably not human! But not everything is perfect and this check may fail if you set a cache with a very high lease time (in this case I recommend that you set the maximum time at least equal to that of cache regeneration ). Values in seconds, 0 to disable', 'cf7-antispam' )
+			esc_html__( 'If the e-mail was sent too quickly or too slowly, the sender is probably not human!', 'cf7-antispam' ),
+			esc_html__( 'But Wait! A small note.... If you use a caching system for the contact page make sure you set you set the maximum elapsed time at least equal to the cache regeneration ).', 'cf7-antispam' ),
+			esc_html__( 'Values in seconds, 0 to disable', 'cf7-antispam' )
 		);
 	}
 
@@ -662,6 +666,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			printf(
 				'<p>%s<br/><code>%s</code></p>',
 				esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
+				// 👇 this is an example of a key definition, isn't define itself.
 				"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
 			);
 		}

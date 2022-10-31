@@ -308,9 +308,9 @@ class CF7_AntiSpam_Admin {
 				?>
 				</ul></div>
 				<p class="community-events-footer">
-					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>"><?php echo esc_html__( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>"><?php esc_html_e( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 					|
-					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>"><?php esc_html__( 'CF7-Antispam setup', 'cf7-antispam' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>"><?php esc_html_e( 'CF7-Antispam setup', 'cf7-antispam' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
 				<script>
 					var spamChartData = {

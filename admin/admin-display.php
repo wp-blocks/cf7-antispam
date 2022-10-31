@@ -37,16 +37,6 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * It displays the header for the widget.
-	 */
-	public function cf7a_display_header() {
-		?>
-		<div class="wrap"><div class="cf7-antispam">
-		<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂ ' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
-		<?php
-	}
-
-	/**
 	 * It displays the content of the widget
 	 */
 	public function cf7a_display_content() {
@@ -99,15 +89,6 @@ class CF7_AntiSpam_Admin_Display {
 			?>
 		</form>
 	</div>
-		<?php
-	}
-
-	/**
-	 * It displays the footer for the widget.
-	 */
-	public function cf7a_display_footer() {
-		?>
-		</div></div>
 		<?php
 	}
 
