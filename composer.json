@@ -31,7 +31,8 @@
 	"automattic/vipwpcs": "^2.3"
   },
   "require": {
-	"geoip2/geoip2": "~2.0"
+	"geoip2/geoip2": "~2.0",
+	"l3u/b8": "*"
   },
   "scripts": {
 	"PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist  -s --report=full,summary,source",
@@ -44,6 +45,21 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "repositories": [
+	{
+	  "type": "package",
+	  "package": {
+		"name": "l3u/b8",
+		"version": "1",
+		"type": "library",
+		"source": {
+		  "url": "https://gitlab.com/l3u/b8.git",
+		  "type": "git",
+		  "reference": "master"
+		}
+	  }
+	}
+  ],
   "config": {
 	"allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
