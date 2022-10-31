@@ -7,7 +7,6 @@
   "files": [
     "admin/*",
     "includes/*",
-    "libs/*",
     "vendor/*",
     "cf7-antispam.php",
     "LICENSE",

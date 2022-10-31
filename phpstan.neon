@@ -16,7 +16,6 @@ parameters:
     excludePaths:
         - .github/
         - .husky/
-        - libs/
         - vendor/
         - tests/
         - node_modules/
