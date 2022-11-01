@@ -50,6 +50,14 @@ $color__info: $color__blue;
     color: $color__info;
   }
 
+  .cf7a-tip {
+	padding: 2px 16px;
+	background: #fff6db;
+	border: 1px solid #EDC03B;
+	border-radius: 3px;
+	box-sizing: border-box;
+  }
+
   form {
 
     // input style
