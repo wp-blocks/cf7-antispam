@@ -22,16 +22,16 @@ So the only thing you need to do is add to (for each contact form) 'flamingo_mes
 This is **required for advanced text statistical analysis**, without this B8 filter will couldn't be enabled.
 
 ==Antispam Available Tests==
-- It is verified that the mail is sent through the cf7 module protecting the form with an encrypted unique hash
-- Browser Fingerprinting
-- Language checks (Geo-ip, http headers and browser - crosschecked)
-- Blacklists (with automatic ban after N failed attempts, user defined ip exclusion list)
-- Time elapsed (with min/max values)
-- Prohibited words in message/email and user agent
-- DNS Blacklists
-- Honeypot
-- Honeyform*
-- B8 statistical "Bayesian" spam filter
+✅ Browser Fingerprinting
+✅ Language checks (Geo-ip, http headers and browser - crosschecked)
+✅ Honeypot
+✅ Honeyform*
+✅ DNS Blacklists
+✅ Blacklists (with automatic ban after N failed attempts, user defined ip exclusion list)
+✅ Hidden fields with encrypted unique hash
+✅ Time elapsed (with min/max values)
+✅ Prohibited words in message/email and user agent
+✅ B8 statistical "Bayesian" spam filter
 
 But why are there so many tests? Because there are so many types of bots, e.g. the phantom-based bot fails with fingerprinting but is clever with honeypots or the python-written bot fails honeypots but is proficient with metadata forgery!
 
@@ -138,7 +138,7 @@ We also have honeypots, to activate them just click on a checkbox, and they will
 
 =DNSBL... What?=
 
-After that the sender ip will be searched into *DNS-based Black-hole server* to found if that ip is delisted for spam. 10 server already set as default, but you can add or remove as you like, there are 50 server available (list below).
+After that the sender ip will be searched into *DNS-based Black-hole server* to found if that ip is delisted for spam. 10 server are already set as default, but you can add or remove as you like, there are 50 server available (list below).
 
 =What is B8? How it works?=
 
