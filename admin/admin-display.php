@@ -281,9 +281,11 @@ class CF7_AntiSpam_Admin_Display {
 			/* output the options */
 			$this->cf7a_get_debug_info_options();
 
-			$this->cf7a_get_debug_info_geoip();
+			if ( ! empty( $this->options['check_geoip_enabled'] ) ) {
+				$this->cf7a_get_debug_info_geoip();
+			}
 
-			if ( $this->options['check_dnsbl'] || ! empty( $this->options['dnsbl_list'] ) ) {
+			if ( ! empty( $this->options['check_dnsbl'] ) && ! empty( $this->options['dnsbl_list'] ) ) {
 				$this->cf7a_get_debug_info_dnsbl();
 			}
 
