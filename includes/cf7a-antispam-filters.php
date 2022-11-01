@@ -282,14 +282,14 @@ class CF7_AntiSpam_Filters {
 		/* get the tag used in the form */
 		$mail_tags = $contact_form->scan_form_tags();
 
-		/* the email and the message from the email */
-		$email_tag = substr( $contact_form->pref( 'flamingo_email' ), 2, -2 );
+		/* get the sender email field using the flamingo defined */
+		$email_tag = sanitize_email( cf7a_get_mail_meta( $contact_form->pref( 'flamingo_email' ) ) );
+		$email     = isset( $posted_data[ $email_tag ] ) ? $posted_data[ $email_tag ] : false;
 
-		// TODO: allow multiple fields (comma separated then join the content)
-		$message_tag = substr( $contact_form->pref( 'flamingo_message' ), 2, -2 );
-
-		$email   = isset( $posted_data[ $email_tag ] ) ? $posted_data[ $email_tag ] : false;
-		$message = isset( $posted_data[ $message_tag ] ) ? $posted_data[ $message_tag ] : false;
+		/* Getting the message field(s) from the form. */
+		$message_tag  = sanitize_text_field( $contact_form->pref( 'flamingo_message' ) );
+		$message_meta = cf7a_get_mail_meta( $message_tag );
+		$message      = cf7a_maybe_split_mail_meta( $posted_data, $message_meta );
 
 		/**
 		 * Let developers hack the message
@@ -420,19 +420,24 @@ class CF7_AntiSpam_Filters {
 
 			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
+			$max_attemps    = intval( $options['max_attempts'] );
 
-			if ( $ip_data_status >= $options['max_attempts'] ) {
+			/* if the current ip has tried more times than allowed */
+			if ( $ip_data_status >= $max_attemps ) {
 
 				++ $spam_score;
 				$spam                  = true;
 				$reason['blacklisted'] = "Score: $spam_score";
 
 				cf7a_log( "The $remote_ip is already blacklisted, status $ip_data_status", 1 );
-			} elseif ( $ip_data_status > 0 ) {
+
+			} elseif ( CF7ANTISPAM_DEBUG && $ip_data_status > 0 ) {
+
+				/* Wanr only if the number of attempts is higher than 0 but lower than the max attempts */
 				cf7a_log(
 					sprintf(
 						"The $remote_ip is already blacklisted (score $ip_data_status) but still has %d attempts left",
-						$options['max_attempts'] - $ip_data_status
+						$max_attemps - $ip_data_status
 					),
 					1
 				);
@@ -828,7 +833,7 @@ class CF7_AntiSpam_Filters {
 					$dsnbl_count     = count( $reason['dsnbl'] );
 					$reason['dsnbl'] = implode( ', ', $reason['dsnbl'] );
 
-					cf7a_log( "The $remote_ip has tried to send an email but is listed $dsnbl_count times in the Domain Name System Blacklists ({$reason['dsnbl']})", 1 );
+					cf7a_log( "$remote_ip has tried to send an email but is listed $dsnbl_count times in the Domain Name System Blacklists ({$reason['dsnbl']})", 1 );
 
 				}
 			}

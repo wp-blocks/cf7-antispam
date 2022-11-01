@@ -167,16 +167,29 @@ class CF7_AntiSpam_Flamingo {
 			/* get the additional setting of the form */
 			$additional_settings = isset( $form_post->ID ) ? self::cf7a_get_mail_additional_data( $form_post->ID ) : null;
 
-			/* if the field we are looking for return it */
-			if ( ! empty( $additional_settings ) && ! empty( $additional_settings[ $field ] ) && ! empty( $flamingo_post->fields[ $additional_settings[ $field ] ] ) ) {
-				return stripslashes( $flamingo_post->fields[ $additional_settings[ $field ] ] );
+			if ( 'message' !== $field ) {
+				if ( ! empty( $additional_settings ) && ! empty( $additional_settings[ $field ] ) && ! empty( $flamingo_post->fields[ $additional_settings[ $field ] ] ) ) {
+					return esc_html( $flamingo_post->fields[ $additional_settings[ $field ] ] );
+				}
+			} else {
+				/* the message field could be multiple */
+				$message_meta = isset( $additional_settings[ $field ] ) ? $additional_settings[ $field ] : false;
+				$message      = cf7a_maybe_split_mail_meta( $flamingo_post->fields, $message_meta, ' ' );
+
+				if ( ! empty( $message ) ) {
+					return esc_html( $message );
+				}
 			}
 		}
 
 		if ( 'message' === $field ) {
 			cf7a_log( 'Original contact form slug not found for flamingo post id ' . $flamingo_post->id() . '. please check your contact form 7 shortcode / settings', 2 );
-			if ( ! empty( $flamingo_post->fields ) && isset( $flamingo_post->meta['message_field'] ) && isset( $flamingo_post->fields[ $flamingo_post->meta['message_field'] ] ) ) {
-				return $flamingo_post->fields[ $flamingo_post->meta['message_field'] ];
+
+			/* the message field could be multiple */
+			$message = cf7a_maybe_split_mail_meta( $flamingo_post->fields, $flamingo_post->meta['message_field'], ' ' );
+
+			if ( ! empty( $message ) ) {
+				return esc_html( $message );
 			}
 		}
 
@@ -281,14 +294,14 @@ class CF7_AntiSpam_Flamingo {
 
 		$posted_data = $submission->get_posted_data();
 
-		/* get the contact form data mail data */
-		$cf = $submission->get_contact_form();
-
 		/* form additional settings */
 		$additional_settings = self::cf7a_get_mail_additional_data( $result['contact_form_id'] );
 
+		/* this is a real monkey patching to remove the "] [" */
+		$message_list = sanitize_text_field( implode( ' ', explode( '] [', $additional_settings['message'] ) ) );
+
 		/* update post meta and add the cf7-antispam customized tags form_id and message_field */
-		$stored_fields = get_post_meta( $result['flamingo_inbound_id'], '_meta', true );
+		$stored_fields = (array) get_post_meta( $result['flamingo_inbound_id'], '_meta', true );
 		update_post_meta(
 			$result['flamingo_inbound_id'],
 			'_meta',
@@ -296,18 +309,19 @@ class CF7_AntiSpam_Flamingo {
 				$stored_fields,
 				array(
 					'form_id'       => $result['contact_form_id'],
-					'message_field' => $additional_settings['message'],
+					'message_field' => $message_list,
 				)
 			)
 		);
 
 		/* then is time to classify the mail with b8 */
-		if ( ! empty( $additional_settings ) && isset( $posted_data[ $additional_settings['message'] ] ) ) {
+		if ( ! empty( $posted_data ) && ! empty( $message_list ) ) {
+
+			$message = cf7a_maybe_split_mail_meta( $posted_data, $message_list, ' ' );
 
 			$b8 = new CF7_AntiSpam_B8();
 
-			$text   = stripslashes( $posted_data[ $additional_settings['message'] ] );
-			$rating = ! empty( $text ) ? $b8->cf7a_b8_classify( $text ) : 'none';
+			$rating = ! empty( $message ) ? round( $b8->cf7a_b8_classify( $message ), 2 ) : 'none';
 
 			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', round( $rating, 2 ) );
 		}
