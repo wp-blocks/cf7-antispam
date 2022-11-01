@@ -897,7 +897,7 @@ class CF7_AntiSpam_Filters {
 		if ( $options['enable_b8'] && $message && ! isset( $reason['blacklisted'] ) ) {
 
 			$cf7a_b8 = new CF7_AntiSpam_B8();
-			$rating  = $cf7a_b8->cf7a_b8_classify( $text );
+			$rating  = round( $cf7a_b8->cf7a_b8_classify( $text ), 2 );
 
 			/* Checking the rating of the message and if it is greater than the threshold */
 			if ( $rating >= $b8_threshold ) {
@@ -905,17 +905,17 @@ class CF7_AntiSpam_Filters {
 				$reason['b8'] = $rating;
 				$spam_score  += $score_detection;
 
-				cf7a_log( "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1 - B8 rating $rating / 1)" );
+				cf7a_log( "B8 rating $rating / 1", 1 );
 			}
 
 			/* Checking if the spam score is greater than or equal to 1. If it is, it sets the spam variable to true. */
 			if ( $spam_score >= 1 ) {
-				/* if d8 isn't enabled we only need to mark as spam and leave a log */
+				/* if B8 isn't enabled we only need to mark as spam and leave a log */
 				cf7a_log( "$remote_ip will be rejected because suspected of spam! (score $spam_score / 1)", 1 );
 				$cf7a_b8->cf7a_b8_learn_spam( $text );
-			} else {
-				/* the mail was classified as ham, so we let learn to d8 what is considered (a probable) ham */
-				cf7a_log( "D8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so the mail from $remote_ip will be marked as ham", 1 );
+			} elseif ( $rating < $b8_threshold * 0.5 ) {
+				/* the mail has been classified as ham and is below half the 'alert value', so we can let B8 learn what is considered (a probable) ham */
+				cf7a_log( "B8 detect spamminess of $rating (below the half of the threshold of $b8_threshold) so the mail from $remote_ip will be marked as ham", 1 );
 				$cf7a_b8->cf7a_b8_learn_ham( $text );
 			}
 		}
