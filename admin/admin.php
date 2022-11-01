@@ -216,10 +216,12 @@ class CF7_AntiSpam_Admin {
 	 */
 	public function cf7a_flamingo_recap() {
 
+		$max_mail_count = apply_filters( 'cf7a_dashboard_max_mail_count', 25 );
+
 		$args = array(
 			'post_type'      => 'flamingo_inbound',
 			'post_status'    => array( 'flamingo-spam', 'publish' ),
-			'posts_per_page' => -1,
+			'posts_per_page' => $max_mail_count,
 			'orderby'        => 'date',
 			'order'          => 'DESC',
 			'date_query'     => array(
