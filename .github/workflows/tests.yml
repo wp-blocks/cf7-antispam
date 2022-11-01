@@ -34,9 +34,6 @@ jobs:
           extensions: mysql
           coverage: none
 
-      - name: Validate Composer configuration
-        run: composer validate --strict
-
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
 
