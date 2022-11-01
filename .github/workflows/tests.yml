@@ -34,8 +34,11 @@ jobs:
           extensions: mysql
           coverage: none
 
+      - name: Validate Composer configuration
+        run: composer validate --strict
+
       - name: Install dependencies
-        run: composer install
+        run: composer install --no-interaction --no-progress
 
       - name: Install WordPress and initialize database
         run: chmod +x ./tests/bin/install-wp-tests.sh && ./tests/bin/install-wp-tests.sh cf7a_tests root wordpress 127.0.0.1 latest
