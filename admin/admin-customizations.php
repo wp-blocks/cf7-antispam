@@ -262,7 +262,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Settings check_bad_ip */
 		add_settings_field(
 			'check_bad_ip',
-			__( 'Check the sender IP Address', 'cf7-antispam' ),
+			__( 'IP Address', 'cf7-antispam' ),
 			array( $this, 'cf7a_check_bad_ip_callback' ),
 			'cf7a-settings',
 			'cf7a_bad_ip'
@@ -608,25 +608,35 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return string a random tip from the array of tips.
 	 */
 	public function cf7a_get_a_random_tip() {
-		$tips_wpkses_format = array( 'a' => array( 'href' => array() ) );
+		$tips_wpkses_format = array(
+			'a' => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+		);
 		$tips               = array(
 			esc_html__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
 			esc_html__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
-			sprintf(
-				wp_kses(
+			wp_kses(
+				sprintf(
 					/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
-					__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. that way it is really easy for a bot to find it, isn\'t it? <a href="%s">Give a try</a>', 'cf7-antispam' ),
-					$tips_wpkses_format
+					'%s <a href="%s" target="_blank">%s</a>',
+					esc_html__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
+					trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
+					esc_html__( 'Give a try', 'cf7-antispam' )
 				),
-				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' )
+				$tips_wpkses_format
 			),
-			sprintf(
-				wp_kses(
+			wp_kses(
+				sprintf(
 					/* translators: %s is the link to Flamingo documentation. */
-					__( "As Flamingo also CF7-Antispam can handle <a href='%s'>fields with multiple tags</a>. In this way, you can scan as a message multiple fields at once (subject line or second text field...)", 'cf7-antispam' ),
-					$tips_wpkses_format
+					"%s <a href='%s' target='_blank'>%s</a>. %s",
+					esc_html__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
+					esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
+					esc_html__( 'fields with multiple tags', 'cf7-antispam' ),
+					esc_html__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
 				),
-				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' )
+				$tips_wpkses_format
 			),
 		);
 
@@ -716,7 +726,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the bad_ip info text */
 	public function cf7a_print_section_bad_ip() {
-		printf( '<p>%s</p>', esc_html__( 'Adding a list of forbidden senders per IP address, one "bad" ip each line', 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( 'After an ip check via the http headers, it is checked that the ip is not blacklisted in the following list, one "bad" ip each line', 'cf7-antispam' ) );
 	}
 
 	/** It prints the bad_words info text */

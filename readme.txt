@@ -4,7 +4,7 @@ Tags: anti-spam, antispam, bot, mail, blacklist, form, security
 Requires at least: 5.4
 Tested up to: 6.1
 Requires PHP: 5.6
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -145,6 +145,13 @@ After that the sender ip will be searched into *DNS-based Black-hole server* to 
 B8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. B8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
 
 == Changelog ==
+
+= 0.4.2 =
+* Dashboard widget updated (adds a new filter 'cf7a_dashboard_max_mail_count' to limit the maximum value of displayed mail, default 25)
+* UI enhancements - labels in the flamingo inbound page and the blacklist table
+* Displays a random security tip at the top of cf7-antispam settings
+* Standalone geoip check (previously it was mandatory to enable the language checks in order to enable geo-ip)
+* Under certain conditions an automatic ban is carried out and the e-mail is not processed to avoid unnecessary consumption of resources
 
 = 0.4.1 =
 * Honeyform updated and enhanced
