@@ -43,7 +43,7 @@ class CF7_AntiSpam_Activator {
 			'append_on_submit'             => true,
 			'check_time'                   => true,
 			'check_time_min'               => 6,
-			'check_time_max'               => 3600 * 48,
+			'check_time_max'               => YEAR_IN_SECONDS,
 			'check_bad_ip'                 => true,
 			'autostore_bad_ip'             => true,
 			'max_attempts'                 => 3,
@@ -51,7 +51,7 @@ class CF7_AntiSpam_Activator {
 			'check_bad_words'              => true,
 			'check_bad_email_strings'      => true,
 			'check_bad_user_agent'         => true,
-			'check_dnsbl'                  => true,
+			'check_dnsbl'                  => false,
 			'check_refer'                  => true,
 			'check_honeypot'               => true,
 			'check_honeyform'              => false,
@@ -111,9 +111,8 @@ class CF7_AntiSpam_Activator {
 				'bl.spamcop.net',
 				'b.barracudacentral.org',
 				'dnsbl.dronebl.org',
-				/* ipv6 dnsbl */
-				'dnsbl.spfbl.net',
-				'bogons.cymru.com',
+				'all.spamrats.com',
+				/* ipv6 dnsbl but due to the unlimited number of ipv6 dnsl will have a lower impact */
 				'bl.ipv6.spameatingmonkey.net',
 			),
 			'honeypot_input_names'   => array(

@@ -37,16 +37,6 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * It displays the header for the widget.
-	 */
-	public function cf7a_display_header() {
-		?>
-		<div class="wrap"><div class="cf7-antispam">
-		<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂ ' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
-		<?php
-	}
-
-	/**
 	 * It displays the content of the widget
 	 */
 	public function cf7a_display_content() {
@@ -99,15 +89,6 @@ class CF7_AntiSpam_Admin_Display {
 			?>
 		</form>
 	</div>
-		<?php
-	}
-
-	/**
-	 * It displays the footer for the widget.
-	 */
-	public function cf7a_display_footer() {
-		?>
-		</div></div>
 		<?php
 	}
 
@@ -230,9 +211,10 @@ class CF7_AntiSpam_Admin_Display {
 
 		/* output the button to rebuild b8 dictionary */
 		$html .= printf(
-			'<hr/><h3>%s</h3><p>%s</p>',
+			'<hr/><h3>%s</h3><p>%s<br/>%s</p>',
 			esc_html__( 'Rebuid Dictionary', 'cf7-antispam' ),
-			esc_html__( 'Reanalyze all the Flamingo inbound emails (you may need to reset dictionary before).', 'cf7-antispam' )
+			esc_html__( 'Reanalyze all the Flamingo inbound emails (you may need to reset dictionary before).', 'cf7-antispam' ),
+			esc_html__( 'Use this function after correctly sorting spam and non-spam mails or if you have experienced a Bayesian poisoning attack, will maximise the accuracy of the algorithm', 'cf7-antispam' )
 		);
 		$url   = wp_nonce_url( add_query_arg( 'action', 'rebuild-dictionary', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
 		$html .= printf(
@@ -299,9 +281,11 @@ class CF7_AntiSpam_Admin_Display {
 			/* output the options */
 			$this->cf7a_get_debug_info_options();
 
-			$this->cf7a_get_debug_info_geoip();
+			if ( ! empty( $this->options['check_geoip_enabled'] ) ) {
+				$this->cf7a_get_debug_info_geoip();
+			}
 
-			if ( $this->options['check_dnsbl'] || ! empty( $this->options['dnsbl_list'] ) ) {
+			if ( ! empty( $this->options['check_dnsbl'] ) && ! empty( $this->options['dnsbl_list'] ) ) {
 				$this->cf7a_get_debug_info_dnsbl();
 			}
 
@@ -366,9 +350,11 @@ class CF7_AntiSpam_Admin_Display {
 
 			if ( ! empty( $performance_test ) ) {
 				printf(
-					'<hr/><h3><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><table class="dnsbl_table">%s</table>',
+					'<hr/><h3><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><p>%s: %s</p><table class="dnsbl_table">%s</table>',
 					esc_html__( 'DNSBL performance test:' ),
 					esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers' ),
+					esc_html__( 'Your IP address' ),
+					filter_var( $remote_ip, FILTER_VALIDATE_IP ),
 					wp_kses(
 						implode( '', $performance_test ),
 						array(

@@ -1,10 +1,11 @@
+# Start command: composer update --classmap-authoritative && vendor/bin/phpstan analyze
 parameters:
-    level: 5
+    level: max
+    inferPrivatePropertyTypeFromConstructor: true
+    # Void as typehints are available only on PHP 7.1+
+    checkMissingIterableValueType: false
     paths:
-        - ./cf7-antispam.php
-        - admin/
-        - includes/
-        - libs/
+        - ./
         - ../contact-form-7/wp-contact-form-7.php
         - ../contact-form-7/admin/
         - ../contact-form-7/includes/
@@ -12,6 +13,12 @@ parameters:
         - ../flamingo/flamingo.php
         - ../flamingo/admin/
         - ../flamingo/includes/
+    excludePaths:
+        - .github/
+        - .husky/
+        - vendor/
+        - tests/
+        - node_modules/
     ignoreErrors:
         - 'Constant CF7ANTISPAM_NAME not found.'
         - 'Constant CF7ANTISPAM_VERSION not found.'

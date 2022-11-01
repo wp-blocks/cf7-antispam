@@ -28,6 +28,10 @@ class CF7_AntiSpam_B8 {
 		/* the database */
 		global $wpdb;
 
+		if ( ! extension_loaded( 'mysqli' ) ) {
+			return false;
+		}
+
 		$db         = explode( ':', DB_HOST );
 		$db_address = $db[0];
 		$db_port    = ! empty( $db[1] ) ? intval( $db[1] ) : 3306;
@@ -53,8 +57,7 @@ class CF7_AntiSpam_B8 {
 		/* We use the default degenerator configuration */
 		$config_degenerator = array();
 
-		/* Include the b8 code */
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/libs/b8/b8.php';
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/l3u/b8/b8/b8.php';
 
 		/* Create a new b8 instance */
 		try {

@@ -171,7 +171,7 @@ class CF7_AntiSpam_Admin {
 		 */
 
 		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-scripts.asset.php';
-		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-scripts.js', $asset['dependencies'], $this->version, true );
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-scripts.js', $asset['dependencies'], $asset['version'], true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(
@@ -205,7 +205,7 @@ class CF7_AntiSpam_Admin {
 	 */
 	public function cf7a_dashboard_widget() {
 		global $wp_meta_boxes;
-		wp_add_dashboard_widget( 'cf7a-widget', 'Contact Form 7 Antispam - Recap', array( $this, 'cf7a_flamingo_recap' ) );
+		wp_add_dashboard_widget( 'cf7a-widget', __( 'Stats for CF7 Antispam', 'cf7-antispam' ), array( $this, 'cf7a_flamingo_recap' ) );
 	}
 
 	/**
@@ -216,10 +216,12 @@ class CF7_AntiSpam_Admin {
 	 */
 	public function cf7a_flamingo_recap() {
 
+		$max_mail_count = apply_filters( 'cf7a_dashboard_max_mail_count', 25 );
+
 		$args = array(
 			'post_type'      => 'flamingo_inbound',
 			'post_status'    => array( 'flamingo-spam', 'publish' ),
-			'posts_per_page' => -1,
+			'posts_per_page' => $max_mail_count,
 			'orderby'        => 'date',
 			'order'          => 'DESC',
 			'date_query'     => array(
@@ -308,9 +310,9 @@ class CF7_AntiSpam_Admin {
 				?>
 				</ul></div>
 				<p class="community-events-footer">
-					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>"><?php echo esc_html__( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>"><?php esc_html_e( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 					|
-					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>"><?php esc_html__( 'CF7-Antispam setup', 'cf7-antispam' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
+					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>"><?php esc_html_e( 'CF7-Antispam setup', 'cf7-antispam' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
 				</p>
 				<script>
 					var spamChartData = {

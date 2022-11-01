@@ -2,10 +2,9 @@
   "phpVersion": "7.4",
   "core": "WordPress/WordPress",
   "plugins": [
-	".",
 	"https://downloads.wordpress.org/plugin/contact-form-7.zip",
 	"https://downloads.wordpress.org/plugin/flamingo.zip",
-	"./tests/test-plugin"
+	"."
   ],
   "config": {
 	"WP_DEBUG": true,

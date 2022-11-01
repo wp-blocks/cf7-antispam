@@ -3,7 +3,7 @@
 'use strict';
 
 window.onload = function () {
-	// disable cf7a script if contact form is not loaded in this page
+	// disable cf7 antispam script if contact form is not loaded in this page
 	if ( ! window.wpcf7 ) return;
 
 	const cf7aPrefix = cf7a_settings.prefix;
@@ -47,9 +47,31 @@ window.onload = function () {
 	}
 
 	/**
+	 * If the user is on an iOS device, return true
+	 * https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+	 *
+	 * @return {boolean} true if the device is apple ios
+	 */
+	function isIOS() {
+		return (
+			[
+				'iPad Simulator',
+				'iPhone Simulator',
+				'iPod Simulator',
+				'iPad',
+				'iPhone',
+				'iPod',
+			].includes( navigator.platform ) ||
+			// iPad on iOS 13 detection
+			( navigator.userAgent.includes( 'Mac' ) &&
+				'ontouchend' in document )
+		);
+	}
+
+	/**
 	 * It returns an object with the browser's name, version, and other information
 	 *
-	 * @return {boolean} An object with the following properties:
+	 * @return {Object} An object with the following properties:
 	 * 	- isFFox
 	 * 	- isSamsung
 	 * 	- isOpera
@@ -64,19 +86,17 @@ window.onload = function () {
 	 * 	- touch
 	 */
 	const browserFingerprint = () => {
-		// as reference https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency
 		const ua = window.navigator.userAgent;
 
 		// holds the object with the tested props
 		const tests = {
-			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? null,
-			platform: window.navigator.platform ?? null,
-			hardware_concurrency: window.navigator.hardwareConcurrency ?? null,
-			screens: [ window.screen.width, window.screen.height ] ?? null,
-			memory: window.navigator.deviceMemory ?? null,
-			user_agent: ua ?? null,
-			app_version: window.navigator.appVersion ?? null,
-			webdriver: window.navigator.webdriver === false ?? null,
+			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+			platform: window.navigator.platform || null,
+			screens: [ window.screen.width, window.screen.height ] || null,
+			memory: window.navigator.deviceMemory || null,
+			user_agent: ua || null,
+			app_version: window.navigator.appVersion || null,
+			webdriver: window.navigator.webdriver === false || null,
 			session_storage: window.sessionStorage ? 1 : null,
 		};
 
@@ -107,8 +127,7 @@ window.onload = function () {
 			tests.isUnknown = true;
 		}
 
-		if ( typeof window.navigator.standalone === 'boolean' ) {
-			// Available on Apple's iOS Safari only, I can detect ios in this way - https://developer.mozilla.org/en-US/docs/Web/API/Navigator#non-standard_properties
+		if ( isIOS() ) {
 			tests.isIos = true;
 		} else if ( ua.indexOf( 'Android' ) > -1 ) {
 			tests.isAndroid = true;
@@ -218,7 +237,7 @@ window.onload = function () {
 					! appendOnSubmit ||
 					tests.isIos ||
 					tests.isIE ||
-					! typeof window.FormData
+					!! window.FormData
 				) {
 					// or add them directly to hidden input container
 					for ( const key in tests ) {

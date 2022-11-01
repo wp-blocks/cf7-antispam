@@ -10,7 +10,6 @@
 		<file name="cf7-antispam.php" />
 		<directory name="admin" />
 		<directory name="includes" />
-		<directory name="libs" />
 		<ignoreFiles>
 			<directory name="tests" />
 			<directory name="vendor" />

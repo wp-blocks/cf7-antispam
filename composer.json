@@ -19,6 +19,7 @@
     "phpstan/phpstan": "^1.8",
 	"phpcompatibility/php-compatibility": "*",
 	"wp-coding-standards/wpcs": "*",
+	"automattic/vipwpcs": "^2.3",
 	"phpcompatibility/phpcompatibility-wp": "*",
 	"slevomat/coding-standard": "^7.2",
     "phpstan/extension-installer": "^1.2",
@@ -27,16 +28,16 @@
 	"phpunit/phpunit": "^7",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
 	"yoast/phpunit-polyfills": "*",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-	"automattic/vipwpcs": "^2.3"
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
   },
   "require": {
-	"geoip2/geoip2": "~2.0"
+	"geoip2/geoip2": "~2.0",
+	"l3u/b8": "*"
   },
   "scripts": {
-	"PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist  -s --report=full --report=source",
-	"PHPCS-dev": "vendor/bin/phpcs --standard=phpcs.ruleset.xml -s --report=full --report=source",
-	"PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml  -s --report=full --report=source",
+	"PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist  -s --report=full,summary,source",
+	"PHPCS-dev": "vendor/bin/phpcs --standard=phpcs.ruleset.xml -s --report=full,summary,source",
+	"PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml  -s --report=full",
 	"phpstan": "vendor/bin/phpstan",
 	"psalm": "vendor/bin/psalm",
 	"psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run",
@@ -44,6 +45,21 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
+  "repositories": [
+	{
+	  "type": "package",
+	  "package": {
+		"name": "l3u/b8",
+		"version": "1",
+		"type": "library",
+		"source": {
+		  "url": "https://gitlab.com/l3u/b8.git",
+		  "type": "git",
+		  "reference": "master"
+		}
+	  }
+	}
+  ],
   "config": {
 	"allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,

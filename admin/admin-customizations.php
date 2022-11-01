@@ -262,7 +262,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Settings check_bad_ip */
 		add_settings_field(
 			'check_bad_ip',
-			__( 'Check the sender IP Address', 'cf7-antispam' ),
+			__( 'IP Address', 'cf7-antispam' ),
 			array( $this, 'cf7a_check_bad_ip_callback' ),
 			'cf7a-settings',
 			'cf7a_bad_ip'
@@ -601,6 +601,49 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+
+	/**
+	 * It returns a random tip from an array of tips
+	 *
+	 * @return string a random tip from the array of tips.
+	 */
+	public function cf7a_get_a_random_tip() {
+		$tips_wpkses_format = array(
+			'a' => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+		);
+		$tips               = array(
+			esc_html__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
+			esc_html__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
+			wp_kses(
+				sprintf(
+					/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
+					'%s <a href="%s" target="_blank">%s</a>',
+					esc_html__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
+					trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
+					esc_html__( 'Give a try', 'cf7-antispam' )
+				),
+				$tips_wpkses_format
+			),
+			wp_kses(
+				sprintf(
+					/* translators: %s is the link to Flamingo documentation. */
+					"%s <a href='%s' target='_blank'>%s</a>. %s",
+					esc_html__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
+					esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
+					esc_html__( 'fields with multiple tags', 'cf7-antispam' ),
+					esc_html__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
+				),
+				$tips_wpkses_format
+			),
+		);
+
+		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
+
+	}
+
 	/**
 	 * It prints The main setting text below the title
 	 *
@@ -608,11 +651,10 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_print_section_main_subtitle() {
 		printf(
-			'<p>%s</p><p>%s</p><p><strong>%s</strong> %s</p>',
+			'<p>%s</p><div class="cf7a-tip"><p><strong>💡 %s</strong> %s</p></div>',
 			esc_html__( 'For most cases the following settings are fine, but you can have fun configuring the antispam to achieve the level of protection you prefer!', 'cf7-antispam' ),
-			esc_html__( 'In multiple text fields (the textarea) you can also enter values in comma-separated format and on saving, the strings will be broken up into one per line format.', 'cf7-antispam' ),
 			esc_html__( 'Tip:', 'cf7-antispam' ),
-			esc_html__( 'You can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' )
+			self::cf7a_get_a_random_tip()
 		);
 	}
 
@@ -633,13 +675,22 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the bot_fingerprint info text */
 	public function cf7a_print_section_bot_fingerprint() {
-		printf( '<p>%s</p>', esc_html__( "Fingerprinting is a way of exploiting certain data that the browser can provide to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ) );
-		printf( '<p>%s</p>', esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' ) );
+		printf(
+			'<p>%s</p><p>%s</p>',
+			esc_html__( "Fingerprinting is a method used for exploiting data from browser in order to check whether it is a real browser. A script checks software and hardware configuration like screen resolution, 3d support, available fonts and OS version, that usually aren't available for bots.", 'cf7-antispam' ),
+			esc_html__( 'The last option, append on submit, causes fingerprinting to take place after the submit button has been pressed, making it even more difficult for a bot to circumvent the protection.', 'cf7-antispam' )
+		);
 	}
 
 	/** It prints the check_time info text */
 	public function cf7a_print_section_check_time() {
-		printf( '<p>%s</p>', esc_html__( "Check that the e-mail is sent in the 'right' time frame. If the e-mail was sent too quickly or too slowly, the sender is probably not human. Values in seconds", 'cf7-antispam' ) );
+		printf(
+			'<p>%s</p><p>%s<br/> %s</p><p>%s</p>',
+			esc_html__( 'Checks that the form has been submitted within a reasonable timeframe, timestamp is encrypted so any manipulation of the data will result in 0.', 'cf7-antispam' ),
+			esc_html__( 'Just set a few seconds as the minimum time (bots usually take 5 seconds at most, usually 3) and as the maximum time I recommend 1 year*.', 'cf7-antispam' ),
+			esc_html__( '* A small note.... If you use a caching system for the contact page make sure you set you set the maximum elapsed time at least equal to the cache regeneration.', 'cf7-antispam' ),
+			esc_html__( 'Values in seconds, 0 to disable', 'cf7-antispam' )
+		);
 	}
 
 	/** It prints the geoip info text */
@@ -658,6 +709,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			printf(
 				'<p>%s<br/><code>%s</code></p>',
 				esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
+				// 👇 this is an example of a key definition, isn't define itself.
 				"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
 			);
 		}
@@ -665,13 +717,16 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the language info text */
 	public function cf7a_check_language() {
-		printf( '<p>%s</p>', esc_html__( 'Check the user browser language / user keyboard. Add one language code (en-US) or language (en) per line, the language code specifically enables or denies a state while the language enables or denies all language codes beginning with that language. ', 'cf7-antispam' ) );
-		printf( '<p>%s</p>', esc_html__( 'The browser language detection method is not as accurate as geo ip because it is based on what is provided by the browser and can easily be bypassed (however, less sophisticated bots do not pass this test)', 'cf7-antispam' ) );
+		printf(
+			'<p>%s</p><p>%s</p>',
+			esc_html__( 'Check the user browser language / user keyboard. Add a country code (us) or language (en) each line, you can insert them comma separated and when you save they will be formatted with the standard one per line.', 'cf7-antispam' ),
+			esc_html__( 'The browser language detection method is not as accurate as geo-ip because it relies on data provided by the browser and can easily bypassed however, less sophisticated bots do not pass this test', 'cf7-antispam' )
+		);
 	}
 
 	/** It prints the bad_ip info text */
 	public function cf7a_print_section_bad_ip() {
-		printf( '<p>%s</p>', esc_html__( 'Adding a list of forbidden senders per IP address, one "bad" ip each line', 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( 'After an ip check via the http headers, it is checked that the ip is not blacklisted in the following list, one "bad" ip each line', 'cf7-antispam' ) );
 	}
 
 	/** It prints the bad_words info text */
@@ -1108,7 +1163,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_time_max_callback() {
 		printf(
 			'<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />',
-			! empty( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : 3600 * 48
+			! empty( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : YEAR_IN_SECONDS
 		);
 	}
 

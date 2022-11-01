@@ -218,7 +218,7 @@ function cf7a_rgb2hex( $r, $g, $b ) {
 function cf7a_format_rating( $rating ) {
 
 	if ( ! is_numeric( $rating ) ) {
-		return '<span class="flamingo-rating-label" style="background-color: rgb(100,100,100)"><b>' . __( 'none' ) . '</b></span>';
+		return '<span class="flamingo-rating-label cf7a-tag-none" style="background-color: #999"><b>' . __( 'none' ) . '</b></span>';
 	}
 
 	$red   = floor( 200 * $rating );
@@ -250,8 +250,12 @@ function cf7a_format_status( $rank ) {
 			$rank_clean = $rank;
 	}
 
-	$green = intval( max( 200 - ( $rank * 2 ), 0 ) );
-	$color = cf7a_rgb2hex( 250, $green, 0 );
+	if ( $rank > 0 ) {
+		$green = intval( max( 200 - ( $rank * 2 ), 0 ) );
+		$color = cf7a_rgb2hex( 250, $green, 0 );
+	} else {
+		$color = '#aaa';
+	}
 
 	return sprintf( '<span class="ico" style="background-color: %s">%s</span>', $color, $rank_clean );
 }
@@ -308,5 +312,42 @@ function cf7a_log( $log_data, $log_level = 0 ) {
 				: CF7ANTISPAM_LOG_PREFIX . print_r( $log_data, true )
 			);
 		}
+	}
+}
+
+/**
+ * It takes a string of metadata and unquote it
+ * the part between the first two characters and the last two characters.
+ *
+ * @param string $tag The raw message string.
+ *
+ * @return string the clean tag string
+ */
+function cf7a_get_mail_meta( $tag ) {
+	return is_string( $tag ) ? substr( $tag, 2, - 2 ) : '';
+}
+
+
+/**
+ * If the message tag contains a space, it's a multiple meta tag,
+ * so split it up and return the value of the meta tag
+ *
+ * @param array  $posted_data The form data array.
+ * @param string $message_tag The tag of the field you want to retrieve.
+ *
+ * @return string|false the field requested
+ */
+function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_patter = '] [' ) {
+	if ( strpos( $message_tag, $explode_patter ) !== false ) {
+		$message = '';
+		foreach ( explode( $explode_patter, $message_tag ) as $message_tag_chunk ) {
+			$tag_chunk = sanitize_title( $message_tag_chunk );
+			if ( ! empty( $posted_data[ $tag_chunk ] ) ) {
+				$message .= sanitize_title( $tag_chunk ) . ': ' . sanitize_textarea_field( $posted_data[ $tag_chunk ] ) . "\r\n";
+			}
+		}
+		return $message;
+	} else {
+		return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : false;
 	}
 }
