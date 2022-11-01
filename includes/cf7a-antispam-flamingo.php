@@ -126,7 +126,7 @@ class CF7_AntiSpam_Flamingo {
 
 						cf7a_log(
 							CF7ANTISPAM_LOG_PREFIX . sprintf(
-							/* translators: %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email */
+							/* translators: %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email (like 0.6/1) */
 								__( 'b8 has learned this e-mail from %1$s was %2$s - score before/after: %3$f/%4$f', 'cf7-antispam' ),
 								$flamingo_post->from_email,
 								$action,
