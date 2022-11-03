@@ -45,8 +45,8 @@ $ wp-env start
 Special Thanks
 --------------
 
-Tobias Leupold - b8 https://nasauber.de/opensource/b8/, https://gitlab.com/l3u/b8/
+[Tobias Leupold](https://github.com/l3u) - [b8](https://gitlab.com/l3u/b8/) https://nasauber.de/opensource/b8/
 
-Takayuki Miyoshi - [Contact Form 7](https://wordpress.org/plugins/contact-form-7/), [Flamingo](https://wordpress.org/plugins/flamingo/)  
+[Takayuki Miyoshi](https://github.com/takayukister) - [Contact Form 7](https://wordpress.org/plugins/contact-form-7/), [Flamingo](https://wordpress.org/plugins/flamingo/)  
 
 This project is tested with BrowserStack. [Browserstack](https://www.browserstack.com/)
