@@ -8,6 +8,8 @@
     "admin/*",
     "includes/*",
     "vendor/*",
+    "languages/cf7-antispam.pot",
+    "languages/readme.txt",
     "cf7-antispam.php",
     "LICENSE",
     "readme.txt"

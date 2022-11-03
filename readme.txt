@@ -57,8 +57,8 @@ The purpose of this word collecting is to build a dictionary used for the spam d
 4. The configuration page for this plugin is located in the submenu "Antispam" under the Contact Form 7 menu
 
 ==Support==
-Community support via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
-Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
+Community support: via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
+Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 
 = Contribute =
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
@@ -249,7 +249,6 @@ See the LICENSE file for more details.
 
 == Special thanks ==
 This project is tested with BrowserStack. [Browserstack](https://www.browserstack.com/)
-All the users involved in translation and testing
 
 == MaxMind GeoIP2 ==
 This plugin on demand can enable GeoLite2 created by MaxMind, available from [https://www.maxmind.com](https://www.maxmind.com)
