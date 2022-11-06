@@ -325,6 +325,65 @@ class CF7_AntiSpam_Frontend {
 	}
 
 	/**
+	 * It disables the XML-RPC protocol and the REST API endpoints for users
+	 *
+	 */
+	public function cf7a_protect_user() {
+		/* disables the XML-RPC */
+		add_filter( 'xmlrpc_enabled', '__return_false' );
+
+		/**
+		 * Remove Rest user endpoints
+		 * @return array $endpoints the value of the variable $endpoints.
+		 */
+		if (!is_user_logged_in()) add_filter('rest_endpoints', function($endpoints) {
+			if ( isset( $endpoints['/wp/v2/users'] ) ) {
+				unset( $endpoints['/wp/v2/users'] );
+			}
+			if ( isset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] ) ) {
+				unset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
+			}
+			return $endpoints;
+		});
+	}
+
+	/**
+	 * It removes the WordPress version from the header, removes the REST API link from the header, removes the X-Pingback
+	 * header, removes the X-Powered-By header, and adds a random server header
+	 *
+	 * @param array $headers The headers array that is passed to the function.
+	 *
+	 * @return array The headers are being returned.
+	 */
+	public function cf7a_protect_wp($headers) {
+
+		// remove version number (WordPress/WooCommerce)
+		remove_action( 'wp_head', 'wp_generator' );
+		remove_action('wp_head', 'woo_version');
+
+		remove_action( 'wp_head', 'rest_output_link_wp_head');
+		remove_action( 'template_redirect', 'rest_output_link_header', 20);
+
+		unset( $headers['X-Pingback'] );
+		unset( $headers['X-Powered-By'] );
+
+		if ( empty( $headers['X-Frame-Options'] )) {
+			$headers['X-Frame-Options'] = 'SAMEORIGIN';
+		}
+		if ( empty( $headers['X-Content-Type-Options'] )) {
+			$headers['X-Content-Type-Options'] = 'nosniff';
+		}
+		if ( empty( $headers['X-XSS-Protection'] )) {
+			$headers['X-XSS-Protection'] = '1; mode=block';
+		}
+		if ( empty( $headers['Strict-Transport-Security'] )) {
+			$headers['Strict-Transport-Security'] = 'max-age=31536000';
+		}
+
+		return $headers;
+	}
+
+	/**
 	 * Register the JavaScript for the admin area.
 	 *
 	 * @since    0.1.0
