@@ -4,16 +4,16 @@ Tags: anti-spam, antispam, mail, blacklist, form, security, honeypot, geoip,
 Requires at least: 5.4
 Tested up to: 6.1
 Requires PHP: 5.6
-Stable tag: 0.4.2
+Stable tag: 0.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 
 == Description ==
-Antispam for Contact Form 7 is a free plugin for Contact Form 7, that without boring you with configurations, block bots from flood your email inbox.
-CF7A use several in and off page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called B8.
-CF7-AntiSpam adds some functionalities also to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such a dashboard widget or a function to resend emails.
+Antispam for Contact Form 7 is a free plugin for Contact Form 7 that blocks bots from flooding your mailbox, without tedious configuration and without captcha for the user (which cause loss of conversions and sometimes block real users).
+To do this we use various in and off page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called B8.
+CF7-AntiSpam adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such a dashboard widget or a function to resend emails.
 
 == SETUP ==
 **Basic** - install & go! no action required to get the standard protection. In this case only some protections may be enabled like fingerprinting, language checks and honeypots.
@@ -25,15 +25,23 @@ This is **required for advanced text statistical analysis**, without this B8 fil
 ✅ Browser Fingerprinting
 ✅ Language checks (Geo-ip, http headers and browser - crosschecked)
 ✅ Honeypot
-✅ Honeyform*
+⚗ Honeyform*
 ✅ DNS Blacklists
 ✅ Blacklists (with automatic ban after N failed attempts, user defined ip exclusion list)
 ✅ Hidden fields with encrypted unique hash
 ✅ Time elapsed (with min/max values)
 ✅ Prohibited words in message/email and user agent
 ✅ B8 statistical "Bayesian" spam filter
+🆕 Identity protection
 
 But why are there so many tests? Because there are so many types of bots, e.g. the phantom-based bot fails with fingerprinting but is clever with honeypots or the python-written bot fails honeypots but is proficient with metadata forgery!
+
+==B8 statistical "Bayesian" Filter==
+Originally created by [Gary Robinson](https://en.wikipedia.org/wiki/Gary_Robinson) [b8 is a statistical "Bayesian"](https://www.linuxjournal.com/article/6467) spam filter implemented in PHP.
+The filter tells you whether a text is spam or not, using statistical text analysis. What it does is: you give b8 a text and it returns a value between 0 and 1, saying it's ham when it's near 0 and saying it's spam when it's near 1.
+To be able to distinguish spam and ham (non-spam), b8 first has to learn some spam and some ham texts. If it makes mistakes when classifying unknown texts or the result is not distinct enough, b8 can be told what the text actually is, getting better with each learned text.
+This takes place on your own server without relying on third-party services.
+More info: [nasauber.de](https://nasauber.de/opensource/b8/)
 
 ==Install Flamingo to unlock the spam manager!==
 Not using Flamingo? well I suggest you to install it, even if it is not essential. In this way from your wordpress installation you will be able to review emails and "re-teach" B8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
@@ -44,6 +52,12 @@ Notes:
 - if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
 - Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the B8 algorithm will be auto-trained
 - Don't delete a spam message from ham if you receive it, rather put it in spam to teach B8 how to recognise the difference!
+
+=Identity protection=
+To fully protect the forms, it may be necessary to add a couple of additional controls, because bots use the public data of the website to attack it.
+- The first is user related and denies those who are not logged in the possibility of asking (sensitive) information about the user via wp-api and the protection for the xmlrpc exploit wordpress.
+- The second one is the WordPress protection that will obfuscate sensitive WordPress and server data, adding some headers in order to enhance security against xss and so on.
+Will be hidden the WordPress and woocommerce version (wp_generator, woo_version), pingback (X-Pingback), server (nginx|apache|...) and php version (X-Powered-By), enabled xss protection headers (X-XSS-Protection), removes rest api link from header (but it will only continue to work if the link is not made public).
 
 == Privacy Notices ==
 AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
@@ -57,8 +71,8 @@ The purpose of this word collecting is to build a dictionary used for the spam d
 4. The configuration page for this plugin is located in the submenu "Antispam" under the Contact Form 7 menu
 
 ==Support==
-Community support via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
-Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
+Community support: via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
+Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 
 = Contribute =
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
@@ -126,6 +140,11 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.4.3 =
+* User enumeration protection
+* Xmlrpc bruteforce protection
+* Http headers obfuscation
 
 = 0.4.2 =
 * Dashboard widget updated (adds a new filter 'cf7a_dashboard_max_mail_count' to limit the maximum value of displayed mail, default 25)

@@ -357,7 +357,7 @@ class CF7_AntiSpam_Frontend {
 	 */
 	public function cf7a_protect_wp($headers) {
 
-		// remove version number (WordPress/WooCommerce)
+		/* removes version number (WordPress/WooCommerce) */
 		remove_action( 'wp_head', 'wp_generator' );
 		remove_action('wp_head', 'woo_version');
 
