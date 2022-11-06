@@ -34,7 +34,15 @@ This is **required for advanced text statistical analysis**, without this B8 fil
 ✅ B8 statistical "Bayesian" spam filter
 🆕 Identity protection
 
-But why are there so many tests? Because there are so many types of bots, e.g. the phantom-based bot fails with fingerprinting but is clever with honeypots or the python-written bot fails honeypots but is proficient with metadata forgery!
+==Extends Flamingo and turns it into a spam manager!==
+In this way you will be able to review emails and "teach" to B8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
+And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation (or checkuot advanced options "rebuild dictionary").
+While activating CF7A all previous collected mail will be parsed and B8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
+Notes:
+- On the right side of Flamingo inbound page I've added a new column that show the mail spamminess level
+- if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
+- Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the B8 algorithm will be auto-trained
+- Don't delete a spam message from ham if you receive it, rather put it in spam to teach B8 how to recognise the difference!
 
 ==B8 statistical "Bayesian" Filter==
 Originally created by [Gary Robinson](https://en.wikipedia.org/wiki/Gary_Robinson) [b8 is a statistical "Bayesian"](https://www.linuxjournal.com/article/6467) spam filter implemented in PHP.
@@ -42,16 +50,6 @@ The filter tells you whether a text is spam or not, using statistical text analy
 To be able to distinguish spam and ham (non-spam), b8 first has to learn some spam and some ham texts. If it makes mistakes when classifying unknown texts or the result is not distinct enough, b8 can be told what the text actually is, getting better with each learned text.
 This takes place on your own server without relying on third-party services.
 More info: [nasauber.de](https://nasauber.de/opensource/b8/)
-
-==Install Flamingo to unlock the spam manager!==
-Not using Flamingo? well I suggest you to install it, even if it is not essential. In this way from your wordpress installation you will be able to review emails and "re-teach" B8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
-And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation.
-While activating CF7A all previous collected mail will be parsed and B8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
-Notes:
-- On the right side of Flamingo inbound page I've added a new column that show the mail spamminess level
-- if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
-- Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the B8 algorithm will be auto-trained
-- Don't delete a spam message from ham if you receive it, rather put it in spam to teach B8 how to recognise the difference!
 
 =Identity protection=
 To fully protect the forms, it may be necessary to add a couple of additional controls, because bots use the public data of the website to attack it.
@@ -93,6 +91,12 @@ if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antisp
 =Will I finally be 100% protected from spam?=
 
 NO, nobody can guarantee that, and anyone who tells you that is lying. But luckily, bots are limited by the fact that they don't use a real browser and they use fairly repetitive routes which can be recognised.
+
+=Why are there so many antispam-tests?=
+
+Because there are so many types of bots in this way detect them all!
+
+Phantom-based bots fail with fingerprinting but are proficient with honeypots, while bots written in python fail with honeypots but are proficient with metadata forgery!
 
 =How spam score works=
 
