@@ -57,7 +57,8 @@ class CF7_AntiSpam_Frontend {
 		try {
 			$html = new DOMDocument( '1.0', 'UTF-8' );
 			libxml_use_internal_errors( true );
-			$html->loadHTML( $form_elements, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+			// mb_convert_encoding is needed for non-latin font sets / LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD avoids auto-fixes for corrupted html code
+			$html->loadHTML( mb_convert_encoding($form_elements, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 			$xpath  = new DOMXpath( $html );
 			$inputs = $xpath->query( '//input' );
 
