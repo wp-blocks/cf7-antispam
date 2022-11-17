@@ -58,7 +58,7 @@ class CF7_AntiSpam_Frontend {
 			$html = new DOMDocument( '1.0', 'UTF-8' );
 			libxml_use_internal_errors( true );
 			// mb_convert_encoding is needed for non-latin font sets / LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD avoids auto-fixes for corrupted html code
-			$html->loadHTML( mb_convert_encoding($form_elements, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+			$html->loadHTML( mb_convert_encoding( $form_elements, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 			$xpath  = new DOMXpath( $html );
 			$inputs = $xpath->query( '//input' );
 
@@ -74,6 +74,16 @@ class CF7_AntiSpam_Frontend {
 		$options     = get_option( 'cf7a_options', array() );
 		$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
 		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
+		/**
+		 * Controls the maximum number of honeypots.
+		 *
+		 * @example add_filter( 'cf7a_additional_max_honeypots', function() {return 42});
+		 *
+		 * @returns int $max_replacements - replacement count number
+		 *
+		 * @since 0.4.3
+		 */
+		$max_replacements = intval( apply_filters( 'cf7a_additional_max_honeypots', 5 ) );
 
 		/* get the inputs data */
 		if ( $inputs && $inputs->length > 0 ) {
@@ -102,7 +112,7 @@ class CF7_AntiSpam_Frontend {
 					/* duplicate the inputs into honeypots */
 					$parent->insertBefore( $clone, $sibling );
 
-					if ( $i > 0 ) {
+					if ( $i > $max_replacements ) {
 						return $html->saveHTML();
 					}
 				}
