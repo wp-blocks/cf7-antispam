@@ -965,7 +965,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* auto-unban delay */
 		$schedule = wp_get_schedules();
-		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array_keys( $schedule ) ) ) {
+		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array_keys( $schedule ), true ) ) {
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
 				/* delete previous scheduled events */
