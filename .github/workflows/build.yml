@@ -32,3 +32,26 @@ jobs:
         with:
           reporter: github-check
           eslint_flags: -c .eslintrc.js --ext .js --fix admin/src/ includes/src/
+
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup environment to use the desired version of NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+
+      - name: Installing NPM dependencies
+        run: npm install
+
+      - name: Starting the WordPress Environment
+        run: npm run wp-env start
+
+      - name: Running the tests
+        run: npm run test:e2e

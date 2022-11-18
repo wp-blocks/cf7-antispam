@@ -1,6 +1,6 @@
 === AntiSpam for Contact Form 7 ===
 Contributors: codekraft
-Tags: anti-spam, antispam, bot, mail, blacklist, form, security
+Tags: anti-spam, antispam, mail, blacklist, form, security, honeypot, geoip,
 Requires at least: 5.4
 Tested up to: 6.1
 Requires PHP: 5.6
@@ -16,7 +16,7 @@ CF7A use several in and off page bots traps and an auto-learning mechanism based
 CF7-AntiSpam adds some functionalities also to [Flamingo](https://wordpress.org/plugins/flamingo/): if both are installed Flamingo will be used as interface for the antispam system and some convenient features will be added, such a dashboard widget or a function to resend emails.
 
 == SETUP ==
-**Basic** - install & go! no action required to get the standard protection.
+**Basic** - install & go! no action required to get the standard protection. In this case only some protections may be enabled like fingerprinting, language checks and honeypots.
 **Advanced** - CF7A needs to parse the input message field of your form to analyze properly the email content with its dictionary.
 So the only thing you need to do is add to (for each contact form) 'flamingo_message: "[your-message]"' in the same way you do for [flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/).
 This is **required for advanced text statistical analysis**, without this B8 filter will couldn't be enabled.
@@ -57,8 +57,8 @@ The purpose of this word collecting is to build a dictionary used for the spam d
 4. The configuration page for this plugin is located in the submenu "Antispam" under the Contact Form 7 menu
 
 ==Support==
-Community support via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
-Open an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
+Community support: via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
+Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 
 = Contribute =
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
@@ -72,47 +72,7 @@ We use GitHub to host code, to track issues and feature requests, as well as acc
 By contributing, you agree that your contributions will be licensed under its GPLv2 License.
 
 My goal is to create an antispam that protects cf7 definitively without relying on external services. And free for everyone.
-if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antispam) is the right place ;)
-
-== Filters ==
-
-Before processing the email
-`add_filter('cf7a_message_before_processing', 'my_message_before_processing', 10, 2 );`
-provides  $message, $posted_data
-`$message` -  the mail message content
-`$submission` - the email metadata
-
-Before processing the email with bayesian filter
-`add_filter('cf7a_before_b8', 'my_before_b8', 10, 3 );`
-provides  $spam, $message, $submission
-`$spam` - true if the mail was detected as spam
-`$message` - the mail message content
-`$submission`  - the mail message submission instance
-
-Add your own spam filter
-`add_filter('cf7a_additional_spam_filters', 'my_additional_spam_filters', 10, 3 );`
-provides  $spam, $message, $submission
-same as the previous filter
-
-Add some content when resending a mail (useful to add a message like "this was spammed" or the original mail date/time)
-`add_filter('cf7a_before_resend_email', 'my_before_resend_email', 10, 3 );`
-provides  $body, $sender, $subject
-`$body` - the mail body
-`$sender` - the mail sender
-`$subject` - the mail subject
-
-== DEBUG ==
-
-Enable **debug mode** (wp-debug has to be enabled)
-- verbose mode
-- prints email analysis results into log
-`define( 'CF7ANTISPAM_DEBUG', true);`
-
-Enable **extended debug mode** (need "CF7ANTISPAM_DEBUG" to be enabled)
-- disable autoban
-- enable advanced logging (the result of each test for each email)
-if you uninstall this plugin with this option is enabled the cf7 options and the cf7 words database used by B8 will not be deleted. (Use it if you know what you are doing, because this way you do not delete/reset options and vocabulary)
-`define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
+if you want to help me, [GitHub](https://github.com/erikyo/contact-form-7-antispam) is the right place 😉
 
 == Frequently Asked Questions ==
 
@@ -144,6 +104,27 @@ After that the sender ip will be searched into *DNS-based Black-hole server* to 
 
 B8 cuts the text to classify to pieces, extracting stuff like email addresses, links and HTML tags and of course normal words. For each such token, it calculates a single probability for a text containing it being spam, based on what the filter has learned so far. B8 is a free software form Tobias Leupold, who I thank for making it available to everyone.
 
+=Filters=
+
+Before processing the email - `add_filter('cf7a_message_before_processing', 'my_message_before_processing', 10, 2 );`
+
+Before processing the email with bayesian filter `add_filter('cf7a_before_b8', 'my_before_b8', 10, 3 );`
+
+Add your own spam filter `add_filter('cf7a_additional_spam_filters', 'my_additional_spam_filters', 10, 3 );`
+
+Add some content when resending a mail (useful to add a message like "this was spammed" or the original mail date/time) `add_filter('cf7a_before_resend_email', 'my_before_resend_email', 10, 3 );`
+
+=DEBUG=
+
+`define( 'CF7ANTISPAM_DEBUG', true);`
+
+Enables **debug mode** (wp-debug has to be enabled) - verbose mode, prints email analysis results into wp-content/debug.log
+
+`define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
+
+Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable autoban, enable advanced logging, when you uninstall the plugin, the word database, blacklist and options are not deleted.
+
+
 == Changelog ==
 
 = 0.4.2 =
@@ -152,6 +133,7 @@ B8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 * Displays a random security tip at the top of cf7-antispam settings
 * Standalone geoip check (previously it was mandatory to enable the language checks in order to enable geo-ip)
 * Under certain conditions an automatic ban is carried out and the e-mail is not processed to avoid unnecessary consumption of resources
+* German translation - thanks to @fhwebdesign and @senjoralfonso
 
 = 0.4.1 =
 * Honeyform updated and enhanced
@@ -162,7 +144,7 @@ B8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 * Adds geoip antispam filter
 * Updated dashboard widget
 * Updated settings and frontend scripts
-* Improved honeypot (fixes 2 bugs)
+* Improved honeypot (thanks to @theadam123 for feedbacks/testing)
 
 = 0.3.0 =
 * Dashboard widget to display the email received of the last week
@@ -257,7 +239,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the LICENSE file for more details.
 
-== Resources ==
+= Resources =
 * Contact Form 7 and Flamingo © 2021 Takayuki Miyoshi,[LGPLv3 or later](https://it.wordpress.org/plugins/contact-form-7/)
 * B8 https://nasauber.de/opensource/b8/, © 2021 Tobias Leupold, [LGPLv3 or later](https://gitlab.com/l3u/b8/-/tree/ab26daa6b293e6aa059d24ce7cf77af6c8b9b052/LICENSES)
 * GeoLite2 [license](https://www.maxmind.com/en/geolite2/eula)
@@ -286,8 +268,8 @@ While enabled you may **have to mention it in the privacy policy** of your site,
 * bl.ipv6.spameatingmonkey.net [spameatingmonkey.net](https://spameatingmonkey.com/faq)
 
 == Inspirations, links ==
-* Alexander Romanov [Bot detection page](bot.sannysoft.com)
 * Nikolai Tschacher [incolumitas.com](https://incolumitas.com/pages/BotOrNot/)
+* Antoine Vastel [fp-scanner](https://github.com/antoinevastel/fpscanner)/[fp-collect](https://github.com/antoinevastel/fp-collect)
 * Niespodd [niespodd](https://github.com/niespodd/browser-fingerprinting)
 * Thomas Breuss [tbreuss](https://gist.github.com/tbreuss/74da96ff5f976ce770e6628badbd7dfc)
 * Domain Name System-based blackhole list [wiki](https://en.wikipedia.org/wiki/Domain_Name_System-based_blackhole_list)

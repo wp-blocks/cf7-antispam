@@ -426,8 +426,8 @@ class CF7_AntiSpam_Filters {
 			if ( $ip_data_status >= $max_attemps ) {
 
 				++ $spam_score;
-				$spam                  = true;
-				$reason['blacklisted'] = "Score: $spam_score";
+				$spam                        = true;
+				$reason['blacklisted score'] = $ip_data_status + $spam_score;
 
 				cf7a_log( "The $remote_ip is already blacklisted, status $ip_data_status", 1 );
 
