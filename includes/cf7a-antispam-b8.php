@@ -1,5 +1,16 @@
 <?php
+/**
+ * B8 related functions
+ *
+ * @since      0.0.1
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/includes
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
+/**
+ * It's a class that interface the plugin with b8
+ */
 class CF7_AntiSpam_B8 {
 
 	/**
@@ -7,7 +18,7 @@ class CF7_AntiSpam_B8 {
 	 *
 	 * @since    0.4.0
 	 * @access   private
-	 * @var      string $b8 the b8 filter
+	 * @var      b8\b8|false|string $b8 the b8 filter
 	 */
 	private $b8;
 

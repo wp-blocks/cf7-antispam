@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The core plugin class.
  *
@@ -9,10 +8,15 @@
  * Also maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  *
- * @since      1.0.0
+ * @since      0.0.1
  * @package    CF7_AntiSpam
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
+ */
+
+/**
+ * It sets the version, plugin name, and options. It loads
+ * the dependencies, sets the locale, updates the plugin, and loads the admin and frontend areas
  */
 class CF7_AntiSpam {
 
@@ -305,14 +309,12 @@ class CF7_AntiSpam {
 				$this->loader->add_filter( 'the_content', $plugin_frontend, 'cf7a_honeyform', 99 );
 			}
 
-			/* Checking if the user has selected the option to protect the user's identity. If they have, it will call the function
-			to protect the user's identity. */
+			/* Checking if the user has selected the option to protect the user's identity. If they have, it will call the function to protect the user's identity. */
 			if ( isset( $this->options['identity_protection_user'] ) && intval( $this->options['identity_protection_user'] ) === 1 ) {
 				$plugin_frontend->cf7a_protect_user();
 			}
 
-			/* It removes the WordPress version from the header, removes the REST API link from the header,
-			removes headers that disposes information */
+			/* It removes the WordPress version from the header, removes the REST API link from the header, removes headers that disposes information */
 			if ( isset( $this->options['identity_protection_wp'] ) && intval( $this->options['identity_protection_wp'] ) === 1 ) {
 				$this->loader->add_filter( 'wp_headers', $plugin_frontend, 'cf7a_protect_wp', 999 );
 			}

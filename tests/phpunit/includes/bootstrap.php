@@ -18,7 +18,7 @@ define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', __DIR__ . '/../../../vendor/yoast/php
 require_once $tests_dir . '/includes/functions.php';
 
 function manually_load_plugin() {
-	require_once dirname( __DIR__ ) . '/cf7-antispam.php';
+	require_once __DIR__ . '/../../../cf7-antispam.php';
 }
 tests_add_filter( 'plugins_loaded', 'manually_load_plugin' );
 

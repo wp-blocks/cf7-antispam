@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -9,6 +8,10 @@
  * @package    CF7_AntiSpam
  * @subpackage CF7_AntiSpam/admin
  * @author     Codekraft Studio <info@codekraft.it>
+ */
+
+/**
+ * It creates a class called CF7_AntiSpam_Admin.
  */
 class CF7_AntiSpam_Admin {
 

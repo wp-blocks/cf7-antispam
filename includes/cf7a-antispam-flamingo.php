@@ -1,5 +1,16 @@
 <?php
+/**
+ * Flamingo related functions.
+ *
+ * @since      0.0.1
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/includes
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
+/**
+ * A class that is used to connect this plugin with Flamingo
+ */
 class CF7_AntiSpam_Flamingo {
 
 	/**

@@ -1,5 +1,15 @@
 <?php
+/**
+ * The plugin notices and ui stuff.
+ *
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/admin_display
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
+/**
+ * Calling the plugin display class.
+ */
 class CF7_AntiSpam_Admin_Display {
 
 	/**
@@ -11,6 +21,10 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private $options;
 
+
+	/**
+	 * Init the class and get the options stored in the database.
+	 */
 	public function __construct() {
 
 		$this->options = CF7_AntiSpam::get_options();

@@ -1,5 +1,16 @@
 <?php
+/**
+ * Front face related stuff
+ *
+ * @since      0.0.1
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/includes
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
+/**
+ * A class that handles front end related function
+ */
 class CF7_AntiSpam_Frontend {
 
 	/**
@@ -45,8 +56,7 @@ class CF7_AntiSpam_Frontend {
 	}
 
 	/**
-	 * It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to
-	 * the form
+	 * It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to the form
 	 *
 	 * @param string $form_elements - The form elements html.
 	 *
@@ -57,7 +67,9 @@ class CF7_AntiSpam_Frontend {
 		try {
 			$html = new DOMDocument( '1.0', 'UTF-8' );
 			libxml_use_internal_errors( true );
-			// mb_convert_encoding is needed for non-latin font sets / LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD avoids auto-fixes for corrupted html code
+			/**
+			 * The 'mb_convert_encoding' is needed for non-latin font sets / LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD avoids auto-fixes for corrupted html code
+			 */
 			$html->loadHTML( mb_convert_encoding( $form_elements, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 			$xpath  = new DOMXpath( $html );
 			$inputs = $xpath->query( '//input' );
@@ -337,7 +349,6 @@ class CF7_AntiSpam_Frontend {
 
 	/**
 	 * It disables the XML-RPC protocol and the REST API endpoints for users
-	 *
 	 */
 	public function cf7a_protect_user() {
 		/* disables the XML-RPC */
@@ -345,17 +356,23 @@ class CF7_AntiSpam_Frontend {
 
 		/**
 		 * Remove Rest user endpoints
+		 *
 		 * @return array $endpoints the value of the variable $endpoints.
 		 */
-		if (!is_user_logged_in()) add_filter('rest_endpoints', function($endpoints) {
-			if ( isset( $endpoints['/wp/v2/users'] ) ) {
-				unset( $endpoints['/wp/v2/users'] );
-			}
-			if ( isset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] ) ) {
-				unset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
-			}
-			return $endpoints;
-		});
+		if ( ! is_user_logged_in() ) {
+			add_filter(
+				'rest_endpoints',
+				function( $endpoints ) {
+					if ( isset( $endpoints['/wp/v2/users'] ) ) {
+						unset( $endpoints['/wp/v2/users'] );
+					}
+					if ( isset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] ) ) {
+						unset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
+					}
+					return $endpoints;
+				}
+			);
+		}
 	}
 
 	/**
@@ -366,28 +383,28 @@ class CF7_AntiSpam_Frontend {
 	 *
 	 * @return array The headers are being returned.
 	 */
-	public function cf7a_protect_wp($headers) {
+	public function cf7a_protect_wp( $headers ) {
 
 		/* removes version number (WordPress/WooCommerce) */
 		remove_action( 'wp_head', 'wp_generator' );
-		remove_action('wp_head', 'woo_version');
+		remove_action( 'wp_head', 'woo_version' );
 
-		remove_action( 'wp_head', 'rest_output_link_wp_head');
-		remove_action( 'template_redirect', 'rest_output_link_header', 20);
+		remove_action( 'wp_head', 'rest_output_link_wp_head' );
+		remove_action( 'template_redirect', 'rest_output_link_header', 20 );
 
 		unset( $headers['X-Pingback'] );
 		unset( $headers['X-Powered-By'] );
 
-		if ( empty( $headers['X-Frame-Options'] )) {
+		if ( empty( $headers['X-Frame-Options'] ) ) {
 			$headers['X-Frame-Options'] = 'SAMEORIGIN';
 		}
-		if ( empty( $headers['X-Content-Type-Options'] )) {
+		if ( empty( $headers['X-Content-Type-Options'] ) ) {
 			$headers['X-Content-Type-Options'] = 'nosniff';
 		}
-		if ( empty( $headers['X-XSS-Protection'] )) {
+		if ( empty( $headers['X-XSS-Protection'] ) ) {
 			$headers['X-XSS-Protection'] = '1; mode=block';
 		}
-		if ( empty( $headers['Strict-Transport-Security'] )) {
+		if ( empty( $headers['Strict-Transport-Security'] ) ) {
 			$headers['Strict-Transport-Security'] = 'max-age=31536000';
 		}
 

@@ -1,5 +1,16 @@
 <?php
+/**
+ * Antispam functions.
+ *
+ * @since      0.0.1
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/includes
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
+/**
+ * A class that is used to filter out spam.
+ */
 class CF7_AntiSpam_Filters {
 
 	/**
@@ -889,10 +900,9 @@ class CF7_AntiSpam_Filters {
 		/**
 		 * B8 is a statistical "Bayesian" spam filter
 		 * https://nasauber.de/opensource/b8/
-		 *
-		 * @var string $text the escaped version of message
 		 */
 		$text = stripslashes( $message );
+		\assert( \is_string( $text ) );
 
 		if ( $options['enable_b8'] && $message && ! isset( $reason['blacklisted'] ) ) {
 

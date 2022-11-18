@@ -1,4 +1,12 @@
 <?php
+/**
+ * Geoip related functions.
+ *
+ * @since      0.0.1
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/includes
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
 use GeoIp2\Database\Reader;
 
@@ -90,7 +98,7 @@ class CF7_Antispam_Geoip {
 
 	/**
 	 *
-	 * if the zlib or phar extensions are loaded, the geo-ip can be enabled, return true and otherwise return false
+	 * If the zlib or phar extensions are loaded, the geo-ip can be enabled, return true and otherwise return false
 	 *
 	 * @return bool true geo-ip can be enabled
 	 */

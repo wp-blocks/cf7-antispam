@@ -1,4 +1,15 @@
 <?php
+/**
+ * The plugin settings.
+ *
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/admin_customizations
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
+
+/**
+ * Calling the plugin setting class.
+ */
 class CF7_AntiSpam_Admin_Customizations {
 
 
@@ -453,7 +464,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* identity_protection position */
 		add_settings_field(
 			'identity_protection_wp',
-			__( 'Enforce Wordpress protection', 'cf7-antispam' ),
+			__( 'Enforce WordPress protection', 'cf7-antispam' ),
 			array( $this, 'cf7a_identity_protection_wp_callback' ),
 			'cf7a-settings',
 			'cf7a_identity_protection'
@@ -634,36 +645,25 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return string a random tip from the array of tips.
 	 */
 	public function cf7a_get_a_random_tip() {
-		$tips_wpkses_format = array(
-			'a' => array(
-				'href'   => array(),
-				'target' => array(),
-			),
-		);
+
 		$tips               = array(
-			esc_html__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
-			esc_html__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
-			wp_kses(
-				sprintf(
-					/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
-					'%s <a href="%s" target="_blank">%s</a>',
-					esc_html__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
-					trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
-					esc_html__( 'Give a try', 'cf7-antispam' )
-				),
-				$tips_wpkses_format
+			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
+			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
+			sprintf(
+				/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
+				'%s <a href="%s" target="_blank">%s</a>',
+				__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
+				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
+				__( 'Give a try', 'cf7-antispam' )
 			),
-			wp_kses(
-				sprintf(
-					/* translators: %s is the link to Flamingo documentation. */
-					"%s <a href='%s' target='_blank'>%s</a>. %s",
-					esc_html__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
-					esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
-					esc_html__( 'fields with multiple tags', 'cf7-antispam' ),
-					esc_html__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
-				),
-				$tips_wpkses_format
-			),
+			sprintf(
+				/* translators: %s is the link to Flamingo documentation. */
+				"%s <a href='%s' target='_blank'>%s</a>. %s",
+				__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
+				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
+				__( 'fields with multiple tags', 'cf7-antispam' ),
+				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
+			)
 		);
 
 		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
@@ -676,11 +676,21 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * TODO: some random tips to protect the website like don't use as page title "contacts" an so on
 	 */
 	public function cf7a_print_section_main_subtitle() {
+		$tips_wpkses_format = array(
+			'a' => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+		);
+
 		printf(
 			'<p>%s</p><div class="cf7a-tip"><p><strong>💡 %s</strong> %s</p></div>',
 			esc_html__( 'For most cases the following settings are fine, but you can have fun configuring the antispam to achieve the level of protection you prefer!', 'cf7-antispam' ),
 			esc_html__( 'Tip:', 'cf7-antispam' ),
-			self::cf7a_get_a_random_tip()
+			wp_kses(
+				self::cf7a_get_a_random_tip(),
+				$tips_wpkses_format
+			)
 		);
 	}
 
@@ -791,7 +801,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the user protection info text */
 	public function cf7a_print_identity_protection() {
-		printf( '<p>%s</p>', esc_html__( "After monitoring and analysing some bots, I noticed that it is necessary to block the way bots collect (user) data from the website, otherwise protecting the form may have no effect. This also blocks some registrations, spam comments and other attacks", 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( 'After monitoring and analysing some bots, I noticed that it is necessary to block the way bots collect (user) data from the website, otherwise protecting the form may have no effect. This also blocks some registrations, spam comments and other attacks', 'cf7-antispam' ) );
 	}
 
 	/** It prints the b8 info text */
@@ -1039,7 +1049,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* honeyform */
 		$new_input['identity_protection_user'] = isset( $input['identity_protection_user'] ) ? 1 : 0;
-		$new_input['identity_protection_wp'] = isset( $input['identity_protection_wp'] ) ? 1 : 0;
+		$new_input['identity_protection_wp']   = isset( $input['identity_protection_wp'] ) ? 1 : 0;
 
 		/* b8 */
 		$new_input['enable_b8']    = isset( $input['enable_b8'] ) ? 1 : 0;
@@ -1198,7 +1208,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_time_max_callback() {
 		printf(
 			'<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />',
-			! empty( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : YEAR_IN_SECONDS
+			! empty( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : intval( YEAR_IN_SECONDS )
 		);
 	}
 
@@ -1225,7 +1235,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>',
 			empty( $this->options['geoip_dbkey'] ) ? '' : 'value="' . esc_attr( $this->options['geoip_dbkey'] ) . '"',
 			// phpcs:ignore WordPress.Security.EscapeOutput
-			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="' . esc_html__( 'KEY provided' ) . '"'
+			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="' . esc_attr__( 'KEY provided' ) . '"'
 		);
 	}
 

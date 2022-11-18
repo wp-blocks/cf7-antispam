@@ -1,10 +1,19 @@
 <?php
+/**
+ * Some utility function used alongside the plugin
+ *
+ * @link       codekraft.it
+ * @since      0.0.1
+ *
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/includes
+ */
 
 /**
  * If the user is behind a proxy, get the IP address from the HTTP_CF_CONNECTING_IP header, otherwise get the IP address
  * from the REMOTE_ADDR header
  *
- * @return mixed|string - the real ip address
+ * @return mixed|string - The real ip address.
  */
 function cf7a_get_real_ip() {
 	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___HTTP_X_FORWARDED_FOR__
@@ -197,9 +206,9 @@ function cf7a_microtime_float() {
 /**
  * It takes three numbers (red, green, and blue) and returns a hexadecimal color code
  *
- * @param int $r red
- * @param int $g green
- * @param int $b blue
+ * @param int $r red.
+ * @param int $g green.
+ * @param int $b blue.
  *
  * @return string A hexadecimal color code.
  */
@@ -299,7 +308,7 @@ function cf7a_compress_array( $array, $is_html = false ) {
  * @param string|array $log_data - The string/array to log.
  * @param numeric      $log_level 0 = log always, 1 = logging, 2 = only extended logging.
  *
- * @return bool|void
+ * @return void
  */
 function cf7a_log( $log_data, $log_level = 0 ) {
 	if ( ! empty( $log_data ) ) {
@@ -334,13 +343,14 @@ function cf7a_get_mail_meta( $tag ) {
  *
  * @param array  $posted_data The form data array.
  * @param string $message_tag The tag of the field you want to retrieve.
+ * @param string $explode_pattern Used to split multiple cf7 user tags .
  *
  * @return string|false the field requested
  */
-function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_patter = '] [' ) {
-	if ( strpos( $message_tag, $explode_patter ) !== false ) {
+function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_pattern = '] [' ) {
+	if ( strpos( $message_tag, $explode_pattern ) !== false ) {
 		$message = '';
-		foreach ( explode( $explode_patter, $message_tag ) as $message_tag_chunk ) {
+		foreach ( explode( $explode_pattern, $message_tag ) as $message_tag_chunk ) {
 			$tag_chunk = sanitize_title( $message_tag_chunk );
 			if ( ! empty( $posted_data[ $tag_chunk ] ) ) {
 				$message .= sanitize_title( $tag_chunk ) . ': ' . sanitize_textarea_field( $posted_data[ $tag_chunk ] ) . "\r\n";

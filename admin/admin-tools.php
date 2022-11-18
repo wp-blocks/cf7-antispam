@@ -1,4 +1,11 @@
 <?php
+/**
+ * The plugin admin tools
+ *
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/admin_tools
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
 /**
  *  It creates a class called CF7_AntiSpam_Admin_Tools.

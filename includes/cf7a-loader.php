@@ -1,10 +1,9 @@
 <?php
-
 /**
  * Register all actions and filters for the plugin
  *
  * @link       codekraft.it
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    CF7_AntiSpam
  * @subpackage CF7_AntiSpam/includes

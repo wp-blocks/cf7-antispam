@@ -4,12 +4,15 @@
  *
  * This class defines all code necessary to run during the plugin's activation.
  *
- * @since      1.0.0
+ * @since      0.0.1
  * @package    CF7_AntiSpam
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
 
+/**
+ * It's a class that activates the plugin.
+ */
 class CF7_AntiSpam_Activator {
 
 	/**

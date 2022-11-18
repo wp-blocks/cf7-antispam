@@ -1,4 +1,12 @@
 <?php
+/**
+ * Fired during Uninstall.
+ *
+ * @since      0.0.1
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/includes
+ * @author     Codekraft Studio <info@codekraft.it>
+ */
 
 /**
  * Fired during plugin deactivation.
