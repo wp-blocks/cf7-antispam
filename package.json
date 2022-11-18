@@ -2,7 +2,7 @@
   "name": "cf7-antispam",
   "author": "Erik Golinelli",
   "license": "GPL-2.0-only",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "AntiSpam for Contact Form 7",
   "files": [
     "admin/*",

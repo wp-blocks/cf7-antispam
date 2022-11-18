@@ -57,7 +57,8 @@ class CF7_AntiSpam_Frontend {
 		try {
 			$html = new DOMDocument( '1.0', 'UTF-8' );
 			libxml_use_internal_errors( true );
-			$html->loadHTML( $form_elements, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+			// mb_convert_encoding is needed for non-latin font sets / LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD avoids auto-fixes for corrupted html code
+			$html->loadHTML( mb_convert_encoding( $form_elements, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 			$xpath  = new DOMXpath( $html );
 			$inputs = $xpath->query( '//input' );
 
@@ -73,6 +74,16 @@ class CF7_AntiSpam_Frontend {
 		$options     = get_option( 'cf7a_options', array() );
 		$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
 		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
+		/**
+		 * Controls the maximum number of honeypots.
+		 *
+		 * @example add_filter( 'cf7a_additional_max_honeypots', function() {return 42});
+		 *
+		 * @returns int $max_replacements - replacement count number
+		 *
+		 * @since 0.4.3
+		 */
+		$max_replacements = intval( apply_filters( 'cf7a_additional_max_honeypots', 5 ) );
 
 		/* get the inputs data */
 		if ( $inputs && $inputs->length > 0 ) {
@@ -101,7 +112,7 @@ class CF7_AntiSpam_Frontend {
 					/* duplicate the inputs into honeypots */
 					$parent->insertBefore( $clone, $sibling );
 
-					if ( $i > 0 ) {
+					if ( $i > $max_replacements ) {
 						return $html->saveHTML();
 					}
 				}
@@ -322,6 +333,65 @@ class CF7_AntiSpam_Frontend {
 				$prefix . 'append_on_submit' => false,
 			)
 		);
+	}
+
+	/**
+	 * It disables the XML-RPC protocol and the REST API endpoints for users
+	 *
+	 */
+	public function cf7a_protect_user() {
+		/* disables the XML-RPC */
+		add_filter( 'xmlrpc_enabled', '__return_false' );
+
+		/**
+		 * Remove Rest user endpoints
+		 * @return array $endpoints the value of the variable $endpoints.
+		 */
+		if (!is_user_logged_in()) add_filter('rest_endpoints', function($endpoints) {
+			if ( isset( $endpoints['/wp/v2/users'] ) ) {
+				unset( $endpoints['/wp/v2/users'] );
+			}
+			if ( isset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] ) ) {
+				unset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
+			}
+			return $endpoints;
+		});
+	}
+
+	/**
+	 * It removes the WordPress version from the header, removes the REST API link from the header, removes the X-Pingback
+	 * header, removes the X-Powered-By header, and adds a random server header
+	 *
+	 * @param array $headers The headers array that is passed to the function.
+	 *
+	 * @return array The headers are being returned.
+	 */
+	public function cf7a_protect_wp($headers) {
+
+		/* removes version number (WordPress/WooCommerce) */
+		remove_action( 'wp_head', 'wp_generator' );
+		remove_action('wp_head', 'woo_version');
+
+		remove_action( 'wp_head', 'rest_output_link_wp_head');
+		remove_action( 'template_redirect', 'rest_output_link_header', 20);
+
+		unset( $headers['X-Pingback'] );
+		unset( $headers['X-Powered-By'] );
+
+		if ( empty( $headers['X-Frame-Options'] )) {
+			$headers['X-Frame-Options'] = 'SAMEORIGIN';
+		}
+		if ( empty( $headers['X-Content-Type-Options'] )) {
+			$headers['X-Content-Type-Options'] = 'nosniff';
+		}
+		if ( empty( $headers['X-XSS-Protection'] )) {
+			$headers['X-XSS-Protection'] = '1; mode=block';
+		}
+		if ( empty( $headers['Strict-Transport-Security'] )) {
+			$headers['Strict-Transport-Security'] = 'max-age=31536000';
+		}
+
+		return $headers;
 	}
 
 	/**

@@ -55,6 +55,8 @@ class CF7_AntiSpam_Activator {
 			'check_refer'                  => true,
 			'check_honeypot'               => true,
 			'check_honeyform'              => false,
+			'identity_protection_user'     => false,
+			'identity_protection_wp'       => false,
 			'enable_geoip_download'        => false,
 			'geoip_dbkey'                  => false,
 			'check_language'               => false,

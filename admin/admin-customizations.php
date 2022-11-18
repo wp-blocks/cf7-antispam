@@ -398,7 +398,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_honeypot'
 		);
 
-		/* DNS Blacklist server list */
+		/* honeypot input name */
 		add_settings_field(
 			'honeypot_input_names',
 			__( 'Name for the honeypots inputs[*]', 'cf7-antispam' ),
@@ -431,6 +431,32 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_honeyform_position_callback' ),
 			'cf7a-settings',
 			'cf7a_honeyform'
+		);
+
+		/* Identity Protection */
+		add_settings_section(
+			'cf7a_identity_protection',
+			__( 'Identity Protection', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_identity_protection' ),
+			'cf7a-settings'
+		);
+
+		/* Enable identity_protection */
+		add_settings_field(
+			'identity_protection_user',
+			__( 'Enforce user protection', 'cf7-antispam' ),
+			array( $this, 'cf7a_identity_protection_user_callback' ),
+			'cf7a-settings',
+			'cf7a_identity_protection'
+		);
+
+		/* identity_protection position */
+		add_settings_field(
+			'identity_protection_wp',
+			__( 'Enforce Wordpress protection', 'cf7-antispam' ),
+			array( $this, 'cf7a_identity_protection_wp_callback' ),
+			'cf7a-settings',
+			'cf7a_identity_protection'
 		);
 
 		/* Section b8 */
@@ -763,6 +789,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf( '<p>%s</p>', esc_html__( "I'm actually going to propose the honey-form for the first time! Instead of serving the bot a form with trap fields we directly serve it a form that is entirely a trap", 'cf7-antispam' ) );
 	}
 
+	/** It prints the user protection info text */
+	public function cf7a_print_identity_protection() {
+		printf( '<p>%s</p>', esc_html__( "After monitoring and analysing some bots, I noticed that it is necessary to block the way bots collect (user) data from the website, otherwise protecting the form may have no effect. This also blocks some registrations, spam comments and other attacks", 'cf7-antispam' ) );
+	}
+
 	/** It prints the b8 info text */
 	public function cf7a_print_b8() {
 		printf( '<p>%s</p>', esc_html__( 'Tells you whether a text is spam or not, using statistical text analysis of the text message', 'cf7-antispam' ) );
@@ -934,7 +965,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* auto-unban delay */
 		$schedule = wp_get_schedules();
-		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array_keys( $schedule ) ) ) {
+		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array_keys( $schedule ), true ) ) {
 			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
 				$new_input['unban_after'] = $input['unban_after'];
 				/* delete previous scheduled events */
@@ -1005,6 +1036,10 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* honeyform */
 		$new_input['check_honeyform']    = isset( $input['check_honeyform'] ) ? 1 : 0;
 		$new_input['honeyform_position'] = ! empty( $input['honeyform_position'] ) ? sanitize_title( $input['honeyform_position'] ) : 'wp_body_open';
+
+		/* honeyform */
+		$new_input['identity_protection_user'] = isset( $input['identity_protection_user'] ) ? 1 : 0;
+		$new_input['identity_protection_wp'] = isset( $input['identity_protection_wp'] ) ? 1 : 0;
 
 		/* b8 */
 		$new_input['enable_b8']    = isset( $input['enable_b8'] ) ? 1 : 0;
@@ -1190,7 +1225,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>',
 			empty( $this->options['geoip_dbkey'] ) ? '' : 'value="' . esc_attr( $this->options['geoip_dbkey'] ) . '"',
 			// phpcs:ignore WordPress.Security.EscapeOutput
-			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="KEY provided"'
+			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="' . esc_html__( 'KEY provided' ) . '"'
 		);
 	}
 
@@ -1359,6 +1394,22 @@ class CF7_AntiSpam_Admin_Customizations {
 					),
 				)
 			)
+		);
+	}
+
+	/** It creates a checkbox with the id of "cf7a_identity_protection_user_callback" */
+	public function cf7a_identity_protection_user_callback() {
+		printf(
+			'<input type="checkbox" id="identity_protection_user" name="cf7a_options[identity_protection_user]" %s />',
+			! empty( $this->options['identity_protection_user'] ) ? 'checked="true"' : ''
+		);
+	}
+
+	/** It creates a checkbox with the id of "cf7a_identity_protection_user_callback" */
+	public function cf7a_identity_protection_wp_callback() {
+		printf(
+			'<input type="checkbox" id="identity_protection_wp" name="cf7a_options[identity_protection_wp]" %s />',
+			! empty( $this->options['identity_protection_wp'] ) ? 'checked="true"' : ''
 		);
 	}
 
