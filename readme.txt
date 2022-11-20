@@ -1,6 +1,6 @@
 === AntiSpam for Contact Form 7 ===
 Contributors: codekraft
-Tags: anti-spam, antispam, mail, blacklist, form, security, honeypot, geoip,
+Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
 Requires at least: 5.4
 Tested up to: 6.1
 Requires PHP: 5.6
@@ -14,7 +14,7 @@ A trustworthy antispam plugin for Contact Form 7. Simple but effective.
 The antispam you're using isn't working well, is it? Maybe because it's not using the correct method*** to stop the type of bot that's attacking you, but I think I have a solution!
 Antispam for Contact Form 7 is a free plugin for Contact Form 7 that blocks bots from flooding your mailbox, without tedious configuration and without captcha (which usually causes loss of conversions and sometimes are blocking for real users).
 To do this we use different in and off page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called B8.
-CF7-AntiSpam works well and adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/). If both are installed Flamingo will gain some additional controls and a dashboard widget will be added in order to show spam and ham mail.
+CF7-AntiSpam works well and adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/). If both are installed Flamingo will get some additional controls and an additional dashboard widget will be enabled.
 
 == SETUP ==
 **Basic** - install & go! No Configuration / keys / registrations required to get the antispam protection. In this case only some protections may be enabled like fingerprinting, language checks and honeypots.
@@ -26,7 +26,7 @@ I know, this is boring but is **required for advanced text statistical analysis*
 In order to enable GeoIp you need to agree GeoLite2 End User License Agreement and sign up GeoLite2 Downloadable Databases, in this way you will obtain the key requested to download the database.
 To find out more, read the information in the dedicated section of the cf7-antispam plugin settings and follow the steps.
 
-==Antispam Available Tests==
+== Antispam Available Tests ==
 ✅ Browser Fingerprinting
 ✅ Language checks (Geo-ip, http headers and browser - cross-checked)
 ✅ Honeypot
@@ -39,7 +39,7 @@ To find out more, read the information in the dedicated section of the cf7-antis
 ✅ B8 statistical "Bayesian" spam filter
 🆕 Identity protection
 
-==Extends Flamingo and turns it into a spam manager!==
+== Extends Flamingo and turns it into a spam manager! ==
 In this way you will be able to review emails and "teach" to B8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
 And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation (or checkuot advanced options "rebuild dictionary").
 While activating CF7A all previous collected mail will be parsed and B8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
@@ -49,14 +49,14 @@ Notes:
 - Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the B8 algorithm will be auto-trained
 - Don't delete a spam message from ham if you receive it, rather put it in spam to teach B8 how to recognise the difference!
 
-==B8 statistical "Bayesian" Filter==
+== B8 statistical "Bayesian" Filter ==
 Originally created by [Gary Robinson](https://en.wikipedia.org/wiki/Gary_Robinson) [b8 is a statistical "Bayesian"](https://www.linuxjournal.com/article/6467) spam filter implemented in PHP.
 The filter tells you whether a text is spam or not, using statistical text analysis. What it does is: you give b8 a text and it returns a value between 0 and 1, saying it's ham when it's near 0 and saying it's spam when it's near 1. See [How does it work?](https://nasauber.de/opensource/b8/readme.html#how-does-it-work) for details about this.
 To be able to distinguish spam and ham (non-spam), b8 first has to learn some spam and some ham texts. If it makes mistakes when classifying unknown texts or the result is not distinct enough, b8 can be told what the text actually is, getting better with each learned text.
 This takes place on your own server without relying on third-party services.
 More info: [nasauber.de](https://nasauber.de/opensource/b8/)
 
-=Identity protection=
+== Identity protection ==
 To fully protect the forms, it may be necessary to enable a couple of additional controls, because bots use the public data of the website to spam on it.
 - The first is user related and denies those who are not logged in the possibility of asking (sensitive) information about the user via wp-api and the protection for the xmlrpc exploit wordpress.
 - The second one is the WordPress protection that will obfuscate sensitive WordPress and server data, adding some headers in order to enhance security against xss and so on.
@@ -73,7 +73,7 @@ The purpose of this word collecting is to build a dictionary used for the spam d
 3. Setup advanced settings in Contact Form 7 in the same way you do for flamingo, but add also 'flamingo_message: "[your-message]"' - reference https://contactform7.com/save-submitted-messages-with-flamingo/
 4. The configuration page for this plugin is located in the submenu "Antispam" under the Contact Form 7 menu
 
-==Support==
+== Support ==
 Community support: via the [support forums](https://wordpress.org/support/plugin/contact-form-7-antispam/) on wordpress.org
 Bug reporting (preferred): file an issue on [GitHub](https://github.com/erikyo/contact-form-7-antispam)
 
