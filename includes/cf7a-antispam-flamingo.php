@@ -277,8 +277,9 @@ class CF7_AntiSpam_Flamingo {
 			foreach ( $lines as $line ) {
 				if ( substr( trim( $line ), 0, 9 ) === 'flamingo_' ) {
 					$matches = array();
-					preg_match( '/flamingo_(.*)(?=:): "\[(.*)]"/', $line, $matches );
-					$additional_settings[ $matches[1] ] = $matches[2];
+					if ( preg_match( '/flamingo_(.*)(?=:): "\[(.*)]"/', $line, $matches ) ) {
+						$additional_settings[ $matches[1] ] = $matches[2];
+					}
 				}
 			}
 
