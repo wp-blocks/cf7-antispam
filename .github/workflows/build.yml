@@ -51,7 +51,7 @@ jobs:
         run: npm install
 
       - name: Starting the WordPress Environment
-        run: npm run wp-env start
+        run: npm run wp-env:start
 
       - name: Running the tests
         run: npm run test:e2e
