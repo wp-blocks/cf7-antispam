@@ -280,12 +280,14 @@ class CF7_AntiSpam_Frontend {
 
 		/* add the default hidden fields */
 		$referrer = ! empty( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : false;
+		$protocol = ! empty( $_SERVER['SERVER_PROTOCOL'] ) ? esc_url_raw( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) : false;
 		return array_merge(
 			$fields,
 			array(
 				$prefix . 'version' => '1.0',
 				$prefix . 'address' => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
 				$prefix . 'referer' => cf7a_crypt( $referrer ? $referrer : 'no referer', $this->options['cf7a_cipher'] ),
+				$prefix . 'protocol' => cf7a_crypt( $protocol ? $protocol : 'protocol missing', $this->options['cf7a_cipher'] ),
 			)
 		);
 	}
