@@ -41,6 +41,7 @@
     "@wordpress/babel-preset-default": "^7.9.0",
     "@wordpress/browserslist-config": "^5.8.0",
     "@wordpress/e2e-test-utils": "^9.2.0",
+	"expect-puppeteer": "^6.1.1",
     "@wordpress/env": "^5.10.0",
     "@wordpress/eslint-plugin": "^13.9.0",
     "@wordpress/scripts": "^25.2.0",
