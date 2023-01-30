@@ -5,7 +5,7 @@
  * Author: Codekraft
  * Text Domain: cf7-antispam
  * Domain Path: /languages/
- * Version: 0.4.3
+ * Version: 0.4.4
  *
  * @package cf7-antispam
  */
