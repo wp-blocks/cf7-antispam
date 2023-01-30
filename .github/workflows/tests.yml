@@ -37,23 +37,37 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
 
-      - name: Setup environment to use the desired version of NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: npm
-
-      - name: Installing NPM dependencies
-        run: npm install
-
       - name: Install WordPress and initialize database
         run: chmod +x ./tests/bin/install-wp-tests.sh && ./tests/bin/install-wp-tests.sh cf7a_tests root wordpress 127.0.0.1 latest
 
       - name: Run PHP Unit tests
         run: composer run test
 
+
+  test-e2e:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Installing NPM dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
       - name: Starting the WordPress Environment
         run: npm run wp-env:start
 
-      - name: Running the tests
+      - name: Running e2e tests
         run: npm run test:e2e
