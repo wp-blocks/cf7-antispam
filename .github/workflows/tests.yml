@@ -37,8 +37,23 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
 
+      - name: Setup environment to use the desired version of NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+
+      - name: Installing NPM dependencies
+        run: npm install
+
       - name: Install WordPress and initialize database
         run: chmod +x ./tests/bin/install-wp-tests.sh && ./tests/bin/install-wp-tests.sh cf7a_tests root wordpress 127.0.0.1 latest
 
       - name: Run PHP Unit tests
         run: composer run test
+
+      - name: Starting the WordPress Environment
+        run: npm run wp-env:start
+
+      - name: Running the tests
+        run: npm run test:e2e
