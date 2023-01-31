@@ -4,7 +4,7 @@ Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
 Requires at least: 5.4
 Tested up to: 6.1
 Requires PHP: 5.6
-Stable tag: 0.4.3
+Stable tag: 0.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -156,6 +156,12 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 == Changelog ==
 
+= 0.4.4 =
+* Adds the @mirekdlugosz fix for flamingo metadata regex
+* Better Honeypot default input name field handling
+* Fixed 'ban forever' that was replacing the list of banned IPs instead of adding the selected one
+* Add a new check in oder to verify the http protocol since bots usually connects with HTTP/1.X
+
 = 0.4.3 =
 * Fixes an issue with honeypot placeholder (thanks to @ardsoms and @edodemo for the report)
 * User enumeration protection
@@ -282,6 +288,9 @@ See the LICENSE file for more details.
 * GeoIP2 PHP API [GeoIP2-php](https://github.com/maxmind/GeoIP2-php)
 * chart.js https://www.chartjs.org/, © 2021 Chart.js [contributors](https://github.com/chartjs/Chart.js/graphs/contributors), [MIT](https://github.com/chartjs/Chart.js/blob/master/LICENSE.md)
 * Sudden Shower in the Summer, Public domain, Wikimedia Commons https://commons.wikimedia.org/wiki/File:Sudden_Shower_in_the_Summer_(5759500422).jpg
+
+== Contibutions ==
+Mirek Długosz - [#30](https://github.com/erikyo/cf7-antispam/pull/30) fixes a crash that occurred when analysing flamingo metadata
 
 == Special thanks ==
 This project is tested with BrowserStack. [Browserstack](https://www.browserstack.com/)
