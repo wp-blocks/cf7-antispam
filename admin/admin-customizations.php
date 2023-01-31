@@ -273,7 +273,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Settings check_bad_ip */
 		add_settings_field(
 			'check_bad_ip',
-			__( 'IP Address', 'cf7-antispam' ),
+			__( 'Check Bad IP Address', 'cf7-antispam' ),
 			array( $this, 'cf7a_check_bad_ip_callback' ),
 			'cf7a-settings',
 			'cf7a_bad_ip'
@@ -921,6 +921,43 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/**
+	 * Handles WP-cron task registrations
+	 *
+	 * @param array  $input      - The post input values.
+	 * @param string $input_name - The value of the input field.
+	 * @param string $cron_task  - The slug of the Post value.
+	 * @param array  $schedule   - The schedules list obtained with wp_get_schedules().
+	 *
+	 * @return array|false the new value that the user has selected
+	 */
+	private function cf7a_input_cron_schedule( $input, $input_name, $cron_task, $schedule ) {
+		$new_value = false;
+
+		if ( ! empty( $input[$input_name] ) && in_array( $input[$input_name], array_keys( $schedule ), true ) ) {
+			if ( $this->options[$input_name] !== $input[$input_name] ) {
+				$new_value = $input[$input_name];
+				/* delete previous scheduled events */
+				$timestamp = wp_next_scheduled( $cron_task );
+				if ( $timestamp ) {
+					wp_clear_scheduled_hook( $cron_task );
+				}
+
+				/* add the new scheduled event */
+				wp_schedule_event( time() + $schedule[ $new_value ]['interval'], $new_value, $cron_task );
+			}
+		} else {
+			/* Get the timestamp for the next event. */
+			$timestamp = wp_next_scheduled( $cron_task );
+			if ( $timestamp ) {
+				wp_clear_scheduled_hook( $cron_task );
+			}
+			$new_value[$input_name] = 'disabled';
+		}
+		return $new_value;
+	}
+
+
+	/**
 	 * Sanitize each setting field as needed
 	 *
 	 * @param array $input Contains all settings fields as array keys.
@@ -975,26 +1012,9 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* auto-unban delay */
 		$schedule = wp_get_schedules();
-		if ( ! empty( $input['unban_after'] ) && in_array( $input['unban_after'], array_keys( $schedule ), true ) ) {
-			if ( $this->options['unban_after'] !== $input['unban_after'] ) {
-				$new_input['unban_after'] = $input['unban_after'];
-				/* delete previous scheduled events */
-				$timestamp = wp_next_scheduled( 'cf7a_cron' );
-				if ( $timestamp ) {
-					wp_clear_scheduled_hook( 'cf7a_cron' );
-				}
 
-				/* add the new scheduled event */
-				wp_schedule_event( time() + $schedule[ $new_input['unban_after'] ]['interval'], $new_input['unban_after'], 'cf7a_cron' );
-			}
-		} else {
-			/* Get the timestamp for the next event. */
-			$timestamp = wp_next_scheduled( 'cf7a_cron' );
-			if ( $timestamp ) {
-				wp_clear_scheduled_hook( 'cf7a_cron' );
-			}
-			$new_input['unban_after'] = 'disabled';
-		}
+		/* unban after */
+		$new_input['unban_after'] = $this->cf7a_input_cron_schedule( $input, 'unban_after', 'cf7a_cron', $schedule );
 
 		/* bad ip */
 		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;

@@ -110,6 +110,28 @@ function cf7a_get_accept_language_array( $languages ) {
 }
 
 /**
+ * It adds two new cron schedules to WordPress
+ *
+ * @param array $schedules This is the name of the hook that we're adding a schedule to.
+ */
+function cf7a_add_cron_steps( $schedules ) {
+	return array_merge(
+		$schedules,
+		array(
+			'5min'  => array(
+				'interval' => 300,
+				'display'  => __( 'Every 5 Minutes', 'cf7-antispam' ),
+			),
+			'60sec' => array(
+				'interval' => 60,
+				'display'  => __( 'Every 60 seconds', 'cf7-antispam' ),
+			),
+		)
+	);
+}
+add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
+
+/**
  * It adds a bunch of common honeypot input names to the list of honeypot input names
  *
  * @param array $custom_names The array of input names to check for.
@@ -139,29 +161,6 @@ function get_honeypot_input_names( $custom_names = array() ) {
 		)
 	);
 }
-
-
-/**
- * It adds two new cron schedules to WordPress
- *
- * @param array $schedules This is the name of the hook that we're adding a schedule to.
- */
-function cf7a_add_cron_steps( $schedules ) {
-	return array_merge(
-		$schedules,
-		array(
-			'5min'  => array(
-				'interval' => 300,
-				'display'  => __( 'Every 5 Minutes', 'cf7-antispam' ),
-			),
-			'60sec' => array(
-				'interval' => 60,
-				'display'  => __( 'Every 60 seconds', 'cf7-antispam' ),
-			),
-		)
-	);
-}
-add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 
 /**
  * It encrypts a string using the WordPress salt as the key

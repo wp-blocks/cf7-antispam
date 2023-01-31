@@ -328,6 +328,7 @@ class CF7_AntiSpam_Filters {
 
 		/* client referer */
 		$cf7a_referer = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'referer' ] ) ), $options['cf7a_cipher'] ) : false;
+		$cf7a_protocol = isset( $_POST[ $prefix . 'protocol' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'protocol' ] ) ), $options['cf7a_cipher'] ) : false;
 
 		/* CF7 user agent */
 		$user_agent = sanitize_text_field( $submission->get_meta( 'user_agent' ) );
@@ -487,6 +488,16 @@ class CF7_AntiSpam_Filters {
 					$reason['no_referrer'] = 'client has referrer address';
 
 					cf7a_log( "the $remote_ip has reached the contact form page without any referrer", 1 );
+				}
+			}
+
+			if ( $cf7a_protocol ) {
+				if ( in_array($cf7a_protocol, array('HTTP/1.0', 'HTTP/1.1','HTTP/1.2') ) ) {
+
+					$spam_score           += $score_warn;
+					$reason['no_protocol'] = 'client has a bot-like connection protocol';
+
+					cf7a_log( "the $remote_ip has a bot-like connection protocol (HTTP/1.X)", 1 );
 				}
 			}
 
@@ -854,22 +865,23 @@ class CF7_AntiSpam_Filters {
 			 */
 			if ( $options['check_honeypot'] ) {
 
-				/* we need only the text tags of the form */
+				/* collect the input "name" value of the type="text" tags of the submitted form */
 				foreach ( $mail_tags as $mail_tag ) {
 					if ( 'text' === $mail_tag['type'] || 'text*' === $mail_tag['type'] ) {
 						$mail_tag_text[] = $mail_tag['name'];
 					}
 				}
 
-				if ( isset( $mail_tag_text ) ) {
+				if ( ! empty( $mail_tag_text ) ) {
 
-					/* faked input name used into honeypots */
+					/* get the collection of the generated (fake) input name used as honeypots name value */
 					$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
 
 					$mail_tag_count = count( $input_names );
 
 					for ( $i = 0; $i < $mail_tag_count; $i ++ ) {
 
+						/* check if any posted input name value has a name from the honeypot names array, if yes the bot has fallen into the trap and filled the input */
 						$has_honeypot = ! empty( $_POST[ $input_names[ $i ] ] );
 
 						/* check only if it's set and if it is different from "" */

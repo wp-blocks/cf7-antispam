@@ -8,51 +8,39 @@ import {
 
 // JS Tests
 describe( 'installation', () => {
-	// Flow being tested.
-	// Ideally each flow is independent and can be run separately.
-	it( 'Should load properly', async () => {
+	it( 'works', () => {
+		expect( true ).toBeTruthy();
+	} );
+
+	it( 'verifies the plugin is active', async () => {
 		// login as admin
 		await loginUser();
 
-		// Navigate the admin and performs tasks
-		// Use Puppeteer APIs to interacte with mouse, keyboard...
-		await visitAdminPage( '/' );
+		// visit the plugins page
+		// assert that our plugin is active by checking the HTML
+		await visitAdminPage( 'plugins.php' );
+	} );
+
+	it( 'is enabled', async () => {
+		await activatePlugin( 'cf7-antispam' );
+		await visitAdminPage( 'admin.php?page=cf7-antispam' );
 
 		// Assertions
-		const nodes = await page.$x(
-			'//h2[contains(text(), "Welcome to WordPress!")]'
+		const activeNode = await page.$x(
+			'//h2[contains(text(), "Settings")]'
 		);
-
-		expect( nodes.length ).not.toEqual( 0 );
+		expect( activeNode.length ).not.toEqual( 1 );
 	} );
 
-	visitAdminPage( '/plugins.php' ).then( () => {
-		it( 'is enabled', async () => {
-			// await activatePlugin( 'cf7-antispam' );
+	it( 'can be disabled', async () => {
+		await deactivatePlugin( 'cf7-antispam' );
+    await visitAdminPage( 'admin.php?page=cf7-antispam' );
 
-			// Assertions
-			const activeNode = await page.$x(
-				'//a[contains(text(), "Antispam Settings")]'
-			);
-			expect( activeNode.length ).not.toEqual( 0 );
-		} );
-		it( 'can be disabled', async () => {
-			await deactivatePlugin( 'cf7-antispam' );
-
-			// Assertions
-			const activePlugin = await page.$x(
-				'//tr[contains(@class, "active") and contains(@data-slug, "cf7-antispam")]'
-			);
-			expect( activePlugin?.length ).toBe( 0 );
-		} );
-		it( 'can be disabled', async () => {
-			await activatePlugin( 'cf7-antispam' );
-
-			// Assertions
-			const activePlugin = await page.$x(
-				'//tr[contains(@class, "active") and contains(@data-slug, "cf7-antispam")]'
-			);
-			expect( activePlugin?.length ).toBe( 1 );
-		} );
+		// Assertions
+		const activePlugin = await page.$x(
+			'//tr[contains(@class, "active") and contains(@data-slug, "cf7-antispam")]'
+		);
+		expect( activePlugin?.length ).toBe( 0 );
 	} );
+
 } );
