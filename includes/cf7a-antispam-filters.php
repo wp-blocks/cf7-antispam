@@ -865,22 +865,23 @@ class CF7_AntiSpam_Filters {
 			 */
 			if ( $options['check_honeypot'] ) {
 
-				/* we need only the text tags of the form */
+				/* collect the input "name" value of the type="text" tags of the submitted form */
 				foreach ( $mail_tags as $mail_tag ) {
 					if ( 'text' === $mail_tag['type'] || 'text*' === $mail_tag['type'] ) {
 						$mail_tag_text[] = $mail_tag['name'];
 					}
 				}
 
-				if ( isset( $mail_tag_text ) ) {
+				if ( ! empty( $mail_tag_text ) ) {
 
-					/* faked input name used into honeypots */
+					/* get the collection of the generated (fake) input name used as honeypots name value */
 					$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
 
 					$mail_tag_count = count( $input_names );
 
 					for ( $i = 0; $i < $mail_tag_count; $i ++ ) {
 
+						/* check if any posted input name value has a name from the honeypot names array, if yes the bot has fallen into the trap and filled the input */
 						$has_honeypot = ! empty( $_POST[ $input_names[ $i ] ] );
 
 						/* check only if it's set and if it is different from "" */

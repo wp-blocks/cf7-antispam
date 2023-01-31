@@ -110,38 +110,6 @@ function cf7a_get_accept_language_array( $languages ) {
 }
 
 /**
- * It adds a bunch of common honeypot input names to the list of honeypot input names
- *
- * @param array $custom_names The array of input names to check for.
- *
- * @return array An array of possible input names.
- */
-function get_honeypot_input_names( $custom_names = array() ) {
-	$defaults = array(
-		'name',
-		'email',
-		'address',
-		'zip',
-		'town',
-		'phone',
-		'credit-card',
-		'ship-address',
-		'billing_company',
-		'billing_city',
-		'billing_country',
-		'email-address',
-	);
-
-	return array_unique(
-		array_merge(
-			$defaults,
-			(array) $custom_names
-		)
-	);
-}
-
-
-/**
  * It adds two new cron schedules to WordPress
  *
  * @param array $schedules This is the name of the hook that we're adding a schedule to.

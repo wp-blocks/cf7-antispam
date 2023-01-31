@@ -84,7 +84,7 @@ class CF7_AntiSpam_Frontend {
 
 		/* A list of default names for the honeypot fields. */
 		$options     = get_option( 'cf7a_options', array() );
-		$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
+		$input_names = $options['honeypot_input_names'];
 		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 		/**
 		 * Controls the maximum number of honeypots.
@@ -95,7 +95,7 @@ class CF7_AntiSpam_Frontend {
 		 *
 		 * @since 0.4.3
 		 */
-		$max_replacements = intval( apply_filters( 'cf7a_additional_max_honeypots', 5 ) );
+		$max_replacements = min( intval( apply_filters( 'cf7a_additional_max_honeypots', 5 ) ), count( $input_names ) );
 
 		/* get the inputs data */
 		if ( $inputs && $inputs->length > 0 ) {
