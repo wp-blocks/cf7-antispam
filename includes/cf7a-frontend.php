@@ -84,7 +84,7 @@ class CF7_AntiSpam_Frontend {
 
 		/* A list of default names for the honeypot fields. */
 		$options     = get_option( 'cf7a_options', array() );
-		$input_names = $options['honeypot_input_names'];
+		$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
 		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
 		/**
 		 * Controls the maximum number of honeypots.

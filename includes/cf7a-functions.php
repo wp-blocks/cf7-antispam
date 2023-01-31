@@ -132,6 +132,37 @@ function cf7a_add_cron_steps( $schedules ) {
 add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 
 /**
+ * It adds a bunch of common honeypot input names to the list of honeypot input names
+ *
+ * @param array $custom_names The array of input names to check for.
+ *
+ * @return array An array of possible input names.
+ */
+function get_honeypot_input_names( $custom_names = array() ) {
+	$defaults = array(
+		'name',
+		'email',
+		'address',
+		'zip',
+		'town',
+		'phone',
+		'credit-card',
+		'ship-address',
+		'billing_company',
+		'billing_city',
+		'billing_country',
+		'email-address',
+	);
+
+	return array_unique(
+		array_merge(
+			$defaults,
+			(array) $custom_names
+		)
+	);
+}
+
+/**
  * It encrypts a string using the WordPress salt as the key
  *
  * @param string|int $value The value to encrypt.
