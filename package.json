@@ -26,7 +26,9 @@
     "wp-env:destroy": "wp-env destroy",
     "test:e2e": "wp-scripts test-e2e",
     "test:e2e:watch": "npm run test:e2e --watch",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+	"PHPCS": "wp-env run composer \"composer PHPCS\"",
+	"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
   },
   "repository": {
     "type": "git",
