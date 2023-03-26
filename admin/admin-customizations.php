@@ -288,6 +288,15 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bad_ip'
 		);
 
+		/* Settings ip_whitelist */
+		add_settings_field(
+			'ip_whitelist',
+			__( 'IP Whitelist', 'cf7-antispam' ),
+			array( $this, 'cf7a_ip_whitelist_callback' ),
+			'cf7a-settings',
+			'cf7a_ip_whitelist'
+		);
+
 		/* Section Bad Words */
 		add_settings_section(
 			'cf7a_bad_words',
@@ -1016,11 +1025,18 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* unban after */
 		$new_input['unban_after'] = $this->cf7a_input_cron_schedule( $input, 'unban_after', 'cf7a_cron', $schedule );
 
+		/*
+		 report by mail */
+		// $new_input['mail_report'] = $this->cf7a_input_cron_schedule( $schedule, 'mail_report', 'cf7a_cron_report' );
+
 		/* bad ip */
 		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
 		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
 		if ( isset( $input['bad_ip_list'] ) && is_string( $input['bad_ip_list'] ) ) {
 			$new_input['bad_ip_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_ip_list'] ) );
+		}
+		if ( isset( $input['ip_whitelist'] ) && is_string( $input['ip_whitelist'] ) ) {
+			$new_input['ip_whitelist'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['ip_whitelist'] ) );
 		}
 
 		/* bad words */
@@ -1316,6 +1332,16 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<textarea id="bad_ip_list" name="cf7a_options[bad_ip_list]" />%s</textarea>',
 			isset( $this->options['bad_ip_list'] ) && is_array( $this->options['bad_ip_list'] ) ? esc_textarea( implode( "\r\n", $this->options['bad_ip_list'] ) ) : ''
+		);
+	}
+
+	/**
+	 * It creates a textarea with the id of "ip whitelist"
+	 */
+	public function cf7a_ip_whitelist_callback() {
+		printf(
+			'<textarea id="ip_whitelist" name="cf7a_options[ip_whitelist]" />%s</textarea>',
+			isset( $this->options['ip_whitelist'] ) && is_array( $this->options['ip_whitelist'] ) ? esc_textarea( implode( "\r\n", $this->options['ip_whitelist'] ) ) : ''
 		);
 	}
 
