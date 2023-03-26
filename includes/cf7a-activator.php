@@ -70,6 +70,7 @@ class CF7_AntiSpam_Activator {
 			'enable_advanced_settings'     => 0,
 			'bad_words_list'               => array(),
 			'bad_ip_list'                  => array(),
+			'ip_whitelist'                 => array(),
 			'bad_email_strings_list'       => array(),
 			'bad_user_agent_list'          => array(),
 			'dnsbl_list'                   => array(),
