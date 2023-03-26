@@ -57,7 +57,12 @@ function cf7a_get_browser_language_array( $languages ) {
 		array_reduce(
 			explode( ',', $languages ),
 			function( $res, $el ) {
-				if ( strlen( $el ) === 5 ) {
+				// trim spaces and removes the semicolon.
+				$el = trim($el);
+				if ( strpos( $el, ';' ) !== false ) {
+					$el = substr( $el, 0, strpos( $el, ';' ) );
+				}
+				if ( strlen( $el ) >= 5 ) {
 					$l                          = explode( '-', $el );
 					$res[ strtolower( $l[0] ) ] = $l[0];
 					$res[ strtolower( $l[1] ) ] = strtolower( $l[1] );
