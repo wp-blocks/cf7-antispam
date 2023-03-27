@@ -63,25 +63,6 @@ class CF7_AntiSpam_Frontend {
 	 * @return string - The form elements.
 	 */
 	public function cf7a_honeypot_add( $form_elements ) {
-
-		try {
-			$html = new DOMDocument( '1.0', 'UTF-8' );
-			libxml_use_internal_errors( true );
-			/**
-			 * The 'mb_convert_encoding' is needed for non-latin font sets / LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD avoids auto-fixes for corrupted html code
-			 */
-			$html->loadHTML( mb_convert_encoding( $form_elements, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
-			$xpath  = new DOMXpath( $html );
-			$inputs = $xpath->query( '//input' );
-
-		} catch ( Exception $e ) {
-			if ( is_admin() ) {
-				esc_html_e( 'I cannot parse this form correctly, please double check that the code is correct, thank you! (this message is only displayed to admins)' );
-				cf7a_log( $e );
-			}
-			return $form_elements;
-		}
-
 		/* A list of default names for the honeypot fields. */
 		$options     = get_option( 'cf7a_options', array() );
 		$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
@@ -97,40 +78,32 @@ class CF7_AntiSpam_Frontend {
 		 */
 		$max_replacements = min( intval( apply_filters( 'cf7a_additional_max_honeypots', 5 ) ), count( $input_names ) );
 
-		/* get the inputs data */
-		if ( $inputs && $inputs->length > 0 ) {
-			/* to be on the save side it can be a good idea to store the name of the input (to avoid duplicates) */
-			foreach ( $inputs as $i => $input ) {
+		/* find the input fields */
+		preg_match_all('/<input\s.*?>/', $form_elements, $matches);
+		$inputs = $matches[0];
 
-				if ( $inputs->item( $i )->getAttribute( 'type' ) === 'text' ) {
-
-					$item = $inputs->item( $i );
-
-					$parent  = $item->parentNode;
-					$sibling = $item->nextSibling;
-					$clone   = $item->cloneNode();
-
-					$item->setAttribute( 'tabindex', '' );
-					$item->setAttribute( 'class', $item->getAttribute( 'class' ) );
-
-					$honeypot_names = $input_names[ $i ];
-
-					$clone->setAttribute( 'name', $honeypot_names );
-					$clone->setAttribute( 'value', '' );
-					$clone->setAttribute( 'autocomplete', 'fill' );
-					$clone->setAttribute( 'tabindex', '-1' );
-					$clone->setAttribute( 'class', $clone->getAttribute( 'class' ) . ' ' . $input_class . ' autocomplete input' );
-
-					/* duplicate the inputs into honeypots */
-					$parent->insertBefore( $clone, $sibling );
-
-					if ( $i > $max_replacements ) {
-						return $html->saveHTML();
-					}
+		/* add honeypot fields */
+		foreach ( $inputs as $i => $input ) {
+			if ( stripos( $input, 'type="text"' ) !== false ) {
+				$honeypot_names = $input_names[ $i ];
+				$honeypot_input = sprintf(
+					'<input type="text" name="%1$s" value="" autocomplete="off" class="%2$s" tabindex="-1" />',
+					esc_attr( $honeypot_names ),
+					esc_attr( $input_class )
+				);
+				// get a random true or false
+				$rand = wp_rand(0, 1);
+				$form_elements = str_replace(
+					$input,
+					$rand ? $input . $honeypot_input : $honeypot_input . $input,
+					$form_elements
+				);
+				if ( $i >= $max_replacements ) {
+					break;
 				}
 			}
-			return $html->saveHTML();
 		}
+
 		return $form_elements;
 	}
 
