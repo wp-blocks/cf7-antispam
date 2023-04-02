@@ -294,7 +294,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'IP Whitelist', 'cf7-antispam' ),
 			array( $this, 'cf7a_ip_whitelist_callback' ),
 			'cf7a-settings',
-			'cf7a_ip_whitelist'
+			'cf7a_bad_ip'
 		);
 
 		/* Section Bad Words */
