@@ -392,14 +392,15 @@ class CF7_AntiSpam_Filters {
 		/**
 		 * Checks for IP and return immediately if it is whitelisted
 		 */
-		foreach ( $ip_whitelist as $good_ip ) {
+		if ( !empty( $ip_whitelist ) )
+			foreach ( $ip_whitelist as $good_ip ) {
 
-			$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
+				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
 
-			if ( false !== stripos( (string) $remote_ip, (string) $good_ip ) ) {
-				return true;
+				if ( false !== stripos( (string) $remote_ip, (string) $good_ip ) ) {
+					return false;
+				}
 			}
-		}
 
 		/**
 		 * Checking if the IP address is empty. If it is empty, it will add a score of 10 to the spam score and add a reason to the reason array.
