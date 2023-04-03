@@ -31,7 +31,7 @@ class CF7_AntiSpam_Uninstaller {
 	 */
 	public static function cf7a_full_reset() {
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
-		self::uninstall( true );
+		self::uninstall( false );
 
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
 		CF7_AntiSpam_Activator::install();
@@ -42,11 +42,48 @@ class CF7_AntiSpam_Uninstaller {
 	/**
 	 * It deletes the plugin's database tables and options
 	 *
-	 * @param bool $force If set to true, the cf7-antispam database and options tables delete will be forced.
+	 * @return bool
 	 */
-	public static function uninstall( $force = false ) {
+	protected static function cf7a_plugin_drop_tables() {
+		global $wpdb;
 
-		if ( CF7ANTISPAM_DEBUG_EXTENDED && ! $force ) {
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' );
+
+		$wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
+	}
+
+	/**
+	 * It deletes the plugin's database tables and options
+	 *
+	 * @return bool
+	 */
+	protected static function cf7a_plugin_drop_options() {
+
+		delete_option( 'cf7a_db_version' );
+		delete_option( 'cf7a_options' );
+		delete_option( 'cf7a_geodb_update' );
+
+		delete_metadata( 'user', 0, 'cf7a_hide_welcome_panel_on', '', true );
+
+		/* unschedule cf7a events */
+		$timestamp = wp_next_scheduled( 'cf7a_cron' );
+		if ( $timestamp ) {
+			wp_clear_scheduled_hook( 'cf7a_cron' );
+		}
+
+		cf7a_log( 'plugin uninstalled' );
+		return true;
+	}
+
+	/**
+	 * Fires the right uninstall routine between single and multisite installations
+	 *
+	 * @param bool $force If set to true, the cf7-antispam database and options tables delete will be forced otherwise it will be skipped.
+	 */
+	public static function uninstall( $force = true ) {
+
+		if ( ( defined( CF7ANTISPAM_DEBUG_EXTENDED ) && CF7ANTISPAM_DEBUG_EXTENDED === true ) || ! $force ) {
 
 			cf7a_log( 'CONTACT FORM 7 ANTISPAM - constant "CF7ANTISPAM_DEBUG_EXTENDED" is set so options and database will NOT be deleted.' );
 			return false;
@@ -55,25 +92,27 @@ class CF7_AntiSpam_Uninstaller {
 
 			global $wpdb;
 
-			$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' );
-			$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' );
+			$is_multisite = is_multisite() || ( defined( 'WP_INSTALLING_NETWORK' ) && WP_INSTALLING_NETWORK );
 
-			$wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
+			if ( $is_multisite ) {
+				// Get all blogs in the network and uninstall the plugin on each one.
+				$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 
-			delete_option( 'cf7a_db_version' );
-			delete_option( 'cf7a_options' );
-			delete_option( 'cf7a_geodb_update' );
+				foreach ( $blog_ids as $blog_id ) {
+					switch_to_blog( $blog_id );
 
-			delete_metadata( 'user', 0, 'cf7a_hide_welcome_panel_on', '', true );
+					// Remove tables and options.
+					self::cf7a_plugin_drop_tables();
+					self::cf7a_plugin_drop_options();
 
-			/* unschedule cf7a events */
-			$timestamp = wp_next_scheduled( 'cf7a_cron' );
-			if ( $timestamp ) {
-				wp_clear_scheduled_hook( 'cf7a_cron' );
+					restore_current_blog();
+				}
 			}
 
-			cf7a_log( 'plugin uninstalled' );
-			return true;
+			// Always remove the main site database tables and options.
+			self::cf7a_plugin_drop_tables();
+			self::cf7a_plugin_drop_options();
+
 		}
 
 	}
