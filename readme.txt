@@ -2,7 +2,7 @@
 Contributors: codekraft
 Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
 Requires at least: 5.4
-Tested up to: 6.1
+Tested up to: 6.2
 Requires PHP: 5.6
 Stable tag: 0.4.5
 License: GPLv2 or later
@@ -162,6 +162,7 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 * Replaced domDocument with a regexp for more reliability (bug report, thanks @jensdiep and @georgr #35)
 * Whitelist Feature request: whitelisting (feature requests, thanks @jensdiep #36)
 * Settings page card style (enhancement, thanks @emilycestmoi)
+* Fix for automatic unban initial settings, in some cases it might not have been "disabled"
 
 = 0.4.4 =
 * Adds the @mirekdlugosz fix for flamingo metadata regex
