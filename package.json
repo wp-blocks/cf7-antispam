@@ -17,7 +17,9 @@
   "scripts": {
     "start": "wp-scripts start",
     "build": "wp-scripts build",
-    "plugin-zip": "wp-scripts plugin-zip",
+    "preplugin-zip": "wp-env run composer \"composer install --no-dev\"",
+	"plugin-zip": "wp-scripts plugin-zip",
+	"postplugin-zip": "wp-env run composer \"composer install\"",
     "lint:css": "wp-scripts lint-style",
     "lint:js": "wp-scripts lint-js  ./includes/src ./admin/src",
     "packages-update": "wp-scripts packages-update",
