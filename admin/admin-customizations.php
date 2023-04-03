@@ -960,7 +960,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			if ( $timestamp ) {
 				wp_clear_scheduled_hook( $cron_task );
 			}
-			$new_value[$input_name] = 'disabled';
+			return 'disabled';
 		}
 		return $new_value;
 	}
@@ -1148,9 +1148,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		$html = '';
 		foreach ( $values as $value ) {
 			$html .= sprintf(
-				'<option value="%s" %s>%s</option>',
+				'<option value="%s"%s>%s</option>',
 				sanitize_title( $value ),
-				$value === $selected ? 'selected' : '',
+				$value === $selected ? ' selected' : '',
 				$value
 			);
 		}
