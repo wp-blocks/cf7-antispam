@@ -2,9 +2,9 @@
 Contributors: codekraft
 Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
 Requires at least: 5.4
-Tested up to: 6.1
+Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 0.4.4
+Stable tag: 0.4.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,7 +37,7 @@ To find out more, read the information in the dedicated section of the cf7-antis
 ✅ Time elapsed (with min/max values)
 ✅ Prohibited words in message/email and user agent
 ✅ B8 statistical "Bayesian" spam filter
-🆕 Identity protection
+✅ Identity protection
 
 == Extends Flamingo and turns it into a spam manager! ==
 In this way you will be able to review emails and "teach" to B8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
@@ -155,6 +155,14 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.4.5 =
+* Enhanced language detection using the http headers accepted language (bug report, thanks @senjoralfonso #33)
+* Multisite compatibility #34 (bug report, thanks @pluspol #34)
+* Replaced domDocument with a regexp for more reliability (bug report, thanks @jensdiep and @georgr #35)
+* Whitelist Feature request: whitelisting (feature requests, thanks @jensdiep #36)
+* Settings page card style (enhancement, thanks @emilycestmoi)
+* Fix for automatic unban initial settings, in some cases it might not have been "disabled"
 
 = 0.4.4 =
 * Adds the @mirekdlugosz fix for flamingo metadata regex

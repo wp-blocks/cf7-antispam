@@ -344,6 +344,9 @@ class CF7_AntiSpam_Filters {
 		/* Checks sender has a blacklisted ip address */
 		$bad_ip_list = isset( $options['bad_ip_list'] ) ? $options['bad_ip_list'] : array();
 
+		/* Checks sender has a blacklisted ip address */
+		$ip_whitelist = isset( $options['ip_whitelist'] ) ? $options['ip_whitelist'] : array();
+
 		/* Checks if the mail contains bad words */
 		$bad_words = isset( $options['bad_words_list'] ) ? $options['bad_words_list'] : array();
 
@@ -385,6 +388,19 @@ class CF7_AntiSpam_Filters {
 		/* initialize the spam data collection */
 		$reason     = array();
 		$spam_score = 0;
+
+		/**
+		 * Checks for IP and return immediately if it is whitelisted
+		 */
+		if ( !empty( $ip_whitelist ) )
+			foreach ( $ip_whitelist as $good_ip ) {
+
+				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
+
+				if ( false !== stripos( (string) $remote_ip, (string) $good_ip ) ) {
+					return false;
+				}
+			}
 
 		/**
 		 * Checking if the IP address is empty. If it is empty, it will add a score of 10 to the spam score and add a reason to the reason array.

@@ -70,6 +70,7 @@ class CF7_AntiSpam_Activator {
 			'enable_advanced_settings'     => 0,
 			'bad_words_list'               => array(),
 			'bad_ip_list'                  => array(),
+			'ip_whitelist'                 => array(),
 			'bad_email_strings_list'       => array(),
 			'bad_user_agent_list'          => array(),
 			'dnsbl_list'                   => array(),
@@ -154,14 +155,15 @@ class CF7_AntiSpam_Activator {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$tables = $wpdb->get_results( 'SHOW TABLES' );
+		$table_wordlist = $wpdb->prefix . 'cf7a_wordlist';
+		$table_blacklist = $wpdb->prefix . 'cf7a_blacklist';
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		/* Create the term database */
-		if ( ! in_array( $wpdb->prefix . 'cf7a_wordlist', $tables, true ) ) {
+		/* Create the term database  if not available */
+		if( $wpdb->get_var( "SHOW TABLES like '{$table_wordlist}'" ) !== $table_wordlist ) {
 
-			$cf7a_wordlist = 'CREATE TABLE IF NOT EXISTS `' . $wpdb->prefix . "cf7a_wordlist` (
+			$cf7a_wordlist = 'CREATE TABLE IF NOT EXISTS `' . $table_wordlist . "` (
 			  `token` varchar(100) character set utf8 collate utf8_bin NOT NULL,
 			  `count_ham` int unsigned default NULL,
 			  `count_spam` int unsigned default NULL,
@@ -176,12 +178,12 @@ class CF7_AntiSpam_Activator {
 			dbDelta( $cf7a_wordlist_version );
 			dbDelta( $cf7a_wordlist_texts );
 
-			cf7a_log( 'cf7a_wordlist table creation succeeded', 2 );
+			cf7a_log( "{$table_wordlist} table creation succeeded", 2 );
 		}
 
 		/* Create the blacklist database */
-		if ( ! in_array( $wpdb->prefix . 'cf7a_blacklist', $tables, true ) ) {
-			$cf7a_database = 'CREATE TABLE IF NOT EXISTS `' . $wpdb->prefix . "cf7a_blacklist` (
+		if( $wpdb->get_var( "SHOW TABLES like '{$table_blacklist}'" ) !== $table_blacklist ) {
+			$cf7a_database = "CREATE TABLE IF NOT EXISTS `{$table_blacklist}` (
 				 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				 `ip` varchar(45) NOT NULL,
 				 `status` int(10) unsigned DEFAULT NULL,
@@ -192,7 +194,7 @@ class CF7_AntiSpam_Activator {
 
 			dbDelta( $cf7a_database );
 
-			cf7a_log( 'cf7a_blacklist table creation succeeded', 2 );
+			cf7a_log( "{$table_blacklist} table creation succeeded", 2 );
 		}
 	}
 
@@ -253,6 +255,27 @@ class CF7_AntiSpam_Activator {
 		self::update_options();
 
 		set_transient( 'cf7a_activation', true );
+	}
+
+	/**
+	 * Creating tables for all blogs in a WordPress Multisite installation
+	 *
+	 * @param bool $network_wide - true if multisite, false if not.
+	 */
+	public static function on_activate( $network_wide ) {
+		global $wpdb;
+
+		if ( is_multisite() && $network_wide ) {
+			// Get all blogs in the network and activate plugin on each one.
+			$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+			foreach ( $blog_ids as $blog_id ) {
+				switch_to_blog( $blog_id );
+				self::activate();
+				restore_current_blog();
+			}
+		} else {
+			self::activate();
+		}
 	}
 
 }

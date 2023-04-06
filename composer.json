@@ -19,9 +19,9 @@
 	"wp-coding-standards/wpcs": "^2.3",
 	"automattic/vipwpcs": "^2.3",
 	"phpcompatibility/phpcompatibility-wp": "*",
-	"phpunit/phpunit": "^8",
+	"phpunit/phpunit": "^8|^9",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
-	"yoast/phpunit-polyfills": "*",
+	"yoast/phpunit-polyfills": "^1.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
   },
   "require": {
@@ -35,7 +35,8 @@
 	"phpstan": "vendor/bin/phpstan",
 	"psalm": "vendor/bin/psalm",
 	"psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run",
-	"test": "vendor/bin/phpunit"
+	"test": "vendor/bin/phpunit -c phpunit.xml.dist --verbose",
+	"test-multisite": "WP_MULTISITE=1 vendor/bin/phpunit -c tests/multisite.xml --verbose"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

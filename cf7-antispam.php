@@ -5,7 +5,7 @@
  * Author: Codekraft
  * Text Domain: cf7-antispam
  * Domain Path: /languages/
- * Version: 0.4.4
+ * Version: 0.4.5
  *
  * @package cf7-antispam
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 /* CONSTANTS */
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
-define( 'CF7ANTISPAM_VERSION', '0.4.3' );
+define( 'CF7ANTISPAM_VERSION', '0.4.5' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
@@ -67,11 +67,43 @@ require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-functions.php';
 /**
  * The code that runs during plugin activation.
  */
-function activate_cf7_antispam() {
+function activate_cf7_antispam($network_wide) {
 	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
-	CF7_AntiSpam_Activator::activate();
+	CF7_AntiSpam_Activator::on_activate($network_wide);
 }
 register_activation_hook( CF7ANTISPAM_PLUGIN, 'activate_cf7_antispam' );
+
+/**
+ * Creating the cf7-antispam tables whenever a new blog is created
+ *
+ * @since 0.4.5
+ *
+ * @param int $blog_id - The ID of the new blog.
+ */
+function on_create_blog( $blog_id ) {
+	if ( is_plugin_active_for_network( 'cf7-antispam/cf7-antispam.php' ) ) {
+		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
+		switch_to_blog( $blog_id );
+		CF7_AntiSpam_Activator::activate();
+		restore_current_blog();
+	}
+}
+add_action( 'wpmu_new_blog', 'on_create_blog' );
+
+/**
+ * Deleting the table whenever a blog is deleted
+ *
+ * @since 0.4.5
+ *
+ * @param array $tables - Array of tables.
+ */
+function on_delete_blog( $tables ) {
+	global $wpdb;
+	$tables[] = $wpdb->prefix . 'cf7a_wordlist';
+	$tables[] = $wpdb->prefix . 'cf7a_blacklist';
+	return $tables;
+}
+add_filter( 'wpmu_drop_tables', 'on_delete_blog' );
 
 /**
  * The code that runs during plugin deactivation.
