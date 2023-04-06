@@ -41,25 +41,16 @@
   },
   "homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
   "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@wordpress/babel-preset-default": "^7.9.0",
-    "@wordpress/browserslist-config": "^5.8.0",
     "@wordpress/e2e-test-utils": "^9.2.0",
 	"expect-puppeteer": "^6.1.1",
-    "@wordpress/env": "^5.10.0",
-    "@wordpress/eslint-plugin": "^13.9.0",
-    "@wordpress/scripts": "^25.2.0",
+    "@wordpress/env": "^5.15.0",
+    "@wordpress/scripts": "^25.5.1",
     "chart.js": "^3.9.1",
     "husky": "^8.0.3"
   },
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=6.9.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "plugin:@wordpress/eslint-plugin/recommended"
-    ]
   },
   "browserslist": [
     "extends @wordpress/browserslist-config",
