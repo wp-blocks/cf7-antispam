@@ -45,6 +45,7 @@
 	"expect-puppeteer": "^6.1.1",
     "@wordpress/env": "^5.15.0",
     "@wordpress/scripts": "^25.5.1",
+	"@wordpress/eslint-plugin": "^13.9.0",
     "chart.js": "^3.9.1",
     "husky": "^8.0.3"
   },
