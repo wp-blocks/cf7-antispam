@@ -87,7 +87,7 @@ class CF7_AntiSpam_Frontend {
 			if ( stripos( $input, 'type="text"' ) !== false ) {
 				$honeypot_names = $input_names[ $i ];
 				$honeypot_input = sprintf(
-					'<input type="text" name="%1$s" value="" autocomplete="off" class="%2$s" tabindex="-1" />',
+					'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" tabindex="-1" />',
 					esc_attr( $honeypot_names ),
 					esc_attr( $input_class )
 				);
