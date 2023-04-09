@@ -11,8 +11,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '7.2', '7.4', '8.0' ]
+        php: [ '7.2', '7.4', '8.0', 'latest' ]
         wp: [ 'latest' ]
+
     services:
       database:
         image: mysql:5.6
