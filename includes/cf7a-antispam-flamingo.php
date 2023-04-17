@@ -335,7 +335,7 @@ class CF7_AntiSpam_Flamingo {
 
 			$rating = ! empty( $message ) ? round( $b8->cf7a_b8_classify( $message ), 2 ) : 'none';
 
-			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', round( $rating, 2 ) );
+			update_post_meta( $result['flamingo_inbound_id'], '_cf7a_b8_classification', $rating );
 		}
 	}
 
