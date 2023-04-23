@@ -34,6 +34,15 @@ class CF7_AntiSpam_Admin {
 	private $version;
 
 	/**
+	 * The geoip class
+	 *
+	 * @since    0.4.6
+	 * @access   private
+	 * @var      CF7_Antispam_Geoip $geoip
+	 */
+	private $geoip;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    0.1.0
