@@ -17,268 +17,274 @@ $color__warn: $color__yellow;
 $color__success: $color__green;
 $color__info: $color__blue;
 
-
 // Plugin Admin style
 .cf7-antispam-admin {
-
-  // utils
-  .ellipsis {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
+	// utils
+	.ellipsis {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
 
 	.hidden,
 	&.hidden {
 		display: none;
 	}
 
-  // extra
-  .monospace {
-    font-family: monospace;
-  }
-
-  .alert {
-    color: $color__alert;
-
-    &.label {
-      font-size: 12px;
-    }
-  }
-
-  .info {
-    color: $color__info;
-  }
-
-  .cf7a-tip {
-	padding: 2px 16px;
-	background: #fff6db;
-	border: 1px solid #EDC03B;
-	border-radius: 3px;
-	box-sizing: border-box;
-  }
-
-  .card {
-	width: 100%;
-	max-width: 900px;
-  }
-
-  form {
-
-    // input style
-    h2 {
-      padding-top: 24px;
-      border-top: 1px solid #eee;
-      margin-top: 32px;
-      margin-bottom: 4px;
-
-      + p {
-        margin-top: 0;
-        color: #666
-      }
-    }
-
-    // remove the border for the first subtitle
-    input[type="hidden"] + h2 {
-      margin-top: 0;
-      border: 0;
-    }
-
-    // input style
-    textarea {
-      width: 100%;
-      min-height: 100px;
-    }
-  }
-
-  .blacklist-table {
-    display: block;
-    max-width: 100%;
-    width: 100%;
-
-    div.row {
-      display: flex;
-      font-size: 12px;
-      margin-bottom: 8px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid darken($color__white, 4%);
-
-      &:last-child {
-        border: 0
-      }
-
-      .status {
-        width: 50px;
-        margin-right: 8px;
-
-        .ico {
-		  display: inline-block;
-          font-family: monospace;
-		  text-align: center;
-		  border-radius: 50%;
-		  width: 40px;
-		  height: 40px;
-		  line-height: 30px;
-		  box-sizing: border-box;
-		  padding: 5px;
-		  margin: 0;
-
-          color: $color__white;
-          font-size: 20px;
-          font-weight: bold;
-          text-shadow: 0 1px 1px transparentize($color__black, .7);
-        }
-      }
-
-      .ip {
-        font-family: monospace;
-        font-weight: bold;
-        margin: 0;
-
-        .actions a {
-          transition: .5s;
-          color: $color__light-grey;
-
-          &:hover {
-            color: $color__red;
-          }
-        }
-      }
-
-      .data {
-        display: block;
-        max-width: 400px;
-        font-size: 11px;
-        color: $color__dark-grey;
-        b {
-          color: $color__black;
-        }
-      }
-
-    }
-  }
-
-  // welcome panel
-  #welcome-panel {
-    margin-top: 20px;
-    padding: 0.7em 2em 1em;
-
-    h3 {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 2.1em;
-      margin: 1em 0 1.2em;
-
-      .dashicons {
-        position: relative;
-        top: -2px;
-        display: inline-block;
-        width: 60px;
-        color: #575757;
-        font-size: 40px;
-      }
-    }
-
-    p a {
-      font-weight: bold;
-    }
-
-    .welcome-panel-column,
-    .welcome-panel-column:first-child {
-      width: 48%;
-      padding: 0 2% 0 0;
-      margin: 0 0 1em 0;
-      @media screen and (max-width: 870px) {
-        display: block;
-        float: none;
-        width: 100%;
-      }
-    }
-
-
-    &:hover {
-      h3.blink { animation: 5s blink }
-      code.blink { animation: 4s 1s blink }
-    }
-
-	.welcome-panel-close {
-	  position: absolute;
-	  top: 10px;
-	  right: 10px;
-	  padding: 10px 15px 10px 24px;
-	  font-size: 13px;
-	  line-height: 1.23076923;
-	  text-decoration: none;
-
-	  &:before {
-		position: absolute;
-		top: 8px;
-		left: 0;
-		transition: all .1s ease-in-out;
-		content: '\f335';
-		font-size: 24px;
-		color: #1d2327;
-		display: block;
-		font: normal 16px/20px dashicons;
-		height: 20px;
-		text-align: center;
-		width: 20px;
-	  }
+	// extra
+	.monospace {
+		font-family: monospace;
 	}
-  }
 
-  .dnsbl_table {
-	width: 100%;
-  }
+	.alert {
+		color: $color__alert;
+
+		&.label {
+			font-size: 12px;
+		}
+	}
+
+	.info {
+		color: $color__info;
+	}
+
+	.cf7a-tip {
+		padding: 2px 16px;
+		background: #fff6db;
+		border: 1px solid #edc03b;
+		border-radius: 3px;
+		box-sizing: border-box;
+	}
+
+	.card {
+		width: 100%;
+		max-width: 900px;
+	}
+
+	form {
+		// input style
+		h2 {
+			padding-top: 24px;
+			border-top: 1px solid #eee;
+			margin-top: 32px;
+			margin-bottom: 4px;
+
+			+ p {
+				margin-top: 0;
+				color: #666;
+			}
+		}
+
+		// remove the border for the first subtitle
+		input[type="hidden"] + h2 {
+			margin-top: 0;
+			border: 0;
+		}
+
+		// input style
+		textarea {
+			width: 100%;
+			min-height: 100px;
+		}
+	}
+
+	.blacklist-table {
+		display: block;
+		max-width: 100%;
+		width: 100%;
+
+		div.row {
+			display: flex;
+			font-size: 12px;
+			margin-bottom: 8px;
+			padding-bottom: 8px;
+			border-bottom: 1px solid darken($color__white, 4%);
+
+			&:last-child {
+				border: 0;
+			}
+
+			.status {
+				width: 50px;
+				margin-right: 8px;
+
+				.ico {
+					display: inline-block;
+					font-family: monospace;
+					text-align: center;
+					border-radius: 50%;
+					width: 40px;
+					height: 40px;
+					line-height: 30px;
+					box-sizing: border-box;
+					padding: 5px;
+					margin: 0;
+
+					color: $color__white;
+					font-size: 20px;
+					font-weight: 700;
+					text-shadow: 0 1px 1px transparentize($color__black, 0.7);
+				}
+			}
+
+			.ip {
+				font-family: monospace;
+				font-weight: 700;
+				margin: 0;
+
+				.actions a {
+					transition: 0.5s;
+					color: $color__light-grey;
+
+					&:hover {
+						color: $color__red;
+					}
+				}
+			}
+
+			.data {
+				display: block;
+				max-width: 400px;
+				font-size: 11px;
+				color: $color__dark-grey;
+
+				b {
+					color: $color__black;
+				}
+			}
+		}
+	}
+
+	// welcome panel
+	#welcome-panel {
+		margin-top: 20px;
+		padding: 0.7em 2em 1em;
+
+		h3 {
+			font-size: 16px;
+			font-weight: 600;
+			line-height: 2.1em;
+			margin: 1em 0 1.2em;
+
+			.dashicons {
+				position: relative;
+				top: -2px;
+				display: inline-block;
+				width: 60px;
+				color: #575757;
+				font-size: 40px;
+			}
+		}
+
+		p a {
+			font-weight: 700;
+		}
+
+		.welcome-panel-column,
+		.welcome-panel-column:first-child {
+			width: 48%;
+			padding: 0 2% 0 0;
+			margin: 0 0 1em 0;
+
+			@media screen and (max-width: 870px) {
+				display: block;
+				float: none;
+				width: 100%;
+			}
+		}
+
+		&:hover {
+
+			h3.blink {
+				animation: 5s blink;
+			}
+
+			code.blink {
+				animation: 4s 1s blink;
+			}
+		}
+
+		.welcome-panel-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			padding: 10px 15px 10px 24px;
+			font-size: 13px;
+			line-height: 1.23076923;
+			text-decoration: none;
+
+			&::before {
+				position: absolute;
+				top: 8px;
+				left: 0;
+				transition: all 0.1s ease-in-out;
+				content: "\f335";
+				font-size: 24px;
+				color: #1d2327;
+				display: block;
+				font: 400 16px/20px dashicons;
+				height: 20px;
+				text-align: center;
+				width: 20px;
+			}
+		}
+	}
+
+	.dnsbl_table {
+		width: 100%;
+	}
 }
 
 // Flamingo customization
 body.flamingo_page_flamingo_inbound {
-  span.flamingo-rating-label {
-    display: inline-block;
-    min-width: 24px;
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
-    border-radius: 15px;
-    padding: 5px;
 
-    b {
-      color: $color__white;
-      font-size: 11px;
-      text-shadow: 0 1px 1px transparentize($color__black, .7);
-      vertical-align: text-bottom;
-    }
-  }
+	span.flamingo-rating-label {
+		display: inline-block;
+		min-width: 24px;
+		height: 20px;
+		line-height: 20px;
+		text-align: center;
+		border-radius: 15px;
+		padding: 5px;
 
-  .column {
-	&-d8 {
-	  width: 120px;
-	  text-align: center;
+		b {
+			color: $color__white;
+			font-size: 11px;
+			text-shadow: 0 1px 1px transparentize($color__black, 0.7);
+			vertical-align: text-bottom;
+		}
 	}
 
-	&-resend {
-	  width: 180px;
-	  text-align: right;
-	}
-  }
+	.column {
 
+		&-d8 {
+			width: 120px;
+			text-align: center;
+		}
+
+		&-resend {
+			width: 180px;
+			text-align: right;
+		}
+	}
 }
 
 .notice.notice-cf7-antispam {
-  border-left-color: $color__orange;
+	border-left-color: $color__orange;
 }
 
 // Animations
 @keyframes blink {
-  0% {
-    color: $color__dark-grey;
-  }
-  5% {
-    color: $color__primary;
-  }
-  20% {
-    color: $color__dark-grey;
-  }
-}
 
+	0% {
+		color: $color__dark-grey;
+	}
+
+	5% {
+		color: $color__primary;
+	}
+
+	20% {
+		color: $color__dark-grey;
+	}
+}

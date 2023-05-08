@@ -29,12 +29,7 @@
 	"l3u/b8": "*"
   },
   "scripts": {
-	"PHPCS": "vendor/bin/phpcs --standard=.phpcs.xml.dist  -s --report=full,summary,source",
-	"PHPCS-dev": "vendor/bin/phpcs --standard=phpcs.ruleset.xml -s --report=full,summary,source",
-	"PHPCS-FIXER-dev": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml  -s --report=full",
-	"phpstan": "vendor/bin/phpstan",
-	"psalm": "vendor/bin/psalm",
-	"psalm-fix": "vendor/bin/psalm --alter --issues=MissingReturnType,InvalidNullableReturnType,InvalidReturnType --dry-run",
+	"PHPCS": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml  -s --report=full,summary,source",
 	"test": "vendor/bin/phpunit -c phpunit.xml.dist --verbose",
 	"test-multisite": "WP_MULTISITE=1 vendor/bin/phpunit -c tests/multisite.xml --verbose"
   },
