@@ -655,7 +655,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_get_a_random_tip() {
 
-		$tips               = array(
+		$tips = array(
 			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
 			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
 			sprintf(
@@ -942,9 +942,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	private function cf7a_input_cron_schedule( $input, $input_name, $cron_task, $schedule ) {
 		$new_value = false;
 
-		if ( ! empty( $input[$input_name] ) && in_array( $input[$input_name], array_keys( $schedule ), true ) ) {
-			if ( $this->options[$input_name] !== $input[$input_name] ) {
-				$new_value = $input[$input_name];
+		if ( ! empty( $input[ $input_name ] ) && in_array( $input[ $input_name ], array_keys( $schedule ), true ) ) {
+			if ( $this->options[ $input_name ] !== $input[ $input_name ] ) {
+				$new_value = $input[ $input_name ];
 				/* delete previous scheduled events */
 				$timestamp = wp_next_scheduled( $cron_task );
 				if ( $timestamp ) {

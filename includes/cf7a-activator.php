@@ -155,13 +155,13 @@ class CF7_AntiSpam_Activator {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$table_wordlist = $wpdb->prefix . 'cf7a_wordlist';
+		$table_wordlist  = $wpdb->prefix . 'cf7a_wordlist';
 		$table_blacklist = $wpdb->prefix . 'cf7a_blacklist';
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		/* Create the term database  if not available */
-		if( $wpdb->get_var( "SHOW TABLES like '{$table_wordlist}'" ) !== $table_wordlist ) {
+		if ( $wpdb->get_var( "SHOW TABLES like '{$table_wordlist}'" ) !== $table_wordlist ) {
 
 			$cf7a_wordlist = 'CREATE TABLE IF NOT EXISTS `' . $table_wordlist . "` (
 			  `token` varchar(100) character set utf8 collate utf8_bin NOT NULL,
@@ -182,7 +182,7 @@ class CF7_AntiSpam_Activator {
 		}
 
 		/* Create the blacklist database */
-		if( $wpdb->get_var( "SHOW TABLES like '{$table_blacklist}'" ) !== $table_blacklist ) {
+		if ( $wpdb->get_var( "SHOW TABLES like '{$table_blacklist}'" ) !== $table_blacklist ) {
 			$cf7a_database = "CREATE TABLE IF NOT EXISTS `{$table_blacklist}` (
 				 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				 `ip` varchar(45) NOT NULL,

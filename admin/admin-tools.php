@@ -80,7 +80,7 @@ class CF7_AntiSpam_Admin_Tools {
 				$ban_id = intval( substr( $action, 12 ) );
 				$ban_ip = $filter->cf7a_blacklist_get_id( $ban_id );
 
-				if ( $ban_ip && !empty($plugin_options) ) {
+				if ( $ban_ip && ! empty( $plugin_options ) ) {
 
 					if ( CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array_merge( $plugin_options['bad_ip_list'], array( $ban_ip->ip ) ) ) ) {
 						$filter->cf7a_unban_by_id( $ban_id );

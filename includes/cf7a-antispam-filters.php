@@ -327,7 +327,7 @@ class CF7_AntiSpam_Filters {
 		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'version' ] ) ), $options['cf7a_cipher'] ) : false;
 
 		/* client referer */
-		$cf7a_referer = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'referer' ] ) ), $options['cf7a_cipher'] ) : false;
+		$cf7a_referer  = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'referer' ] ) ), $options['cf7a_cipher'] ) : false;
 		$cf7a_protocol = isset( $_POST[ $prefix . 'protocol' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'protocol' ] ) ), $options['cf7a_cipher'] ) : false;
 
 		/* CF7 user agent */
@@ -392,7 +392,7 @@ class CF7_AntiSpam_Filters {
 		/**
 		 * Checks for IP and return immediately if it is whitelisted
 		 */
-		if ( !empty( $ip_whitelist ) )
+		if ( ! empty( $ip_whitelist ) ) {
 			foreach ( $ip_whitelist as $good_ip ) {
 
 				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
@@ -401,6 +401,7 @@ class CF7_AntiSpam_Filters {
 					return false;
 				}
 			}
+		}
 
 		/**
 		 * Checking if the IP address is empty. If it is empty, it will add a score of 10 to the spam score and add a reason to the reason array.
@@ -508,7 +509,7 @@ class CF7_AntiSpam_Filters {
 			}
 
 			if ( $cf7a_protocol ) {
-				if ( in_array($cf7a_protocol, array('HTTP/1.0', 'HTTP/1.1','HTTP/1.2') ) ) {
+				if ( in_array( $cf7a_protocol, array( 'HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2' ) ) ) {
 
 					$spam_score           += $score_warn;
 					$reason['no_protocol'] = 'client has a bot-like connection protocol';

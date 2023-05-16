@@ -79,7 +79,7 @@ class CF7_AntiSpam_Frontend {
 		$max_replacements = min( intval( apply_filters( 'cf7a_additional_max_honeypots', 5 ) ), count( $input_names ) );
 
 		/* find the input fields */
-		preg_match_all('/<input\s.*?>/', $form_elements, $matches);
+		preg_match_all( '/<input\s.*?>/', $form_elements, $matches );
 		$inputs = $matches[0];
 
 		/* add honeypot fields */
@@ -92,7 +92,7 @@ class CF7_AntiSpam_Frontend {
 					esc_attr( $input_class )
 				);
 				// get a random true or false
-				$rand = wp_rand(0, 1);
+				$rand          = wp_rand( 0, 1 );
 				$form_elements = str_replace(
 					$input,
 					$rand ? $input . $honeypot_input : $honeypot_input . $input,
@@ -257,9 +257,9 @@ class CF7_AntiSpam_Frontend {
 		return array_merge(
 			$fields,
 			array(
-				$prefix . 'version' => '1.0',
-				$prefix . 'address' => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
-				$prefix . 'referer' => cf7a_crypt( $referrer ? $referrer : 'no referer', $this->options['cf7a_cipher'] ),
+				$prefix . 'version'  => '1.0',
+				$prefix . 'address'  => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
+				$prefix . 'referer'  => cf7a_crypt( $referrer ? $referrer : 'no referer', $this->options['cf7a_cipher'] ),
 				$prefix . 'protocol' => cf7a_crypt( $protocol ? $protocol : 'protocol missing', $this->options['cf7a_cipher'] ),
 			)
 		);

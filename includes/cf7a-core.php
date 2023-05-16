@@ -285,7 +285,9 @@ class CF7_AntiSpam {
 			/* adds the javascript script to frontend */
 			$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );
 
-			if ($post) $this->options['check_bot_fingerprint'] = apply_filters( $this->options['check_bot_fingerprint'], $post->ID );
+			if ( $post ) {
+				$this->options['check_bot_fingerprint'] = apply_filters( $this->options['check_bot_fingerprint'], $post->ID );
+			}
 
 			/* It adds a hidden field to the form with a unique value that is encrypted with a cipher */
 			if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
