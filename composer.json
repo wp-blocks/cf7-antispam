@@ -29,7 +29,7 @@
 	"l3u/b8": "*"
   },
   "scripts": {
-	"PHPCS": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml  -s --report=full,summary,source",
+	"PHPCS": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml -s --report=full,summary,source",
 	"test": "vendor/bin/phpunit -c phpunit.xml.dist --verbose",
 	"test-multisite": "WP_MULTISITE=1 vendor/bin/phpunit -c tests/multisite.xml --verbose"
   },

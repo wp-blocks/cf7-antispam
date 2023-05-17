@@ -2,7 +2,7 @@
 	"name": "cf7-antispam",
 	"author": "Erik Golinelli",
 	"license": "GPL-2.0-only",
-	"version": "0.4.5",
+	"version": "0.4.6",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
@@ -42,11 +42,10 @@
 	"homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
 	"devDependencies": {
 		"@wordpress/e2e-test-utils": "^9.2.0",
-		"@wordpress/env": "^5.15.0",
-		"@wordpress/eslint-plugin": "^13.9.0",
+		"@wordpress/eslint-plugin": "^14.6.0",
 		"@wordpress/scripts": "^25.5.1",
-		"chart.js": "^3.9.1",
-		"expect-puppeteer": "^6.1.1",
+		"chart.js": "^4.3.0",
+		"expect-puppeteer": "^8.0.5",
 		"husky": "^8.0.3"
 	},
 	"engines": {

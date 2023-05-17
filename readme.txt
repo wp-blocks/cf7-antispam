@@ -4,7 +4,7 @@ Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
 Requires at least: 5.4
 Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 0.4.5
+Stable tag: 0.4.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,11 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.4.6 =
+* PHP 8.2 support (bug report, thanks @senjoralfonso)
+* Fix "internal_server_error" when message is empty (pull request, thanks @MeliEve #42)
+* Maintenance - updated dependencies CI and coding standards
 
 = 0.4.5 =
 * Enhanced language detection using the http headers accepted language (bug report, thanks @senjoralfonso #33)
