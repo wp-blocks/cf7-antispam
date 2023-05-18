@@ -672,7 +672,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
 				__( 'fields with multiple tags', 'cf7-antispam' ),
 				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
-			)
+			),
 		);
 
 		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];

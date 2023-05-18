@@ -332,8 +332,8 @@ class CF7_AntiSpam_Admin {
 							labels: ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_date'] ) ), array() ); ?>"],
 							datasets: [{
 								label: 'Ham',
-								backgroundColor: 'rgb(45,138,234)',
-								borderColor: 'rgb(51 114 179)',
+								backgroundColor: 'rgb(38,137,218)',
+								borderColor: 'rgb(34 113 177)',
 								tension: 0.25,
 								data: [
 									<?php
@@ -361,7 +361,7 @@ class CF7_AntiSpam_Admin {
 							datasets: [{
 								data: [<?php echo esc_html( $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam'] ); ?>],
 								backgroundColor: [
-									'rgb(45,138,234)',
+									'rgb(38,137,218)',
 									'rgb(248,49,47)'
 								]
 							}]
