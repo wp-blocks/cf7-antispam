@@ -43,22 +43,16 @@ class CF7_AntiSpam_B8 {
 			return false;
 		}
 
-		$db         = explode( ':', DB_HOST );
-		$db_address = $db[0];
-		$db_port    = ! empty( $db[1] ) ? intval( $db[1] ) : 3306;
+		$dbh = $wpdb->__get( 'dbh' );
 
-		/* B8 config */
-		$mysql = new mysqli(
-			$db_address,
-			DB_USER,
-			DB_PASSWORD,
-			DB_NAME,
-			$db_port
-		);
+		if ( empty( $dbh ) ) {
+			cf7a_log( 'There might be a problem with the MySQL server connection' );
+			return false;
+		}
 
 		$config_b8      = array( 'storage' => 'mysql' );
 		$config_storage = array(
-			'resource' => $mysql,
+			'resource' => $dbh,
 			'table'    => $wpdb->prefix . 'cf7a_wordlist',
 		);
 

@@ -67,9 +67,9 @@ require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-functions.php';
 /**
  * The code that runs during plugin activation.
  */
-function activate_cf7_antispam($network_wide) {
+function activate_cf7_antispam( $network_wide ) {
 	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
-	CF7_AntiSpam_Activator::on_activate($network_wide);
+	CF7_AntiSpam_Activator::on_activate( $network_wide );
 }
 register_activation_hook( CF7ANTISPAM_PLUGIN, 'activate_cf7_antispam' );
 
