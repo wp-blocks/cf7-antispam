@@ -43,9 +43,10 @@
 	"devDependencies": {
 		"@wordpress/e2e-test-utils": "^9.2.0",
 		"@wordpress/eslint-plugin": "^14.6.0",
+		"@wordpress/env": "^7.0.0",
 		"@wordpress/scripts": "^25.5.1",
 		"chart.js": "^4.3.0",
-		"expect-puppeteer": "^8.0.5",
+		"expect-puppeteer": "^6.1.1",
 		"husky": "^8.0.3"
 	},
 	"engines": {
