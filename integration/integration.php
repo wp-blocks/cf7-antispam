@@ -20,7 +20,6 @@ require_once CF7ANTISPAM_PLUGIN_DIR . '/integration/service.php' ;
  * into the intefration page
  */
 
-add_action( 'wpcf7_init', 'cf7_antispam_register_service', 12, 0 );
 
 function cf7_antispam_register_service() {
 	$integration = WPCF7_Integration::get_instance();
@@ -28,4 +27,10 @@ function cf7_antispam_register_service() {
 		'cf7-antispam',
 		WPCF7_Antispam::get_instance()
 	);
+
 }
+
+add_action( 'wpcf7_init', 'cf7_antispam_register_service',1,0);
+
+
+

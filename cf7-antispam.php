@@ -134,6 +134,7 @@ require CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-core.php';
  * Initialize the plugin once all other plugins have finished loading.
  */
 
+require CF7ANTISPAM_PLUGIN_DIR . '/integration/integration.php' ;
 function run_cf7a() {
 	$cf7a = new CF7_AntiSpam();
 	if ($cf7a->enabled === true) {
@@ -142,7 +143,6 @@ function run_cf7a() {
 }
 add_action( 'init', 'run_cf7a', 11 );
 
-include_once CF7ANTISPAM_PLUGIN_DIR . '/integration/integration.php' ;
 
 
 
