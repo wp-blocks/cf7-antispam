@@ -33,20 +33,26 @@ class WPCF7_Antispam extends GlobalWPCF7_Service
 
 	private static $instance;
 
-	private $options;
+	public $options;
 
 	public static function get_instance()
 	{
-
 		if (empty(self::$instance)) {
 			self::$instance = new self();
 		}
-
+		
 		return self::$instance;
 	}
-
+	
 	public function __construct()
 	{
+		$this->options = CF7_AntiSpam::get_options();
+
+		if (isset($_POST['cf7a_submit'])) {
+			$this->options['cf7a_enable'] = !$this->options['cf7a_enable'];
+			CF7_AntiSpam::update_plugin_options($this->options);
+			echo '<div class="updated"><p>Settings saved.</p></div>';
+		} 
 		/**
 		 * Call the options otherwise the plugin will break in integration
 		 */
@@ -73,7 +79,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service
 	 */
 	public function is_active()
 	{
-		$this->options = CF7_AntiSpam::get_options();
+
 		return $this->options['cf7a_enable'];
 	}
 
@@ -145,6 +151,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service
 
 	public function admin_notice($message = '')
 	{
+
 	}
 
 	/**
@@ -177,7 +184,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service
 	 * performs some actions and redirects the user.
 	 *
 	 * @param action The "action" parameter is used to determine the specific action that needs to be
-	 * performed. In this code snippet, if the value of the "action" parameter is "setup", it will execute
+	 * performed. In this code snippet, if the value of the "action" parameter is "setup", it will executehttp://two.wordpress.test/wp-admin/tools.php
 	 * the code inside the if statement.
 	 */
 	public function load($action = '')
@@ -232,32 +239,9 @@ class WPCF7_Antispam extends GlobalWPCF7_Service
 				esc_html(__('CF7-Antispam is active on this site.', 'contact-form-7'))
 			);
 		}
-
-		//if ('setup' == $action) {
-		// 	$this->display_setup();
-		// } else {
-		// 	echo sprintf(
-		// 		'<p><a href="%1$s" class="button">%2$s</a></p>',
-		// 		esc_url($this->menu_page_url('action=setup')),
-		// 		esc_html(__('Setup Integration', 'contact-form-7'))
-		// 	);
-		// }
-		if (isset($_POST['cf7a_submit'])) {
-			// Verify nonce
-
-				// Update the checkbox value in the options
-				$this->options['cf7a_enable'] = !$this->options['cf7a_enable'];
-				CF7_AntiSpam::update_plugin_options($this->options);
-				echo '<div class="updated"><p>Settings saved.</p></div>';
-				echo "<script type='text/javascript'>
-       				  window.location=document.location.href;
-        			  </script>";
-
-		} 
 	
 		// Get the current checkbox status from the options
 		$checked = $this->options['cf7a_enable'] ? 'Disable' : 'Enable';
-	
 		// Display the form
 		echo '<div class="wrap">';
 		echo '<h2>Checkbox Settings</h2>';
@@ -268,7 +252,6 @@ class WPCF7_Antispam extends GlobalWPCF7_Service
 		} 
 		echo '</form>';
 		echo '</div>';
-	//}
 
 	}
 
