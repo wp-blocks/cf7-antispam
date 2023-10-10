@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Livello_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
+<g>
+	<g>
+		<defs>
+			<circle id="SVGID_1_" cx="128" cy="128" r="124.2"/>
+		</defs>
+		<clipPath id="SVGID_2_">
+			<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+		</clipPath>
+		<circle style="clip-path:url(#SVGID_2_);fill:#33C6F4;" cx="128" cy="128" r="124.2"/>
+	</g>
+	<path style="fill:#221E1F;" d="M128,256C57.4,256,0,198.6,0,128C0,57.4,57.4,0,128,0c70.6,0,128,57.4,128,128
+		C256,198.6,198.6,256,128,256z M128,7.7C61.6,7.7,7.7,61.6,7.7,128s54,120.3,120.3,120.3c66.4,0,120.3-54,120.3-120.3
+		S194.4,7.7,128,7.7z"/>
+	<g>
+		<path style="fill:#A32222;stroke:#221E1F;stroke-width:9.0598;stroke-miterlimit:10;" d="M229.8,138.7
+			c0-31.4-45.6-53.1-101.8-53.1S26.2,107.3,26.2,138.7"/>
+		
+			<ellipse style="fill:#FFFFFF;stroke:#221E1F;stroke-width:9.0598;stroke-miterlimit:10;" cx="128" cy="138.7" rx="101.8" ry="25.4"/>
+		<path style="fill:none;stroke:#221E1F;stroke-width:7.6849;stroke-miterlimit:10;" d="M101.6,112.1c0,0,13.4,29.8,26.6,29.8
+			c15.1,0,26.6-29.8,26.6-29.8"/>
+		<line style="fill:none;stroke:#221E1F;stroke-width:9.742;stroke-miterlimit:10;" x1="128.2" y1="144.1" x2="128.2" y2="252.6"/>
+		<path style="fill:none;stroke:#221E1F;stroke-width:4.2635;stroke-miterlimit:10;" d="M39.7,151.3C32.2,110.8,128,85.6,128,85.6
+			s-77.6,31.6-64.9,74.3"/>
+		<path style="fill:none;stroke:#221E1F;stroke-width:4.2635;stroke-miterlimit:10;" d="M85.5,163c0,0-12-30.2,42.5-77.5"/>
+		<path style="fill:none;stroke:#221E1F;stroke-width:4.2635;stroke-miterlimit:10;" d="M216.6,151.3c7.5-40.5-88.3-65.7-88.3-65.7
+			s77.6,31.6,64.9,74.3"/>
+		<path style="fill:none;stroke:#221E1F;stroke-width:4.2635;stroke-miterlimit:10;" d="M170.8,163c0,0,12-30.2-42.5-77.5"/>
+	</g>
+</g>
+</svg>

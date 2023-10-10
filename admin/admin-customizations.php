@@ -57,6 +57,13 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_options',
 			array( $this, 'cf7a_sanitize_options' )
 		);
+		/* Checkbox for Plugin enabling */
+		add_settings_field(
+			'cf7a_enable',
+			__( 'Enable Plugin', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_plugin' ),
+			'cf7a-settings',
+		);
 
 		/* Section Bot Fingerprint */
 		add_settings_section(
@@ -976,6 +983,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* get the existing options */
 		$new_input = $this->options;
+
+		$new_input['cf7a_enable']  = isset( $input['cf7a_enable'] ) ? $input['cf7a_enable'] : $input['cf7a_enable'];
 
 		/* bot fingerprint */
 		$new_input['check_bot_fingerprint']        = isset( $input['check_bot_fingerprint'] ) ? 1 : 0;

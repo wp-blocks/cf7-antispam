@@ -62,6 +62,9 @@ class CF7_AntiSpam {
 	 * The constructor function is called when the plugin is loaded. It sets the version, plugin name, and options. It loads
 	 * the dependencies, sets the locale, updates the plugin, and loads the admin and frontend areas
 	 */
+
+	public $enabled = false;
+
 	public function __construct() {
 		if ( defined( 'CF7ANTISPAM_VERSION' ) ) {
 			$this->version = CF7ANTISPAM_VERSION;
@@ -71,6 +74,10 @@ class CF7_AntiSpam {
 
 		$this->plugin_name = CF7ANTISPAM_NAME;
 		$this->options     = $this->get_options(); /* the plugin options */
+
+		if ( $this->options['cf7a_enable'] === false ) {
+			return $this->enabled = false;
+		}
 
 		/* the php files */
 		$this->load_dependencies();
@@ -101,6 +108,8 @@ class CF7_AntiSpam {
 
 		/* the frontend area */
 		$this->load_frontend();
+
+		return $this->enabled = true;
 	}
 
 	/**
@@ -110,9 +119,9 @@ class CF7_AntiSpam {
 	 * with WordPress.
 	 *
 	 * @since    0.2.4
-	 * @access   private
+	 * @access   protected
 	 */
-	private function update() {
+	protected function update() {
 
 		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
 		do_action( 'cf7a_update' );
