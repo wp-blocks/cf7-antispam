@@ -1,61 +1,68 @@
 {
-  "name": "cf7-antispam",
-  "author": "Erik Golinelli",
-  "license": "GPL-2.0-only",
-  "version": "0.4.5",
-  "description": "AntiSpam for Contact Form 7",
-  "files": [
-    "admin/*",
-    "includes/*",
-    "vendor/*",
-    "languages/cf7-antispam.pot",
-    "languages/readme.txt",
-    "cf7-antispam.php",
-    "LICENSE",
-    "readme.txt"
-  ],
-  "scripts": {
-    "start": "wp-scripts start",
-    "build": "wp-scripts build",
-    "preplugin-zip": "wp-env run composer \"composer install --no-dev\"",
-	"plugin-zip": "wp-scripts plugin-zip",
-	"postplugin-zip": "wp-env run composer \"composer install\"",
-    "lint:css": "wp-scripts lint-style",
-    "lint:js": "wp-scripts lint-js  ./includes/src ./admin/src",
-    "packages-update": "wp-scripts packages-update",
-    "wp-env:start": "wp-env start",
-    "wp-env:stop": "wp-env stop",
-    "wp-env:destroy": "wp-env destroy",
-    "test:e2e": "wp-scripts test-e2e",
-    "test:e2e:watch": "npm run test:e2e --watch",
-    "postinstall": "husky install",
-	"PHPCS": "wp-env run composer \"composer PHPCS\"",
-	"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/erikyo/contact-form-7-antispam.git"
-  },
-  "bugs": {
-    "url": "https://github.com/erikyo/contact-form-7-antispam/issues"
-  },
-  "homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
-  "devDependencies": {
-    "@wordpress/e2e-test-utils": "^9.2.0",
-	"expect-puppeteer": "^6.1.1",
-    "@wordpress/env": "^5.15.0",
-    "@wordpress/scripts": "^25.5.1",
-	"@wordpress/eslint-plugin": "^13.9.0",
-    "chart.js": "^3.9.1",
-    "husky": "^8.0.3"
-  },
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=6.9.0"
-  },
-  "browserslist": [
-    "extends @wordpress/browserslist-config",
-    "Safari > 8",
-    "IE > 10"
-  ]
+	"name": "cf7-antispam",
+	"author": "Erik Golinelli",
+	"license": "GPL-2.0-only",
+	"version": "0.4.6",
+	"description": "AntiSpam for Contact Form 7",
+	"files": [
+		"admin/*",
+		"includes/*",
+		"vendor/*",
+		"languages/cf7-antispam.pot",
+		"languages/readme.txt",
+		"cf7-antispam.php",
+		"LICENSE",
+		"readme.txt"
+	],
+	"scripts": {
+		"start": "wp-scripts start",
+		"build": "wp-scripts build",
+		"preplugin-zip": "wp-env run composer \"composer install --no-dev\"",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"postplugin-zip": "wp-env run composer \"composer install\"",
+		"lint:css": "wp-scripts lint-style ./admin/src/**/*.scss --fix",
+		"lint:js": "wp-scripts lint-js  ./includes/src ./admin/src",
+		"packages-update": "wp-scripts packages-update",
+		"wp-env:start": "wp-env start",
+		"wp-env:stop": "wp-env stop",
+		"wp-env:destroy": "wp-env destroy",
+		"test:e2e": "wp-scripts test-e2e",
+		"test:e2e:watch": "npm run test:e2e --watch",
+		"postinstall": "husky install",
+		"PHPCS": "wp-env run composer \"composer PHPCS\"",
+		"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/erikyo/contact-form-7-antispam.git"
+	},
+	"bugs": {
+		"url": "https://github.com/erikyo/contact-form-7-antispam/issues"
+	},
+	"homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
+	"devDependencies": {
+		"@wordpress/e2e-test-utils": "^9.2.0",
+		"@wordpress/eslint-plugin": "^14.6.0",
+		"@wordpress/env": "^7.0.0",
+		"@wordpress/scripts": "^25.5.1",
+		"chart.js": "^4.3.0",
+		"expect-puppeteer": "^6.1.1",
+		"husky": "^8.0.3"
+	},
+	"engines": {
+		"node": ">=16.0.0",
+		"npm": ">=6.9.0"
+	},
+	"browserslist": [
+		"extends @wordpress/browserslist-config",
+		"Safari > 8",
+		"IE > 10"
+	],
+	"stylelint": {
+		"extends": [
+			"@wordpress/stylelint-config",
+			"@wordpress/stylelint-config/scss"
+		]
+	},
+	"prettier": "@wordpress/prettier-config"
 }

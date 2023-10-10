@@ -16,7 +16,7 @@
 	<arg value="sp"/> <!-- Show sniff and progress -->
 	<arg name="basepath" value="./"/><!-- Strip the file paths down to the relevant bit -->
 	<arg name="extensions" value="php"/>
-	<arg name="parallel" value="20"/><!-- Enables parallel processing when available for faster results. -->
+	<arg name="parallel" value="100"/><!-- Enables parallel processing when available for faster results. -->
 
 	<!-- Rules: Check PHP version compatibility -->
 	<!-- https://github.com/PHPCompatibility/PHPCompatibility#sniffing-your-code-for-compatibility-with-specific-php-versions -->
@@ -33,6 +33,10 @@
 	<rule ref="WordPress" />
 	<rule ref="WordPress-Docs"/>
 	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-VIP-Go"/>
+	<rule ref="WordPressVIPMinimum"/>
+	<rule ref="WordPress-Docs"/>
+	<rule ref="VariableAnalysis"/>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
@@ -49,8 +53,6 @@
 			</property>
 		</properties>
 	</rule>
-
-	<rule ref="SlevomatCodingStandard.PHP"/>
 
 	<!-- What to scan -->
 	<file>.</file>

@@ -4,27 +4,21 @@ Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
 Requires at least: 5.4
 Tested up to: 6.2
 Requires PHP: 5.6
-Stable tag: 0.4.5
+Stable tag: 0.4.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A trustworthy antispam plugin for Contact Form 7. Simple but effective.
+A trustworthy antispam plugin for Contact Form 7. Wave goodbye to spam and keep your inbox clean!
 
 == Description ==
-The antispam you're using isn't working well, is it? Maybe because it's not using the correct method*** to stop the type of bot that's attacking you, but I think I have a solution!
-Antispam for Contact Form 7 is a free plugin for Contact Form 7 that blocks bots from flooding your mailbox, without tedious configuration and without captcha (which usually causes loss of conversions and sometimes are blocking for real users).
-To do this we use different in and off page bots traps and an auto-learning mechanism based on a statistical "Bayesian" spam filter called B8.
-CF7-AntiSpam works well and adds some functionalities to [Flamingo](https://wordpress.org/plugins/flamingo/). If both are installed Flamingo will get some additional controls and an additional dashboard widget will be enabled.
+Are you unsatisfied with your current antispam solution for Contact Form 7? It might be using an ineffective method to combat the specific type of bot attacks you're facing. Fortunately, I have a solution for you!
+Antispam for Contact Form 7 is a simple yet highly effective plugin that protects your mailbox from bot flooding. Say goodbye to tedious configurations and captchas, which often lead to reduced conversions and inconvenience for genuine users. Our plugin utilizes a combination of on-page and off-page bot traps, along with an auto-learning mechanism powered by a statistical "Bayesian" spam filter called B8.
+CF7-AntiSpam seamlessly integrates with [Flamingo](https://wordpress.org/plugins/flamingo/) and enhances its functionality. When both plugins are installed, Flamingo gains additional controls, and an extra dashboard widget is enabled.
 
 == SETUP ==
-**Basic** - install & go! No Configuration / keys / registrations required to get the antispam protection. In this case only some protections may be enabled like fingerprinting, language checks and honeypots.
-**Advanced** - CF7A needs to parse the input message field of your form to analyze properly the email content with its dictionary.
-So you need to add a "marker" to "notify" the antispam to check this field (you need to do this for each contact form of your website)
-so you need to add 'flamingo_message: "[your-message]"' for each additional settings panel of each contact form you need to secure. The method is the same as you use with [Flamingo](https://contactform7.com/save-submitted-messages-with-flamingo/).
-I know, this is boring but is **required for advanced text statistical analysis**, without this B8 filter will couldn't be enabled.
-**GeoIP** - (optional) Enable this functionality if you need to restrict which countries (or languages) can email you and which cannot.
-In order to enable GeoIp you need to agree GeoLite2 End User License Agreement and sign up GeoLite2 Downloadable Databases, in this way you will obtain the key requested to download the database.
-To find out more, read the information in the dedicated section of the cf7-antispam plugin settings and follow the steps.
+Basic - Install and go! No configuration, keys, or registrations are required to activate the antispam protection. In this case, some protections, such as fingerprinting, language checks, and honeypots, will be enabled.
+Advanced - For CF7A to properly analyze the email content using its dictionary, it needs to parse the input message field of your form. To notify the antispam to check this field, you'll need to add a "marker" to each contact form on your website. Simply add 'flamingo_message: "[your-message]"' in the additional settings panel of each contact form you want to secure. This process follows the same method used with Flamingo. While this step may seem tedious, it is required for advanced text statistical analysis. Without it, the B8 filter cannot be enabled.
+GeoIP - (Optional) If you need to restrict which countries or languages can email you, you can enable this functionality. To enable GeoIP, you'll need to agree to the GeoLite2 End User License Agreement and sign up for GeoLite2 Downloadable Databases. This will provide you with the required key to download the database. For detailed instructions, please refer to the dedicated section in the cf7-antispam plugin settings.
 
 == Antispam Available Tests ==
 ✅ Browser Fingerprinting
@@ -40,14 +34,14 @@ To find out more, read the information in the dedicated section of the cf7-antis
 ✅ Identity protection
 
 == Extends Flamingo and turns it into a spam manager! ==
-In this way you will be able to review emails and "teach" to B8 what is spam and what is not (might be useful in the first times if some mail spam pass through).
-And if you already use Flamingo? Even better! But remember, to add 'flamingo_message: "[your-message]"' to advanced settings (as you do for the other flamingo labels) before activation (or checkuot advanced options "rebuild dictionary").
-While activating CF7A all previous collected mail will be parsed and B8 will learn and build its vocabulary. In this way you will start with a pre-trained algorithm. Super cool!
-Notes:
-- On the right side of Flamingo inbound page I've added a new column that show the mail spamminess level
-- if you unban an email in the flamingo "inbound" page the related ip will be removed from blacklist. But if you mark as spam the mail the ip will be not blacklisted again.
-- Before activate this plugin please be sure to mark all spam mail as spam in flamingo inbound, in this way the B8 algorithm will be auto-trained
-- Don't delete a spam message from ham if you receive it, rather put it in spam to teach B8 how to recognise the difference!
+With this plugin, you can now review emails and train B8 to identify spam and legitimate messages. This feature proves useful, especially during the initial stages when some spam emails may slip through.
+Already using Flamingo? Even better! Just remember to add 'flamingo_message: "[your-message]"' to the advanced settings (similar to other Flamingo labels) before activating the plugin. Alternatively, you can explore the advanced options and select "rebuild dictionary."
+Upon activating CF7A, all previously collected emails will be parsed, and B8 will learn and develop its vocabulary. This pre-trained algorithm gives you a head start. How cool is that?
+Additional Notes:
+- A new column has been added to the right side of the Flamingo inbound page, displaying the level of spaminess for each email.
+- If you unban an email on the Flamingo "inbound" page, the corresponding IP will be removed from the blacklist. However, marking an email as spam will not blacklist the IP again.
+- Before activating this plugin, please make sure to mark all spam emails as spam in the Flamingo inbound section. This auto-training process will help the B8 algorithm.
+- If you receive a spam message, please avoid deleting it from the "ham" section. Instead, place it in the spam section to teach B8 how to differentiate between spam and legitimate messages.
 
 == B8 statistical "Bayesian" Filter ==
 Originally created by [Gary Robinson](https://en.wikipedia.org/wiki/Gary_Robinson) [b8 is a statistical "Bayesian"](https://www.linuxjournal.com/article/6467) spam filter implemented in PHP.
@@ -135,13 +129,21 @@ B8 cuts the text to classify to pieces, extracting stuff like email addresses, l
 
 =Filters=
 
-Before processing the email - `add_filter('cf7a_message_before_processing', 'my_message_before_processing', 10, 2 );`
+Before processing the email
 
-Before processing the email with bayesian filter `add_filter('cf7a_before_b8', 'my_before_b8', 10, 3 );`
+`add_filter('cf7a_message_before_processing', 'my_message_before_processing', 10, 2 );`
 
-Add your own spam filter `add_filter('cf7a_additional_spam_filters', 'my_additional_spam_filters', 10, 3 );`
+Before processing the email with bayesian filter
 
-Add some content when resending a mail (useful to add a message like "this was spammed" or the original mail date/time) `add_filter('cf7a_before_resend_email', 'my_before_resend_email', 10, 3 );`
+`add_filter('cf7a_before_b8', 'my_before_b8', 10, 3 );`
+
+Add your own spam filter
+
+`add_filter('cf7a_additional_spam_filters', 'my_additional_spam_filters', 10, 3 );`
+
+Add some content when resending a mail (useful to add a message like "this was spammed" or the original mail date/time)
+
+`add_filter('cf7a_before_resend_email', 'my_before_resend_email', 10, 3 );`
 
 =DEBUG=
 
@@ -155,6 +157,11 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.4.6 =
+* PHP 8.2 support (bug report, thanks @senjoralfonso)
+* Fix "internal_server_error" when message is empty (pull request, thanks @MeliEve #42)
+* Maintenance - updated dependencies CI and coding standards
 
 = 0.4.5 =
 * Enhanced language detection using the http headers accepted language (bug report, thanks @senjoralfonso #33)

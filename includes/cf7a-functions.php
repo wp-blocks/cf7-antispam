@@ -58,7 +58,7 @@ function cf7a_get_browser_language_array( $languages ) {
 			explode( ',', $languages ),
 			function( $res, $el ) {
 				// trim spaces and removes the semicolon.
-				$el = trim($el);
+				$el = trim( $el );
 				if ( strpos( $el, ';' ) !== false ) {
 					$el = substr( $el, 0, strpos( $el, ';' ) );
 				}

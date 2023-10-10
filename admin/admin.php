@@ -34,6 +34,15 @@ class CF7_AntiSpam_Admin {
 	private $version;
 
 	/**
+	 * The geoip class
+	 *
+	 * @since    0.4.6
+	 * @access   private
+	 * @var      CF7_Antispam_Geoip $geoip
+	 */
+	private $geoip;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    0.1.0
@@ -267,7 +276,7 @@ class CF7_AntiSpam_Admin {
 							get_the_date( 'Y-m-d' ),
 							admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
 							$post->ID,
-							$is_ham ? '✅️' : '⛔',
+							$is_ham ? '🔵' : '🔴',
 							esc_html( get_post_meta( $post->ID, '_from' )[0] ),
 							esc_html( $post->post_title )
 						);
@@ -323,8 +332,8 @@ class CF7_AntiSpam_Admin {
 							labels: ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_date'] ) ), array() ); ?>"],
 							datasets: [{
 								label: 'Ham',
-								backgroundColor: 'rgb(0,255,122)',
-								borderColor: 'rgb(3, 210, 106)',
+								backgroundColor: 'rgb(38,137,218)',
+								borderColor: 'rgb(34 113 177)',
 								tension: 0.25,
 								data: [
 									<?php
@@ -352,7 +361,7 @@ class CF7_AntiSpam_Admin {
 							datasets: [{
 								data: [<?php echo esc_html( $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam'] ); ?>],
 								backgroundColor: [
-									'rgb(15,199,107)',
+									'rgb(38,137,218)',
 									'rgb(248,49,47)'
 								]
 							}]
