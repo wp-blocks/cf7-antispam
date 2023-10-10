@@ -63,6 +63,7 @@ class CF7_AntiSpam {
 	 * the dependencies, sets the locale, updates the plugin, and loads the admin and frontend areas
 	 */
 
+	public $enabled = false;
 
 	public function __construct() {
 		if ( defined( 'CF7ANTISPAM_VERSION' ) ) {
@@ -75,7 +76,7 @@ class CF7_AntiSpam {
 		$this->options     = $this->get_options(); /* the plugin options */
 
 		if ( $this->options['cf7a_enable'] === false ) {
-			return false;
+			return $this->enabled = false;
 		}
 
 		/* the php files */
@@ -108,7 +109,7 @@ class CF7_AntiSpam {
 		/* the frontend area */
 		$this->load_frontend();
 
-		return true;
+		return $this->enabled = true;
 	}
 
 	/**

@@ -1,3 +1,5 @@
+/* The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
+functionality. */
 <?php
 
 /**
@@ -231,15 +233,43 @@ class WPCF7_Antispam extends GlobalWPCF7_Service
 			);
 		}
 
-		if ('setup' == $action) {
-			$this->display_setup();
-		} else {
-			echo sprintf(
-				'<p><a href="%1$s" class="button">%2$s</a></p>',
-				esc_url($this->menu_page_url('action=setup')),
-				esc_html(__('Setup Integration', 'contact-form-7'))
-			);
-		}
+		//if ('setup' == $action) {
+		// 	$this->display_setup();
+		// } else {
+		// 	echo sprintf(
+		// 		'<p><a href="%1$s" class="button">%2$s</a></p>',
+		// 		esc_url($this->menu_page_url('action=setup')),
+		// 		esc_html(__('Setup Integration', 'contact-form-7'))
+		// 	);
+		// }
+		if (isset($_POST['cf7a_submit'])) {
+			// Verify nonce
+
+				// Update the checkbox value in the options
+				$this->options['cf7a_enable'] = !$this->options['cf7a_enable'];
+				CF7_AntiSpam::update_plugin_options($this->options);
+				echo '<div class="updated"><p>Settings saved.</p></div>';
+				echo "<script type='text/javascript'>
+       				  window.location=document.location.href;
+        			  </script>";
+
+		} 
+	
+		// Get the current checkbox status from the options
+		$checked = $this->options['cf7a_enable'] ? 'Disable' : 'Enable';
+	
+		// Display the form
+		echo '<div class="wrap">';
+		echo '<h2>Checkbox Settings</h2>';
+		echo '<form method="post" action="">';
+		echo '<input type="submit" name="cf7a_submit" class="button button-primary" value="' . $checked . '">';
+		if($this->options['cf7a_enable']  === true){
+			echo '<a class="button" href="' . $_SERVER["PHP_SELF"] . '?page=cf7-antispam">Settings Page</a>'; 
+		} 
+		echo '</form>';
+		echo '</div>';
+	//}
+
 	}
 
 	public function display_setup()
