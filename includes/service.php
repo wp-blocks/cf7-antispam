@@ -12,10 +12,6 @@ functionality. */
  * @author     Codekraft Studio <info@codekraft.it>
  */
 
-
-
-
-
 /**
  * Integration class from Contact Form 7
  */

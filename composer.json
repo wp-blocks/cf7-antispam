@@ -55,10 +55,5 @@
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "phpstan/extension-installer": true
     }
-  }, 
-  "autoload": {
-    "classmap": [
-        "../contact-form-7/includes/integration.php"
-    ]
-}
+  }
 }
