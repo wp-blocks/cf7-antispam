@@ -1,6 +1,6 @@
+<?php
 /* The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
 functionality. */
-<?php
 
 /**
  * Contact Form 7 Integration.
