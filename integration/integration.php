@@ -10,7 +10,7 @@
  * @link      https://modul-r.codekraft.it/
  */
 
-require_once CF7ANTISPAM_PLUGIN_DIR . '/integration/service.php' ;
+require_once CF7ANTISPAM_PLUGIN_DIR . '/integration/service.php';
 /**
  * call the integration action to mount our plugin as a component
  * into the intefration page
@@ -25,7 +25,7 @@ function cf7_antispam_register_service() {
 
 }
 
-add_action( 'wpcf7_init', 'cf7_antispam_register_service',1,0);
+add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
 
 
 

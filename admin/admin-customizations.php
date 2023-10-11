@@ -978,7 +978,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* get the existing options */
 		$new_input = $this->options;
 
-		$new_input['cf7a_enable']  = isset( $input['cf7a_enable'] ) ? $input['cf7a_enable'] : $new_input['cf7a_enable'];
+		$new_input['cf7a_enable'] = isset( $input['cf7a_enable'] ) ? $input['cf7a_enable'] : $new_input['cf7a_enable'];
 
 		/* bot fingerprint */
 		$new_input['check_bot_fingerprint']        = isset( $input['check_bot_fingerprint'] ) ? 1 : 0;
@@ -1159,14 +1159,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 		return $html;
 	}
-
-	public function cf7a_enable_hidden(){
-		printf(
-			'<input type="checkbox" id="cf7a_enable" name="cf7a_options[cf7a_enable]" style="display: hidden;" %s />',
-			! empty( $this->options['cf7a_enable'] ) ? 'checked="true"' : ''
-		);
-	}
-
 
 	/**
 	 * Get the settings option array and print one of its values

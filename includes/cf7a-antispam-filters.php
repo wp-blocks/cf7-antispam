@@ -66,7 +66,7 @@ class CF7_AntiSpam_Filters {
 	 * @return bool if true returns the dnsbl says it is spam otherwise false
 	 */
 	public static function cf7a_check_dnsbl( $reverse_ip, $dnsbl ) {
-		return checkdnsrr( $reverse_ip . '.' . $dnsbl . '.' , 'A');
+		return checkdnsrr( $reverse_ip . '.' . $dnsbl . '.', 'A' );
 	}
 
 	/* CF7_AntiSpam_Filters blacklists */
@@ -865,8 +865,8 @@ class CF7_AntiSpam_Filters {
 						$spam_score       += $score_dnsbl;
 					}
 					// if ( $this->cf7a_check_emailbl( $dnsbl ) ) {
-					// 	$reason['dsnbl'][] = $dnsbl;
-					// 	$spam_score       += $score_dnsbl;
+					// $reason['dsnbl'][] = $dnsbl;
+					// $spam_score       += $score_dnsbl;
 					// }
 				}
 
