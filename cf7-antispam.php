@@ -134,14 +134,14 @@ require CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-core.php';
  * Initialize the plugin once all other plugins have finished loading.
  */
 
- require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/service.php';
- 
- /**
-  * call the integration action to mount our plugin as a component
-  * into the intefration page
-  */
- 
+
+/**
+ * call the integration action to mount our plugin as a component
+ * into the intefration page
+ */
+
 function cf7_antispam_register_service() {
+	require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/service.php';
 	$integration = WPCF7_Integration::get_instance();
 	$integration->add_service(
 		'cf7-antispam',
@@ -149,8 +149,7 @@ function cf7_antispam_register_service() {
 	);
  
 }
- 
- add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
+add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
  
  
 

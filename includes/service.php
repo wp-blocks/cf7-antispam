@@ -89,41 +89,44 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 	 */
 	public function icon() {
 		$allowed_html = array(
-			'svg'    => array(
-				'xmlns'   => true,
-				'id'      => true,
-				'viewbox' => true,
-				'width'   => true,
-				'height'  => true,
+			'svg'      => array(
+				'xmlns'       => true,
+				'xmlns:xlink' => true,
+				'xml:space'   => true,
+				'viewbox'     => true,
 			),
-			'defs'   => array(),
-			'style'  => array(),
-			'g'      => array(
+			'defs'     => array(),
+			'circle'   => array(
+				'fill' => true,
+				'id'   => true,
+				'cx'   => true,
+				'cy'   => true,
+				'r'    => true,
+			),
+			'clipPath' => array(
 				'id' => true,
 			),
-			'circle' => array(
-				'cx'        => true,
-				'cy'        => true,
-				'r'         => true,
-				'class'     => true,
-				'transform' => true,
+			'use'      => array(
+				'xlink:href' => true,
+				'overflow'   => true,
 			),
-			'path'   => array(
-				'd'     => true,
-				'class' => true,
-				'fill'  => true,
+			'path'     => array(
+				'fill' => true,
+				'd'    => true,
 			),
-			'rect'   => array(
-				'width'  => true,
-				'height' => true,
-				'x'      => true,
-				'y'      => true,
-				'class'  => true,
-				'rx'     => true,
-				'ry'     => true,
+			'ellipse'  => array(
+				'cx'   => true,
+				'cy'   => true,
+				'rx'   => true,
+				'ry'   => true,
+				'fill' => true,
+			),
+			'g'        => array(
+				'stroke'            => true,
+				'stroke-miterlimit' => true,
 			),
 		);
-		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7ANTISPAM_PLUGIN_DIR . '/assets/icon-original.svg' ), $allowed_html ) . '</div>';
+		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7ANTISPAM_PLUGIN_DIR . '/assets/icon.svg' ), $allowed_html ) . '</div>';
 	}
 
 	/**
@@ -199,16 +202,27 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 	 */
 	public function display( $action = '' ) {
 		echo sprintf(
-			'<p>%s</p>',
+			'<p>%s<br>%s<br>%s<br>%s%s</p>',
 			esc_html__(
-				'Antispam for Contact Form 7 is a free plugin’.'
-				. 'It blocks bots from flooding your mailbox, without tedious configuration and without captcha, '
-				. 'CF7-AntiSpam uses different in and off page bots traps and an auto-learning mechanism based on a statistical “Bayesian” spam filter called B8'
-				. 'Its recomended to install ',
+				'Antispam for Contact Form 7 is a free plugin for Contact Form 7.',
+				'contact-form-7'
+			),
+			esc_html__(
+				'It blocks bots from flooding your mailbox, without tedious configuration and without captcha. (which may introduce issues)',
+				'contact-form-7'
+			),
+			esc_html__(
+				'CF7-AntiSpam uses different in and off page bots traps and an auto-learning mechanism based on a statistical “Bayesian” spam filter called B8.',
+				'contact-form-7'
+			),
+			esc_html__(
+				'It\'s recommended to install ',
+				'contact-form-7'
+			),
+			'<a href="https://wordpress.org/plugins/flamingo/">Flamingo</a>' . esc_html__(
+				' which will provide additional controls and a dashboard widget.',
 				'contact-form-7'
 			)
-				. '<a href="https://wordpress.org/plugins/flamingo/">Flamingo</a>'
-				. esc_html__( ' which will provide additional controls and a dashboard widget.', 'contact-form-7' )
 		);
 
 
@@ -217,7 +231,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 			// phpcs:ignore
 			wpcf7_link(
 				esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ),
-				esc_html__( 'CF7-Antispam', 'contact-form-7' )
+				esc_html__( 'CF7-Antispam (v' . CF7ANTISPAM_VERSION . ')', 'contact-form-7' )
 			)
 		);
 
