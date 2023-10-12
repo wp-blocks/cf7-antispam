@@ -91,4 +91,7 @@ out
 .DS_Store
 Thumbs.db
 
+# lock files
 .lock
+
+**/dist/
