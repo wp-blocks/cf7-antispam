@@ -1,5 +1,10 @@
 <?php
 
+namespace CF7_AntiSpam\Tests\PhpUnit\Tests;
+
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Frontend;
+use DOMDocument;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,9 +26,13 @@ class CF7_AntiSpam_FrontendTest extends TestCase {
 	 */
 	private $frontend;
 
+	public $options;
+
 	public function __construct( $name = null, $data = array(), $dataName = '' ) {
+
 		parent::__construct( $name, $data, $dataName );
 		$this->frontend = new CF7_AntiSpam_Frontend(CF7ANTISPAM_NAME, CF7ANTISPAM_VERSION);
+		$this->options = CF7_AntiSpam::get_options();
 	}
 
 	public function testCf7a_honeypot_count_and_validate() {

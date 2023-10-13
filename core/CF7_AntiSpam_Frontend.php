@@ -71,8 +71,8 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_honeypot_add( $form_elements ) {
 		/* A list of default names for the honeypot fields. */
 		$options     = get_option( 'cf7a_options', array() );
-		$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
-		$input_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
+		$input_names = !empty( $options['honeypot_input_names'] ) ? get_honeypot_input_names( $options['honeypot_input_names'] ) : array();
+		$input_class = !empty( $this->options['cf7a_customizations_class'] ) ? sanitize_html_class( $this->options['cf7a_customizations_class'] ) : 'cf7a';
 		/**
 		 * Controls the maximum number of honeypots.
 		 *
@@ -91,7 +91,8 @@ class CF7_AntiSpam_Frontend {
 		/* add honeypot fields */
 		foreach ( $inputs as $i => $input ) {
 			if ( stripos( $input, 'type="text"' ) !== false ) {
-				$honeypot_names = $input_names[ $i ];
+				// TODO: add set of default values
+				$honeypot_names = isset( $input_names[ $i ] ) ? $input_names[ $i ] : 'hey_' . $i;
 				$honeypot_input = sprintf(
 					'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" tabindex="-1" />',
 					esc_attr( $honeypot_names ),

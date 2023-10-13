@@ -15,7 +15,6 @@
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Activator;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Deactivator;
-use CF7_AntiSpam\Core\WPCF7_Service;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Uninstaller;
 
 if ( ! defined( 'WPINC' ) ) {

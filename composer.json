@@ -12,7 +12,7 @@
   ],
   "homepage": "https://wordpress.org/plugins/cf7-antispam/",
   "require-dev": {
-	"php": ">=7.2",
+	"php": ">=7.4",
 	"friendsofphp/php-cs-fixer": "3.*",
 	"squizlabs/php_codesniffer": "^3",
 	"phpcompatibility/php-compatibility": "*",
@@ -22,7 +22,9 @@
 	"phpunit/phpunit": "^9.6.13",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
 	"yoast/phpunit-polyfills": "^1.1",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
+	  "ext-dom": "*",
+	  "ext-libxml": "*"
   },
   "require": {
 	"geoip2/geoip2": "~2.0",
