@@ -93,5 +93,5 @@ Thumbs.db
 
 # lock files
 .lock
-
+composer.lock
 **/dist/

@@ -1,4 +1,7 @@
 <?php
+
+namespace CF7_AntiSpam\Core;
+
 /*
  The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
 functionality. */
@@ -22,7 +25,7 @@ if ( ! class_exists( 'WPCF7_Service' ) ) {
 	return;
 }
 /**
- * This Extention represents the skeleton of the integration API
+ * This Extension represents the skeleton of the integration API
  */
 
 class WPCF7_Antispam extends GlobalWPCF7_Service {
@@ -36,18 +39,18 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
 		}
-		
+
 		return self::$instance;
 	}
-	
+
 	public function __construct() {
 		 $this->options = CF7_AntiSpam::get_options();
 
 		if ( isset( $_POST['cf7a_submit'] ) ) {
-			$this->options['cf7a_enable'] = ! $this->options['cf7a_enable'];
+			$this->options['cf7a_enable'] = empty( $this->options['cf7a_enable'] ) ? true : ! $this->options['cf7a_enable'];
 			CF7_AntiSpam::update_plugin_options( $this->options );
 			echo '<div class="updated"><p>Settings saved.</p></div>';
-		} 
+		}
 		/**
 		 * Call the options otherwise the plugin will break in integration
 		 */
@@ -71,8 +74,8 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 	 *
 	 * @return bool value of the 'enabled' key in the  array.
 	 */
-	public function is_active() { 
-		return $this->options['cf7a_enable'];
+	public function is_active() {
+		return isset( $this->options['cf7a_enable'] ) ? $this->options['cf7a_enable'] : false;
 	}
 
 	/**
@@ -149,7 +152,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 	 * The function `menu_page_url` generates a URL for a specific menu page with additional query
 	 * parameters.
 	 *
-	 * @param args The `` parameter is an optional array that allows you to add additional query
+	 * @param string $args The `` parameter is an optional array that allows you to add additional query
 	 * parameters to the URL. These query parameters can be used to pass data or settings to the page that
 	 * the URL points to.
 	 *
@@ -173,7 +176,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 	 * The function checks if the action is "setup" and the request method is "POST", and if so, it
 	 * performs some actions and redirects the user.
 	 *
-	 * @param action The "action" parameter is used to determine the specific action that needs to be
+	 * @param "action" parameter is used to determine the specific action that needs to be
 	 * performed. In this code snippet, if the value of the "action" parameter is "setup", it will executehttp://two.wordpress.test/wp-admin/tools.php
 	 * the code inside the if statement.
 	 */
@@ -241,20 +244,18 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 				esc_html( __( 'CF7-Antispam is active on this site.', 'contact-form-7' ) )
 			);
 		}
-	
+
 		// Get the current checkbox status from the options
-		$checked = $this->options['cf7a_enable'] ? 'Disable' : 'Enable';
+		$checked = ! empty( $this->options['cf7a_enable'] ) ? 'Disable' : 'Enable';
 		// Display the form
 		echo '<div class="wrap">';
 		echo '<h2>Checkbox Settings</h2>';
 		echo '<form method="post" action="">';
 		echo '<input type="submit" name="cf7a_submit" class="button button-primary" value="' . $checked . '">';
-		if ( $this->options['cf7a_enable'] === true ) {
-			echo '<a class="button" href="' . $_SERVER['PHP_SELF'] . '?page=cf7-antispam">Settings Page</a>'; 
-		} 
+		if ( ! empty( $this->options['cf7a_enable'] ) ) {
+			echo '<a class="button" href="' . $_SERVER['PHP_SELF'] . '?page=cf7-antispam">Settings Page</a>';
+		}
 		echo '</form>';
 		echo '</div>';
-
 	}
-
 }

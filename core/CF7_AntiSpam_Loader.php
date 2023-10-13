@@ -1,4 +1,7 @@
 <?php
+
+namespace CF7_AntiSpam\Core;
+
 /**
  * Register all actions and filters for the plugin
  *

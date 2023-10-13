@@ -1,4 +1,10 @@
 <?php
+
+namespace CF7_AntiSpam\Core;
+
+use WP_Query;
+use WPCF7_Submission;
+use Flamingo_Inbound_Message;
 /**
  * Flamingo related functions.
  *

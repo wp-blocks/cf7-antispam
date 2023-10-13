@@ -1,4 +1,12 @@
 <?php
+
+namespace CF7_AntiSpam\Admin;
+
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Flamingo;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Uninstaller;
+
 /**
  * The plugin admin tools
  *
@@ -114,7 +122,6 @@ class CF7_AntiSpam_Admin_Tools {
 			if ( 'reset-blacklist' === $action ) {
 
 				/* uninstall class contains the database utility functions */
-				require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
 				$r = CF7_AntiSpam_Uninstaller::cf7a_clean_blacklist();
 
 				if ( $r ) {
@@ -146,7 +153,6 @@ class CF7_AntiSpam_Admin_Tools {
 			if ( 'cf7a-full-reset' === $action ) {
 
 				/* uninstall class contains the database utility functions */
-				require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-uninstall.php';
 				$r = CF7_AntiSpam_Uninstaller::cf7a_full_reset();
 
 				if ( $r ) {

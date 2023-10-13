@@ -1,19 +1,10 @@
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const path = require( 'path' );
 
-const addModule = ( fileName, filePath ) => {
-	return {
-		...defaultConfig,
-		name: fileName,
-		entry: path.resolve( __dirname, filePath + fileName ),
-		output: {
-			path: path.resolve( __dirname, filePath + '../dist/' ),
-			filename: fileName,
-		},
-	};
+module.exports = {
+  ...defaultConfig,
+  entry: {
+    script: path.resolve( process.cwd(), `src/script.js` ),
+    'admin-scripts': path.resolve( process.cwd(), `src/admin-scripts.js` ),
+  },
 };
-
-const mainScript = addModule( 'script.js', 'includes/src/' );
-const adminScript = addModule( 'admin-scripts.js', 'admin/src/' );
-
-module.exports = [ mainScript, adminScript ];

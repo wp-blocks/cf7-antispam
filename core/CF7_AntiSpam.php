@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The core plugin class.
  *
@@ -14,6 +15,15 @@
  * @author     Codekraft Studio <info@codekraft.it>
  */
 
+namespace CF7_AntiSpam\Core;
+
+use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Core;
+use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
+
+use CF7_AntiSpam\Core\CF7_AntiSpam_i18n;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Loader;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Flamingo;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Frontend;
 /**
  * It sets the version, plugin name, and options. It loads
  * the dependencies, sets the locale, updates the plugin, and loads the admin and frontend areas
@@ -117,7 +127,6 @@ class CF7_AntiSpam {
 	 */
 	protected function update() {
 
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
 		do_action( 'cf7a_update' );
 		CF7_AntiSpam_Activator::update_options();
 
@@ -128,40 +137,40 @@ class CF7_AntiSpam {
 	 */
 	private function load_dependencies() {
 
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-loader.php';
-
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-i18n.php';
-
-		/**
-		 * The class responsible for defining frontend functionality
-		 * of the plugin.
-		 */
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-frontend.php';
-
-		/**
-		 * The classes responsible for defining antispam functionality and the related filters
-		 * of the plugin.
-		 */
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-filters.php';
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geoip.php';
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-flamingo.php';
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-b8.php';
-
-		/**
-		 * The classes responsible for defining admin backend functionality
-		 */
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-customizations.php';
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin.php';
+		// **
+		// * The class responsible for orchestrating the actions and filters of the
+		// * core plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-loader.php';
+		//
+		// **
+		// * The class responsible for defining internationalization functionality
+		// * of the plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-i18n.php';
+		//
+		// **
+		// * The class responsible for defining frontend functionality
+		// * of the plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-frontend.php';
+		//
+		// **
+		// * The classes responsible for defining antispam functionality and the related filters
+		// * of the plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-filters.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geoip.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-flamingo.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-b8.php';
+		//
+		// **
+		// * The classes responsible for defining admin backend functionality
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-customizations.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin.php';
 
 		$this->loader = new CF7_AntiSpam_Loader();
 	}
@@ -236,7 +245,7 @@ class CF7_AntiSpam {
 			add_action( 'admin_init', array( $tools, 'cf7a_handle_actions' ), 1 );
 
 			/* the admin area */
-			$plugin_admin = new CF7_AntiSpam_Admin( $this->get_plugin_name(), $this->get_version() );
+			$plugin_admin = new CF7_AntiSpam_Admin_Core( $this->get_plugin_name(), $this->get_version() );
 
 			/* add the admin menu */
 			$this->loader->add_action( 'admin_menu', $plugin_admin, 'cf7a_admin_menu' );

@@ -1,4 +1,9 @@
 <?php
+
+namespace CF7_AntiSpam\Admin;
+
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 /**
  * The plugin settings.
  *
@@ -66,7 +71,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_print_section_main_subtitle' ),
 			'cf7a-settings'
 		);
-		
+
 		/* Section Bot Fingerprint */
 		add_settings_section(
 			'cf7a_auto_blacklist',
@@ -74,7 +79,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_print_section_auto_blacklist' ),
 			'cf7a-settings'
 		);
-		
+
 		/* Settings autostore_bad_ip */
 		add_settings_field(
 			'autostore_bad_ip',
@@ -974,6 +979,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return array $options sanitized
 	 */
 	public function cf7a_sanitize_options( $input ) {
+		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
 		/* get the existing options */
 		$new_input = $this->options;

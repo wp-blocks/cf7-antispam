@@ -1,4 +1,10 @@
 <?php
+
+namespace CF7_AntiSpam\Admin;
+
+use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
+use WP_Query;
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -13,7 +19,7 @@
 /**
  * It creates a class called CF7_AntiSpam_Admin.
  */
-class CF7_AntiSpam_Admin {
+class CF7_AntiSpam_Admin_Core {
 
 	/**
 	 * The ID of this plugin.
@@ -182,8 +188,8 @@ class CF7_AntiSpam_Admin {
 		 * class.
 		 */
 
-		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-scripts.asset.php';
-		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-scripts.js', $asset['dependencies'], $asset['version'], true );
+		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/build/admin-scripts.asset.php';
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.js', $asset['dependencies'], $asset['version'], true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(

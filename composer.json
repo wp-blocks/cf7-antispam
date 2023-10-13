@@ -19,9 +19,9 @@
 	"wp-coding-standards/wpcs": "^2.3",
 	"automattic/vipwpcs": "^2.3",
 	"phpcompatibility/phpcompatibility-wp": "*",
-	"phpunit/phpunit": "^8|^9",
+	"phpunit/phpunit": "^9.6.13",
 	"wp-phpunit/wp-phpunit": "^5.9.5",
-	"yoast/phpunit-polyfills": "^1.0",
+	"yoast/phpunit-polyfills": "^1.1",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7"
   },
   "require": {
@@ -30,7 +30,7 @@
   },
   "scripts": {
 	"PHPCS": "vendor/bin/phpcbf --standard=phpcs.ruleset.xml -s --report=full,summary,source",
-	"test": "vendor/bin/phpunit -c phpunit.xml.dist --verbose",
+	"test": "vendor/bin/phpunit -c phpunit.xml.dist",
 	"test-multisite": "WP_MULTISITE=1 vendor/bin/phpunit -c tests/multisite.xml --verbose"
   },
   "minimum-stability": "dev",
@@ -55,5 +55,16 @@
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "phpstan/extension-installer": true
     }
-  }
+  },
+	"autoload": {
+		"psr-4": {
+			"CF7_AntiSpam\\Core\\": "core/",
+			"CF7_AntiSpam\\Admin\\": "admin/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"CF7_AntiSpam\\Tests\\": "tests/"
+		}
+	}
 }

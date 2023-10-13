@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Some utility function used alongside the plugin
  *

@@ -1,4 +1,9 @@
 <?php
+
+namespace CF7_AntiSpam\Core;
+
+use b8\b8;
+use Exception;
 /**
  * B8 related functions
  *
@@ -62,11 +67,9 @@ class CF7_AntiSpam_B8 {
 		/* We use the default degenerator configuration */
 		$config_degenerator = array();
 
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/vendor/l3u/b8/b8/b8.php';
-
 		/* Create a new b8 instance */
 		try {
-			return new b8\b8( $config_b8, $config_storage, $config_lexer, $config_degenerator );
+			return new b8( $config_b8, $config_storage, $config_lexer, $config_degenerator );
 		} catch ( Exception $e ) {
 			cf7a_log( 'error message: ' . $e->getMessage() );
 			return false;
@@ -117,7 +120,7 @@ class CF7_AntiSpam_B8 {
 	 */
 	public function cf7a_b8_learn_spam( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::SPAM );
+			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::SPAM );
 		}
 	}
 
@@ -128,7 +131,7 @@ class CF7_AntiSpam_B8 {
 	 */
 	public function cf7a_b8_unlearn_spam( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::SPAM );
+			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::SPAM );
 		}
 	}
 
@@ -139,7 +142,7 @@ class CF7_AntiSpam_B8 {
 	 */
 	public function cf7a_b8_learn_ham( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::HAM );
+			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::HAM );
 		}
 	}
 
@@ -150,7 +153,7 @@ class CF7_AntiSpam_B8 {
 	 */
 	public function cf7a_b8_unlearn_ham( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8\b8::HAM );
+			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::HAM );
 		}
 	}
 
