@@ -410,8 +410,8 @@ class CF7_AntiSpam_Frontend {
 		 * class.
 		 */
 
-		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/includes/dist/script.asset.php';
-		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/includes/dist/script.js', $asset['dependencies'], $asset['version'], true );
+		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/build/script.asset.php';
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/script.js', $asset['dependencies'], $asset['version'], true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(

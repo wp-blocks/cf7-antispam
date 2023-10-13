@@ -188,8 +188,8 @@ class CF7_AntiSpam_Admin_Core {
 		 * class.
 		 */
 
-		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/admin/dist/admin-scripts.asset.php';
-		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/admin-scripts.js', $asset['dependencies'], $asset['version'], true );
+		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/build/admin-scripts.asset.php';
+		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.js', $asset['dependencies'], $asset['version'], true );
 		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(
