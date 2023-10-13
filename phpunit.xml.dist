@@ -3,11 +3,13 @@
 	bootstrap="tests/phpunit/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
-	beStrictAboutTestsThatDoNotTestAnything="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
 	>
 	<testsuites>
 		<testsuite name="Php tests">
-			<directory suffix=".php" phpVersion="*">tests/phpunit/tests</directory>
+			<directory prefix="CF7_AntiSpam" suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>
