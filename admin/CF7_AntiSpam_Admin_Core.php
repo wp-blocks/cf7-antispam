@@ -1,4 +1,9 @@
 <?php
+
+namespace CF7_AntiSpam\Admin;
+use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
+use WP_Query;
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -13,7 +18,7 @@
 /**
  * It creates a class called CF7_AntiSpam_Admin.
  */
-class CF7_AntiSpam_Admin {
+class CF7_AntiSpam_Admin_Core {
 
 	/**
 	 * The ID of this plugin.

@@ -1,4 +1,9 @@
 <?php
+
+namespace CF7_AntiSpam\Admin;
+
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+
 /**
  * The plugin notices and ui stuff.
  *

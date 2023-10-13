@@ -1,4 +1,7 @@
 <?php
+
+namespace CF7_AntiSpam\Core;
+
 /**
  * Front face related stuff
  *

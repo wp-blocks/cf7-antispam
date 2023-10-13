@@ -1,4 +1,7 @@
 <?php
+
+namespace CF7_AntiSpam\Core;
+
 /**
  * B8 related functions
  *
