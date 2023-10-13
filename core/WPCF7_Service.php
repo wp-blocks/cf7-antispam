@@ -47,7 +47,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 		 $this->options = CF7_AntiSpam::get_options();
 
 		if ( isset( $_POST['cf7a_submit'] ) ) {
-			$this->options['cf7a_enable'] = empty($this->options['cf7a_enable']) ? true : ! $this->options['cf7a_enable'];
+			$this->options['cf7a_enable'] = empty( $this->options['cf7a_enable'] ) ? true : ! $this->options['cf7a_enable'];
 			CF7_AntiSpam::update_plugin_options( $this->options );
 			echo '<div class="updated"><p>Settings saved.</p></div>';
 		}
@@ -176,7 +176,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 	 * The function checks if the action is "setup" and the request method is "POST", and if so, it
 	 * performs some actions and redirects the user.
 	 *
-	 * @param action The "action" parameter is used to determine the specific action that needs to be
+	 * @param "action" parameter is used to determine the specific action that needs to be
 	 * performed. In this code snippet, if the value of the "action" parameter is "setup", it will executehttp://two.wordpress.test/wp-admin/tools.php
 	 * the code inside the if statement.
 	 */

@@ -3,7 +3,7 @@
 namespace CF7_AntiSpam\Admin;
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
-
+use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 /**
  * The plugin settings.
  *
@@ -979,7 +979,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return array $options sanitized
 	 */
 	public function cf7a_sanitize_options( $input ) {
-		$new_input['cf7a_enabled']  = isset( $input['cf7a_enabled'] ) ? 1 : 0;
+		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
 		/* get the existing options */
 		$new_input = $this->options;

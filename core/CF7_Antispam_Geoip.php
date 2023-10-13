@@ -10,8 +10,10 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
-
+use PharData;
+use Exception;
 use GeoIp2\Database\Reader;
+use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 
 /**
  * It checks if the CF7ANTISPAM_GEOIP_KEY constant is set, and if it is, it uses that as the license key. Otherwise, it

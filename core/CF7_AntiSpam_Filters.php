@@ -1,7 +1,5 @@
 <?php
 
-namespace CF7_AntiSpam\Core;
-
 /**
  * Antispam functions.
  *
@@ -12,6 +10,10 @@ namespace CF7_AntiSpam\Core;
  */
 
 namespace CF7_AntiSpam\Core;
+
+use Exception;
+use WPCF7_Submission;
+use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 
 /**
  * A class that is used to filter out spam.
@@ -311,7 +313,7 @@ class CF7_AntiSpam_Filters {
 
 		/* get the sender email field using the flamingo defined */
 		$email_tag = sanitize_title( cf7a_get_mail_meta( $contact_form->pref( 'flamingo_email' ) ) );
-		$emails     = isset( $posted_data[ $email_tag ] ) ? array($posted_data[ $email_tag ]) : $this->scan_email_tags($mail_tags);
+		$emails    = isset( $posted_data[ $email_tag ] ) ? array( $posted_data[ $email_tag ] ) : $this->scan_email_tags( $mail_tags );
 
 		/* Getting the message field(s) from the form. */
 		$message_tag  = sanitize_text_field( $contact_form->pref( 'flamingo_message' ) );
@@ -788,12 +790,12 @@ class CF7_AntiSpam_Filters {
 			 * because it is an attempt to circumvent the controls, because the e-mail client cannot blacklist the e-mail itself,
 			 * we must prevent this.
 			 */
-			if ( intval( $options['check_bad_email_strings'] ) === 1 && !empty( $emails ) ) {
+			if ( intval( $options['check_bad_email_strings'] ) === 1 && ! empty( $emails ) ) {
 
-				foreach ($emails as $email) {
-					foreach ($bad_email_strings as $bad_email_string) {
-						if (false !== stripos(strtolower($email), strtolower($bad_email_string))) {
-							$spam_score += $score_bad_string;
+				foreach ( $emails as $email ) {
+					foreach ( $bad_email_strings as $bad_email_string ) {
+						if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
+							$spam_score                   += $score_bad_string;
 							$reason['email_blacklisted'][] = $bad_email_string;
 						}
 					}

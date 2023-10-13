@@ -1,7 +1,5 @@
 <?php
 
-namespace CF7_AntiSpam\Core;
-
 /**
  * The core plugin class.
  *
@@ -22,6 +20,10 @@ namespace CF7_AntiSpam\Core;
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Core;
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 
+use CF7_AntiSpam\Core\CF7_AntiSpam_i18n;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Loader;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Flamingo;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Frontend;
 /**
  * It sets the version, plugin name, and options. It loads
  * the dependencies, sets the locale, updates the plugin, and loads the admin and frontend areas
@@ -125,7 +127,6 @@ class CF7_AntiSpam {
 	 */
 	protected function update() {
 
-		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-activator.php';
 		do_action( 'cf7a_update' );
 		CF7_AntiSpam_Activator::update_options();
 
@@ -136,40 +137,40 @@ class CF7_AntiSpam {
 	 */
 	private function load_dependencies() {
 
-//		/**
-//		 * The class responsible for orchestrating the actions and filters of the
-//		 * core plugin.
-//		 */
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-loader.php';
-//
-//		/**
-//		 * The class responsible for defining internationalization functionality
-//		 * of the plugin.
-//		 */
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-i18n.php';
-//
-//		/**
-//		 * The class responsible for defining frontend functionality
-//		 * of the plugin.
-//		 */
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-frontend.php';
-//
-//		/**
-//		 * The classes responsible for defining antispam functionality and the related filters
-//		 * of the plugin.
-//		 */
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-filters.php';
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geoip.php';
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-flamingo.php';
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-b8.php';
-//
-//		/**
-//		 * The classes responsible for defining admin backend functionality
-//		 */
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-customizations.php';
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
-//		require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin.php';
+		// **
+		// * The class responsible for orchestrating the actions and filters of the
+		// * core plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-loader.php';
+		//
+		// **
+		// * The class responsible for defining internationalization functionality
+		// * of the plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-i18n.php';
+		//
+		// **
+		// * The class responsible for defining frontend functionality
+		// * of the plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-frontend.php';
+		//
+		// **
+		// * The classes responsible for defining antispam functionality and the related filters
+		// * of the plugin.
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-filters.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-geoip.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-flamingo.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/includes/cf7a-antispam-b8.php';
+		//
+		// **
+		// * The classes responsible for defining admin backend functionality
+		// */
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-customizations.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-display.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin-tools.php';
+		// require_once CF7ANTISPAM_PLUGIN_DIR . '/admin/admin.php';
 
 		$this->loader = new CF7_AntiSpam_Loader();
 	}

@@ -2,8 +2,11 @@
 
 namespace CF7_AntiSpam\Admin;
 
-use CF7_AntiSpam\Core\CF7_AntiSpam;
+use Exception;
 
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
 /**
  * The plugin notices and ui stuff.
  *

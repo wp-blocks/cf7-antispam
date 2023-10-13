@@ -11,6 +11,9 @@ namespace CF7_AntiSpam\Core;
  * @author     Codekraft Studio <info@codekraft.it>
  */
 
+use WP_Query;
+use WPCF7_ContactForm;
+
 /**
  * A class that handles front end related function
  */
