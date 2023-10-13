@@ -1,5 +1,7 @@
 <?php
 
+namespace CF7_AntiSpam\Tests\PhpUnit\Tests;
+
 use PHPUnit\Framework\TestCase;
 
 class CF7_AntiSpam_ActivatorTest extends TestCase {

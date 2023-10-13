@@ -1,7 +1,10 @@
 <?php
 
+namespace CF7_AntiSpam\Tests\PhpUnit\Tests;
+
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Frontend;
+use DOMDocument;
 use PHPUnit\Framework\TestCase;
 
 /**

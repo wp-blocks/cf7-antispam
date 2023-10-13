@@ -4,10 +4,8 @@
  *
  * @package Cf7_Antispam
  */
+
 // Debug settings for parity with WordPress Core's PHPUnit tests.
-if ( ! defined( 'WP_DEBUG' ) ) {
-	define( 'WP_DEBUG', true );
-}
 if ( ! defined( 'LOCAL_WP_DEBUG_LOG' ) ) {
 	define( 'LOCAL_WP_DEBUG_LOG', true );
 }
@@ -20,8 +18,6 @@ if ( ! defined( 'LOCAL_SCRIPT_DEBUG' ) ) {
 if ( ! defined( 'LOCAL_WP_ENVIRONMENT_TYPE' ) ) {
 	define( 'LOCAL_WP_ENVIRONMENT_TYPE', 'local' );
 }
-
-include("vendor/autoload.php");
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
