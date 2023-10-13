@@ -58,6 +58,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_sanitize_options' )
 		);
 
+
 		/* Section Bot Fingerprint */
 		add_settings_section(
 			'cf7a_subtitle',
@@ -65,7 +66,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_print_section_main_subtitle' ),
 			'cf7a-settings'
 		);
-
+		
 		/* Section Bot Fingerprint */
 		add_settings_section(
 			'cf7a_auto_blacklist',
@@ -73,7 +74,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_print_section_auto_blacklist' ),
 			'cf7a-settings'
 		);
-
+		
 		/* Settings autostore_bad_ip */
 		add_settings_field(
 			'autostore_bad_ip',
@@ -977,6 +978,8 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* get the existing options */
 		$new_input = $this->options;
 
+		$new_input['cf7a_enable'] = isset( $input['cf7a_enable'] ) ? $input['cf7a_enable'] : $new_input['cf7a_enable'];
+
 		/* bot fingerprint */
 		$new_input['check_bot_fingerprint']        = isset( $input['check_bot_fingerprint'] ) ? 1 : 0;
 		$new_input['check_bot_fingerprint_extras'] = isset( $input['check_bot_fingerprint_extras'] ) ? 1 : 0;
@@ -1095,7 +1098,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$score_preset = $this->cf7a_get_scores_presets();
 
 		/* Scoring:  if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
-		if ( $input['score'] === $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) {
+		if ( $input['score'] !== $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) {
 			if ( 'weak' === $input['cf7a_score_preset'] ) {
 				$new_input['score']             = $score_preset['weak'];
 				$new_input['cf7a_score_preset'] = 'weak';

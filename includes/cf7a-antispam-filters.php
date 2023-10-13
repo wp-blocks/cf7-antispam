@@ -69,7 +69,6 @@ class CF7_AntiSpam_Filters {
 		return checkdnsrr( $reverse_ip . '.' . $dnsbl . '.', 'A' );
 	}
 
-
 	/* CF7_AntiSpam_Filters blacklists */
 
 	/**
@@ -294,7 +293,7 @@ class CF7_AntiSpam_Filters {
 		$mail_tags = $contact_form->scan_form_tags();
 
 		/* get the sender email field using the flamingo defined */
-		$email_tag = sanitize_email( cf7a_get_mail_meta( $contact_form->pref( 'flamingo_email' ) ) );
+		$email_tag = sanitize_title( cf7a_get_mail_meta( $contact_form->pref( 'flamingo_email' ) ) );
 		$email     = isset( $posted_data[ $email_tag ] ) ? $posted_data[ $email_tag ] : false;
 
 		/* Getting the message field(s) from the form. */
@@ -865,6 +864,10 @@ class CF7_AntiSpam_Filters {
 						$reason['dsnbl'][] = $dnsbl;
 						$spam_score       += $score_dnsbl;
 					}
+					// if ( $this->cf7a_check_emailbl( $dnsbl ) ) {
+					// $reason['dsnbl'][] = $dnsbl;
+					// $spam_score       += $score_dnsbl;
+					// }
 				}
 
 				if ( isset( $reason['dsnbl'] ) ) {

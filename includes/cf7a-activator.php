@@ -35,6 +35,7 @@ class CF7_AntiSpam_Activator {
 	public static function init_vars() {
 
 		self::$default_cf7a_options = array(
+			'cf7a_enable'                  => true,
 			'cf7a_version'                 => CF7ANTISPAM_VERSION,
 			'cf7a_customizations_class'    => CF7ANTISPAM_HONEYPOT_CLASS,
 			'cf7a_customizations_prefix'   => CF7ANTISPAM_PREFIX,
