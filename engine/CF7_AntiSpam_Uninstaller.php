@@ -1,6 +1,6 @@
 <?php
 
-namespace CF7_AntiSpam\Core;
+namespace CF7_AntiSpam\Engine;
 
 /**
  * Fired during Uninstall.
@@ -33,7 +33,7 @@ class CF7_AntiSpam_Uninstaller {
 	 * It uninstalls the plugin, then reinstall it
 	 */
 	public static function cf7a_full_reset() {
-		
+
 		self::uninstall( false );
 		CF7_AntiSpam_Activator::install();
 

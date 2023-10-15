@@ -1,6 +1,6 @@
 <?php
 
-namespace CF7_AntiSpam\Core;
+namespace CF7_AntiSpam\Engine;
 
 /**
  * Fired during plugin activation.
@@ -12,7 +12,9 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
+
 /**
  * It's a class that activates the plugin.
  */

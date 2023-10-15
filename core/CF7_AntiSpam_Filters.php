@@ -13,7 +13,6 @@ namespace CF7_AntiSpam\Core;
 
 use Exception;
 use WPCF7_Submission;
-use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 
 /**
  * A class that is used to filter out spam.

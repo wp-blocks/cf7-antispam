@@ -1,6 +1,6 @@
 <?php
 
-namespace CF7_AntiSpam\Core;
+namespace CF7_AntiSpam\Engine;
 
 /**
  * Fired during deactivation.
