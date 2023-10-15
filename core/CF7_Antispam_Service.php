@@ -28,7 +28,7 @@ if ( ! class_exists( 'WPCF7_Service' ) ) {
  * This Extension represents the skeleton of the integration API
  */
 
-class WPCF7_Antispam extends GlobalWPCF7_Service {
+class CF7_Antispam_Service extends GlobalWPCF7_Service {
 
 
 	private static $instance;
@@ -114,6 +114,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 				'overflow'   => true,
 			),
 			'path'     => array(
+				'stroke-width' => true,
 				'fill' => true,
 				'd'    => true,
 			),
@@ -123,6 +124,7 @@ class WPCF7_Antispam extends GlobalWPCF7_Service {
 				'rx'   => true,
 				'ry'   => true,
 				'fill' => true,
+				'stroke-width' => true,
 			),
 			'g'        => array(
 				'stroke'            => true,

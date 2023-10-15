@@ -61,6 +61,7 @@
 	"autoload": {
 		"psr-4": {
 			"CF7_AntiSpam\\Core\\": "core/",
+			"CF7_AntiSpam\\Engine\\": "engine/",
 			"CF7_AntiSpam\\Admin\\": "admin/"
 		}
 	},

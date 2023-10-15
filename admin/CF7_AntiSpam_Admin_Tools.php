@@ -5,7 +5,7 @@ namespace CF7_AntiSpam\Admin;
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Flamingo;
-use CF7_AntiSpam\Core\CF7_AntiSpam_Uninstaller;
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
 
 /**
  * The plugin admin tools
