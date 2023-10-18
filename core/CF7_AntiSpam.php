@@ -188,6 +188,10 @@ class CF7_AntiSpam {
 
 			add_action( 'cf7a_geoip_update_db', array( $geo, 'cf7a_geoip_download_database' ) );
 		}
+
+		if ( defined( 'CF7_SMTP_NAME' ) ){
+			add_filter( 'cf7_smtp_report_mailbody', array($this, 'spam_mail_report'), 10, 2);
+		}
 	}
 
 	/**
@@ -414,5 +418,26 @@ class CF7_AntiSpam {
 		}
 
 		return false;
+}
+
+	public function spam_mail_report( $mail_body, $last_report_timestamp ) {
+
+		global $wpdb;
+
+		$all = $wpdb->get_var(
+			"SELECT COUNT(*) AS cnt 
+			 FROM {$wpdb->prefix}posts
+			 WHERE post_status = 'flamingo-spam';" );
+		$last = $wpdb->get_var(
+			$wpdb->prepare(
+			"SELECT COUNT(*) AS cnt
+		 	 FROM {$wpdb->prefix}posts 
+		 	 WHERE post_date_gmt >= FROM_UNIXTIME( %d ) 
+			 AND post_status = 'flamingo-spam';"
+		,$last_report_timestamp));
+
+		$mail_body .= \sprintf('<p>%s overall spam attempts, %s since last report</p>',$all, $last );
+
+		return $mail_body;
 	}
 }
