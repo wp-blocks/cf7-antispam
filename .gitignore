@@ -28,6 +28,9 @@ coverage
 # e2e artifacts
 artifacts
 
+# the build folder with all the assets 
+build/
+
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 

@@ -2,8 +2,8 @@
 
 namespace CF7_AntiSpam\Core;
 
-use b8\b8;
 use Exception;
+use b8\b8;
 /**
  * B8 related functions
  *
@@ -23,7 +23,7 @@ class CF7_AntiSpam_B8 {
 	 *
 	 * @since    0.4.0
 	 * @access   private
-	 * @var      b8\b8|false|string $b8 the b8 filter
+	 * @var      b8|false|string $b8 the b8 filter
 	 */
 	private $b8;
 
@@ -38,7 +38,7 @@ class CF7_AntiSpam_B8 {
 	/**
 	 * CF7_AntiSpam_Filters b8
 	 *
-	 * @return \b8\b8|false the B8 instance if it can be enabled, otherwise false
+	 * @return b8|false the B8 instance if it can be enabled, otherwise false
 	 */
 	private function cf7a_b8_init() {
 		/* the database */
