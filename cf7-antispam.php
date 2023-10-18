@@ -141,6 +141,9 @@ function run_cf7a() {
 	if ( $enabled && ! empty( $enabled['cf7a_enable'] ) ) {
 		$cf7a = new \CF7_AntiSpam\Core\CF7_AntiSpam();
 		$cf7a->run();
+	} else {
+		/* Must call style enqueue to apply styles in integration page even if the plugin is deactivated */
+		wp_enqueue_style( CF7ANTISPAM_NAME , CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), CF7ANTISPAM_VERSION );
 	}
 }
 add_action( 'init', 'run_cf7a', 11, 0 );

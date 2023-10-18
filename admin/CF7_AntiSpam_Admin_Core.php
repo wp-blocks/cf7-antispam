@@ -166,7 +166,7 @@ class CF7_AntiSpam_Admin_Core {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/admin/dist/main.css', array(), $this->version );
+		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), $this->version );
 
 	}
 
