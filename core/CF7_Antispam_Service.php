@@ -115,15 +115,15 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			),
 			'path'     => array(
 				'stroke-width' => true,
-				'fill' => true,
-				'd'    => true,
+				'fill'         => true,
+				'd'            => true,
 			),
 			'ellipse'  => array(
-				'cx'   => true,
-				'cy'   => true,
-				'rx'   => true,
-				'ry'   => true,
-				'fill' => true,
+				'cx'           => true,
+				'cy'           => true,
+				'rx'           => true,
+				'ry'           => true,
+				'fill'         => true,
 				'stroke-width' => true,
 			),
 			'g'        => array(

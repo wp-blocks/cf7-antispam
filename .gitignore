@@ -97,4 +97,9 @@ Thumbs.db
 # lock files
 .lock
 composer.lock
+
+#any distribution
 **/dist/
+
+# the zipped plugin
+cf7-antispam.zip
