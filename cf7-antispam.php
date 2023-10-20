@@ -143,7 +143,7 @@ function run_cf7a() {
 		$cf7a->run();
 	} else {
 		/* Must call style enqueue to apply styles in integration page even if the plugin is deactivated */
-		wp_enqueue_style( CF7ANTISPAM_NAME , CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), CF7ANTISPAM_VERSION );
+		wp_enqueue_style( CF7ANTISPAM_NAME, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), CF7ANTISPAM_VERSION );
 	}
 }
 add_action( 'init', 'run_cf7a', 11, 0 );
