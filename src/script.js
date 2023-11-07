@@ -2,7 +2,15 @@
 /* global cf7a_settings, wpcf7 */
 'use strict';
 
-window.onload = function () {
+function ready( fn ) {
+	if ( document.readyState !== 'loading' ) {
+		fn();
+		return;
+	}
+	document.addEventListener( 'DOMContentLoaded', fn );
+}
+
+ready( function () {
 	// disable cf7 antispam script if contact form is not loaded in this page
 	if ( ! window.wpcf7 ) return;
 
@@ -574,4 +582,4 @@ window.onload = function () {
 			}
 		}
 	}
-};
+} );
