@@ -27,7 +27,17 @@ Contributing to Contact Form 7 - Antispam
 
 You can contribute to the project of AntiSpam for Contact Form 7 collaborating with we to develop this plugin or translating it.
 
+#### Before Start
+All ready for development in 2 minutes! In order to setup the development environment, remember to install:
+- NodeJS - https://nodejs.org/
+- Composer - https://getcomposer.org/
+
+Optionally if you need, you can setup a local environment with wp-env and Docker 
+- wp-env (optional) - https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/
+- Docker (optional) - https://www.docker.com/
+ 
 #### if you are downloading the GitHub version, do not forget to install the composer and npm dependencies 
+Now place yourself inside the plugins folder of your wordpress installation or if you chose to develop with the local environment in a folder where you keep your projects and type:
 ```bash
 $ git clone https://github.com/erikyo/cf7-antispam.git
 $ cd cf7-antispam
@@ -35,9 +45,7 @@ $ npm i && composer install
 ```
 
 #### Easy to contribute! 
-
-All ready for development in 2 minutes! If you have docker installed, you only need to run the wp-env command to start a server with WordPress, this CF7-Antispam (this plugin), Flamingo and, of course, Contact Form 7.
-
+If you have choosen to develop with the local environment, run the wp-env command in order to start a local server with WordPress, this CF7-Antispam (this plugin), Flamingo and, of course, Contact Form 7.
 ```bash
 $ wp-env start
 ```
