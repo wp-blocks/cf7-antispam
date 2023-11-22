@@ -258,6 +258,7 @@ class CF7_AntiSpam {
 
 			/* It adds hidden fields to the form */
 			$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_add_hidden_fields', 1 );
+			$this->loader->add_filter( 'wpcf7_config_validator_available_error_codes', $plugin_frontend, 'cf7a_remove_cf7_error_message', 10, 2 );
 
 			/* adds the javascript script to frontend */
 			$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );

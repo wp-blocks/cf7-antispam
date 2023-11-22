@@ -62,6 +62,24 @@ class CF7_AntiSpam_Frontend {
 	}
 
 	/**
+	 * Remove "unsafe email config" error messsage
+	 *
+	 * @param array  $error_codes  List of error codes.
+	 * @param object $contact_form Current contact form object.
+	 * @return array               Modified array of error codes, without "unsafe_email_without_protection".
+	 */
+	public function cf7a_remove_cf7_error_message( $error_codes, $contact_form ) {
+		// List error codes to disable here.
+		$error_codes_to_disable = array(
+			'unsafe_email_without_protection',
+		);
+
+		$error_codes = array_diff( $error_codes, $error_codes_to_disable );
+
+		return $error_codes;
+	}
+
+	/**
 	 * It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to the form
 	 *
 	 * @param string $form_elements - The form elements html.
