@@ -70,7 +70,7 @@ $ composer install
 
 ##### Additional dependencies
 
-This plugin extends the functionality of Contact Form 7 and Flamingo. Both plugins should also be installed in your development environment.
+This plugin extends the functionality of Contact Form 7 and Flamingo. Both plugins should also be installed in your development environment. If using `wp-env`, this is automatically.
 
 #### Starting the local development environment
 
