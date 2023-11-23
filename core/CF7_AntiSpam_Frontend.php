@@ -133,12 +133,25 @@ class CF7_AntiSpam_Frontend {
 	}
 
 	/**
-	 * It get the content of the page and appends a fake form at the end or at the beginning
+	 * It gets the content of the page and appends a fake form at the end or at the beginning
 	 *
 	 * @param string $content The content of the post.
 	 */
 	public function cf7a_honeyform( $content ) {
-		global $post;
+		/**
+		 * Pages Excluded from the honeyform insertion
+		 *
+		 * @since 0.5.6
+		 *
+		 * @param array $option an array of pages id where cf7-antispam won't insert the honeyform.
+		 */
+		$excluded_ids = apply_filters('cf7a_honeyform_excluded_id', array());
+
+		// Check if the current post ID is in the excluded IDs array
+		if (in_array(get_the_ID(), $excluded_ids)) {
+			// If the current post ID is excluded, return the original content
+			return $content;
+		}
 
 		/* $html will store the honeyform html */
 		$html = '';
@@ -162,7 +175,7 @@ class CF7_AntiSpam_Frontend {
 			$unit_tag = sprintf(
 				'wpcf7-f%1$d-p%2$d-o%3$d',
 				$wpcf7->id(),
-				$post->ID,
+				get_the_ID(),
 				$global_count
 			);
 
