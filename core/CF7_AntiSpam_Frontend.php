@@ -145,10 +145,10 @@ class CF7_AntiSpam_Frontend {
 		 *
 		 * @param array $option an array of pages id where cf7-antispam won't insert the honeyform.
 		 */
-		$excluded_ids = apply_filters('cf7a_honeyform_excluded_id', array());
+		$excluded_ids = apply_filters( 'cf7a_honeyform_excluded_id', array() );
 
 		// Check if the current post ID is in the excluded IDs array
-		if (in_array(get_the_ID(), $excluded_ids)) {
+		if ( in_array( get_the_ID(), $excluded_ids ) ) {
 			// If the current post ID is excluded, return the original content
 			return $content;
 		}
