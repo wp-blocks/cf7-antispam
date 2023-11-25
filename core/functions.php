@@ -366,3 +366,5 @@ function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_patter
 		return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : false;
 	}
 }
+
+
