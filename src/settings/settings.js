@@ -115,7 +115,6 @@ window.onload = function () {
 
         for (const option of removeSelect.options) {
           if (option.selected) {
-            console.log("2")
             const name = option.textContent;
             const value = option.value;
 
