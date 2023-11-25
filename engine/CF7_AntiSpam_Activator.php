@@ -81,7 +81,6 @@ class CF7_AntiSpam_Activator {
 			'bad_user_agent_list'          => array(),
 			'dnsbl_list'                   => array(),
 			'honeypot_input_names'         => array(),
-			'honeyform_excluded_pages'	   => array(),
 			'languages'                    => array(
 				'allowed'    => array(),
 				'disallowed' => array(),

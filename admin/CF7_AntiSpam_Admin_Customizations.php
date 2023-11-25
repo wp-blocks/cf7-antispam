@@ -4,8 +4,6 @@ namespace CF7_AntiSpam\Admin;
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
-use WP_Query;
-
 /**
  * The plugin settings.
  *
@@ -457,15 +455,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'honeyform_position',
 			__( 'Select where the honeyform will be placed', 'cf7-antispam' ),
 			array( $this, 'cf7a_honeyform_position_callback' ),
-			'cf7a-settings',
-			'cf7a_honeyform'
-		);
-
-		/* Honeyform excluded pages */
-		add_settings_field(
-			'honeyform_excluded_pages',
-			__( 'Add pages you wish shouldn\'t have a Honeyform', 'cf7-antispam' ),
-			array( $this, 'cf7a_honeyform_excluded_pages_callback' ),
 			'cf7a-settings',
 			'cf7a_honeyform'
 		);
@@ -1102,7 +1091,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* honeyform */
 		$new_input['check_honeyform']    = isset( $input['check_honeyform'] ) ? 1 : 0;
 		$new_input['honeyform_position'] = ! empty( $input['honeyform_position'] ) ? sanitize_title( $input['honeyform_position'] ) : 'wp_body_open';
-		$new_input['honeyform_excluded_pages'] = ! empty( $input['honeyform_excluded_pages'] ) ?  array_map('number_format', $input['honeyform_excluded_pages']) : '';
 
 		/* honeyform */
 		$new_input['identity_protection_user'] = isset( $input['identity_protection_user'] ) ? 1 : 0;
@@ -1471,55 +1459,6 @@ class CF7_AntiSpam_Admin_Customizations {
 					),
 				)
 			)
-		);
-	}
-
-	public function cf7a_honeyform_excluded_pages_callback() {
-		$args = array(
-			'post_type' => 'page', // change this to the post type you're querying
-			'fields' => 'ids', // get all posts
-		);
-		$query = new WP_Query($args);
-
-		$options = '';
-
-		if ($query->have_posts()) {
-			while ($query->have_posts()) {
-				$query->the_post();
-				$options .= '<option value="' . get_the_ID() . '">' . get_the_title() . '</option>';
-			}
-		}
-
-		$admin_options = get_option( 'cf7a_options' );
-		$excluded = $admin_options['honeyform_excluded_pages'];
-		$str_excluded = '';
-		if ( is_array($excluded) ) {
-			foreach ($excluded as $entry) {
-				$str_excluded .= '<option selected="true" value="' . $entry . '">' . get_the_title($entry) . '</option>';
-			}
-		}
-		wp_reset_postdata();
-		printf(
-			'<div class="honeyform-container">
-						 <div class="row">
-							  <div class="add">
-								<select name="add" multiple class="form-control add-select">
-								  %s
-								</select>
-								<br/>
-								<div class="add-list">Add ></div>
-							  </div>
-							  <div class="remove">
-								<select id="honeyform_excluded_pages" name="cf7a_options[honeyform_excluded_pages][]" multiple="multiple" class="form-control remove-select" >
-								%s
-								</select>
-								<br/>
-								<div class="remove-list">< Remove</div>
-							  </div>
-						 </div>
-					 </div>',
-					$options,
-					$str_excluded
 		);
 	}
 
