@@ -203,7 +203,7 @@ class CF7_AntiSpam_Flamingo {
 			cf7a_log( 'Original contact form slug not found for flamingo post id ' . $flamingo_post->id() . '. please check your contact form 7 shortcode / settings', 2 );
 
 			/* the message field could be multiple */
-			$message = !empty($flamingo_post->meta['message_field']) ? cf7a_maybe_split_mail_meta( $flamingo_post->fields, $flamingo_post->meta['message_field'], ' ' ) : '';
+			$message = ! empty( $flamingo_post->meta['message_field'] ) ? cf7a_maybe_split_mail_meta( $flamingo_post->fields, $flamingo_post->meta['message_field'], ' ' ) : '';
 
 			if ( ! empty( $message ) ) {
 				return esc_html( $message );

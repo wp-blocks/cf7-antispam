@@ -78,7 +78,7 @@ window.onload = function () {
 			}
 		};
 
-    // Honeyform page exlusion
+    // Honeyform page exlusion logic
     if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
       const addListButton = document.querySelector('.add-list');
       const addSelect = document.querySelector('.add-select');
