@@ -95,6 +95,10 @@ $color__info: $color__blue;
 			display: flex;
 			flex-wrap: wrap;
 
+			.honeyform-action {
+				margin-top: 8px;
+			}
+
 			.add,
 			.remove {
 				flex: 1;
@@ -104,7 +108,7 @@ $color__info: $color__blue;
 				}
 				div {
 					text-align: center;
-					border: #8c8f94 solid 1px;
+					border: $color__dark-grey solid 1px;
 				}
 			}
 		}

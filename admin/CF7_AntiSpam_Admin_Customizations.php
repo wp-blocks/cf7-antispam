@@ -1506,20 +1506,20 @@ class CF7_AntiSpam_Admin_Customizations {
 								<select name="add" multiple class="form-control add-select">
 								  %s
 								</select>
-								<br/>
-								<div class="add-list">Add ></div>
+								<div class="honeyform-action add-list">%s ></div>
 							  </div>
 							  <div class="remove">
 								<select id="honeyform_excluded_pages" name="cf7a_options[honeyform_excluded_pages][]" multiple="multiple" class="form-control remove-select" >
 								%s
 								</select>
-								<br/>
-								<div class="remove-list">< Remove</div>
+								<div class="honeyform-action remove-list">< %s</div>
 							  </div>
 						 </div>
 					 </div>',
 					$options,
-					$str_excluded
+					__( 'Add', 'cf7-antispam' ),
+					$str_excluded,
+					__( 'Remove', 'cf7-antispam' ),
 		);
 	}
 
