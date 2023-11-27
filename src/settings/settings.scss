@@ -88,6 +88,32 @@ $color__info: $color__blue;
 		}
 	}
 
+	// Style for honeyform exclude pages
+	.honeyform-container {
+
+		.row {
+			display: flex;
+			flex-wrap: wrap;
+
+			.honeyform-action {
+				margin-top: 8px;
+			}
+
+			.add,
+			.remove {
+				flex: 1;
+				select {
+					width: 100%;
+					min-height: 120px;
+				}
+				div {
+					text-align: center;
+					border: $color__dark-grey solid 1px;
+				}
+			}
+		}
+	}
+
 	.blacklist-table {
 		display: block;
 		max-width: 100%;

@@ -366,3 +366,22 @@ function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_patter
 		return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : false;
 	}
 }
+
+/**
+ * This is a PHP function that takes in a string array and returns an unsigned integer array.
+ *
+ * @param array $str_array The string array to be converted.
+ *
+ * @return array $num_array The unsigned integer array.
+ */
+function cf7a_str_array_to_uint_array( $str_array ) {
+
+	return array_unique(
+		array_filter(
+			$str_array,
+			function ( $value ) {
+				return is_numeric( $value ) && $value > 0 && intval( $value ) == $value;
+			}
+		)
+	);
+}
