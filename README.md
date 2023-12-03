@@ -77,7 +77,7 @@ This plugin extends the functionality of Contact Form 7 and Flamingo. Both plugi
 If you have chosen to use the develop environment, run the following `wp-env` command to start the local server.
 
 ```bash
-$ wp-env start
+$ npm run wp-env:start
 ```
 
 Special Thanks
