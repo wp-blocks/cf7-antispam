@@ -75,3 +75,10 @@ require $_tests_dir . '/includes/bootstrap.php';
 
 // Use existing behavior for wp_die during actual test execution.
 remove_filter( 'wp_die_handler', 'fail_if_died' );
+
+// pre-load add_filter if it's not already loaded by PHPUnit
+if (!function_exists('add_filter')) {
+	tests_add_filter('add_filter', 'fail_if_died');
+}
+
+
