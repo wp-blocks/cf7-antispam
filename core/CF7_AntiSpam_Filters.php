@@ -236,6 +236,20 @@ class CF7_AntiSpam_Filters {
 
 		return true;
 	}
+	/**
+	 * Retrieves the list of languages or locales from the given options array by key.
+	 *
+	 * @param array $option An array of options.
+	 * @param string $key The key of the option to retrieve.
+	 * @return array The list of languages extracted from the options array.
+	 */
+	public function cf7a_get_language_locales($option, $key){
+		$res[] = '';
+		foreach ($option as $item) {
+			$res[] = $item[$key];
+		}
+		return $res;
+	}
 
 
 	/**
@@ -264,6 +278,31 @@ class CF7_AntiSpam_Filters {
 		if ( ! empty( $disalloweds ) ) {
 			foreach ( $disalloweds as $disallowed ) {
 				if ( in_array( $disallowed, $languages, true ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public function cf7a_check_locale_allowed( $locales, $disalloweds = array(), $alloweds = array() ) {
+
+		if ( ! is_array( $locales ) ) {
+			$locales = array( $locales );
+		}
+
+		if ( ! empty( $alloweds ) ) {
+			foreach ( $alloweds as $allowed ) {
+				if ( in_array( $allowed, $locales, true ) ) {
+					return true;
+				}
+			}
+		}
+
+		if ( ! empty( $disalloweds ) ) {
+			foreach ( $disalloweds as $disallowed ) {
+				if ( in_array( $disallowed, $locales, true ) ) {
 					return false;
 				}
 			}
@@ -666,9 +705,10 @@ class CF7_AntiSpam_Filters {
 			if ( intval( $options['check_language'] ) === 1 ) {
 
 				/* Checks sender has a blacklisted ip address */
-				$languages_allowed    = isset( $options['languages']['allowed'] ) ? $options['languages']['allowed'] : array();
-				$languages_disallowed = isset( $options['languages']['disallowed'] ) ? $options['languages']['disallowed'] : array();
+				$languages_allowed    = isset( $options['languages_locales']['allowed'] ) ? $options['languages_locales']['allowed'] : array();
+				$languages_disallowed = isset( $options['languages_locales']['disallowed'] ) ? $options['languages_locales']['disallowed'] : array();
 
+				/* prefix '_cf7a_' */
 				$languages                     = array();
 				$languages['browser_language'] = ! empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'browser_language' ] ) ) : null;
 				$languages['accept_language']  = isset( $_POST[ $prefix . '_language' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . '_language' ] ) ), $options['cf7a_cipher'] ) : null;
@@ -680,7 +720,8 @@ class CF7_AntiSpam_Filters {
 					$spam_score                += $score_detection;
 					$reason['browser_language'] = 'missing browser language';
 				} else {
-					$languages['browser'] = cf7a_get_browser_language_array( $languages['browser_language'] );
+					$languages_locales = cf7a_get_browser_language_array( $languages['browser_language'] );
+					$languages['browser'] = $languages_locales['languages'];
 				}
 
 				if ( empty( $languages['accept_language'] ) ) {
@@ -718,6 +759,11 @@ class CF7_AntiSpam_Filters {
 
 				$geoip = new CF7_Antispam_Geoip();
 
+				if ( ! empty( $languages_allowed ) || ! empty( $languages_disallowed ) ) {
+					$locales_allowed = $this->cf7a_get_language_locales($options['languages_locales']['allowed'], 'locales');
+					$locales_disallowed = $this->cf7a_get_language_locales($options['languages_locales']['disallowed'], 'locales');
+				}
+
 				if ( ! empty( $geoip ) ) {
 
 					try {
@@ -729,7 +775,8 @@ class CF7_AntiSpam_Filters {
 
 						if ( ! empty( $geo_data ) ) {
 							/* then check if the detected country is among the allowed and disallowed languages */
-							if ( false === $this->cf7a_check_language_allowed( $geo_data, $languages_disallowed, $languages_allowed ) ) {
+							// Check if the country is allowed by country by splitting browser headers 2nd arg since ISO is coherent
+							if ( false === $this->cf7a_check_locale_allowed( $geo_data, $languages_disallowed, $languages_allowed ) ) {
 								$reason['geo_ip'] = $geoip_continent . '-' . $geoip_country;
 								$spam_score      += $score_warn;
 

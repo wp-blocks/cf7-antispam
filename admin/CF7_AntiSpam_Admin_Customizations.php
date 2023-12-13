@@ -1026,11 +1026,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_geo_location'] = isset( $input['check_geo_location'] ) ? 1 : 0;
 
 		/* languages allowed | disallowed */
-		$new_input['languages']['allowed']    = isset( $input['languages']['allowed'] )
-			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['allowed'] ) )
+		$new_input['languages_locales']['allowed']    = isset( $input['languages_locales']['allowed'] )
+			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['allowed'] ) )
 			: array();
-		$new_input['languages']['disallowed'] = isset( $input['languages']['disallowed'] )
-			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages']['disallowed'] ) )
+		$new_input['languages_locales']['disallowed'] = isset( $input['languages_locales']['disallowed'] )
+			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
 			: array();
 
 		/* max attempts before ban */
@@ -1317,16 +1317,16 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It creates the input field "cf7a_language_allowed" */
 	public function cf7a_language_allowed() {
 		printf(
-			'<textarea id="languages_allowed" name="cf7a_options[languages][allowed]" />%s</textarea>',
-			isset( $this->options['languages']['allowed'] ) && is_array( $this->options['languages']['allowed'] ) ? esc_textarea( implode( "\r\n", $this->options['languages']['allowed'] ) ) : ''
+			'<textarea id="languages_allowed" name="cf7a_options[languages_locales][allowed]" />%s</textarea>',
+			isset( $this->options['languages_locales']['allowed'] ) && is_array( $this->options['languages_locales']['allowed'] ) ? esc_textarea( implode( "\r\n", $this->options['languages_locales']['allowed'] ) ) : ''
 		);
 	}
 
 	/** It creates the input field "cf7a_language_disallowed" */
 	public function cf7a_language_disallowed() {
 		printf(
-			'<textarea id="languages_disallowed" name="cf7a_options[languages][disallowed]" />%s</textarea>',
-			isset( $this->options['languages']['disallowed'] ) && is_array( $this->options['languages']['disallowed'] ) ? esc_textarea( implode( "\r\n", $this->options['languages']['disallowed'] ) ) : ''
+			'<textarea id="languages_disallowed" name="cf7a_options[languages_locales][disallowed]" />%s</textarea>',
+			isset( $this->options['languages_locales']['disallowed'] ) && is_array( $this->options['languages_locales']['disallowed'] ) ? esc_textarea( implode( "\r\n", $this->options['languages_locales']['disallowed'] ) ) : ''
 		);
 	}
 

@@ -49,14 +49,13 @@ function cf7a_get_real_ip() {
 /**
  * It takes a string of comma-separated language codes, and returns an array of language codes
  *
- * @param string $languages The Accept-Language header sent by the browser.
+ * @param string $languages_locales The Accept-Language header sent by the browser.
  *
- * @return array the array of language codes
+ * @return array assoc array of languages and locales
  */
-function cf7a_get_browser_language_array( $languages ) {
-	return array_values(
-		array_reduce(
-			explode( ',', $languages ),
+function cf7a_get_browser_language_array( $languages_locales ) {
+	$result = array_reduce(
+			explode( ',', $languages_locales ),
 			function( $res, $el ) {
 				// trim spaces and removes the semicolon.
 				$el = trim( $el );
@@ -64,30 +63,39 @@ function cf7a_get_browser_language_array( $languages ) {
 					$el = substr( $el, 0, strpos( $el, ';' ) );
 				}
 				if ( strlen( $el ) >= 5 ) {
+					/* split into key: language , value: locale */
 					$l                          = explode( '-', $el );
-					$res[ strtolower( $l[0] ) ] = $l[0];
-					$res[ strtolower( $l[1] ) ] = strtolower( $l[1] );
-				} else {
-					$l = preg_split( '/(\-|\_)/', $el );
-					if ( ctype_alnum( $l[0] ) ) {
-						$res[ strtolower( $l[0] ) ] = $l[0];
+					$res[ 'languages' ][] = strtolower($l[0]) ;
+					$res[ 'locales' ][] = strtoupper($l[1]) ;
+				} else if ( strlen( $el ) === 2 &&  ctype_alpha( $el ) ) {
+					/* otherwise keep key:language, value: '' (any locale) */
+					if ( ctype_lower( $el ) ) {
+						$res[ 'languages' ][] = $el ;
+					} else {
+						$res[ 'locales' ][] = $el ;
 					}
 				}
 				return $res;
 			},
 			array()
-		)
 	);
+
+	if (! empty($result)) {
+		$result['languages'] = array_unique($result['languages']);
+		$result['locales'] = array_unique($result['locales']);
+	}
+
+	return $result;
 }
 
 /**
  *
- * Converts HTTP_ACCEPT_LANGUAGE into an array of languages and nations
+ * Converts HTTP_ACCEPT_LANGUAGE into an array of languages
  * this is a modified version of https://stackoverflow.com/a/33748742/5735847
  *
  * It takes a string like
  * `en-US,en;q=0.9,de;q=0.8,es;q=0.7,fr;q=0.6,it;q=0.5,pt;q=0.4,ru;q=0.3,ja;q=0.2,zh-CN;q=0.1,zh-TW;q=0.1` and returns an
- * array like `[ 'en', 'us', 'de', 'es', 'fr', 'it', 'pt', 'ru', 'ja', 'zh', 'cn', 'tw' ]`
+ * array like `[ 'en', 'de', 'es', 'fr', 'it', 'pt', 'ru', 'ja', 'zh']`
  *
  * @param string $languages The Accept-Language header from the browser.
  *
@@ -101,13 +109,35 @@ function cf7a_get_accept_language_array( $languages ) {
 				if ( strlen( $el ) === 5 ) {
 					$l                          = explode( '-', $el );
 					$res[ strtolower( $l[0] ) ] = $l[0];
-					$res[ strtolower( $l[1] ) ] = strtolower( $l[1] );
 				} else {
 					$l = explode( ';q=', $el );
-					if ( ctype_alnum( $l[0] ) ) {
+					if ( ctype_alpha( $l[0] ) && ctype_lower( $l[0] ) ) {
 						$res[ strtolower( $l[0] ) ] = $l[0];
 					}
 				}
+
+				return $res;
+			},
+			array()
+		)
+	);
+}
+
+function cf7a_get_accept_locales_array( $locales ) {
+	return array_values(
+		array_reduce(
+			explode( ',', str_replace( ' ', '', $locales ) ),
+			function ( $res, $el ) {
+				if ( strlen( $el ) === 5 ) {
+					$l                          = explode( '-', $el );
+					$res[ strtolower( $l[1] ) ] = $l[1];
+				} else {
+					$l = explode( ';q=', $el );
+					if ( ctype_alpha( $l[0] ) && ctype_upper( $l[0] ) ) {
+						$res[ strtolower( $l[0] ) ] = $l[0];
+					}
+				}
+
 				return $res;
 			},
 			array()
@@ -135,6 +165,7 @@ function cf7a_add_cron_steps( $schedules ) {
 		)
 	);
 }
+
 add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 
 /**
@@ -172,7 +203,7 @@ function get_honeypot_input_names( $custom_names = array() ) {
  * It encrypts a string using the WordPress salt as the key
  *
  * @param string|int $value The value to encrypt.
- * @param string     $cipher The cipher method to use.
+ * @param string $cipher The cipher method to use.
  *
  * @return string The encrypted value.
  */
@@ -180,6 +211,7 @@ function cf7a_crypt( $value, $cipher = 'aes-256-cbc' ) {
 	if ( ! extension_loaded( 'openssl' ) ) {
 		return $value;
 	}
+
 	return openssl_encrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
 }
 
@@ -195,6 +227,7 @@ function cf7a_decrypt( $value, $cipher = 'aes-256-cbc' ) {
 	if ( ! extension_loaded( 'openssl' ) ) {
 		return $value;
 	}
+
 	return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
 }
 
@@ -205,6 +238,7 @@ function cf7a_decrypt( $value, $cipher = 'aes-256-cbc' ) {
  */
 function cf7a_microtime_float() {
 	$time = explode( ' ', microtime() );
+
 	return (float) $time[0] + (float) $time[1];
 }
 
@@ -239,6 +273,7 @@ function cf7a_format_rating( $rating ) {
 	$green = floor( 200 * ( 1 - $rating ) );
 
 	$color = cf7a_rgb2hex( $red, $green, 0 );
+
 	return '<span class="flamingo-rating-label" style="background-color: ' . $color . '"><b>' . round( $rating * 100 ) . '% </b></span>';
 }
 
@@ -279,7 +314,7 @@ function cf7a_format_status( $rank ) {
  * key/value pair separated by a semicolon and a space
  *
  * @param array $array - the array of reasons to ban.
- * @param bool  $is_html - true to return a html string.
+ * @param bool $is_html - true to return a html string.
  *
  * @return false|string Compress arrays into "key:value; " pair
  */
@@ -311,7 +346,7 @@ function cf7a_compress_array( $array, $is_html = false ) {
  * on, then log the string
  *
  * @param string|array $log_data - The string/array to log.
- * @param numeric      $log_level 0 = log always, 1 = logging, 2 = only extended logging.
+ * @param numeric $log_level 0 = log always, 1 = logging, 2 = only extended logging.
  *
  * @return void
  */
@@ -321,9 +356,9 @@ function cf7a_log( $log_data, $log_level = 0 ) {
 			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log(
 				is_string( $log_data )
-				? CF7ANTISPAM_LOG_PREFIX . $log_data
-				// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				: CF7ANTISPAM_LOG_PREFIX . print_r( $log_data, true )
+					? CF7ANTISPAM_LOG_PREFIX . $log_data
+					// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					: CF7ANTISPAM_LOG_PREFIX . print_r( $log_data, true )
 			);
 		}
 	}
@@ -346,7 +381,7 @@ function cf7a_get_mail_meta( $tag ) {
  * If the message tag contains a space, it's a multiple meta tag,
  * so split it up and return the value of the meta tag
  *
- * @param array  $posted_data The form data array.
+ * @param array $posted_data The form data array.
  * @param string $message_tag The tag of the field you want to retrieve.
  * @param string $explode_pattern Used to split multiple cf7 user tags .
  *
@@ -361,6 +396,7 @@ function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_patter
 				$message .= sanitize_title( $tag_chunk ) . ': ' . sanitize_textarea_field( $posted_data[ $tag_chunk ] ) . "\r\n";
 			}
 		}
+
 		return $message;
 	} else {
 		return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : false;
