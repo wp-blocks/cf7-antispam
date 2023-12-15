@@ -38,7 +38,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$this->returnValue( '1.1.168.192' );
 	}
 
-	public function testCf7a_get_browser_language_array() {
+	public function testCf7a_get_browser_languages_locales_array() {
 
 		$tests = array(
 			array(
@@ -55,21 +55,19 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 			),
 			array(
 				"string"   => 'da,en-GB;q=0.8,en;q=0.7',
-				"expected" => array( 'languages' => array( 'da', 'en' ), 'locales' => array( 'GB', 'US' ) )
+				"expected" => array( 'languages' => array( 'da', 'en' ), 'locales' => array( 'GB' ) )
 			),
 			array(
 				"string"   => 'zh-CN, zh-TW; q = 0.9, zh-HK; q = 0.8, zh; q = 0.7, en; q = 0.6',
-				"expected" => array( 'languages' => array( 'zh', 'en' ), 'locales' => array( 'CN', 'TW', 'HK', 'US' ) )
+				"expected" => array( 'languages' => array( 'zh', 'en' ), 'locales' => array( 'CN', 'TW', 'HK' ) )
 			),
 			array(
 				"string"   => 'en-US,en;q=0.9,de;q=0.8,es;q=0.7,fr;q=0.6,it;q=0.5,pt;q=0.4,ru;q=0.3,ja;q=0.2,zh-CN;q=0.1,zh-TW;q=0.1',
 				"expected" => array(
 					'languages' => array( 'en', 'de', 'es', 'fr', 'it', 'pt', 'ru', 'ja', 'zh' ),
-					'locales'   => array( 'US', 'US', 'US', 'US', 'US', 'US', 'US', 'US', 'CN' )
+					'locales'   => array( 'US', 'CN', 'TW' )
 				)
 			),
-			//ISSUE TEST CASE
-			// be-BY is Belarussian Belarus, nl-BE, fr-BE, de-BE is Belgium, so we need to discriminate for the second argument
 			array(
 				"string"   => 'ru-RU, be-BY;q=0.9, en-US;q=0.8, en;q=0.7',
 				"expected" => array( 'languages' => array( 'ru', 'be', 'en' ), 'locales' => array( 'RU', 'BY', 'US' ) )
@@ -77,7 +75,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		);
 
 		foreach ( $tests as $test ) {
-			$result = cf7a_get_browser_language_array( $test['string'] );
+			$result = cf7a_get_browser_languages_locales_array( $test['string'] );
 			$this->assertEquals( $test['expected'], $result, 'error expected ' . print_r( $test, true ) . " result " . print_r( $result, true ) );
 		}
 	}

@@ -726,7 +726,7 @@ class CF7_AntiSpam_Filters {
 					$spam_score                 += $score_detection;
 					$reason['browser_language'] = 'missing browser language';
 				} else {
-					$languages_locales    = cf7a_get_browser_language_array( $languages['browser_language'] );
+					$languages_locales    = cf7a_get_browser_languages_locales_array( $languages['browser_language'] );
 					$languages['browser'] = $languages_locales['languages'];
 				}
 

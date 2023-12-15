@@ -144,7 +144,7 @@ class CF7_AntiSpam_Activator {
 			),
 			'languages_locales'              => array(
 				'allowed'    => isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] )
-					? cf7a_get_browser_language_array( sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) )
+					? cf7a_get_browser_languages_locales_array( sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) )
 					: array(),
 				'disallowed' => array(),
 			),

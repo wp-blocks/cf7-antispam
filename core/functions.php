@@ -53,36 +53,36 @@ function cf7a_get_real_ip() {
  *
  * @return array assoc array of languages and locales
  */
-function cf7a_get_browser_language_array( $languages_locales ) {
+function cf7a_get_browser_languages_locales_array( $languages_locales ) {
 	$result = array_reduce(
-			explode( ',', $languages_locales ),
-			function( $res, $el ) {
-				// trim spaces and removes the semicolon.
-				$el = trim( $el );
-				if ( strpos( $el, ';' ) !== false ) {
-					$el = substr( $el, 0, strpos( $el, ';' ) );
+		explode( ',', $languages_locales ),
+		function( $res, $el ) {
+			// trim spaces and removes the semicolon.
+			$el = trim( $el );
+			if ( strpos( $el, ';' ) !== false ) {
+				$el = substr( $el, 0, strpos( $el, ';' ) );
+			}
+			if ( strlen( $el ) >= 5 ) {
+				/* split into key: language , value: locale */
+				$l                          = explode( '-', $el );
+				$res[ 'languages' ][] = $l[0] ;
+				$res[ 'locales' ][] = $l[1] ;
+			} else if ( strlen( $el ) === 2 &&  ctype_alpha( $el ) ) {
+				/* otherwise keep key:language, value: '' (any locale) */
+				if ( ctype_lower( $el ) ) {
+					$res[ 'languages' ][] = $el ;
+				} elseif ( ctype_upper( $el ) ) {
+					$res[ 'locales' ][] = $el ;
 				}
-				if ( strlen( $el ) >= 5 ) {
-					/* split into key: language , value: locale */
-					$l                          = explode( '-', $el );
-					$res[ 'languages' ][] = strtolower($l[0]) ;
-					$res[ 'locales' ][] = strtoupper($l[1]) ;
-				} else if ( strlen( $el ) === 2 &&  ctype_alpha( $el ) ) {
-					/* otherwise keep key:language, value: '' (any locale) */
-					if ( ctype_lower( $el ) ) {
-						$res[ 'languages' ][] = $el ;
-					} else {
-						$res[ 'locales' ][] = $el ;
-					}
-				}
-				return $res;
-			},
-			array()
+			}
+			return $res;
+		},
+		array()
 	);
 
 	if (! empty($result)) {
-		$result['languages'] = array_unique($result['languages']);
-		$result['locales'] = array_unique($result['locales']);
+		$result['languages'] = array_values(array_unique($result['languages'])) ;
+		$result['locales'] = array_values(array_unique($result['locales'])) ;
 	}
 
 	return $result;
