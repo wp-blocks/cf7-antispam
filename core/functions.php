@@ -64,15 +64,15 @@ function cf7a_get_browser_languages_locales_array( $languages_locales ) {
 			}
 			if ( strlen( $el ) >= 5 ) {
 				/* split into key: language , value: locale */
-				$l                          = explode( '-', $el );
-				$res[ 'languages' ][] = $l[0] ;
-				$res[ 'locales' ][] = $l[1] ;
-			} else if ( strlen( $el ) === 2 &&  ctype_alpha( $el ) ) {
+				$l                  = explode( '-', $el );
+				$res['languages'][] = $l[0];
+				$res['locales'][]   = $l[1];
+			} elseif ( strlen( $el ) === 2 && ctype_alpha( $el ) ) {
 				/* otherwise keep key:language, value: '' (any locale) */
 				if ( ctype_lower( $el ) ) {
-					$res[ 'languages' ][] = $el ;
+					$res['languages'][] = $el;
 				} elseif ( ctype_upper( $el ) ) {
-					$res[ 'locales' ][] = $el ;
+					$res['locales'][] = $el;
 				}
 			}
 			return $res;
@@ -80,9 +80,9 @@ function cf7a_get_browser_languages_locales_array( $languages_locales ) {
 		array()
 	);
 
-	if (! empty($result)) {
-		$result['languages'] = array_values(array_unique($result['languages'])) ;
-		$result['locales'] = array_values(array_unique($result['locales'])) ;
+	if ( ! empty( $result ) ) {
+		$result['languages'] = array_values( array_unique( $result['languages'] ) );
+		$result['locales']   = array_values( array_unique( $result['locales'] ) );
 	}
 
 	return $result;
@@ -203,7 +203,7 @@ function get_honeypot_input_names( $custom_names = array() ) {
  * It encrypts a string using the WordPress salt as the key
  *
  * @param string|int $value The value to encrypt.
- * @param string $cipher The cipher method to use.
+ * @param string     $cipher The cipher method to use.
  *
  * @return string The encrypted value.
  */
@@ -314,7 +314,7 @@ function cf7a_format_status( $rank ) {
  * key/value pair separated by a semicolon and a space
  *
  * @param array $array - the array of reasons to ban.
- * @param bool $is_html - true to return a html string.
+ * @param bool  $is_html - true to return a html string.
  *
  * @return false|string Compress arrays into "key:value; " pair
  */
@@ -346,7 +346,7 @@ function cf7a_compress_array( $array, $is_html = false ) {
  * on, then log the string
  *
  * @param string|array $log_data - The string/array to log.
- * @param numeric $log_level 0 = log always, 1 = logging, 2 = only extended logging.
+ * @param numeric      $log_level 0 = log always, 1 = logging, 2 = only extended logging.
  *
  * @return void
  */
@@ -381,7 +381,7 @@ function cf7a_get_mail_meta( $tag ) {
  * If the message tag contains a space, it's a multiple meta tag,
  * so split it up and return the value of the meta tag
  *
- * @param array $posted_data The form data array.
+ * @param array  $posted_data The form data array.
  * @param string $message_tag The tag of the field you want to retrieve.
  * @param string $explode_pattern Used to split multiple cf7 user tags .
  *

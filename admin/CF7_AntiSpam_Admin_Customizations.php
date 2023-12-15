@@ -779,16 +779,16 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the language info text */
 	public function cf7a_check_language() {
-		$iso_639 = '<a href="' . esc_url('https://www.loc.gov/standards/iso639-2/php/code_list.php') . '">ISO 639-1</a>';
-		$iso_3166 = '<a href="' . esc_url('https://www.iso.org/obp/ui/#search') . '">ISO 3166-2</a>';
+		$iso_639  = '<a href="' . esc_url( 'https://www.loc.gov/standards/iso639-2/php/code_list.php' ) . '">ISO 639-1</a>';
+		$iso_3166 = '<a href="' . esc_url( 'https://www.iso.org/obp/ui/#search' ) . '">ISO 3166-2</a>';
 		printf(
 			'<p>%s</p><p>%s<br>%s</p><p>%s<br>%s<br>%s</p>',
 			esc_html__( 'Check the user browser language / user keyboard. Add a country code / locale (US), language (en) or both (en-US) each line, in the latter case you must delimit with a "-" (Hyphen) character , you can insert them comma separated and when you save they will be formatted with the standard one per line.', 'cf7-antispam' ),
 			esc_html__( 'The browser language detection and country detection are separated, you can choose one of them each line or both.', 'cf7-antispam' ),
 			esc_html__( 'The language detection must be lower case, while the country detection upper case.', 'cf7-antispam' ),
 			esc_html__( 'If you are unsure please consult these ISO standards:', 'cf7-antispam' ),
-			esc_html__( '- Language codes (use ctrl+f for search) ', 'cf7-antispam') . wp_kses( $iso_639, array( 'a' => array( 'href' => array() ) ) ),
-			esc_html__( '- Country codes (refer to "Alpha-2 code"), ', 'cf7-antispam') . wp_kses( $iso_3166, array( 'a' => array( 'href' => array() ) ) )
+			esc_html__( '- Language codes (use ctrl+f for search) ', 'cf7-antispam' ) . wp_kses( $iso_639, array( 'a' => array( 'href' => array() ) ) ),
+			esc_html__( '- Country codes (refer to "Alpha-2 code"), ', 'cf7-antispam' ) . wp_kses( $iso_3166, array( 'a' => array( 'href' => array() ) ) )
 		);
 	}
 
