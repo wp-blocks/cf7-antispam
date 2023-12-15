@@ -287,23 +287,23 @@ class CF7_AntiSpam_Filters {
 
 
 	/**
-	 * Check the languages list for allowed and not allowed.
-	 * If the language is not allowed, return the language.
+	 * Check the languages or locales list for allowed and not allowed.
+	 * If the language or locale is not allowed, return the false.
 	 * TODO: actually this function is case-sensitive, but maybe this is not wanted
 	 *
-	 * @param array $languages The languages to check.
-	 * @param array $disalloweds An array of languages that are not allowed.
-	 * @param array $alloweds An array of allowed languages (has the precedence over the not allowed if specified).
+	 * @param array $languages_locales The languages or locales to check.
+	 * @param array $disalloweds An array of languages or locales that are not allowed.
+	 * @param array $alloweds An array of allowed languages or locales (has the precedence over the not allowed if specified).
 	 */
-	public function cf7a_check_languages_locales_allowed( $languages, $disalloweds = array(), $alloweds = array() ) {
+	public function cf7a_check_languages_locales_allowed( $languages_locales, $disalloweds = array(), $alloweds = array() ) {
 
-		if ( ! is_array( $languages ) ) {
-			$languages = array( $languages );
+		if ( ! is_array( $languages_locales ) ) {
+			$languages_locales = array( $languages_locales );
 		}
 
 		if ( ! empty( $alloweds ) ) {
 			foreach ( $alloweds as $allowed ) {
-				if ( in_array( $allowed, $languages, true ) ) {
+				if ( in_array( $allowed, $languages_locales, true ) ) {
 					return true;
 				}
 			}
@@ -311,7 +311,7 @@ class CF7_AntiSpam_Filters {
 
 		if ( ! empty( $disalloweds ) ) {
 			foreach ( $disalloweds as $disallowed ) {
-				if ( in_array( $disallowed, $languages, true ) ) {
+				if ( in_array( $disallowed, $languages_locales, true ) ) {
 					return false;
 				}
 			}
