@@ -44,6 +44,15 @@ function cf7a_get_real_ip() {
 		return $http_cf_connecting_ip;
 	}
 }
+
+function cf7a_strip_weight( $str ) {
+	$str = trim( $str );
+	if ( strpos( $str, ';' ) !== false ) {
+		$str = substr( $str, 0, strpos( $str, ';' ) );
+	}
+	return $str;
+}
+
 /**
  * Generate an array of languages and locales based on the accept language header.
  *
@@ -54,12 +63,7 @@ function cf7a_init_languages_locales_array( $accept_language ) {
 	return array_reduce(
 		explode( ',', $accept_language ),
 		function( $res, $el ) {
-			// trim spaces and removes the semicolon.
-			$el = trim( $el );
-			if ( strpos( $el, ';' ) !== false ) {
-				$el = substr( $el, 0, strpos( $el, ';' ) );
-			}
-			$res[] = $el;
+			$res[] = cf7a_strip_weight( $el );
 			return $res;
 		},
 		array()
@@ -78,11 +82,7 @@ function cf7a_get_browser_languages_locales_array( $languages_locales ) {
 	$result = array_reduce(
 		explode( ',', $languages_locales ),
 		function( $res, $el ) {
-			// trim spaces and removes the semicolon.
-			$el = trim( $el );
-			if ( strpos( $el, ';' ) !== false ) {
-				$el = substr( $el, 0, strpos( $el, ';' ) );
-			}
+			$el = cf7a_strip_weight( $el );
 			if ( strlen( $el ) >= 5 ) {
 				/* split into key: language , value: locale */
 				$l                  = explode( '-', $el );
@@ -131,7 +131,7 @@ function cf7a_get_accept_language_array( $languages ) {
 					$l                          = explode( '-', $el );
 					$res[ strtolower( $l[0] ) ] = $l[0];
 				} else {
-					$l = explode( ';q=', $el );
+					$l = cf7a_strip_weight( $el );
 					if ( ctype_alpha( $l[0] ) && ctype_lower( $l[0] ) ) {
 						$res[ strtolower( $l[0] ) ] = $l[0];
 					}
@@ -153,7 +153,7 @@ function cf7a_get_accept_locales_array( $locales ) {
 					$l                          = explode( '-', $el );
 					$res[ strtolower( $l[1] ) ] = $l[1];
 				} else {
-					$l = explode( ';q=', $el );
+					$l = cf7a_strip_weight( $el );
 					if ( ctype_alpha( $l[0] ) && ctype_upper( $l[0] ) ) {
 						$res[ strtolower( $l[0] ) ] = $l[0];
 					}

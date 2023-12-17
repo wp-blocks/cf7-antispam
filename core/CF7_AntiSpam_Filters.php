@@ -241,50 +241,47 @@ class CF7_AntiSpam_Filters {
 		return true;
 	}
 
+	public function cf7a_check_length_exclusive( $el, $n ) {
+		if ( strlen( $el ) >= 5 ) {
+			$l = explode( '-', $el );
+			if ( $n == 0 ) {
+				return strtolower( $l[0] );
+			} elseif ( $n == 1 ) {
+				return strtoupper( $l[1] );
+			}
+		} elseif ( strlen( $el ) === 2 && ctype_alpha( $el ) ) {
+			if ( $n == 0 && ctype_lower( $el ) ) {
+				return $el;
+			} elseif ( $n == 1 && ctype_upper( $el ) ) {
+				return $el;
+			}
+		}
+		return '';
+	}
+
 	/**
 	 * Retrieves the list of languages or locales from the given options array by key.
 	 *
 	 * @param array  $option An array of options.
 	 * @param string $key The key of the option to retrieve.
 	 *
-	 * @return array The list of languages extracted from the options array.
+	 * @return array The list of unique languages or locales extracted from the options array.
 	 */
-	public function cf7a_get_language_locales( $option, $key ) {
-
-		$check_len = function ( $el, $n ) {
-			if ( strlen( $el ) >= 5 ) {
-				$l = explode( '-', $el );
-				if ( $n == 0 ) {
-					return strtolower( $l[0] );
-				} elseif ( $n == 1 ) {
-					return strtoupper( $l[1] );
-				}
-			} elseif ( strlen( $el ) === 2 && ctype_alpha( $el ) ) {
-				if ( $n == 0 && ctype_lower( $el ) ) {
-					return $el;
-				} elseif ( $n == 1 && ctype_upper( $el ) ) {
-					return $el;
-				}
-			}
-
-			return '';
-		};
-
+	public function cf7a_get_languages_or_locales( $option, $key ) {
 		return array_values(
 			array_unique(
 				array_reduce(
 					$option,
-					function ( $carry, $item ) use ( $key, $check_len ) {
+					function ( $carry, $item ) use ( $key ) {
 						$carry = is_array( $carry ) ? $carry : array();
 						if ( $key == 'languages' ) {
-							$l = $check_len( $item, 0 );
+							$l = $this->cf7a_check_length_exclusive( $item, 0 );
 						} elseif ( $key == 'locales' ) {
-							$l = $check_len( $item, 1 );
+							$l = $this->cf7a_check_length_exclusive( $item, 1 );
 						}
 						if ( ! empty( $l ) ) {
 							$carry[] = $l;
 						}
-
 						return $carry;
 					}
 				)
@@ -296,7 +293,7 @@ class CF7_AntiSpam_Filters {
 	/**
 	 * Check the languages or locales list for allowed and not allowed.
 	 * If the language or locale is not allowed, return the false.
-	 * TODO: actually this function is case-sensitive, but maybe this is not wanted
+	 * This function is case-sensitive, but maybe this is not wanted
 	 *
 	 * @param array $languages_locales The languages or locales to check.
 	 * @param array $disalloweds An array of languages or locales that are not allowed.
@@ -757,8 +754,8 @@ class CF7_AntiSpam_Filters {
 					$client_languages = array_unique( array_merge( $languages['browser'], $languages['accept'] ) );
 
 					/* extract options and assign them to local variables */
-					$languages_allowed    = isset( $options['languages_locales']['allowed'] ) ? $this->cf7a_get_language_locales( $options['languages_locales']['allowed'], 'languages' ) : array();
-					$languages_disallowed = isset( $options['languages_locales']['disallowed'] ) ? $this->cf7a_get_language_locales( $options['languages_locales']['disallowed'], 'languages' ) : array();
+					$languages_allowed    = isset( $options['languages_locales']['allowed'] ) ? $this->cf7a_get_languages_or_locales( $options['languages_locales']['allowed'], 'languages' ) : array();
+					$languages_disallowed = isset( $options['languages_locales']['disallowed'] ) ? $this->cf7a_get_languages_or_locales( $options['languages_locales']['disallowed'], 'languages' ) : array();
 
 
 					$language_disallowed = $this->cf7a_check_languages_locales_allowed( $client_languages, $languages_disallowed, $languages_allowed );
@@ -777,8 +774,8 @@ class CF7_AntiSpam_Filters {
 
 				$geoip = new CF7_Antispam_Geoip();
 
-				$locales_allowed    = $this->cf7a_get_language_locales( $options['languages_locales']['allowed'], 'locales' );
-				$locales_disallowed = $this->cf7a_get_language_locales( $options['languages_locales']['disallowed'], 'locales' );
+				$locales_allowed    = $this->cf7a_get_languages_or_locales( $options['languages_locales']['allowed'], 'locales' );
+				$locales_disallowed = $this->cf7a_get_languages_or_locales( $options['languages_locales']['disallowed'], 'locales' );
 
 
 				if ( ! empty( $geoip ) ) {

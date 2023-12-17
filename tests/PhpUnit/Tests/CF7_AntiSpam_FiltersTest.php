@@ -142,7 +142,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 	}
 
-	public function testCf7a_get_language_locales() {
+	public function testCf7a_get_languages_or_locales() {
 
 		$tests = array(
 			array(
@@ -158,7 +158,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		);
 
 		foreach ( $tests as $test ) {
-			$result = $this->filters->cf7a_get_language_locales( $test['languages_locales'], $test['string'] );
+			$result = $this->filters->cf7a_get_languages_or_locales( $test['languages_locales'], $test['string'] );
 			$this->assertEquals( $test['expected'], $result, 'error expected ' . print_r( $test, true ) . " result " . print_r( $result, true ) );
 		}
 	}
