@@ -8,18 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-dev --no-progress
+
       - name: WPCS check
         uses: 10up/wpcs-action@stable
         with:
           standard: 'WordPress'
           extra_args: '--report-json=./phpcs.json'
           excludes: '.github/ tests/'
+
       - name: Update summary
         run: |
           npx --yes github:10up/phpcs-json-to-md --path ./phpcs.json --output ./phpcs.md
           cat phpcs.md >> $GITHUB_STEP_SUMMARY
-
-      - uses: actions/checkout@v3
 
       - name: Run plugin check
         uses: swissspidy/wp-plugin-check-action@v1
