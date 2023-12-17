@@ -14,14 +14,8 @@ class CF7_AntiSpam_UpdaterTest extends TestCase {
 		$options_test_new = array(
 			'cf7a_version' => '0.6.0',
 			'languages_locales' => array(
-				'allowed' => array(
-					'languages' => array( 'en' ),
-					'locales' => array( 'US' )
-				),
-				'disallowed' => array(
-					'languages' => array( 'it' ),
-					'locales' => array( 'IT' )
-				)
+				'allowed' => array( 'en', 'it-IT' ),
+				'disallowed' => array( 'fr', 'FR'),
 			)
 		);
 
@@ -33,8 +27,8 @@ class CF7_AntiSpam_UpdaterTest extends TestCase {
 			)
 		);
 
-		$thisInstance = new CF7_AntiSpam_Updater($v0_6_0, $options_test_old['cf7a_version'], $options_test_old);
-		$result = $thisInstance->do_updates();
+		$thisInstance = new CF7_AntiSpam_Updater($v0_6_0, $options_test_old);
+		$result = $thisInstance->update_db_procedure_to_0_6_0();
 		$this->assertEquals($options_test_new, $result ,
 			'error expected ' . print_r( $options_test_new, true ) .
 			" result " . print_r( $result, true ));

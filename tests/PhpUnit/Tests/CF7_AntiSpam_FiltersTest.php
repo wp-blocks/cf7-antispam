@@ -38,6 +38,19 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$this->returnValue( '1.1.168.192' );
 	}
 
+	public function testCf7a_init_languages_locales_array() {
+		$tests = array(
+			array(
+				"string"   => 'en-US,en;q=0.9,it;q=0.8,it-IT;q=0.7',
+				"expected" => array( 'en-US', 'en', 'it', 'it-IT' )
+			));
+
+		foreach ( $tests as $test ) {
+			$result = cf7a_init_languages_locales_array( $test['string'] );
+			$this->assertEquals( $test['expected'], $result, 'error expected ' . print_r( $test, true ) . " result " . print_r( $result, true ) );
+		}
+	}
+
 	public function testCf7a_get_browser_languages_locales_array() {
 
 		$tests = array(

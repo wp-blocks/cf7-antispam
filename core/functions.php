@@ -44,6 +44,27 @@ function cf7a_get_real_ip() {
 		return $http_cf_connecting_ip;
 	}
 }
+/**
+ * Generate an array of languages and locales based on the accept language header.
+ *
+ * @param string $accept_language The accept language header.
+ * @return string[] The array of language-locale codes.
+ */
+function cf7a_init_languages_locales_array( $accept_language ) {
+	return array_reduce(
+		explode( ',', $accept_language ),
+		function( $res, $el ) {
+			// trim spaces and removes the semicolon.
+			$el = trim( $el );
+			if ( strpos( $el, ';' ) !== false ) {
+				$el = substr( $el, 0, strpos( $el, ';' ) );
+			}
+			$res[] = $el;
+			return $res;
+		},
+		array()
+	);
+}
 
 
 /**

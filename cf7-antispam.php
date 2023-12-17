@@ -139,26 +139,11 @@ add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
 function run_cf7a() {
 
 	$options = get_option( 'cf7a_options' );
-	if (empty($options)) {
-		return;
-	}
 
-
-
-//	if ( empty($options)  ) {
-//		throw new ErrorException(
-//			'CF7-Antispam plugin options not found,
-//		at this point of execution "cf7a_options" should already exist in "wp_options",
-//		if it exist upon update then it\'s likely your db connection has issues, otherwise,
-//		if this is your first installation there might be permission related problems.
-//		If you\'re not a technical user please contact your sysadmin');
-//	}
-
-	/* Checks and handles updates on version change */
-	$result = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater(CF7ANTISPAM_VERSION, $options['cf7a_version'], $options);
-	$result->do_updates();
-
-	if ( ! empty( $options['cf7a_enable'] ) ) {
+	if ( $options && ! empty( $options['cf7a_enable'] ) ) {
+		/* Checks and handles updates on version change */
+		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $options );
+		$updater->may_do_updates();
 		$cf7a = new \CF7_AntiSpam\Core\CF7_AntiSpam();
 		$cf7a->run();
 	} else {
