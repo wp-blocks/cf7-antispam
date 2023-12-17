@@ -286,9 +286,9 @@ class CF7_AntiSpam_Filters {
 						}
 
 						return $carry;
-					} 
-				) 
-			) 
+					}
+				)
+			)
 		);
 	}
 
@@ -756,7 +756,7 @@ class CF7_AntiSpam_Filters {
 					/* check if the language is allowed and if is disallowed */
 					$client_languages = array_unique( array_merge( $languages['browser'], $languages['accept'] ) );
 
-					/* Checks sender has a blacklisted ip address */
+					/* extract options and assign them to local variables */
 					$languages_allowed    = isset( $options['languages_locales']['allowed'] ) ? $this->cf7a_get_language_locales( $options['languages_locales']['allowed'], 'languages' ) : array();
 					$languages_disallowed = isset( $options['languages_locales']['disallowed'] ) ? $this->cf7a_get_language_locales( $options['languages_locales']['disallowed'], 'languages' ) : array();
 
