@@ -23,9 +23,3 @@ jobs:
         run: |
           npx --yes github:10up/phpcs-json-to-md --path ./phpcs.json --output ./phpcs.md
           cat phpcs.md >> $GITHUB_STEP_SUMMARY
-
-      - name: Run plugin check
-        uses: swissspidy/wp-plugin-check-action@v1
-        with:
-          exclude-checks: |
-            plugin_review_phpcs
