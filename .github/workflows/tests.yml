@@ -50,8 +50,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
-        wp: [ '6.0', 'latest' ]
+        node-version: [lts/*]
+        wp: [ '6.2', 'latest' ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
