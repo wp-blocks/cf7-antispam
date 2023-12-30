@@ -1533,7 +1533,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 
 		$admin_options = get_option( 'cf7a_options' );
-		$excluded      = $admin_options['honeyform_excluded_pages'];
+		$excluded      = isset( $admin_options['honeyform_excluded_pages'] ) ? $admin_options['honeyform_excluded_pages'] : array();
 		$str_excluded  = '';
 		if ( is_array( $excluded ) ) {
 			foreach ( $excluded as $entry ) {
@@ -1561,7 +1561,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			$options,
 			__( 'Add', 'cf7-antispam' ),
 			$str_excluded,
-			__( 'Remove', 'cf7-antispam' ),
+			__( 'Remove', 'cf7-antispam' )
 		);
 	}
 

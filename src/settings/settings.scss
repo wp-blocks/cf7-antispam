@@ -8,6 +8,7 @@ $color__orange: #ff5722;
 $color__yellow: #ffc107;
 $color__green: #8bc34a;
 $color__blue: #008bff;
+$color__dark_blue: #31314b;
 
 $color__primary: $color__orange;
 
@@ -93,24 +94,45 @@ $color__info: $color__blue;
 
 		.row {
 			display: flex;
+			gap: 1rem;
+			width: 100%;
 			flex-wrap: wrap;
 
 			.honeyform-action {
-				margin-top: 8px;
+				margin-top: 0.5rem;
+				padding: 0.4rem 0.3rem;
+				border-radius: 4px;
+				background-color: $color__dark_blue;
+				color: $color__white;
 			}
 
 			.add,
 			.remove {
 				flex: 1;
+
 				select {
 					width: 100%;
 					min-height: 120px;
 				}
+
 				div {
 					text-align: center;
-					border: $color__dark-grey solid 1px;
+					box-sizing: border-box;
+					border: 1px solid darken($color__dark_blue, 10%);
 				}
 			}
+		}
+	}
+
+	#debug-info {
+		pre {
+			background: darken($color__white, 5%);
+			padding: 2rem;
+			box-sizing: border-box;
+			width: 100%;
+			border-radius: 10px;
+			color: #040404;
+			line-height: 1.4;
 		}
 	}
 

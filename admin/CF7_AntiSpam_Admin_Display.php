@@ -45,7 +45,7 @@ class CF7_AntiSpam_Admin_Display {
 		?>
 		<div class="wrap">
 			<div class="cf7-antispam">
-			<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂ ' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
+			<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂️' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
 			<?php
 			add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
 			?>
