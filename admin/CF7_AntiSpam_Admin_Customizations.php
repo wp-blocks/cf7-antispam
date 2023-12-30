@@ -472,6 +472,23 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Identity Protection */
 		add_settings_section(
+			'cf7a_mailbox_protection',
+			__( 'Mailbox Protection', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_mailbox_protection' ),
+			'cf7a-settings'
+		);
+
+		/* Enable identity_protection */
+		add_settings_field(
+			'mailbox_protection_multiple_send',
+			__( 'Avoid multiple send', 'cf7-antispam' ),
+			array( $this, 'cf7a_mailbox_protection_multiple_send_callback' ),
+			'cf7a-settings',
+			'cf7a_mailbox_protection'
+		);
+
+		/* Identity Protection */
+		add_settings_section(
 			'cf7a_identity_protection',
 			__( 'Identity Protection', 'cf7-antispam' ),
 			array( $this, 'cf7a_print_identity_protection' ),
@@ -826,6 +843,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/** It prints the user protection info text */
+	public function cf7a_print_mailbox_protection() {
+		$expire = apply_filters( 'cf7a_resend_timeout', 5 );
+		printf( '<p>%s</p><p>%s%s</p>', esc_html__( 'When activated, this feature prevents consecutive email deliveries to the user\'s mailbox by imposing delay between each message.', 'cf7-antispam' ), $expire, __( ' seconds has been set as the resend timeout, check the documentation if you want to change it', 'cf7-antispam' ) );
+	}
+
+	/** It prints the user protection info text */
 	public function cf7a_print_identity_protection() {
 		printf( '<p>%s</p>', esc_html__( 'After monitoring and analysing some bots, I noticed that it is necessary to block the way bots collect (user) data from the website, otherwise protecting the form may have no effect. This also blocks some registrations, spam comments and other attacks', 'cf7-antispam' ) );
 	}
@@ -1104,7 +1127,10 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['honeyform_position']       = ! empty( $input['honeyform_position'] ) ? sanitize_title( $input['honeyform_position'] ) : 'wp_body_open';
 		$new_input['honeyform_excluded_pages'] = ! empty( $input['honeyform_excluded_pages'] ) ? cf7a_str_array_to_uint_array( $input['honeyform_excluded_pages'] ) : '';
 
-		/* honeyform */
+		/* identity protection */
+		$new_input['mailbox_protection_multiple_send'] = isset( $input['mailbox_protection_multiple_send'] ) ? 1 : 0;
+
+		/* identity protection */
 		$new_input['identity_protection_user'] = isset( $input['identity_protection_user'] ) ? 1 : 0;
 		$new_input['identity_protection_wp']   = isset( $input['identity_protection_wp'] ) ? 1 : 0;
 
@@ -1530,6 +1556,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'Add', 'cf7-antispam' ),
 			$str_excluded,
 			__( 'Remove', 'cf7-antispam' ),
+		);
+	}
+
+	/** It creates a checkbox with the id of "cf7a_identity_protection_user_callback" */
+	public function cf7a_mailbox_protection_multiple_send_callback() {
+		printf(
+			'<input type="checkbox" id="mailbox_protection_multiple_send" name="cf7a_options[mailbox_protection_multiple_send]" %s />',
+			! empty( $this->options['mailbox_protection_multiple_send'] ) ? 'checked="true"' : ''
 		);
 	}
 
