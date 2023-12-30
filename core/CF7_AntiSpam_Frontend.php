@@ -112,7 +112,7 @@ class CF7_AntiSpam_Frontend {
 				// TODO: add set of default values
 				$honeypot_names = isset( $input_names[ $i ] ) ? $input_names[ $i ] : 'hey_' . $i;
 				$honeypot_input = sprintf(
-					'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" tabindex="-1" />',
+					'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" aria-hidden="true" tabindex="-1" />',
 					esc_attr( $honeypot_names ),
 					esc_attr( $input_class )
 				);
