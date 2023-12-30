@@ -275,6 +275,18 @@ class CF7_AntiSpam_Frontend {
 		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
 	}
 
+	function generateHash( $length = 12 ) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$hash       = '';
+
+		for ( $i = 0; $i < $length; $i++ ) {
+			$randIndex = random_int( 0, strlen( $characters ) - 1 );
+			$hash     .= $characters[ $randIndex ];
+		}
+
+		return $hash;
+	}
+
 	/**
 	 * It adds hidden fields to the form
 	 *
@@ -296,6 +308,11 @@ class CF7_AntiSpam_Frontend {
 		/* add the timestamp if required */
 		if ( intval( $this->options['check_time'] ) === 1 ) {
 			$fields[ $prefix . '_timestamp' ] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
+		}
+
+		/* whenever required add the hash to the form to prevent multiple submissions */
+		if ( intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
+			$fields[ $prefix . 'hash' ] = $this->generateHash();
 		}
 
 		/* add the default hidden fields */
