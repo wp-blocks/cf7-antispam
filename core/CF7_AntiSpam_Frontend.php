@@ -465,4 +465,47 @@ class CF7_AntiSpam_Frontend {
 			)
 		);
 	}
+
+	// Prevent the email sending step for specific form
+
+	/**
+	 * Check if the form should be aborted if mail was sent or invalid
+	 *
+	 * @param $cf7 WPCF7_ContactForm - the contact form object
+	 * @param $abort boolean - if the form should be aborted? not sure because undocumented
+	 * @param $submission WPCF7_Submission - the form object
+	 *
+	 * @return void - if the form should be aborted
+	 */
+	public function cf7a_check_resend( $cf7, &$abort, $submission ) {
+
+		// Get the hash from the form data if it exists
+		$hash = sanitize_text_field( preg_replace( '/[^A-Za-z0-9 ]/', '', $_POST['_cf7a_hash'] ) );
+		// get the expiration time
+		$expire = apply_filters( 'cf7a_resend_timeout', 5 );
+
+		if ( empty( $hash ) ) {
+			// The Hash is empty - do nothing
+			$submission->add_result_props(
+				array(
+					'antispam' => array(
+						'error' => esc_html__( 'Missing hash.', 'cf7-antispam' ),
+					),
+				)
+			);
+			$submission->set_status( 'mail_hash_missing' );
+			$submission->set_response( esc_html__( 'Something went wrong. Please reload the page.', 'cf7-antispam' ) );
+		} elseif ( get_transient( "mail_sent_$hash" ) ) {
+			// Set the status
+			$submission->set_status( 'mail_sent_multiple' );
+			$submission->set_response( esc_html__( "Slow down, please wait $expire seconds before resending.", 'cf7-antispam' ) );
+		} else {
+			delete_transient( "mail_sent_$hash" );
+			set_transient( "mail_sent_$hash", true, $expire );
+			return;
+		}
+
+		// abort the form
+		$abort = true;
+	}
 }
