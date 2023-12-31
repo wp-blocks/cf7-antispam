@@ -275,6 +275,18 @@ class CF7_AntiSpam_Frontend {
 		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
 	}
 
+	function generateHash( $length = 12 ) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$hash       = '';
+
+		for ( $i = 0; $i < $length; $i++ ) {
+			$randIndex = random_int( 0, strlen( $characters ) - 1 );
+			$hash     .= $characters[ $randIndex ];
+		}
+
+		return $hash;
+	}
+
 	/**
 	 * It adds hidden fields to the form
 	 *
@@ -296,6 +308,11 @@ class CF7_AntiSpam_Frontend {
 		/* add the timestamp if required */
 		if ( intval( $this->options['check_time'] ) === 1 ) {
 			$fields[ $prefix . '_timestamp' ] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
+		}
+
+		/* whenever required add the hash to the form to prevent multiple submissions */
+		if ( intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
+			$fields[ $prefix . 'hash' ] = $this->generateHash();
 		}
 
 		/* add the default hidden fields */
@@ -464,5 +481,48 @@ class CF7_AntiSpam_Frontend {
 				'version'       => cf7a_crypt( CF7ANTISPAM_VERSION, $this->options['cf7a_cipher'] ),
 			)
 		);
+	}
+
+	// Prevent the email sending step for specific form
+
+	/**
+	 * Check if the form should be aborted if mail was sent or invalid
+	 *
+	 * @param $cf7 WPCF7_ContactForm - the contact form object
+	 * @param $abort boolean - if the form should be aborted? not sure because undocumented
+	 * @param $submission WPCF7_Submission - the form object
+	 *
+	 * @return void - if the form should be aborted
+	 */
+	public function cf7a_check_resend( $cf7, &$abort, $submission ) {
+
+		// Get the hash from the form data if it exists
+		$hash = sanitize_text_field( preg_replace( '/[^A-Za-z0-9 ]/', '', $_POST['_cf7a_hash'] ) );
+		// get the expiration time
+		$expire = apply_filters( 'cf7a_resend_timeout', 5 );
+
+		if ( empty( $hash ) ) {
+			// The Hash is empty - do nothing
+			$submission->add_result_props(
+				array(
+					'antispam' => array(
+						'error' => esc_html__( 'Missing hash.', 'cf7-antispam' ),
+					),
+				)
+			);
+			$submission->set_status( 'mail_hash_missing' );
+			$submission->set_response( esc_html__( 'Something went wrong. Please reload the page.', 'cf7-antispam' ) );
+		} elseif ( get_transient( "mail_sent_$hash" ) ) {
+			// Set the status
+			$submission->set_status( 'mail_sent_multiple' );
+			$submission->set_response( esc_html__( "Slow down, please wait $expire seconds before resending.", 'cf7-antispam' ) );
+		} else {
+			delete_transient( "mail_sent_$hash" );
+			set_transient( "mail_sent_$hash", true, $expire );
+			return;
+		}
+
+		// abort the form
+		$abort = true;
 	}
 }

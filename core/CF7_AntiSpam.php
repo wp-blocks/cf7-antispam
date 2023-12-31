@@ -302,6 +302,11 @@ class CF7_AntiSpam {
 				$this->loader->add_filter( 'wp_headers', $plugin_frontend, 'cf7a_protect_wp', 999 );
 			}
 
+			/* Will check if the form has been submitted more than once, blocking all emails that were sent after the first one for a period of 5 seconds */
+			if ( isset( $this->options['mailbox_protection_multiple_send'] ) && intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
+				$this->loader->add_action( 'wpcf7_before_send_mail', $plugin_frontend, 'cf7a_check_resend', 9, 3 );
+			}
+
 			/* It adds a CSS style to the page that hides the honeypot field */
 			if (
 				( isset( $this->options['check_honeypot'] ) && 1 === intval( $this->options['check_honeypot'] ) ) || ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) )
