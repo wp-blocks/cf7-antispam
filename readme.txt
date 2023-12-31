@@ -1,10 +1,10 @@
 === AntiSpam for Contact Form 7 ===
-Contributors: codekraft
+Contributors: codekraft, gardenboi
 Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
 Requires at least: 5.4
-Tested up to: 6.2
+Tested up to: 6.4.2
 Requires PHP: 5.6
-Stable tag: 0.4.6
+Stable tag: 0.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,9 +22,9 @@ GeoIP - (Optional) If you need to restrict which countries or languages can emai
 
 == Antispam Available Tests ==
 ✅ Browser Fingerprinting
-✅ Language checks (Geo-ip, http headers and browser - cross-checked)
+✅ Language checks (Geo-ip, http headers and browser)
 ✅ Honeypot
-⚠️Honeyform*
+*️⃣ Honeyform*
 ✅ DNS Blacklists
 ✅ Blacklists (with automatic ban after N failed attempts, user defined ip exclusion list)
 ✅ Hidden fields with encrypted unique hash
@@ -32,6 +32,7 @@ GeoIP - (Optional) If you need to restrict which countries or languages can emai
 ✅ Prohibited words in message/email and user agent
 ✅ B8 statistical "Bayesian" spam filter
 ✅ Identity protection
+🆕 Webmail protection
 
 == Extends Flamingo and turns it into a spam manager! ==
 With this plugin, you can now review emails and train B8 to identify spam and legitimate messages. This feature proves useful, especially during the initial stages when some spam emails may slip through.
@@ -55,6 +56,9 @@ To fully protect the forms, it may be necessary to enable a couple of additional
 - The first is user related and denies those who are not logged in the possibility of asking (sensitive) information about the user via wp-api and the protection for the xmlrpc exploit wordpress.
 - The second one is the WordPress protection that will obfuscate sensitive WordPress and server data, adding some headers in order to enhance security against xss and so on.
 Will be hidden the WordPress and WooCommerce version (wp_generator, woo_version), pingback (X-Pingback), server (nginx|apache|...) and php version (X-Powered-By), enabled xss protection headers (X-XSS-Protection), removes rest api link from header (but it will only continue to work if the link is not made public).
+
+== Mailbox Protection (Multiple Send) ==
+Enhance email security by enabling the "Multiple Send" feature, which prevents consecutive email submissions to the user's mailbox. This measure is effective in thwarting automated spam attempts and ensures a secure communication environment.
 
 == Privacy Notices ==
 AntiSpam for Contact Form 7 only process the ip but doesn't store any personal data, but anyway it creates a dictionary of spam and ham words in the wordpress database.
@@ -157,6 +161,19 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.6.0 =
+* Fix: new config validator: unsafe email (Zodiac1978)
+* Fix: Warning- Uninitialized string (bug report, thanks to @benjaminvandenberg)
+* Fix: false positives due to language_incoherence (bug report, thanks to @benjaminvandenberg fixed by @gardenboi)
+* Feature Request: exception list for honeyforms (@linuxlurak close by @gardenboi)
+* Fix: mail resend didn't work (bug report, thanks to @oceandigitals)
+* Enhancement: Remove mail duplicates if users sent multiple
+* Enhancement: General UI enahancements
+* Enhancement: Rewrote the plugin core to keep it up to date with modern loading methods
+
+= 0.5.0 =
+* Fixed compatibility with php 8.2
 
 = 0.4.6 =
 * PHP 8.2 support (bug report, thanks @senjoralfonso)
@@ -306,6 +323,10 @@ See the LICENSE file for more details.
 
 == Contibutions ==
 Mirek Długosz - [#30](https://github.com/erikyo/cf7-antispam/pull/30) fixes a crash that occurred when analysing flamingo metadata
+MeliEve - [#42](https://github.com/wp-blocks/cf7-antispam/pull/42) Fix "internal_server_error" when message is empty
+MeliEve - [#61](https://github.com/wp-blocks/cf7-antispam/pull/61)  Handle deferrer script loading
+Zodiac1978 - [#67](https://github.com/wp-blocks/cf7-antispam/pull/67) Remove warning for unsafe email configuration w/o protection
+JohnHooks - [#66](https://github.com/wp-blocks/cf7-antispam/pull/61) Readme + plugin env
 
 == Special thanks ==
 This project is tested with BrowserStack. [Browserstack](https://www.browserstack.com/)
