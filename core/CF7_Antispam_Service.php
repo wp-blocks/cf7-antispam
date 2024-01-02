@@ -147,7 +147,6 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	}
 
 	public function admin_notice( $message = '' ) {
-
 	}
 
 	/**
@@ -230,7 +229,6 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			)
 		);
 
-
 		echo sprintf(
 			'<p><strong>%s</strong></p>',
 			// phpcs:ignore
@@ -251,7 +249,6 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		$checked = ! empty( $this->options['cf7a_enable'] ) ? 'Disable' : 'Enable';
 		// Display the form
 		echo '<div class="wrap">';
-		echo '<h2>Checkbox Settings</h2>';
 		echo '<form method="post" action="">';
 		echo '<input type="submit" name="cf7a_submit" class="button button-primary" value="' . $checked . '">';
 		if ( ! empty( $this->options['cf7a_enable'] ) ) {
