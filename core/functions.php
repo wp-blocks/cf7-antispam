@@ -144,6 +144,12 @@ function cf7a_get_accept_language_array( $languages ) {
 	);
 }
 
+/**
+ * Generates an array of accepted locales based on the given input.
+ *
+ * @param string $locales A comma-separated list of locales.
+ * @return array An array of accepted locales.
+ */
 function cf7a_get_accept_locales_array( $locales ) {
 	return array_values(
 		array_reduce(
