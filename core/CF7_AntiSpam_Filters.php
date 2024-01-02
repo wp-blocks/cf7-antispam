@@ -268,25 +268,19 @@ class CF7_AntiSpam_Filters {
 	 * @return array The list of unique languages or locales extracted from the options array.
 	 */
 	public function cf7a_get_languages_or_locales( $option, $key ) {
-		return array_values(
-			array_unique(
-				array_reduce(
-					$option,
-					function ( $carry, $item ) use ( $key ) {
-						$carry = is_array( $carry ) ? $carry : array();
-						if ( $key == 'languages' ) {
-							$l = $this->cf7a_check_length_exclusive( $item, 0 );
-						} elseif ( $key == 'locales' ) {
-							$l = $this->cf7a_check_length_exclusive( $item, 1 );
-						}
-						if ( ! empty( $l ) ) {
-							$carry[] = $l;
-						}
-						return $carry;
-					}
-				)
-			)
-		);
+		$languages = [];
+		foreach ( $option as $item ) {
+			$carry = is_array( $carry ) ? $carry : array();
+			if ( $key == 'languages' ) {
+				$l = $this->cf7a_check_length_exclusive( $item, 0 );
+			} elseif ( $key == 'locales' ) {
+				$l = $this->cf7a_check_length_exclusive( $item, 1 );
+			}
+			if ( ! empty( $l ) ) {
+				$languages[] = $l;
+			}
+		}
+		return array_values( array_unique( $languages ) );
 	}
 
 
