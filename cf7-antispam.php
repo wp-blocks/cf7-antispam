@@ -2,10 +2,10 @@
 /**
  * Plugin Name: AntiSpam for Contact Form 7
  * Description: A trustworthy antispam plugin for Contact Form 7. Simple but effective.
- * Author: Codekraft
+ * Author: Codekraft, gardenboi
  * Text Domain: cf7-antispam
  * Domain Path: /languages/
- * Version: 0.4.6
+ * Version: 0.6.0
  *
  * @package cf7-antispam
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 /* CONSTANTS */
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
-define( 'CF7ANTISPAM_VERSION', '0.4.6' );
+define( 'CF7ANTISPAM_VERSION', '0.6.0' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
@@ -124,14 +124,12 @@ register_uninstall_hook( CF7ANTISPAM_PLUGIN, 'uninstall_cf7_antispam' );
  * Call the integration action to mount our plugin as a component
  * into the intefration page
  */
-
 function cf7_antispam_register_service() {
 	$integration = WPCF7_Integration::get_instance();
 	$integration->add_service(
 		'cf7-antispam',
 		\CF7_AntiSpam\Core\CF7_Antispam_Service::get_instance()
 	);
-
 }
 add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
 
