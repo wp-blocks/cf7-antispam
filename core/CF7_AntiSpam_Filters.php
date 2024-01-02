@@ -23,7 +23,6 @@ class CF7_AntiSpam_Filters {
 	 * CF7_AntiSpam_Filters constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -35,6 +34,7 @@ class CF7_AntiSpam_Filters {
 	 */
 	public static function cf7a_expand_ipv6( $ip ) {
 		$hex = unpack( 'H*hex', inet_pton( $ip ) );
+
 		return substr( preg_replace( '/([A-f0-9]{4})/', '$1:', $hex['hex'] ), 0, - 1 );
 	}
 
@@ -60,6 +60,7 @@ class CF7_AntiSpam_Filters {
 	 */
 	public static function cf7a_reverse_ipv6( $ip ) {
 		$ip = self::cf7a_expand_ipv6( $ip );
+
 		return implode( '.', str_split( strrev( str_replace( ':', '', $ip ) ) ) );
 	}
 
@@ -94,6 +95,7 @@ class CF7_AntiSpam_Filters {
 				return $r;
 			}
 		}
+
 		return false;
 	}
 
@@ -107,6 +109,7 @@ class CF7_AntiSpam_Filters {
 	public function cf7a_blacklist_get_id( $id ) {
 		if ( is_int( $id ) ) {
 			global $wpdb;
+
 			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE id = %s", $id ) );
 		}
 	}
@@ -121,11 +124,9 @@ class CF7_AntiSpam_Filters {
 	 * @return bool true if the given id was banned
 	 */
 	public function cf7a_ban_by_ip( $ip, $reason = array(), $spam_score = 1 ) {
-
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 
 		if ( $ip ) {
-
 			$ip_row = self::cf7a_blacklist_get_ip( $ip );
 
 			global $wpdb;
@@ -145,7 +146,7 @@ class CF7_AntiSpam_Filters {
 				array( '%s', '%d', '%s' )
 			);
 
-			if ( $r > -1 ) {
+			if ( $r > - 1 ) {
 				return true;
 			}
 		}
@@ -161,11 +162,9 @@ class CF7_AntiSpam_Filters {
 	 * @return int|false The number of rows deleted.
 	 */
 	public function cf7a_unban_by_ip( $ip ) {
-
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 
 		if ( $ip ) {
-
 			global $wpdb;
 
 			$r = $wpdb->delete(
@@ -192,7 +191,6 @@ class CF7_AntiSpam_Filters {
 	 * @return int The number of rows affected by the query.
 	 */
 	public function cf7a_unban_by_id( $id ) {
-
 		$id = intval( $id );
 
 		global $wpdb;
@@ -208,7 +206,6 @@ class CF7_AntiSpam_Filters {
 		);
 
 		return ! is_wp_error( $r ) ? $r : $wpdb->last_error;
-
 	}
 
 	/**
@@ -237,25 +234,72 @@ class CF7_AntiSpam_Filters {
 		return true;
 	}
 
+	/**
+	 * Checks the length of a string and returns a specific part of it based on a given index.
+	 *
+	 * @param string $el The input string to be checked.
+	 * @param int    $n The index used to retrieve a specific part of the string.
+	 * @return string The extracted part of the string based on the given index, or an empty string if the conditions are not met.
+	 */
+	public function cf7a_check_length_exclusive( $el, $n ) {
+		if ( strlen( $el ) >= 5 ) {
+			$l = explode( '-', $el );
+			if ( $n == 0 ) {
+				return strtolower( $l[0] );
+			} elseif ( $n == 1 ) {
+				return strtoupper( $l[1] );
+			}
+		} elseif ( strlen( $el ) === 2 && ctype_alpha( $el ) ) {
+			if ( $n == 0 && ctype_lower( $el ) ) {
+				return $el;
+			} elseif ( $n == 1 && ctype_upper( $el ) ) {
+				return $el;
+			}
+		}
+		return '';
+	}
 
 	/**
-	 * Check the languages list for allowed and not allowed.
-	 * If the language is not allowed, return the language.
-	 * TODO: actually this function is case-sensitive, but maybe this is not wanted
+	 * Retrieves the list of languages or locales from the given options array by key.
 	 *
-	 * @param array $languages The languages to check.
-	 * @param array $disalloweds An array of languages that are not allowed.
-	 * @param array $alloweds An array of allowed languages (has the precedence over the not allowed if specified).
+	 * @param array  $option An array of options.
+	 * @param string $key The key of the option to retrieve.
+	 *
+	 * @return array The list of unique languages or locales extracted from the options array.
 	 */
-	public function cf7a_check_language_allowed( $languages, $disalloweds = array(), $alloweds = array() ) {
+	public function cf7a_get_languages_or_locales( $option, $key ) {
+		$languages = array();
+		foreach ( $option as $item ) {
+			if ( $key == 'languages' ) {
+				$l = $this->cf7a_check_length_exclusive( $item, 0 );
+			} elseif ( $key == 'locales' ) {
+				$l = $this->cf7a_check_length_exclusive( $item, 1 );
+			}
+			if ( ! empty( $l ) ) {
+				$languages[] = $l;
+			}
+		}
+		return array_values( array_unique( $languages ) );
+	}
 
-		if ( ! is_array( $languages ) ) {
-			$languages = array( $languages );
+
+	/**
+	 * Check the languages or locales list for allowed and not allowed.
+	 * If the language or locale is not allowed, return the false.
+	 * This function is case-sensitive, but maybe this is not wanted
+	 *
+	 * @param array $languages_locales The languages or locales to check.
+	 * @param array $disalloweds An array of languages or locales that are not allowed.
+	 * @param array $alloweds An array of allowed languages or locales (has the precedence over the not allowed if specified).
+	 */
+	public function cf7a_check_languages_locales_allowed( $languages_locales, $disalloweds = array(), $alloweds = array() ) {
+		if ( ! is_array( $languages_locales ) ) {
+			$languages_locales = array( $languages_locales );
 		}
 
 		if ( ! empty( $alloweds ) ) {
 			foreach ( $alloweds as $allowed ) {
-				if ( in_array( $allowed, $languages, true ) ) {
+				if ( in_array( $allowed, $languages_locales, true ) ) {
 					return true;
 				}
 			}
@@ -263,7 +307,7 @@ class CF7_AntiSpam_Filters {
 
 		if ( ! empty( $disalloweds ) ) {
 			foreach ( $disalloweds as $disallowed ) {
-				if ( in_array( $disallowed, $languages, true ) ) {
+				if ( in_array( $disallowed, $languages_locales, true ) ) {
 					return false;
 				}
 			}
@@ -271,6 +315,7 @@ class CF7_AntiSpam_Filters {
 
 		return true;
 	}
+
 
 	public function scan_email_tags( $fields ) {
 		$validEmails = array();
@@ -293,7 +338,6 @@ class CF7_AntiSpam_Filters {
 	 * @return boolean
 	 */
 	public function cf7a_spam_filter( $spam ) {
-
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 
 		/* Get the submitted data */
@@ -322,7 +366,7 @@ class CF7_AntiSpam_Filters {
 		/**
 		 * Let developers hack the message
 		 *
-		 * @param string  $message  the mail message content
+		 * @param string $message the mail message content
 		 * @param array $posted_data the email metadata
 		 */
 		$message = apply_filters( 'cf7a_message_before_processing', $message, $posted_data );
@@ -411,7 +455,6 @@ class CF7_AntiSpam_Filters {
 		 */
 		if ( ! empty( $ip_whitelist ) ) {
 			foreach ( $ip_whitelist as $good_ip ) {
-
 				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
 
 				if ( false !== stripos( (string) $remote_ip, (string) $good_ip ) ) {
@@ -422,9 +465,8 @@ class CF7_AntiSpam_Filters {
 
 		/**
 		 * Checking if the IP address is empty. If it is empty, it will add a score of 10 to the spam score and add a reason to the reason array.
-		*/
+		 */
 		if ( ! $remote_ip ) {
-
 			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
 
 			++ $spam_score;
@@ -438,17 +480,13 @@ class CF7_AntiSpam_Filters {
 		 * Checks if the IP is filtered
 		 */
 		if ( intval( $options['check_bad_ip'] ) === 1 ) {
-
 			foreach ( $bad_ip_list as $bad_ip ) {
-
 				$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
 
 				if ( false !== stripos( (string) $remote_ip, (string) $bad_ip ) ) {
-
 					++ $spam_score;
 					$spam               = true;
 					$reason['bad_ip'][] = $bad_ip;
-
 				}
 			}
 
@@ -463,20 +501,17 @@ class CF7_AntiSpam_Filters {
 		 * Checking if the IP address was already blacklisted - no mercy 😎
 		 */
 		if ( $remote_ip && $options['max_attempts'] ) {
-
 			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
 			$max_attemps    = intval( $options['max_attempts'] );
 
 			/* if the current ip has tried more times than allowed */
 			if ( $ip_data_status >= $max_attemps ) {
-
 				++ $spam_score;
 				$spam                        = true;
 				$reason['blacklisted score'] = $ip_data_status + $spam_score;
 
 				cf7a_log( "The $remote_ip is already blacklisted, status $ip_data_status", 1 );
-
 			} elseif ( CF7ANTISPAM_DEBUG && $ip_data_status > 0 ) {
 
 				/* Wanr only if the number of attempts is higher than 0 but lower than the max attempts */
@@ -494,7 +529,6 @@ class CF7_AntiSpam_Filters {
 		 * Checking if the honeyForm field is empty. If it is not empty, then it is a bot.
 		 */
 		if ( intval( $options['check_honeyform'] ) === 1 ) {
-
 			$form_class = sanitize_html_class( $options['cf7a_customizations_class'] );
 
 			/* get the "marker" field */
@@ -517,7 +551,6 @@ class CF7_AntiSpam_Filters {
 			 */
 			if ( intval( $options['check_refer'] ) === 1 ) {
 				if ( ! $cf7a_referer ) {
-
 					$spam_score           += $score_warn;
 					$reason['no_referrer'] = 'client has referrer address';
 
@@ -527,7 +560,6 @@ class CF7_AntiSpam_Filters {
 
 			if ( $cf7a_protocol ) {
 				if ( in_array( $cf7a_protocol, array( 'HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2' ) ) ) {
-
 					$spam_score           += $score_warn;
 					$reason['no_protocol'] = 'client has a bot-like connection protocol';
 
@@ -539,7 +571,6 @@ class CF7_AntiSpam_Filters {
 			 * Check the CF7 AntiSpam version field
 			 */
 			if ( ! $cf7a_version ) {
-
 				$spam_score             += $score_fingerprinting;
 				$reason['data_mismatch'] = "Version mismatch '$cf7a_version' != '" . CF7ANTISPAM_VERSION . "'";
 
@@ -619,14 +650,14 @@ class CF7_AntiSpam_Filters {
 			 * Bot fingerprints extras
 			 */
 			if ( intval( $options['check_bot_fingerprint_extras'] ) === 1 ) {
-
 				$bot_fingerprint_extras = array(
 					'activity'               => ! empty( $_POST[ $prefix . 'activity' ] ) ? intval( $_POST[ $prefix . 'activity' ] ) : 0,
 					'mouseclick_activity'    => ! empty( $_POST[ $prefix . 'mouseclick_activity' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'mouseclick_activity' ] ) ) === 'passed',
 					'mousemove_activity'     => ! empty( $_POST[ $prefix . 'mousemove_activity' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'mousemove_activity' ] ) ) === 'passed',
 					'webgl'                  => ! empty( $_POST[ $prefix . 'webgl' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webgl' ] ) ) === 'passed',
 					'webgl_render'           => ! empty( $_POST[ $prefix . 'webgl_render' ] ) && sanitize_text_field( wp_unslash( $_POST[ $prefix . 'webgl_render' ] ) ) === 'passed',
-					'bot_fingerprint_extras' => empty( $_POST[ $prefix . 'bot_fingerprint_extras' ] ), // has to be empty!
+					'bot_fingerprint_extras' => empty( $_POST[ $prefix . 'bot_fingerprint_extras' ] ),
+					// has to be empty!
 				);
 
 				$fails = array();
@@ -650,13 +681,11 @@ class CF7_AntiSpam_Filters {
 				}
 
 				if ( ! empty( $fails ) ) {
-
 					$spam_score                      += count( $fails ) * $score_fingerprinting;
 					$reason['bot_fingerprint_extras'] = implode( ', ', $fails );
 
 					cf7a_log( "The $remote_ip ip hasn't passed " . count( $fails ) . ' / ' . count( $bot_fingerprint_extras ) . " of the bot fingerprint extra test ({$reason['bot_fingerprint_extras']})", 1 );
 					cf7a_log( $bot_fingerprint_extras, 2 );
-
 				}
 			}
 
@@ -664,11 +693,7 @@ class CF7_AntiSpam_Filters {
 			 * Check the browser / headers language
 			 */
 			if ( intval( $options['check_language'] ) === 1 ) {
-
-				/* Checks sender has a blacklisted ip address */
-				$languages_allowed    = isset( $options['languages']['allowed'] ) ? $options['languages']['allowed'] : array();
-				$languages_disallowed = isset( $options['languages']['disallowed'] ) ? $options['languages']['disallowed'] : array();
-
+				/* prefix '_cf7a_' */
 				$languages                     = array();
 				$languages['browser_language'] = ! empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'browser_language' ] ) ) : null;
 				$languages['accept_language']  = isset( $_POST[ $prefix . '_language' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . '_language' ] ) ), $options['cf7a_cipher'] ) : null;
@@ -680,7 +705,8 @@ class CF7_AntiSpam_Filters {
 					$spam_score                += $score_detection;
 					$reason['browser_language'] = 'missing browser language';
 				} else {
-					$languages['browser'] = cf7a_get_browser_language_array( $languages['browser_language'] );
+					$languages_locales    = cf7a_get_browser_languages_locales_array( $languages['browser_language'] );
+					$languages['browser'] = $languages_locales['languages'];
 				}
 
 				if ( empty( $languages['accept_language'] ) ) {
@@ -691,7 +717,6 @@ class CF7_AntiSpam_Filters {
 				}
 
 				if ( ! empty( $languages['accept'] ) && ! empty( $languages['browser'] ) ) {
-
 					if ( ! array_intersect( $languages['browser'], $languages['accept'] ) ) {
 						$spam_score += $score_detection;
 
@@ -702,7 +727,11 @@ class CF7_AntiSpam_Filters {
 					/* check if the language is allowed and if is disallowed */
 					$client_languages = array_unique( array_merge( $languages['browser'], $languages['accept'] ) );
 
-					$language_disallowed = $this->cf7a_check_language_allowed( $client_languages, $languages_disallowed, $languages_allowed );
+					/* extract options and assign them to local variables */
+					$languages_allowed    = isset( $options['languages_locales']['allowed'] ) ? $this->cf7a_get_languages_or_locales( $options['languages_locales']['allowed'], 'languages' ) : array();
+					$languages_disallowed = isset( $options['languages_locales']['disallowed'] ) ? $this->cf7a_get_languages_or_locales( $options['languages_locales']['disallowed'], 'languages' ) : array();
+
+					$language_disallowed = $this->cf7a_check_languages_locales_allowed( $client_languages, $languages_disallowed, $languages_allowed );
 
 					if ( false === $language_disallowed ) {
 						$spam_score                += $score_detection;
@@ -715,21 +744,24 @@ class CF7_AntiSpam_Filters {
 			 * Geo-ip verification
 			 */
 			if ( intval( $options['check_geo_location'] ) === 1 ) {
-
 				$geoip = new CF7_Antispam_Geoip();
 
-				if ( ! empty( $geoip ) ) {
+				$locales_allowed    = $this->cf7a_get_languages_or_locales( $options['languages_locales']['allowed'], 'locales' );
+				$locales_disallowed = $this->cf7a_get_languages_or_locales( $options['languages_locales']['disallowed'], 'locales' );
 
+				if ( ! empty( $geoip ) ) {
 					try {
 						/* check if the ip is available into geo-ip database, then create an array with county and continent */
 						$geoip_data      = $geoip->cf7a_geoip_check_ip( $remote_ip );
-						$geoip_continent = isset( $geoip_data['continent'] ) ? strtolower( $geoip_data['continent'] ) : false;
-						$geoip_country   = isset( $geoip_data['country'] ) ? strtolower( $geoip_data['country'] ) : false;
+						$geoip_continent = isset( $geoip_data['continent'] ) ? ( $geoip_data['continent'] ) : false;
+						$geoip_country   = isset( $geoip_data['country'] ) ? ( $geoip_data['country'] ) : false;
 						$geo_data        = array_filter( array( $geoip_continent, $geoip_country ) );
 
 						if ( ! empty( $geo_data ) ) {
-							/* then check if the detected country is among the allowed and disallowed languages */
-							if ( false === $this->cf7a_check_language_allowed( $geo_data, $languages_disallowed, $languages_allowed ) ) {
+							/*
+							 then check if the detected country is among the allowed and disallowed languages */
+							// Check if the country is allowed by country by splitting browser headers 2nd arg since ISO is coherent
+							if ( false === $this->cf7a_check_languages_locales_allowed( $geo_data, $locales_disallowed, $locales_allowed ) ) {
 								$reason['geo_ip'] = $geoip_continent . '-' . $geoip_country;
 								$spam_score      += $score_warn;
 
@@ -748,23 +780,18 @@ class CF7_AntiSpam_Filters {
 			 * Check if the time to submit the email
 			 */
 			if ( intval( $options['check_time'] ) === 1 ) {
-
 				if ( ! $timestamp ) {
-
 					$spam_score         += $score_detection;
 					$reason['timestamp'] = 'undefined';
 
 					cf7a_log( "The $remote_ip ip _timestamp field is missing, probable form hacking attempt from $remote_ip", 1 );
-
 				} else {
-
 					$time_elapsed = $time_now - $timestamp;
 
 					/**
 					 * Check if the time to submit the email il lower than expected
 					 */
 					if ( 0 !== $time_elapsed_min && $time_elapsed < $time_elapsed_min ) {
-
 						$spam_score                += $score_time;
 						$reason['min_time_elapsed'] = $time_elapsed;
 
@@ -775,7 +802,6 @@ class CF7_AntiSpam_Filters {
 					 * Check if the time to submit the email il higher than expected
 					 */
 					if ( 0 !== $time_elapsed_max && $time_elapsed > $time_elapsed_max ) {
-
 						$spam_score                += $score_time;
 						$reason['max_time_elapsed'] = $time_elapsed;
 
@@ -790,7 +816,6 @@ class CF7_AntiSpam_Filters {
 			 * we must prevent this.
 			 */
 			if ( intval( $options['check_bad_email_strings'] ) === 1 && ! empty( $emails ) ) {
-
 				foreach ( $emails as $email ) {
 					foreach ( $bad_email_strings as $bad_email_string ) {
 						if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
@@ -801,7 +826,6 @@ class CF7_AntiSpam_Filters {
 				}
 
 				if ( isset( $reason['email_blackilisted'] ) ) {
-
 					$reason['email_blackilisted'] = implode( ',', $reason['email_blackilisted'] );
 
 					cf7a_log( "The ip address $remote_ip sent a mail using the email address {$reason['email_blackilisted']} that contains the bad string {$reason['email_blackilisted']}", 1 );
@@ -812,17 +836,13 @@ class CF7_AntiSpam_Filters {
 			 * Checks if the emails user agent is denied
 			 */
 			if ( intval( $options['check_bad_user_agent'] ) === 1 ) {
-
 				if ( ! $user_agent ) {
-
 					$spam_score          += $score_detection;
 					$reason['user_agent'] = 'empty';
 
 					cf7a_log( "The $remote_ip ip user agent is empty, look like a spambot", 1 );
 				} else {
-
 					foreach ( $bad_user_agent_list as $bad_user_agent ) {
-
 						if ( false !== stripos( strtolower( $user_agent ), strtolower( $bad_user_agent ) ) ) {
 							$spam_score          += $score_bad_string;
 							$reason['user_agent'] = $bad_user_agent;
@@ -846,7 +866,6 @@ class CF7_AntiSpam_Filters {
 
 				foreach ( $bad_words as $bad_word ) {
 					if ( false !== stripos( $message_compressed, str_replace( ' ', '', strtolower( $bad_word ) ) ) ) {
-
 						$spam_score          += $score_bad_string;
 						$reason['bad_word'][] = $bad_word;
 					}
@@ -865,15 +884,11 @@ class CF7_AntiSpam_Filters {
 			 * inspiration taken from https://gist.github.com/tbreuss/74da96ff5f976ce770e6628badbd7dfc
 			 */
 			if ( intval( $options['check_dnsbl'] ) === 1 && $remote_ip ) {
-
 				$reverse_ip = '';
 
 				if ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-
 					$reverse_ip = $this->cf7a_reverse_ipv4( $remote_ip );
-
 				} elseif ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-
 					$reverse_ip = $this->cf7a_reverse_ipv6( $remote_ip );
 				}
 
@@ -889,12 +904,10 @@ class CF7_AntiSpam_Filters {
 				}
 
 				if ( isset( $reason['dsnbl'] ) ) {
-
 					$dsnbl_count     = count( $reason['dsnbl'] );
 					$reason['dsnbl'] = implode( ', ', $reason['dsnbl'] );
 
 					cf7a_log( "$remote_ip has tried to send an email but is listed $dsnbl_count times in the Domain Name System Blacklists ({$reason['dsnbl']})", 1 );
-
 				}
 			}
 
@@ -942,8 +955,8 @@ class CF7_AntiSpam_Filters {
 		 * Filter before Bayesian filter B8
 		 *
 		 * @param bool $spam true if the mail was detected as spam
-		 * @param array  $message  the mail message content
-		 * @param null|WPCF7_Submission  $submission  the mail message submission instance
+		 * @param array $message the mail message content
+		 * @param null|WPCF7_Submission $submission the mail message submission instance
 		 */
 		$spam = apply_filters( 'cf7a_before_b8', $spam, $message, $submission );
 
@@ -955,13 +968,11 @@ class CF7_AntiSpam_Filters {
 		\assert( \is_string( $text ) );
 
 		if ( $options['enable_b8'] && $message && ! isset( $reason['blacklisted'] ) ) {
-
 			$cf7a_b8 = new CF7_AntiSpam_B8();
 			$rating  = round( $cf7a_b8->cf7a_b8_classify( $text ), 2 );
 
 			/* Checking the rating of the message and if it is greater than the threshold */
 			if ( $rating >= $b8_threshold ) {
-
 				$reason['b8'] = $rating;
 				$spam_score  += $score_detection;
 
@@ -984,8 +995,8 @@ class CF7_AntiSpam_Filters {
 		 * Filter with the antispam results (before ban).
 		 *
 		 * @param boolean $spam true if the mail was detected as spam
-		 * @param string  $message  the mail message content
-		 * @param null|WPCF7_Submission  $submission  the mail message submission instance
+		 * @param string $message the mail message content
+		 * @param null|WPCF7_Submission $submission the mail message submission instance
 		 */
 		$spam = apply_filters( 'cf7a_additional_spam_filters', $spam, $message, $submission );
 
@@ -1016,6 +1027,7 @@ class CF7_AntiSpam_Filters {
 		);
 
 		/* case closed */
+
 		return true;
 	}
 
