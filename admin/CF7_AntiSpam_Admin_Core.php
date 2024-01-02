@@ -167,7 +167,6 @@ class CF7_AntiSpam_Admin_Core {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), $this->version );
-
 	}
 
 	/**
@@ -199,7 +198,6 @@ class CF7_AntiSpam_Admin_Core {
 				'alertMessage' => esc_html__( 'Are you sure?', 'cf7-antispam' ),
 			)
 		);
-
 	}
 
 	/**
@@ -233,7 +231,6 @@ class CF7_AntiSpam_Admin_Core {
 	 * emails received per day, and one with the number of emails received per type (ham or spam)
 	 */
 	public function cf7a_flamingo_recap() {
-
 		$max_mail_count = apply_filters( 'cf7a_dashboard_max_mail_count', 25 );
 
 		$args = array(
@@ -296,7 +293,6 @@ class CF7_AntiSpam_Admin_Core {
 					}
 					$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
 					$mail_collection['by_date'][ $today ][] = array( 'status' => $is_ham ? 'ham' : 'spam' );
-
 				endwhile;
 
 				wp_reset_postdata();

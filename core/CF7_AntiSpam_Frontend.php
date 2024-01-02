@@ -13,6 +13,7 @@ namespace CF7_AntiSpam\Core;
 
 use WP_Query;
 use WPCF7_ContactForm;
+use WPCF7_Submission;
 
 /**
  * A class that handles front end related function
@@ -53,7 +54,6 @@ class CF7_AntiSpam_Frontend {
 	 * @param string $version The current version number of the plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
 
@@ -160,8 +160,6 @@ class CF7_AntiSpam_Frontend {
 			return $content;
 		}
 
-
-
 		/* $html will store the honeyform html */
 		$html = '';
 
@@ -256,7 +254,6 @@ class CF7_AntiSpam_Frontend {
 			);
 
 			$html = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
-
 		endwhile;
 
 		wp_reset_postdata();
@@ -337,7 +334,6 @@ class CF7_AntiSpam_Frontend {
 	 * @return array The array of fields is being returned.
 	 */
 	public function cf7a_add_bot_fingerprinting( $fields ) {
-
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
 		return array_merge(
@@ -356,7 +352,6 @@ class CF7_AntiSpam_Frontend {
 	 * @return array The $fields array is being merged with the $prefix . 'bot_fingerprint_extras' => false array.
 	 */
 	public function cf7a_add_bot_fingerprinting_extras( $fields ) {
-
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
 		return array_merge(
@@ -375,7 +370,6 @@ class CF7_AntiSpam_Frontend {
 	 * @return array The array of fields.
 	 */
 	public function cf7a_append_on_submit( $fields ) {
-
 		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
 
 		return array_merge(

@@ -38,7 +38,6 @@ class CF7_AntiSpam_Activator {
 	 * It sets the default options for the plugin.
 	 */
 	public static function init_vars() {
-
 		self::$default_cf7a_options = array(
 			'cf7a_enable'                  => true,
 			'cf7a_version'                 => CF7ANTISPAM_VERSION,
@@ -169,7 +168,6 @@ class CF7_AntiSpam_Activator {
 
 		/* Create the term database  if not available */
 		if ( $wpdb->get_var( "SHOW TABLES like '{$table_wordlist}'" ) !== $table_wordlist ) {
-
 			$cf7a_wordlist = 'CREATE TABLE IF NOT EXISTS `' . $table_wordlist . "` (
 			  `token` varchar(100) character set utf8 collate utf8_bin NOT NULL,
 			  `count_ham` int unsigned default NULL,
@@ -211,7 +209,6 @@ class CF7_AntiSpam_Activator {
 	 * @param bool $reset_options - whatever to force the reset.
 	 */
 	public static function update_options( $reset_options = false ) {
-
 		self::init_vars();
 
 		$options = get_option( 'cf7a_options' );
@@ -239,14 +236,12 @@ class CF7_AntiSpam_Activator {
 		cf7a_log( $new_options, 1 );
 
 		CF7_AntiSpam_Admin_Tools::cf7a_push_notice( esc_html__( 'CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'success cf7-antispam' );
-
 	}
 
 	/**
 	 *  Activate CF7 Antispam Plugin
 	 */
 	public static function activate() {
-
 		if ( CF7ANTISPAM_DEBUG ) {
 			cf7a_log( 'CF7-Antispam plugin enabled', 1 );
 		}

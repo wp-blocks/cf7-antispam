@@ -85,7 +85,6 @@ class CF7_AntiSpam_B8 {
 	 * @return float The rating of the message.
 	 */
 	public function cf7a_b8_classify( $message, $verbose = false ) {
-
 		if ( empty( $message ) ) {
 			return false;
 		}

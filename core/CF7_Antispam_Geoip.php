@@ -122,7 +122,6 @@ class CF7_Antispam_Geoip {
 	 * @return GeoIp2\Database\Reader|false
 	 */
 	private function cf7a_geoip_get_reader() {
-
 		if ( $this->next_update ) {
 			$this->reader = $this->cf7a_geo_init();
 		}
@@ -180,11 +179,9 @@ class CF7_Antispam_Geoip {
 	 * @return string The upload directory for the plugin.
 	 */
 	private static function cf7a_get_upload_dir() {
-
 		$upload_dir = wp_upload_dir();
 
 		return trailingslashit( $upload_dir['basedir'] . '/' . CF7ANTISPAM_NAME );
-
 	}
 
 	/**
@@ -230,7 +227,6 @@ class CF7_Antispam_Geoip {
 	 * @return bool true when the database has been downloaded
 	 */
 	private function cf7a_geoip_download_database() {
-
 		cf7a_log( 'GeoIP DB download start', 1 );
 
 		$key = sanitize_text_field( $this->license );
@@ -330,7 +326,6 @@ class CF7_Antispam_Geoip {
 
 			/* remove the extracted directory */
 			$wp_filesystem->delete( $plugin_upload_dir . $temp_file );
-
 		} catch ( Exception $exception ) {
 			$message = __( 'GEO-IP decompressed database copy failed', 'cf7-antispam' );
 			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( $message );
@@ -352,7 +347,6 @@ class CF7_Antispam_Geoip {
 		$this->next_update = $update_date;
 
 		return true;
-
 	}
 
 	/**
@@ -361,7 +355,6 @@ class CF7_Antispam_Geoip {
 	 * @param bool $now If true, the database will be downloaded immediately.
 	 */
 	public function cf7a_geoip_schedule_update( $now = false ) {
-
 		if ( $now ) {
 			$this->cf7a_geoip_download_database();
 		}
@@ -379,7 +372,6 @@ class CF7_Antispam_Geoip {
 	 * @param string $ip The IP address to check.
 	 */
 	public function cf7a_geoip_check_ip( $ip ) {
-
 		try {
 			if ( $this->reader ) {
 				$ip_data = $this->reader->country( $ip );

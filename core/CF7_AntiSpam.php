@@ -69,9 +69,6 @@ class CF7_AntiSpam {
 	 * The constructor function is called when the plugin is loaded. It sets the version, plugin name, and options. It loads
 	 * the dependencies, sets the locale, updates the plugin, and loads the admin and frontend areas
 	 */
-
-
-
 	public function __construct() {
 		if ( defined( 'CF7ANTISPAM_VERSION' ) ) {
 			$this->version = CF7ANTISPAM_VERSION;
@@ -123,10 +120,8 @@ class CF7_AntiSpam {
 	 * @access   protected
 	 */
 	protected function update() {
-
 		do_action( 'cf7a_update' );
 		CF7_AntiSpam_Activator::update_options();
-
 	}
 
 	/**
@@ -146,11 +141,9 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function set_locale() {
-
 		$plugin_i18n = new CF7_AntiSpam_i18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -172,7 +165,6 @@ class CF7_AntiSpam {
 		add_action( 'cf7a_cron', array( $plugin_antispam, 'cf7a_cron_unban' ) );
 
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
-
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 
 			/* if flamingo is defined the mail will be analyzed after flamingo has stored */
@@ -183,7 +175,6 @@ class CF7_AntiSpam {
 		}
 
 		if ( ! empty( $this->options['enable_geoip_download'] ) ) {
-
 			$geo = new CF7_Antispam_Geoip();
 
 			add_action( 'cf7a_geoip_update_db', array( $geo, 'cf7a_geoip_download_database' ) );
@@ -202,7 +193,6 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_admin() {
-
 		if ( is_admin() ) {
 
 			/* It handles the actions that are triggered by the user */
@@ -403,11 +393,9 @@ class CF7_AntiSpam {
 	 * @return bool
 	 */
 	public static function update_plugin_option( $option, $value ) {
-
 		$plugin_options = self::get_options();
 
 		if ( isset( $plugin_options[ $option ] ) ) {
-
 			if ( is_string( $value ) ) {
 				/* if the value is a string sanitize and replace the option */
 				$plugin_options[ $option ] = sanitize_text_field( trim( $value ) );
@@ -427,19 +415,18 @@ class CF7_AntiSpam {
 	}
 
 	public function spam_mail_report( $mail_body, $last_report_timestamp ) {
-
 		global $wpdb;
 
 		$all  = $wpdb->get_var(
-			"SELECT COUNT(*) AS cnt 
+			"SELECT COUNT(*) AS cnt
 			 FROM {$wpdb->prefix}posts
-			 WHERE post_status = 'flamingo-spam';" 
+			 WHERE post_status = 'flamingo-spam';"
 		);
 		$last = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) AS cnt
-		 	 FROM {$wpdb->prefix}posts 
-		 	 WHERE post_date_gmt >= FROM_UNIXTIME( %d ) 
+		 	 FROM {$wpdb->prefix}posts
+		 	 WHERE post_date_gmt >= FROM_UNIXTIME( %d )
 			 AND post_status = 'flamingo-spam';",
 				$last_report_timestamp
 			)

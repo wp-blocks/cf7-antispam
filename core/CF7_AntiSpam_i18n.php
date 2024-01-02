@@ -25,7 +25,6 @@ class CF7_AntiSpam_i18n {
 	 * @since    0.1.0
 	 */
 	public function load_plugin_textdomain() {
-
 		load_plugin_textdomain(
 			'cf7-antispam',
 			false,

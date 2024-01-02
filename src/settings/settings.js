@@ -78,58 +78,59 @@ window.onload = function () {
 			}
 		};
 
-    // Honeyform page exlusion logic
-    if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
-      const addListButton = document.querySelector('.add-list');
-      const addSelect = document.querySelector('.add-select');
-      const removeListButton = document.querySelector('.remove-list');
-      const removeSelect = document.querySelector('.remove-select');
+		// Honeyform page exlusion logic
+		if ( document.body.classList.contains( 'cf7-antispam-admin' ) ) {
+			const addListButton = document.querySelector( '.add-list' );
+			const addSelect = document.querySelector( '.add-select' );
+			const removeListButton = document.querySelector( '.remove-list' );
+			const removeSelect = document.querySelector( '.remove-select' );
 
-      for (const remove of removeSelect) {
-        for (const add of addSelect) {
-          if (remove.value === add.value) {
-            addSelect.removeChild(add);
-          }
-        }
-      }
-      addListButton.addEventListener('click', () => {
-        for (const option of addSelect.options) {
-          if (option.selected) {
-            const name = option.textContent;
-            const value = option.value;
+			for ( const remove of removeSelect ) {
+				for ( const add of addSelect ) {
+					if ( remove.value === add.value ) {
+						addSelect.removeChild( add );
+					}
+				}
+			}
+			addListButton.addEventListener( 'click', () => {
+				for ( const option of addSelect.options ) {
+					if ( option.selected ) {
+						const name = option.textContent;
+						const value = option.value;
 
-            if (!removeSelect.options[value]) {
-              const newOption = document.createElement('option');
-              newOption.setAttribute('selected', true);
-              newOption.value = value;
-              newOption.textContent = name;
+						if ( ! removeSelect.options[ value ] ) {
+							const newOption =
+								document.createElement( 'option' );
+							newOption.setAttribute( 'selected', true );
+							newOption.value = value;
+							newOption.textContent = name;
 
-              removeSelect.appendChild(newOption);
-            }
-            option.remove();
-          }
-        }
-      });
+							removeSelect.appendChild( newOption );
+						}
+						option.remove();
+					}
+				}
+			} );
 
-      removeListButton.addEventListener('click', () => {
+			removeListButton.addEventListener( 'click', () => {
+				for ( const option of removeSelect.options ) {
+					if ( option.selected ) {
+						const name = option.textContent;
+						const value = option.value;
 
-        for (const option of removeSelect.options) {
-          if (option.selected) {
-            const name = option.textContent;
-            const value = option.value;
+						if ( ! removeSelect.options[ value ] ) {
+							const newOption =
+								document.createElement( 'option' );
+							newOption.value = value;
+							newOption.textContent = name;
 
-            if (!removeSelect.options[value]) {
-              const newOption = document.createElement('option');
-              newOption.value = value;
-              newOption.textContent = name;
-
-              addSelect.appendChild(newOption);
-            }
-            option.remove();
-          }
-        }
-      });
-    }
+							addSelect.appendChild( newOption );
+						}
+						option.remove();
+					}
+				}
+			} );
+		}
 
 		/* on click show advanced options */
 		document

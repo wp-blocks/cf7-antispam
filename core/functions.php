@@ -291,7 +291,6 @@ function cf7a_rgb2hex( $r, $g, $b ) {
  * @return string - html formatted rating
  */
 function cf7a_format_rating( $rating ) {
-
 	if ( ! is_numeric( $rating ) ) {
 		return '<span class="flamingo-rating-label cf7a-tag-none" style="background-color: #999"><b>' . __( 'none' ) . '</b></span>';
 	}
@@ -346,7 +345,6 @@ function cf7a_format_status( $rank ) {
  * @return false|string Compress arrays into "key:value; " pair
  */
 function cf7a_compress_array( $array, $is_html = false ) {
-
 	if ( ! is_array( $array ) ) {
 		return false;
 	}
@@ -438,7 +436,6 @@ function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_patter
  * @return array $num_array The unsigned integer array.
  */
 function cf7a_str_array_to_uint_array( $str_array ) {
-
 	return array_unique(
 		array_filter(
 			$str_array,
