@@ -140,7 +140,7 @@ function run_cf7a() {
 
 	$options = get_option( 'cf7a_options' );
 
-	if ( $options && ! empty( $options['cf7a_enable'] ) ) {
+	if ( ! empty( $options['cf7a_enable'] ) ) {
 		/* Checks and handles updates on version change */
 		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $options );
 		$updater->may_do_updates();
