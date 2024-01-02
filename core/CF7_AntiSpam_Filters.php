@@ -241,6 +241,13 @@ class CF7_AntiSpam_Filters {
 		return true;
 	}
 
+	/**
+	 * Checks the length of a string and returns a specific part of it based on a given index.
+	 *
+	 * @param string $el The input string to be checked.
+	 * @param int $n The index used to retrieve a specific part of the string.
+	 * @return string The extracted part of the string based on the given index, or an empty string if the conditions are not met.
+	 */
 	public function cf7a_check_length_exclusive( $el, $n ) {
 		if ( strlen( $el ) >= 5 ) {
 			$l = explode( '-', $el );
