@@ -25,7 +25,7 @@
 		"plugin-zip": "wp-scripts plugin-zip",
 		"postplugin-zip": "wp-env run cli --env-cwd=wp-content/plugins/cf7-antispam \"composer install\"",
 		"lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
-		"lint:js": "wp-scripts lint-js  ./src/**/*.js",
+		"lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
 		"packages-update": "wp-scripts packages-update",
 		"wp-env:start": "wp-env start",
 		"wp-env:stop": "wp-env stop",
@@ -45,12 +45,12 @@
 	},
 	"homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
 	"devDependencies": {
-		"@wordpress/e2e-test-utils": "^9.2.0",
-		"@wordpress/eslint-plugin": "^14.6.0",
-		"@wordpress/env": "^7.0.0",
-		"@wordpress/scripts": "^25.5.1",
-		"chart.js": "^4.3.0",
-		"expect-puppeteer": "^6.1.1",
+		"@wordpress/e2e-test-utils": "^10.19.0",
+		"@wordpress/env": "^9.0.0",
+		"@wordpress/eslint-plugin": "^17.5.0",
+		"@wordpress/scripts": "^26.19.0",
+		"chart.js": "^4.4.1",
+		"expect-puppeteer": "^9.0.2",
 		"husky": "^8.0.3"
 	},
 	"engines": {
