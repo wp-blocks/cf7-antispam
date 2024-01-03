@@ -45,6 +45,6 @@ class CF7_AntiSpam_ActivatorTest extends TestCase {
 	}
 
 	public function testOne() {
-		$this->assertTrue(true);
+		$this->assertTrue( true );
 	}
 }

@@ -38,7 +38,6 @@ class CF7_AntiSpam_Admin_Tools {
 	 * It handles the actions that are triggered by the user
 	 */
 	public function cf7a_handle_actions() {
-
 		$action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
 		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
@@ -59,7 +58,6 @@ class CF7_AntiSpam_Admin_Tools {
 
 			/* Ban a single ID (related to ip) */
 			if ( 'unban_' === substr( $action, 0, 6 ) ) {
-
 				$unban_id = intval( substr( $action, 6 ) );
 
 				$filter = new CF7_AntiSpam_Filters();
@@ -80,7 +78,6 @@ class CF7_AntiSpam_Admin_Tools {
 
 			/* Ban forever a single ID */
 			if ( 'ban_forever_' === substr( $action, 0, 12 ) ) {
-
 				$filter = new CF7_AntiSpam_Filters();
 
 				$plugin_options = CF7_AntiSpam::get_options();
@@ -89,7 +86,6 @@ class CF7_AntiSpam_Admin_Tools {
 				$ban_ip = $filter->cf7a_blacklist_get_id( $ban_id );
 
 				if ( $ban_ip && ! empty( $plugin_options ) ) {
-
 					if ( CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array_merge( $plugin_options['bad_ip_list'], array( $ban_ip->ip ) ) ) ) {
 						$filter->cf7a_unban_by_id( $ban_id );
 					}
@@ -102,7 +98,6 @@ class CF7_AntiSpam_Admin_Tools {
 							! empty( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
 						)
 					);
-
 				} else {
 					self::cf7a_push_notice(
 						sprintf(
@@ -167,7 +162,6 @@ class CF7_AntiSpam_Admin_Tools {
 
 			/* Rebuild Dictionary */
 			if ( 'rebuild-dictionary' === $action ) {
-
 				$r = CF7_AntiSpam_Flamingo::cf7a_rebuild_dictionary();
 
 				if ( $r ) {
@@ -182,13 +176,11 @@ class CF7_AntiSpam_Admin_Tools {
 
 			/* Resend an email */
 			if ( 'cf7a_resend_' === substr( $action, 0, 12 ) ) {
-
 				$mail_id = (int) substr( $action, 12 );
 
 				$refer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : false;
 
 				if ( $mail_id > 1 ) {
-
 					$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 					$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
@@ -213,6 +205,5 @@ class CF7_AntiSpam_Admin_Tools {
 				exit();
 			}
 		}
-
 	}
 }

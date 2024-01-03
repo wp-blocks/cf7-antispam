@@ -15,8 +15,8 @@ use PHPUnit\Framework\TestCase;
  * @return int
  */
 function cf7a_count_input( $form_html = '' ) {
-	preg_match_all('/<input[^>]+>/', $form_html, $matches);
-	return intval(count($matches[0]));
+	preg_match_all( '/<input[^>]+>/', $form_html, $matches );
+	return intval( count( $matches[0] ) );
 }
 
 class CF7_AntiSpam_FrontendTest extends TestCase {
@@ -29,14 +29,12 @@ class CF7_AntiSpam_FrontendTest extends TestCase {
 	public $options;
 
 	public function __construct( $name = null, $data = array(), $dataName = '' ) {
-
 		parent::__construct( $name, $data, $dataName );
-		$this->frontend = new CF7_AntiSpam_Frontend(CF7ANTISPAM_NAME, CF7ANTISPAM_VERSION);
-		$this->options = CF7_AntiSpam::get_options();
+		$this->frontend = new CF7_AntiSpam_Frontend( CF7ANTISPAM_NAME, CF7ANTISPAM_VERSION );
+		$this->options  = CF7_AntiSpam::get_options();
 	}
 
 	public function testCf7a_honeypot_count_and_validate() {
-
 		$tests = array(
 			0 => '<form><p><label> Your name<br />
 <span class="wpcf7-form-control-wrap" data-name="your-name"><input size="40" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" autocomplete="name" aria-required="true" aria-invalid="false" value="" type="text" name="your-name" /></span> </label>
@@ -110,52 +108,51 @@ class CF7_AntiSpam_FrontendTest extends TestCase {
 </div>
 <p><span class="wpcf7-form-control-wrap" data-name="your-message-1"><textarea cols="40" rows="6" class="wpcf7-form-control wpcf7-textarea" aria-invalid="false" placeholder="Message" name="your-message-1"></textarea></span><br />
 <input class="wpcf7-form-control has-spinner wpcf7-submit" type="submit" value="Send" />
-</p></form>'
+</p></form>',
 		);
 
-		foreach ($tests as $k => $test) {
+		foreach ( $tests as $k => $test ) {
 			// count the number of inputs
-			$input_count = cf7a_count_input($test);
+			$input_count = cf7a_count_input( $test );
 			// add the honeypots
-			$result = $this->frontend->cf7a_honeypot_add($test);
+			$result = $this->frontend->cf7a_honeypot_add( $test );
 
 			// count the resulting input count
-			$input_count_2 = cf7a_count_input($result);
+			$input_count_2 = cf7a_count_input( $result );
 
 			// print_r("\nCOUNT " .  $input_count . " - " . $input_count_2);
-			$this->assertTrue( $input_count <= $input_count_2 && $input_count + 6 > $input_count_2 , "the number of honeypot added is correct" );
+			$this->assertTrue( $input_count <= $input_count_2 && $input_count + 6 > $input_count_2, 'the number of honeypot added is correct' );
 
 			// add again the honeypots
-			$result2 = $this->frontend->cf7a_honeypot_add($result);
+			$result2 = $this->frontend->cf7a_honeypot_add( $result );
 
 			// count the resulting input count
-			$input_count_3 = cf7a_count_input($result2);
-			$this->assertTrue( $input_count_2 <= $input_count_3 && $input_count_2 + 6 > $input_count_3 , "the number of honeypot added the second time is correct" );
+			$input_count_3 = cf7a_count_input( $result2 );
+			$this->assertTrue( $input_count_2 <= $input_count_3 && $input_count_2 + 6 > $input_count_3, 'the number of honeypot added the second time is correct' );
 
 			// print_r("\nCOUNT2 " . $input_count_2 . " - " . $input_count_3);
 
 			// check for the validity of the html contained in the string $result
 			$dom = new DOMDocument();
-			$dom->loadHTML($result);
-
+			$dom->loadHTML( $result );
 
 			// Check if all tags are correctly opened and closed
 			$errors = libxml_get_errors();
-			if (empty($errors)) {
+			if ( empty( $errors ) ) {
 				// Get all the HTML tags in the form
-				$tags = $dom->getElementsByTagName('*');
+				$tags = $dom->getElementsByTagName( '*' );
 
-				foreach ($tags as $tag) {
-					$open_tag = $dom->saveHTML($tag);
-					$closed_tag = str_replace('<', '</', $open_tag);
-					$this->assertTrue( substr($open_tag, -2) !== '/>' && $dom->getElementsByTagName($closed_tag)->length === 0, "The form string is not valid");
+				foreach ( $tags as $tag ) {
+					$open_tag   = $dom->saveHTML( $tag );
+					$closed_tag = str_replace( '<', '</', $open_tag );
+					$this->assertTrue( substr( $open_tag, -2 ) !== '/>' && $dom->getElementsByTagName( $closed_tag )->length === 0, 'The form string is not valid' );
 				}
 			} else {
-				$this->assertNotEmpty($errors, "The form string is not valid");
+				$this->assertNotEmpty( $errors, 'The form string is not valid' );
 			}
 
 			// Check if the HTML string contains a form tag
-			$form_tags = $dom->getElementsByTagName('form');
+			$form_tags = $dom->getElementsByTagName( 'form' );
 			$this->assertTrue( $form_tags->length === 1, "Error. Form $k returned invalid html after adding honeypots" );
 		}
 	}

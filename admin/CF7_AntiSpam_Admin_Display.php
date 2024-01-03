@@ -34,7 +34,6 @@ class CF7_AntiSpam_Admin_Display {
 	 * Init the class and get the options stored in the database.
 	 */
 	public function __construct() {
-
 		$this->options = CF7_AntiSpam::get_options();
 	}
 
@@ -45,7 +44,7 @@ class CF7_AntiSpam_Admin_Display {
 		?>
 		<div class="wrap">
 			<div class="cf7-antispam">
-			<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂ ' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
+			<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂️' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
 			<?php
 			add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
 			?>
@@ -135,12 +134,10 @@ class CF7_AntiSpam_Admin_Display {
 	 * It gets the blacklisted IPs from the database and displays them in a table
 	 */
 	public static function cf7a_get_blacklisted_table() {
-
 		global $wpdb;
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
 
 		if ( $blacklisted ) {
-
 			$count = count( $blacklisted );
 			$rows  = '';
 
@@ -261,14 +258,12 @@ class CF7_AntiSpam_Admin_Display {
 		$html .= printf( '</div>' );
 
 		return $html;
-
 	}
 
 	/**
 	 * It outputs a debug panel if WP_DEBUG or CF7ANTISPAM_DEBUG are true
 	 */
 	public function cf7a_get_debug_info() {
-
 		if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) {
 
 			/* the header */
@@ -323,7 +318,6 @@ class CF7_AntiSpam_Admin_Display {
 	 * @return void the HTML for the debug info options.
 	 */
 	private function cf7a_get_debug_info_options() {
-
 		printf( '<hr/><h3>%s</h3>', esc_html__( 'Options debug', 'cf7-antispam' ) );
 		printf(
 			'<p>%s</p><pre>%s</pre>',
@@ -340,17 +334,13 @@ class CF7_AntiSpam_Admin_Display {
 	 * It checks if the GeoIP database is enabled, and if so, it checks the next update date and displays it
 	 */
 	private function cf7a_get_debug_info_dnsbl() {
-
 		$remote_ip = cf7a_get_real_ip();
 
 		$performance_test = array();
 
 		if ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-
 			$reverse_ip = CF7_AntiSpam_Filters::cf7a_reverse_ipv4( $remote_ip );
-
 		} elseif ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-
 			$reverse_ip = CF7_AntiSpam_Filters::cf7a_reverse_ipv6( $remote_ip );
 		} else {
 			$reverse_ip = false;
@@ -394,7 +384,6 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private static function cf7a_get_debug_info_geoip() {
 		try {
-
 			$cf7a_geo = new CF7_Antispam_Geoip();
 
 			$geoip_update = $cf7a_geo->next_update ? esc_html( date_i18n( get_option( 'date_format' ), $cf7a_geo->next_update ) ) : esc_html__( 'not set', 'cf7-antispam' );

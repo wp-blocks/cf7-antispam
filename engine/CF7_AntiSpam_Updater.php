@@ -35,7 +35,6 @@ class CF7_AntiSpam_Updater {
 		if ( ! empty( $new_options ) ) {
 			return update_option( 'cf7a_options', $new_options );
 		}
-
 	}
 
 	/**
@@ -43,7 +42,6 @@ class CF7_AntiSpam_Updater {
 	 * Substitute "languages" with "
 	 */
 	public function update_db_procedure_to_0_6_0() {
-
 		if ( ! array_key_exists( 'languages', $this->current_options ) ) {
 			return;
 		}
@@ -53,7 +51,6 @@ class CF7_AntiSpam_Updater {
 		$this->current_options['languages_locales']['disallowed'] = $this->current_options['languages']['disallowed'];
 
 		unset( $this->current_options['languages'] );
-
 
 		return $this->current_options;
 	}

@@ -2,24 +2,23 @@
 /* global cf7a_settings, wpcf7 */
 'use strict';
 
-function ready( fn ) {
-	if ( document.readyState !== 'loading' ) {
+function ready(fn) {
+	if (document.readyState !== 'loading') {
 		fn();
 		return;
 	}
-	document.addEventListener( 'DOMContentLoaded', fn );
+	document.addEventListener('DOMContentLoaded', fn);
 }
 
-ready( function () {
+ready(function () {
 	// disable cf7 antispam script if contact form is not loaded in this page
-	if ( ! window.wpcf7 ) return;
+	if (!window.wpcf7) return;
 
 	const cf7aPrefix = cf7a_settings.prefix;
 	const cf7aVersion = cf7a_settings.version;
 
 	// disable cf7 refill on load
-	wpcf7.cached =
-		parseInt( cf7a_settings.disableReload ) === 0 && wpcf7.cached; // if is cached disable reload
+	wpcf7.cached = parseInt(cf7a_settings.disableReload) === 0 && wpcf7.cached; // if is cached disable reload
 
 	/**
 	 * If the browser supports the `maxTouchPoints` property, then return the value of that property. If the browser supports
@@ -32,23 +31,23 @@ ready( function () {
 	 */
 	function testTouch() {
 		let hasTouch;
-		if ( 'maxTouchPoints' in window.navigator ) {
+		if ('maxTouchPoints' in window.navigator) {
 			hasTouch = window.navigator.maxTouchPoints > 0;
-		} else if ( 'msMaxTouchPoints' in window.navigator ) {
+		} else if ('msMaxTouchPoints' in window.navigator) {
 			hasTouch = window.navigator.msMaxTouchPoints > 0;
 		} else {
 			const mQ =
-				window.matchMedia && window.matchMedia( '(pointer:coarse)' );
-			if ( mQ && mQ.media === '(pointer:coarse)' ) {
-				hasTouch = !! mQ.matches;
-			} else if ( 'orientation' in window ) {
+				window.matchMedia && window.matchMedia('(pointer:coarse)');
+			if (mQ && mQ.media === '(pointer:coarse)') {
+				hasTouch = !!mQ.matches;
+			} else if ('orientation' in window) {
 				hasTouch = true; // deprecated, but good fallback
 			} else {
 				// Only as a last resort, fall back to user agent sniffing
 				const UA = window.navigator.userAgent;
 				hasTouch =
-					/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test( UA ) ||
-					/\b(Android|Windows Phone|iPad|iPod)\b/i.test( UA );
+					/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+					/\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
 			}
 		}
 		return hasTouch;
@@ -69,10 +68,9 @@ ready( function () {
 				'iPad',
 				'iPhone',
 				'iPod',
-			].includes( navigator.platform ) ||
+			].includes(navigator.platform) ||
 			// iPad on iOS 13 detection
-			( navigator.userAgent.includes( 'Mac' ) &&
-				'ontouchend' in document )
+			(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
 		);
 	}
 
@@ -100,7 +98,7 @@ ready( function () {
 		const tests = {
 			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
 			platform: window.navigator.platform || null,
-			screens: [ window.screen.width, window.screen.height ] || null,
+			screens: [window.screen.width, window.screen.height] || null,
 			memory: window.navigator.deviceMemory || null,
 			user_agent: ua || null,
 			app_version: window.navigator.appVersion || null,
@@ -110,38 +108,35 @@ ready( function () {
 
 		// detect browser
 		// https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
-		if ( ua.indexOf( 'Firefox' ) > -1 ) {
+		if (ua.indexOf('Firefox') > -1) {
 			tests.isFFox = true;
-		} else if ( ua.indexOf( 'SamsungBrowser' ) > -1 ) {
+		} else if (ua.indexOf('SamsungBrowser') > -1) {
 			tests.isSamsung = true;
-		} else if ( ua.indexOf( 'Opera' ) > -1 || ua.indexOf( 'OPR' ) > -1 ) {
+		} else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) {
 			tests.isOpera = true;
-		} else if ( ua.indexOf( 'Trident' ) > -1 ) {
+		} else if (ua.indexOf('Trident') > -1) {
 			tests.isIE = true;
-		} else if ( ua.indexOf( 'Edge' ) > -1 ) {
+		} else if (ua.indexOf('Edge') > -1) {
 			tests.isIELegacy = true;
-		} else if ( ua.indexOf( 'Edg' ) > -1 ) {
+		} else if (ua.indexOf('Edg') > -1) {
 			tests.isEdge = true;
-		} else if (
-			ua.indexOf( 'Chrome' ) > -1 ||
-			ua.indexOf( 'CriOS' ) > -1
-		) {
+		} else if (ua.indexOf('Chrome') > -1 || ua.indexOf('CriOS') > -1) {
 			// criOS stands for chrome for ios
 			tests.isChrome = true;
-		} else if ( ua.indexOf( 'Safari' ) > -1 || ua.indexOf( 'GSA' ) > -1 ) {
+		} else if (ua.indexOf('Safari') > -1 || ua.indexOf('GSA') > -1) {
 			// GSA stand for Google Search Appliance
 			tests.isSafari = true;
 		} else {
 			tests.isUnknown = true;
 		}
 
-		if ( isIOS() ) {
+		if (isIOS()) {
 			tests.isIos = true;
-		} else if ( ua.indexOf( 'Android' ) > -1 ) {
+		} else if (ua.indexOf('Android') > -1) {
 			tests.isAndroid = true;
 		}
 
-		if ( tests.isIos || tests.isAndroid ) tests.touch = testTouch();
+		if (tests.isIos || tests.isAndroid) tests.touch = testTouch();
 
 		return tests;
 	};
@@ -169,28 +164,27 @@ ready( function () {
 	 *
 	 * @return {HTMLElement} A new input element with the type of hidden, name of the key, and value of the value.
 	 */
-	const createCF7Afield = ( key, value, prefix = cf7aPrefix ) => {
-		const e = document.createElement( 'input' );
-		e.setAttribute( 'type', 'hidden' );
-		e.setAttribute( 'name', prefix + key );
+	const createCF7Afield = (key, value, prefix = cf7aPrefix) => {
+		const e = document.createElement('input');
+		e.setAttribute('type', 'hidden');
+		e.setAttribute('name', prefix + key);
 		e.setAttribute(
 			'value',
-			typeof value === 'string' ? value : JSON.stringify( value )
+			typeof value === 'string' ? value : JSON.stringify(value)
 		);
 		return e;
 	};
 
 	// get all page forms
-	const wpcf7Forms = document.querySelectorAll( '.wpcf7' );
+	const wpcf7Forms = document.querySelectorAll('.wpcf7');
 
-	if ( wpcf7Forms.length ) {
+	if (wpcf7Forms.length) {
 		let oldy = 0,
 			mouseMoveValue = 0,
 			mouseActivityValue = 0;
 
-		for ( const wpcf7Form of wpcf7Forms ) {
-			const hiddenInputsContainer =
-				wpcf7Form.querySelector( 'form > div' );
+		for (const wpcf7Form of wpcf7Forms) {
+			const hiddenInputsContainer = wpcf7Form.querySelector('form > div');
 
 			// 1) Standard bot checks
 			const botFingerprintKey = hiddenInputsContainer.querySelector(
@@ -218,22 +212,20 @@ ready( function () {
 			);
 
 			// get the fake field and skip it
-			if (
-				wpcf7Form.querySelector( 'form' ).getAttribute( 'autocomplete' )
-			)
+			if (wpcf7Form.querySelector('form').getAttribute('autocomplete'))
 				continue;
 
 			// then set the cf7 antispam version field
-			cf7aVersionInput.setAttribute( 'value', cf7aVersion );
+			cf7aVersionInput.setAttribute('value', cf7aVersion);
 
 			// fingerprint browser data
 			const tests = browserFingerprint();
 
-			if ( botFingerprintKey ) {
+			if (botFingerprintKey) {
 				// 1.0 hijack the value of the bot_fingerprint
 				botFingerprintKey.setAttribute(
 					'value',
-					botFingerprintKey.getAttribute( 'value' ).slice( 0, 5 )
+					botFingerprintKey.getAttribute('value').slice(0, 5)
 				);
 
 				/**
@@ -242,117 +234,111 @@ ready( function () {
 				 * update 2022/10: finally safari seems to support decently and widely formData! adding anyway a check to avoid failures with old browsers
 				 */
 				if (
-					! appendOnSubmit ||
+					!appendOnSubmit ||
 					tests.isIos ||
 					tests.isIE ||
-					!! window.FormData
+					!!window.FormData
 				) {
 					// or add them directly to hidden input container
-					for ( const key in tests ) {
+					for (const key in tests) {
 						hiddenInputsContainer.appendChild(
-							createCF7Afield( key, tests[ key ] )
+							createCF7Afield(key, tests[key])
 						);
 					}
 				} else {
-					const formElem = wpcf7Form.querySelector( 'form' );
-					new window.FormData( formElem.formData );
+					const formElem = wpcf7Form.querySelector('form');
+					new window.FormData(formElem.formData);
 
-					formElem.addEventListener( 'formdata', ( e ) => {
+					formElem.addEventListener('formdata', (e) => {
 						const data = e.formData;
-						for ( const key in tests ) {
-							data.append( cf7aPrefix + key, tests[ key ] );
+						for (const key in tests) {
+							data.append(cf7aPrefix + key, tests[key]);
 						}
 						return data;
-					} );
+					});
 				}
 			}
 
 			// 2) Bot fingerprint extra checks
-			if ( botFingerprintExtra ) {
+			if (botFingerprintExtra) {
 				// 2.1) check for mouse clicks
 				const activity = function () {
 					const botActivity = hiddenInputsContainer.querySelector(
 						'input[name=' + cf7aPrefix + 'activity]'
 					);
-					if ( botActivity ) botActivity.remove();
+					if (botActivity) botActivity.remove();
 					hiddenInputsContainer.append(
-						createCF7Afield( 'activity', mouseActivityValue++ )
+						createCF7Afield('activity', mouseActivityValue++)
 					);
 
-					if ( mouseActivityValue > 3 ) {
-						document.body.removeEventListener(
-							'mouseup',
-							activity
-						);
-						document.body.removeEventListener(
-							'touchend',
-							activity
-						);
+					if (mouseActivityValue > 3) {
+						document.body.removeEventListener('mouseup', activity);
+						document.body.removeEventListener('touchend', activity);
 						hiddenInputsContainer.append(
-							createCF7Afield( 'mouseclick_activity', 'passed' )
+							createCF7Afield('mouseclick_activity', 'passed')
 						);
 					}
 				};
-				document.body.addEventListener( 'mouseup', activity );
-				document.body.addEventListener( 'touchend', activity );
+				document.body.addEventListener('mouseup', activity);
+				document.body.addEventListener('touchend', activity);
 
 				// 2.2) detect the mouse/touch direction change OR touchscreen iterations
-				const mouseMove = function ( e ) {
-					if ( e.pageY > oldy ) mouseMoveValue += 1;
+				const mouseMove = function (e) {
+					if (e.pageY > oldy) mouseMoveValue += 1;
 					oldy = e.pageY;
 
-					if ( mouseMoveValue > 3 ) {
-						document.removeEventListener( 'mousemove', mouseMove );
+					if (mouseMoveValue > 3) {
+						document.removeEventListener('mousemove', mouseMove);
 						hiddenInputsContainer.append(
-							createCF7Afield( 'mousemove_activity', 'passed' )
+							createCF7Afield('mousemove_activity', 'passed')
 						);
 					}
 				};
-				document.addEventListener( 'mousemove', mouseMove );
+				document.addEventListener('mousemove', mouseMove);
 
 				// set mousemove_activity true as fallback in mobile devices (we have already tested the ability to use the touchscreen)
-				if ( tests.isIos || tests.isAndroid ) {
+				if (tests.isIos || tests.isAndroid) {
 					hiddenInputsContainer.append(
-						createCF7Afield( 'mousemove_activity', 'passed' )
+						createCF7Afield('mousemove_activity', 'passed')
 					);
 				}
 
 				// 2.3) WebGL Tests
 				// credits //bot.sannysoft.com
-				const wpcf7box = document.createElement( 'div' );
+				const wpcf7box = document.createElement('div');
 				wpcf7box.id = 'hidden';
-				hiddenInputsContainer.append( wpcf7box );
+				hiddenInputsContainer.append(wpcf7box);
 				String.prototype.hashCode = function () {
 					let hash = 0,
 						i,
 						chr;
-					if ( this.length === 0 ) return hash;
-					for ( i = 0; i < this.length; i++ ) {
-						chr = this.charCodeAt( i );
+					if (this.length === 0) return hash;
+					for (i = 0; i < this.length; i++) {
+						chr = this.charCodeAt(i);
 						// eslint-disable-next-line no-bitwise
-						hash = ( hash << 5 ) - hash + chr;
+						hash = (hash << 5) - hash + chr;
 						// eslint-disable-next-line no-bitwise
 						hash |= 0; // Convert to 32bit integer
 					}
 					return hash;
 				};
 
-				const wglv = document.createElement( 'div' );
+				const wglv = document.createElement('div');
 				wglv.id = 'webgl-vendor';
-				wpcf7box.append( wglv );
+				wpcf7box.append(wglv);
 				const webGLVendorElement =
-					document.getElementById( 'webgl-vendor' );
-				const wgle = document.createElement( 'div' );
+					document.getElementById('webgl-vendor');
+				const wgle = document.createElement('div');
 				wgle.id = 'webgl-renderer';
-				wpcf7box.append( wgle );
+				wpcf7box.append(wgle);
 				const webGLRendererElement =
-					document.getElementById( 'webgl-renderer' );
-				const canvas = document.createElement( 'canvas' );
+					document.getElementById('webgl-renderer');
+				const canvas = document.createElement('canvas');
 				const gl =
-					canvas.getContext( 'webgl' ) ||
-					canvas.getContext( 'webgl-experimental' );
+					canvas.getContext('webgl') ||
+					canvas.getContext('webgl-experimental');
 
-				if ( gl ) {
+				if (gl) {
 					const debugInfo = gl.getExtension(
 						'WEBGL_debug_renderer_info'
 					);
@@ -368,14 +354,14 @@ ready( function () {
 							vendor === 'Google Inc.'
 						) {
 							hiddenInputsContainer.append(
-								createCF7Afield( 'webgl', 'failed' )
+								createCF7Afield('webgl', 'failed')
 							);
 						} else {
 							hiddenInputsContainer.append(
-								createCF7Afield( 'webgl', 'passed' )
+								createCF7Afield('webgl', 'passed')
 							);
 						}
-					} catch ( e ) {
+					} catch (e) {
 						webGLVendorElement.innerHTML = 'Error: ' + e;
 					}
 
@@ -387,70 +373,70 @@ ready( function () {
 						webGLRendererElement.innerHTML = renderer;
 						if (
 							renderer === 'Mesa OffScreen' ||
-							renderer.indexOf( 'Swift' ) !== -1
+							renderer.indexOf('Swift') !== -1
 						) {
 							hiddenInputsContainer.append(
-								createCF7Afield( 'webgl_render', 'failed' )
+								createCF7Afield('webgl_render', 'failed')
 							);
 						} else
 							hiddenInputsContainer.append(
-								createCF7Afield( 'webgl_render', 'passed' )
+								createCF7Afield('webgl_render', 'passed')
 							);
-					} catch ( e ) {
+					} catch (e) {
 						webGLRendererElement.innerHTML = 'Error: ' + e;
 					}
 				} else {
 					hiddenInputsContainer.append(
-						createCF7Afield( 'webgl', 'failed' )
+						createCF7Afield('webgl', 'failed')
 					);
 					hiddenInputsContainer.append(
-						createCF7Afield( 'webgl_render', 'failed' )
+						createCF7Afield('webgl_render', 'failed')
 					);
 				}
 
 				// TODO: change the canvas name
 				const testCanvas = [];
 				const testCanvasIframe = [];
-				testCanvas[ 1 ] = document.createElement( 'div' );
-				testCanvas[ 1 ].id = 'canvas1';
+				testCanvas[1] = document.createElement('div');
+				testCanvas[1].id = 'canvas1';
 
-				testCanvas[ 2 ] = document.createElement( 'div' );
-				testCanvas[ 2 ].id = 'canvas2';
+				testCanvas[2] = document.createElement('div');
+				testCanvas[2].id = 'canvas2';
 
-				testCanvas[ 3 ] = document.createElement( 'div' );
-				testCanvas[ 3 ].id = 'canvas3';
-				testCanvasIframe[ 3 ] = document.createElement( 'iframe' );
-				testCanvasIframe[ 3 ].id = 'canvas3-iframe';
-				testCanvasIframe[ 3 ].class = 'canvased';
-				testCanvasIframe[ 3 ].setAttribute(
+				testCanvas[3] = document.createElement('div');
+				testCanvas[3].id = 'canvas3';
+				testCanvasIframe[3] = document.createElement('iframe');
+				testCanvasIframe[3].id = 'canvas3-iframe';
+				testCanvasIframe[3].class = 'canvased';
+				testCanvasIframe[3].setAttribute(
 					'sandbox',
 					'allow-same-origin'
 				);
-				testCanvas[ 3 ].append( testCanvasIframe[ 3 ] );
+				testCanvas[3].append(testCanvasIframe[3]);
 
-				testCanvas[ 4 ] = document.createElement( 'div' );
-				testCanvas[ 4 ].id = 'canvas4';
-				testCanvasIframe[ 4 ] = document.createElement( 'iframe' );
-				testCanvasIframe[ 4 ].id = 'canvas4-iframe';
-				testCanvasIframe[ 4 ].class = 'canvased';
-				testCanvasIframe[ 4 ].setAttribute(
+				testCanvas[4] = document.createElement('div');
+				testCanvas[4].id = 'canvas4';
+				testCanvasIframe[4] = document.createElement('iframe');
+				testCanvasIframe[4].id = 'canvas4-iframe';
+				testCanvasIframe[4].class = 'canvased';
+				testCanvasIframe[4].setAttribute(
 					'sandbox',
 					'allow-same-origin'
 				);
-				testCanvas[ 4 ].append( testCanvasIframe[ 4 ] );
+				testCanvas[4].append(testCanvasIframe[4]);
 
-				testCanvas[ 5 ] = document.createElement( 'div' );
-				testCanvas[ 5 ].id = 'canvas5';
-				testCanvasIframe[ 5 ] = document.createElement( 'iframe' );
-				testCanvasIframe[ 5 ].id = 'canvas5-iframe';
-				testCanvasIframe[ 5 ].class = 'canvased';
-				testCanvas[ 5 ].append( testCanvasIframe[ 5 ] );
+				testCanvas[5] = document.createElement('div');
+				testCanvas[5].id = 'canvas5';
+				testCanvasIframe[5] = document.createElement('iframe');
+				testCanvasIframe[5].id = 'canvas5-iframe';
+				testCanvasIframe[5].class = 'canvased';
+				testCanvas[5].append(testCanvasIframe[5]);
 
-				testCanvas.forEach( function ( e ) {
-					wpcf7box.appendChild( e );
-				} );
+				testCanvas.forEach(function (e) {
+					wpcf7box.appendChild(e);
+				});
 
-				const drawCanvas2 = function ( num, useIframe = false ) {
+				const drawCanvas2 = function (num, useIframe = false) {
 					let datUrl;
 					let canvas2d;
 
@@ -468,39 +454,39 @@ ready( function () {
 					);
 
 					let canvasElement = useIframe
-						? iframe.contentDocument.createElement( 'canvas' )
-						: document.createElement( 'canvas' );
+						? iframe.contentDocument.createElement('canvas')
+						: document.createElement('canvas');
 
-					if ( canvasElement.getContext ) {
-						canvas2d = canvasElement.getContext( '2d' );
+					if (canvasElement.getContext) {
+						canvas2d = canvasElement.getContext('2d');
 
 						try {
-							canvasElement.setAttribute( 'width', 220 );
-							canvasElement.setAttribute( 'height', 30 );
+							canvasElement.setAttribute('width', 220);
+							canvasElement.setAttribute('height', 30);
 
 							canvas2d.textBaseline = 'top';
 							canvas2d.font = "14px 'Arial'";
 							canvas2d.textBaseline = 'alphabetic';
 							canvas2d.fillStyle = '#f60';
-							canvas2d.fillRect( 53, 1, 62, 20 );
+							canvas2d.fillRect(53, 1, 62, 20);
 							canvas2d.fillStyle = '#069';
-							canvas2d.fillText( canvasText, 2, 15 );
+							canvas2d.fillText(canvasText, 2, 15);
 							canvas2d.fillStyle = 'rgba(102, 204, 0, 0.7)';
-							canvas2d.fillText( canvasText, 4, 17 );
-						} catch ( b ) {
+							canvas2d.fillText(canvasText, 4, 17);
+						} catch (b) {
 							/** @type {!Element} */
-							canvasElement = document.createElement( 'canvas' );
-							canvas2d = canvasElement.getContext( '2d' );
+							canvasElement = document.createElement('canvas');
+							canvas2d = canvasElement.getContext('2d');
 							if (
 								void 0 === canvas2d ||
 								'function' !==
-									typeof canvasElement.getContext( '2d' )
+									typeof canvasElement.getContext('2d')
 										.fillText
 							) {
 								isOkCanvas = false;
 							} else {
-								canvasElement.setAttribute( 'width', 220 );
-								canvasElement.setAttribute( 'height', 30 );
+								canvasElement.setAttribute('width', 220);
+								canvasElement.setAttribute('height', 30);
 								/** @type {string} */
 								canvas2d.textBaseline = 'top';
 								/** @type {string} */
@@ -509,13 +495,13 @@ ready( function () {
 								canvas2d.textBaseline = 'alphabetic';
 								/** @type {string} */
 								canvas2d.fillStyle = '#f60';
-								canvas2d.fillRect( 125, 1, 62, 20 );
+								canvas2d.fillRect(125, 1, 62, 20);
 								/** @type {string} */
 								canvas2d.fillStyle = '#069';
-								canvas2d.fillText( canvasText, 2, 15 );
+								canvas2d.fillText(canvasText, 2, 15);
 								/** @type {string} */
 								canvas2d.fillStyle = 'rgba(102, 204, 0, 0.7)';
-								canvas2d.fillText( canvasText, 4, 17 );
+								canvas2d.fillText(canvasText, 4, 17);
 							}
 						}
 
@@ -523,19 +509,19 @@ ready( function () {
 							isOkCanvas &&
 							'function' === typeof canvasElement.toDataURL
 						) {
-							datUrl = canvasElement.toDataURL( 'image/png' );
+							datUrl = canvasElement.toDataURL('image/png');
 							try {
 								if (
 									'boolean' === typeof datUrl ||
 									void 0 === datUrl
 								) {
-									throw new Error( 'Unable to load image' );
+									throw new Error('Unable to load image');
 								}
-							} catch ( a ) {
+							} catch (a) {
 								/** @type {string} */
 								datUrl = '';
 							}
-							if ( 0 === datUrl.indexOf( 'data:image/png' ) ) {
+							if (0 === datUrl.indexOf('data:image/png')) {
 							} else {
 								/** @type {boolean} */
 								isOkCanvas = false;
@@ -549,37 +535,37 @@ ready( function () {
 						isOkCanvas = false;
 					}
 
-					if ( isOkCanvas ) {
-						const newDiv = document.createElement( 'div' );
+					if (isOkCanvas) {
+						const newDiv = document.createElement('div');
 						newDiv.innerHTML = 'Hash: ' + datUrl.hashCode();
-						canvasContainer.appendChild( canvasElement );
-						canvasContainer.appendChild( newDiv );
+						canvasContainer.appendChild(canvasElement);
+						canvasContainer.appendChild(newDiv);
 					} else {
-						const newDiv = document.createElement( 'div' );
+						const newDiv = document.createElement('div');
 						newDiv.innerHTML = 'Canvas failed';
-						canvasContainer.appendChild( newDiv );
+						canvasContainer.appendChild(newDiv);
 					}
 				};
 
 				window.canvasCount = 0;
 
-				drawCanvas2( '1' );
-				drawCanvas2( '2' );
+				drawCanvas2('1');
+				drawCanvas2('2');
 
-				drawCanvas2( '3', true );
-				drawCanvas2( '4', true );
-				drawCanvas2( '5', true );
+				drawCanvas2('3', true);
+				drawCanvas2('4', true);
+				drawCanvas2('5', true);
 
 				// then remove the useless div
 				wpcf7box.remove();
 			}
 
 			// 3) check the browser language
-			if ( languageChecksEnabled ) {
+			if (languageChecksEnabled) {
 				hiddenInputsContainer.append(
-					createCF7Afield( 'browser_language', getBrowserLanguage() )
+					createCF7Afield('browser_language', getBrowserLanguage())
 				);
 			}
 		}
 	}
-} );
+});

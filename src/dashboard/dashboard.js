@@ -2,7 +2,7 @@
 import Chart from 'chart.js/auto';
 
 function spamCharts() {
-	if ( typeof spamChartData !== 'undefined' ) {
+	if (typeof spamChartData !== 'undefined') {
 		const cf7aCharts = {};
 
 		const lineConfig = {
@@ -36,12 +36,12 @@ function spamCharts() {
 		};
 
 		cf7aCharts.lineChart = new Chart(
-			document.getElementById( 'line-chart' ),
+			document.getElementById('line-chart'),
 			lineConfig
 		);
 
 		cf7aCharts.pieChart = new Chart(
-			document.getElementById( 'pie-chart' ),
+			document.getElementById('pie-chart'),
 			PieConfig
 		);
 

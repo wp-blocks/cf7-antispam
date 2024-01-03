@@ -135,7 +135,6 @@ add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
 
 
 function run_cf7a() {
-
 	$options = get_option( 'cf7a_options' );
 
 	if ( ! empty( $options['cf7a_enable'] ) ) {

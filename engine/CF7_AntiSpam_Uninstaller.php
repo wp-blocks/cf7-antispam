@@ -33,7 +33,6 @@ class CF7_AntiSpam_Uninstaller {
 	 * It uninstalls the plugin, then reinstall it
 	 */
 	public static function cf7a_full_reset() {
-
 		self::uninstall( false );
 		CF7_AntiSpam_Activator::install();
 
@@ -60,7 +59,6 @@ class CF7_AntiSpam_Uninstaller {
 	 * @return bool
 	 */
 	protected static function cf7a_plugin_drop_options() {
-
 		delete_option( 'cf7a_db_version' );
 		delete_option( 'cf7a_options' );
 		delete_option( 'cf7a_geodb_update' );
@@ -83,14 +81,10 @@ class CF7_AntiSpam_Uninstaller {
 	 * @param bool $force If set to true, the cf7-antispam database and options tables delete will be forced otherwise it will be skipped.
 	 */
 	public static function uninstall( $force = true ) {
-
 		if ( ( defined( CF7ANTISPAM_DEBUG_EXTENDED ) && CF7ANTISPAM_DEBUG_EXTENDED === true ) || ! $force ) {
-
 			cf7a_log( 'CONTACT FORM 7 ANTISPAM - constant "CF7ANTISPAM_DEBUG_EXTENDED" is set so options and database will NOT be deleted.' );
 			return false;
-
 		} else {
-
 			global $wpdb;
 
 			$is_multisite = is_multisite() || ( defined( 'WP_INSTALLING_NETWORK' ) && WP_INSTALLING_NETWORK );
@@ -113,9 +107,7 @@ class CF7_AntiSpam_Uninstaller {
 			// Always remove the main site database tables and options.
 			self::cf7a_plugin_drop_tables();
 			self::cf7a_plugin_drop_options();
-
 		}
-
 	}
 
 }

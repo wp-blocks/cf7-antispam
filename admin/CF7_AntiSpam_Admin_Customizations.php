@@ -41,7 +41,6 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * The class `CF7_Antispam_geoip` is instantiated.
 	 */
 	public function __construct() {
-
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return esc_html__( 'Administrators only', 'cf7-antispam' );
 		}
@@ -50,7 +49,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		$this->options = CF7_AntiSpam::get_options();
 
 		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
-
 	}
 
 	/**
@@ -64,7 +62,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_options',
 			array( $this, 'cf7a_sanitize_options' )
 		);
-
 
 		/* Section Bot Fingerprint */
 		add_settings_section(
@@ -464,7 +461,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Honeyform excluded pages */
 		add_settings_field(
 			'honeyform_excluded_pages',
-			__( 'Add pages you wish shouldn\'t have a Honeyform', 'cf7-antispam' ),
+			__( 'Exclude pages', 'cf7-antispam' ),
 			array( $this, 'cf7a_honeyform_excluded_pages_callback' ),
 			'cf7a-settings',
 			'cf7a_honeyform'
@@ -688,7 +685,6 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return string a random tip from the array of tips.
 	 */
 	public function cf7a_get_a_random_tip() {
-
 		$tips = array(
 			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
 			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
@@ -710,7 +706,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
-
 	}
 
 	/**
@@ -845,7 +840,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the honeyform info text */
 	public function cf7a_print_honeyform() {
-		printf( '<p>%s</p>', esc_html__( "I'm actually going to propose the honey-form for the first time! Instead of serving the bot a form with trap fields we directly serve it a form that is entirely a trap", 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( "Instead of relying on trap fields, we utilize honeyforms, that are forms specifically designed as deceptive 'trap' forms. Similar to honeypots, these forms are crafted to mislead and catch potential threats.", 'cf7-antispam' ) );
 	}
 
 	/** It prints the user protection info text */
@@ -1515,7 +1510,6 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * The user can add pages from the first dropdown to the second dropdown and remove pages from the second dropdown.
 	 * The selected pages are saved as options in the WordPress database.
 	 */
-
 	public function cf7a_honeyform_excluded_pages_callback() {
 		$args  = array(
 			'post_type' => 'page', // change this to the post type you're querying
@@ -1533,7 +1527,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		}
 
 		$admin_options = get_option( 'cf7a_options' );
-		$excluded      = $admin_options['honeyform_excluded_pages'];
+		$excluded      = isset( $admin_options['honeyform_excluded_pages'] ) ? $admin_options['honeyform_excluded_pages'] : array();
 		$str_excluded  = '';
 		if ( is_array( $excluded ) ) {
 			foreach ( $excluded as $entry ) {
@@ -1561,7 +1555,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			$options,
 			__( 'Add', 'cf7-antispam' ),
 			$str_excluded,
-			__( 'Remove', 'cf7-antispam' ),
+			__( 'Remove', 'cf7-antispam' )
 		);
 	}
 
