@@ -1535,6 +1535,12 @@ class CF7_AntiSpam_Admin_Customizations {
 			}
 		}
 		wp_reset_postdata();
+		$allowed_html = array(
+			'option' => array(
+				'selected' => array(),
+				'value'    => array(),
+			),
+		);
 		printf(
 			'<div class="honeyform-container">
 						 <div class="row">
@@ -1552,9 +1558,9 @@ class CF7_AntiSpam_Admin_Customizations {
 							  </div>
 						 </div>
 					 </div>',
-			esc_html( $options ),
+			wp_kses( $options, $allowed_html ),
 			esc_html__( 'Add', 'cf7-antispam' ),
-			esc_html( $str_excluded ),
+			wp_kses( $str_excluded, $allowed_html ),
 			esc_html__( 'Remove', 'cf7-antispam' )
 		);
 	}

@@ -250,7 +250,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		// Display the form
 		echo '<div class="wrap">';
 		echo '<form method="post" action="">';
-		echo '<input type="submit" name="cf7a_submit" class="button button-primary" value="' . $checked ? 'Disable' : 'Enable' . '">';
+		echo sprintf( '<input type="submit" name="cf7a_submit" class="button button-primary" value="%s">', $checked ? __( 'Disable', 'cf7-antispam' ) : __( 'Enable', 'cf7-antispam' ) );
 		if ( $checked ) {
 			echo '<a class="button" href="' . esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ) . '">Settings Page</a>';
 		}
