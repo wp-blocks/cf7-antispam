@@ -277,7 +277,8 @@ class CF7_AntiSpam_Frontend {
 		$hash       = '';
 
 		for ( $i = 0; $i < $length; $i++ ) {
-			$randIndex = random_int( 0, strlen( $characters ) - 1 );
+			// TODO: after upgrade to PHP>7.x, use random_int()
+			$randIndex = rand( 0, strlen( $characters ) - 1 );
 			$hash     .= $characters[ $randIndex ];
 		}
 
@@ -491,7 +492,12 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_check_resend( $cf7, &$abort, $submission ) {
 
 		// Get the hash from the form data if it exists
-		$hash = sanitize_text_field( preg_replace( '/[^A-Za-z0-9 ]/', '', $_POST['_cf7a_hash'] ) );
+		$raw_hash = ! empty( $_POST['_cf7a_hash'] ) ? sanitize_text_field( $_POST['_cf7a_hash'] ) : false;
+		if ( ! $raw_hash ) {
+			return;
+		}
+
+		$hash = sanitize_text_field( preg_replace( '/[^A-Za-z0-9 ]/', '', $raw_hash ) );
 		// get the expiration time
 		$expire = apply_filters( 'cf7a_resend_timeout', 5 );
 

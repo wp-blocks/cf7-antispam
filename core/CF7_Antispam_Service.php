@@ -246,13 +246,13 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		}
 
 		// Get the current checkbox status from the options
-		$checked = ! empty( $this->options['cf7a_enable'] ) ? 'Disable' : 'Enable';
+		$checked = ! empty( $this->options['cf7a_enable'] );
 		// Display the form
 		echo '<div class="wrap">';
 		echo '<form method="post" action="">';
-		echo '<input type="submit" name="cf7a_submit" class="button button-primary" value="' . $checked . '">';
-		if ( ! empty( $this->options['cf7a_enable'] ) ) {
-			echo '<a class="button" href="' . $_SERVER['PHP_SELF'] . '?page=cf7-antispam">Settings Page</a>';
+		echo '<input type="submit" name="cf7a_submit" class="button button-primary" value="' . $checked ? 'Disable' : 'Enable' . '">';
+		if ( $checked ) {
+			echo '<a class="button" href="' . esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ) . '">Settings Page</a>';
 		}
 		echo '</form>';
 		echo '</div>';

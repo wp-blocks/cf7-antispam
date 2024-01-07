@@ -50,7 +50,6 @@ class CF7_AntiSpam_Updater {
 	 * @return void|mixed
 	 */
 	public function update_db_procedure_to_0_6_0() {
-
 		if ( array_key_exists( 'languages', $this->current_options ) ) {
 			$this->current_options['cf7a_version']                    = $this->hc_version;
 			$this->current_options['languages_locales']['allowed']    = $this->current_options['languages']['allowed'];
