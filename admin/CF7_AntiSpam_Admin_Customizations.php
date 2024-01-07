@@ -846,7 +846,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It prints the user protection info text */
 	public function cf7a_print_mailbox_protection() {
 		$expire = apply_filters( 'cf7a_resend_timeout', 5 );
-		printf( '<p>%s</p><p>%s%s</p>', esc_html__( 'When activated, this feature prevents consecutive email deliveries to the user\'s mailbox by imposing delay between each message.', 'cf7-antispam' ), $expire, __( ' seconds has been set as the resend timeout, check the documentation if you want to change it', 'cf7-antispam' ) );
+		printf( '<p>%s</p><p>%s%s</p>', esc_html__( 'When activated, this feature prevents consecutive email deliveries to the user\'s mailbox by imposing delay between each message.', 'cf7-antispam' ), esc_html( $expire ), esc_html__( ' seconds has been set as the resend timeout, check the documentation if you want to change it', 'cf7-antispam' ) );
 	}
 
 	/** It prints the user protection info text */
@@ -1552,10 +1552,10 @@ class CF7_AntiSpam_Admin_Customizations {
 							  </div>
 						 </div>
 					 </div>',
-			$options,
-			__( 'Add', 'cf7-antispam' ),
-			$str_excluded,
-			__( 'Remove', 'cf7-antispam' )
+			esc_html( $options ),
+			esc_html__( 'Add', 'cf7-antispam' ),
+			esc_html( $str_excluded ),
+			esc_html__( 'Remove', 'cf7-antispam' )
 		);
 	}
 

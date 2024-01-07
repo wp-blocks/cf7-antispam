@@ -128,7 +128,7 @@ class CF7_AntiSpam_Admin_Core {
 		/* It checks if the settings have been updated, and if so, it displays a success message. */
 		$settings_updated = isset( $_REQUEST['settings-updated'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['settings-updated'] ) ) : false;
 		if ( 'true' === $settings_updated ) {
-			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( __( 'Antispam setting updated with success', 'cf7-antispam' ), 'success' );
+			CF7_AntiSpam_Admin_Tools::cf7a_push_notice( esc_html__( 'Antispam setting updated with success', 'cf7-antispam' ), 'success' );
 		}
 
 		/* if there is a notice stored, print it then delete the transient */
