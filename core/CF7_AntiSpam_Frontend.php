@@ -497,7 +497,7 @@ class CF7_AntiSpam_Frontend {
 			return;
 		}
 
-		$hash = sanitize_text_field( preg_replace( '/[^A-Za-z0-9 ]/', '', $raw_hash ) );
+		$hash = preg_replace( '/[^A-Za-z0-9 ]/', '', $raw_hash );
 		// get the expiration time
 		$expire = apply_filters( 'cf7a_resend_timeout', 5 );
 
