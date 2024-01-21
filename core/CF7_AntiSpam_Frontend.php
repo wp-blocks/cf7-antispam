@@ -154,8 +154,7 @@ class CF7_AntiSpam_Frontend {
 			return $content;
 		}
 
-		$cf7a_options = get_option( 'cf7a_options' );
-		if ( in_array( $current_id, $cf7a_options['honeyform_excluded_pages'] ) ) {
+		if ( is_array( $this->options['honeyform_excluded_pages'] ) && in_array( $current_id, $this->options['honeyform_excluded_pages'] ) ) {
 			// If the current post ID is excluded, return the original content
 			return $content;
 		}
