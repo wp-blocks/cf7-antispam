@@ -1126,7 +1126,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* honeyform */
 		$new_input['check_honeyform']          = isset( $input['check_honeyform'] ) ? 1 : 0;
 		$new_input['honeyform_position']       = ! empty( $input['honeyform_position'] ) ? sanitize_title( $input['honeyform_position'] ) : 'wp_body_open';
-		$new_input['honeyform_excluded_pages'] = ! empty( $input['honeyform_excluded_pages'] ) ? cf7a_str_array_to_uint_array( $input['honeyform_excluded_pages'] ) : '';
+		$new_input['honeyform_excluded_pages'] = ! empty( $input['honeyform_excluded_pages'] ) ? cf7a_str_array_to_uint_array( $input['honeyform_excluded_pages'] ) : array();
 
 		/* identity protection */
 		$new_input['mailbox_protection_multiple_send'] = isset( $input['mailbox_protection_multiple_send'] ) ? 1 : 0;
