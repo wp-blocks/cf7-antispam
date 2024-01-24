@@ -5,3 +5,5 @@ import './integration/integration.scss';
 
 import './settings/settings.js';
 import './settings/settings.scss';
+
+import './settings/importExport.js';
