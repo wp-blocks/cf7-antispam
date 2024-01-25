@@ -110,7 +110,10 @@ class CF7_AntiSpam_Admin_Display {
 			?>
 		</form>
 	</div>
+
 		<?php
+		// Export/Import Options
+		$this->cf7a_export_options();
 	}
 
 	/**
@@ -186,6 +189,36 @@ class CF7_AntiSpam_Admin_Display {
 				)
 			);
 		}
+	}
+
+	private function cf7a_export_options() {
+
+		?>
+		<hr/>
+		<div id="cf7a_export_import" class="cf7-antispam card">
+			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
+			<form method="post" action="<?php echo admin_url( 'options.php' ); ?>">
+				<?php
+				$option_group = 'cf7_antispam_options';
+				wp_nonce_field( "$option_group-options" );
+				?>
+				<input type="hidden" name="option_page" value="cf7_antispam_options">
+				<input type="hidden" name="action" value="update">
+				<input type="hidden" name="type" value="import">
+				<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
+
+				<!-- Form field -->
+				<label for="cf7a_options_json"><?php esc_html__( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
+				<textarea id="cf7a_options_area" id="cf7a_options_json" rows="5"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+
+				<!-- buttons -->
+				<div class="cf7a_buttons cf7a_buttons_export_import">
+					<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
+					<button type="submit" id="cf7a_import_button" class="button button-secondary">Import</button>
+				</div>
+			</form>
+		</div>
+		<?php
 	}
 
 	/**
@@ -295,8 +328,6 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
-			$this->cf7a_export_options();
-
 			/* output the options */
 			$this->cf7a_get_debug_info_options();
 
@@ -330,27 +361,6 @@ class CF7_AntiSpam_Admin_Display {
 				)
 			)
 		);
-	}
-
-	private function cf7a_export_options() {
-		printf( '<hr/><h3>%s</h3>', esc_html__( 'Export/Import Options', 'cf7-antispam' ) );
-		?>
-
-		<form method="post" action="">
-			<input type="hidden" name="cf7a_action" value="import">
-			<input type="hidden" name="nonce" value="<?php echo wp_create_nonce( 'cf7a-nonce' ); ?>">
-
-			<!-- Form field -->
-			<label for="export_options"><?php esc_html__( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-			<textarea id="cf7a_options_area" name="export_options" rows="5"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
-
-			<!-- buttons -->
-			<div class="cf7a_buttons cf7a_buttons_export_import">
-				<button type="submit" id="cf7a_import_button">Import</button>
-				<button type="button" id="cf7a_download_button">Download</button>
-			</div>
-		</form>
-		<?php
 	}
 
 	/**
