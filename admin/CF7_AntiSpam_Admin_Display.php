@@ -197,7 +197,7 @@ class CF7_AntiSpam_Admin_Display {
 		<hr/>
 		<div id="cf7a_export_import" class="cf7-antispam card">
 			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
-			<form method="post" action="<?php echo admin_url( 'options.php' ); ?>">
+			<form id="import-export-options" method="post" action="<?php echo admin_url( 'options.php' ); ?>">
 				<?php
 				$option_group = 'cf7_antispam_options';
 				wp_nonce_field( "$option_group-options" );
@@ -208,8 +208,8 @@ class CF7_AntiSpam_Admin_Display {
 				<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
 
 				<!-- Form field -->
-				<label for="cf7a_options_json"><?php esc_html__( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-				<textarea id="cf7a_options_area" id="cf7a_options_json" rows="5"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+				<label for="cf7a_options_area"><?php esc_html__( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
+				<textarea id="cf7a_options_area" rows="5"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
 
 				<!-- buttons -->
 				<div class="cf7a_buttons cf7a_buttons_export_import">
