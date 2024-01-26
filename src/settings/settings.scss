@@ -102,8 +102,11 @@ $color__info: $color__blue;
 				margin-top: 0.5rem;
 				padding: 0.4rem 0.3rem;
 				border-radius: 4px;
-				background-color: $color__dark_blue;
-				color: $color__white;
+				text-align: center;
+				box-sizing: border-box;
+				min-height: inherit;
+				line-height: 1rem;
+				width: 100%;
 			}
 
 			.add,
@@ -134,6 +137,12 @@ $color__info: $color__blue;
 			color: #040404;
 			line-height: 1.4;
 		}
+	}
+
+	.cf7a-option-notice {
+		padding: 4px 8px;
+		border: 2px solid $color__yellow;
+		border-radius: 8px;
 	}
 
 	.blacklist-table {
