@@ -96,7 +96,12 @@ class CF7_AntiSpam_Admin_Core {
 	 * @return array Modified array of plugin action links.
 	 */
 	public function cf7a_plugin_settings_link( array $links ) {
-		$settings_page_link = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=cf7-antispam' ), esc_html__( 'Antispam Settings', 'cf7-antispam' ) );
+		$options = get_option( 'cf7a_options' );
+		if ( $options['cf7a_enable'] ) {
+			$settings_page_link = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=cf7-antispam' ), esc_html__( 'Antispam Settings', 'cf7-antispam' ) );
+		} else {
+			$settings_page_link = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wpcf7-integration' ), esc_html__( 'Activate Contact Form 7 integration', 'cf7-antispam' ) );
+		}
 		array_unshift( $links, $settings_page_link );
 
 		return $links;
