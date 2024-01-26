@@ -116,15 +116,10 @@ class CF7_AntiSpam_Activator {
 			),
 			'dnsbl_list'             => array(
 				/* ipv4 dnsbl */
-				'dnsbl-1.uceprotect.net',
 				'dnsbl-2.uceprotect.net',
 				'dnsbl-3.uceprotect.net',
-				'dnsbl.sorbs.net',
 				'zen.spamhaus.org',
-				'bl.spamcop.net',
 				'b.barracudacentral.org',
-				'dnsbl.dronebl.org',
-				'all.spamrats.com',
 				/* ipv6 dnsbl but due to the unlimited number of ipv6 dnsl will have a lower impact */
 				'bl.ipv6.spameatingmonkey.net',
 			),
