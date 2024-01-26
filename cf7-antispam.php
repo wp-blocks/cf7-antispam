@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 /* CONSTANTS */
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
-define( 'CF7ANTISPAM_VERSION', '0.6.0' );
+define( 'CF7ANTISPAM_VERSION', '0.6.1' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 

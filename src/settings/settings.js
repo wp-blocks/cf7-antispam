@@ -1,4 +1,6 @@
-window.onload = function () {
+window.addEventListener('load', adminSettingsHelper);
+
+function adminSettingsHelper() {
 	/* This is the code that adds the confirmation alert to the delete buttons on the settings page. */
 	if (
 		document.body.classList.contains('cf7-antispam-admin') ||
@@ -133,4 +135,4 @@ window.onload = function () {
 			.addEventListener('click', showAdvanced);
 		showAdvanced();
 	}
-};
+}
