@@ -5,6 +5,7 @@ namespace CF7_AntiSpam\Admin;
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 use WP_Query;
+use function cli\err;
 
 /**
  * The plugin settings.
@@ -1014,10 +1015,25 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return array $options sanitized
 	 */
 	public function cf7a_sanitize_options( $input ) {
-		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
-
 		/* get the existing options */
-		$new_input = $this->options;
+		$new_input   = $this->options;
+		$import_data = $_POST['to-import'];
+		if ( ! empty( $import_data ) ) {
+			$import_data                    = json_decode( $import_data );
+			$input['enable_geoip_download'] = false;
+
+			foreach ( json_decode( $import_data ) as $key => $value ) {
+				if ( is_numeric( $value ) ) {
+					$input[ $key ] = boolval( $value );
+				} elseif ( is_numeric( $value ) ) {
+					$input[ $key ] = intval( $value );
+				} else {
+					$input[ $key ] = sanitize_text_field( $value );
+				}
+			}
+		}
+
+		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
 		$new_input['cf7a_enable'] = isset( $input['cf7a_enable'] ) ? $input['cf7a_enable'] : $new_input['cf7a_enable'];
 
@@ -1036,26 +1052,31 @@ class CF7_AntiSpam_Admin_Customizations {
 		 * Checking if the enable_geoip_download is not set (note the name is $new_input but actually is the copy of the stored options)
 		 * and the user has chosen to enable the geoip, in this case download the database if needed
 		 */
-		if ( empty( $new_input['enable_geoip_download'] ) && isset( $input['enable_geoip_download'] ) ) {
+		if ( empty( $import_data ) && empty( $new_input['enable_geoip_download'] ) && isset( $input['enable_geoip_download'] ) ) {
 			$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
 		}
 
-		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
-		$new_input['geoip_dbkey']           = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
+		if ( empty( $import_data ) ) {
+			$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
+		}
+
+		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
 		/* browser language check enabled */
-		$new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
+		$new_input['check_language'] = ! empty( $input['check_language'] ) ? 1 : 0;
 
 		/* geo-ip location check enabled */
 		$new_input['check_geo_location'] = isset( $input['check_geo_location'] ) ? 1 : 0;
 
 		/* languages allowed | disallowed */
-		$new_input['languages_locales']['allowed']    = isset( $input['languages_locales']['allowed'] )
-			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['allowed'] ) )
-			: array();
-		$new_input['languages_locales']['disallowed'] = isset( $input['languages_locales']['disallowed'] )
-			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
-			: array();
+		if ( empty( $import_data ) ) {
+			$new_input['languages_locales']['allowed']    = isset( $input['languages_locales']['allowed'] )
+				? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['allowed'] ) )
+				: array();
+			$new_input['languages_locales']['disallowed'] = isset( $input['languages_locales']['disallowed'] )
+				? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
+				: array();
+		}
 
 		/* max attempts before ban */
 		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 3;

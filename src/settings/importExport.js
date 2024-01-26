@@ -43,7 +43,7 @@ function importExportOptions(e) {
 	 * @type {FormData}
 	 */
 	const data = new FormData(e.target);
-	data.append('toImport', JSON.stringify(cf7aOptions));
+	data.append('to-import', encodeURIComponent(JSON.stringify(cf7aOptions)));
 
 	// Make an AJAX request to save the merged options
 	fetch(e.target.getAttribute('action'), {
