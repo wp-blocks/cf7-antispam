@@ -277,8 +277,8 @@ class CF7_AntiSpam_Frontend {
 
 		for ( $i = 0; $i < $length; $i++ ) {
 			// TODO: after upgrade to PHP>7.x, use random_int()
-			$randIndex = rand( 0, strlen( $characters ) - 1 );
-			$hash     .= $characters[ $randIndex ];
+			$rand_index = wp_rand( 0, strlen( $characters ) - 1 );
+			$hash      .= $characters[ $rand_index ];
 		}
 
 		return $hash;

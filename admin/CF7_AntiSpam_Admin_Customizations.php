@@ -1050,9 +1050,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_sanitize_options( $input ) {
 		/* get the import options */
 		$new_input   = $this->options;
-		$import_data = isset( $_POST['to-import'] ) ? $_POST['to-import'] : false;
+		$import_data = isset( $_POST['to-import'] ) ? sanitize_text_field( $_POST['to-import'] ) : false;
 		if ( ! empty( $import_data ) ) {
-			$json_data = json_decode( wp_unslash( $_POST['to-import'] ) );
+			$json_data = json_decode( wp_unslash( $import_data ) );
 			$input     = $this->cf7a_clean_recursive( $json_data );
 			// monkey pathing arrays that needs to be imploded
 			$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
@@ -1068,7 +1068,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			$input['cf7a_enable']                     = 1;
 			$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
 		}
-		error_log( print_r( $input, true ) );
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 

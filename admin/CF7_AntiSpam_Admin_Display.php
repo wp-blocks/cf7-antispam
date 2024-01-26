@@ -196,7 +196,7 @@ class CF7_AntiSpam_Admin_Display {
 		?>
 		<div id="cf7a_export_import" class="cf7-antispam card">
 			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
-			<form id="import-export-options" method="post" action="<?php echo admin_url( 'options.php' ); ?>">
+			<form id="import-export-options" method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
 				<?php
 				$option_group = 'cf7_antispam_options';
 				wp_nonce_field( "$option_group-options" );

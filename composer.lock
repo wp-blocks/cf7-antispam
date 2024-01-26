@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb13b92ba8c92b03aeb5c49e221f385a",
+    "content-hash": "3e7338049a31dbce7667fad9e96e54a2",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -678,16 +678,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.46.0",
+            "version": "v3.48.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "be6831c9af1740470d2a773119b9273f8ac1c3d2"
+                "reference": "a92472c6fb66349de25211f31c77eceae3df024e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/be6831c9af1740470d2a773119b9273f8ac1c3d2",
-                "reference": "be6831c9af1740470d2a773119b9273f8ac1c3d2",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/a92472c6fb66349de25211f31c77eceae3df024e",
+                "reference": "a92472c6fb66349de25211f31c77eceae3df024e",
                 "shasum": ""
             },
             "require": {
@@ -757,7 +757,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.46.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.48.0"
             },
             "funding": [
                 {
@@ -765,7 +765,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-01-03T21:38:46+00:00"
+            "time": "2024-01-19T21:44:39+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1490,16 +1490,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.15",
+            "version": "9.6.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "05017b80304e0eb3f31d90194a563fd53a6021f1"
+                "reference": "3767b2c56ce02d01e3491046f33466a1ae60a37f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/05017b80304e0eb3f31d90194a563fd53a6021f1",
-                "reference": "05017b80304e0eb3f31d90194a563fd53a6021f1",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3767b2c56ce02d01e3491046f33466a1ae60a37f",
+                "reference": "3767b2c56ce02d01e3491046f33466a1ae60a37f",
                 "shasum": ""
             },
             "require": {
@@ -1573,7 +1573,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.15"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.16"
             },
             "funding": [
                 {
@@ -1589,7 +1589,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-01T16:55:19+00:00"
+            "time": "2024-01-19T07:03:14+00:00"
         },
         {
             "name": "psr/container",
@@ -2763,16 +2763,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.8.0",
+            "version": "3.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "5805f7a4e4958dbb5e944ef1e6edae0a303765e7"
+                "reference": "14f5fff1e64118595db5408e946f3a22c75807f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/5805f7a4e4958dbb5e944ef1e6edae0a303765e7",
-                "reference": "5805f7a4e4958dbb5e944ef1e6edae0a303765e7",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/14f5fff1e64118595db5408e946f3a22c75807f7",
+                "reference": "14f5fff1e64118595db5408e946f3a22c75807f7",
                 "shasum": ""
             },
             "require": {
@@ -2782,11 +2782,11 @@
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0"
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
             },
             "bin": [
-                "bin/phpcs",
-                "bin/phpcbf"
+                "bin/phpcbf",
+                "bin/phpcs"
             ],
             "type": "library",
             "extra": {
@@ -2839,7 +2839,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2023-12-08T12:32:31+00:00"
+            "time": "2024-01-11T20:47:48+00:00"
         },
         {
             "name": "symfony/console",
@@ -4446,7 +4446,10 @@
     "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-json": "*",
+        "ext-openssl": "*"
+    },
     "platform-dev": {
         "php": ">=7.4",
         "ext-dom": "*",

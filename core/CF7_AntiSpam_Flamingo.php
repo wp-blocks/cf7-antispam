@@ -241,9 +241,9 @@ class CF7_AntiSpam_Flamingo {
 		$recipient  = $form_props['mail']['recipient'];
 		if ( $form_props['mail']['recipient'] || ! empty( $flamingo_data->meta['recipient'] ) ) {
 			if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) || ! empty( $recipient ) ) {
-				if ( $recipient === '[_site_admin_email]' ) {
+				if ( '[_site_admin_email]' === $recipient ) {
 					$recipient = $flamingo_data->meta['site_admin_email'];
-				} elseif ( $recipient === '[_post_author]' ) {
+				} elseif ( '[_post_author]' === $recipient ) {
 					$recipient = get_option( 'post_author_email' ); // check this, not sure 🤔
 				} else {
 					$recipient = get_option( 'admin_email' );

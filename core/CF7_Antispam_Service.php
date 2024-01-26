@@ -202,9 +202,6 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	/**
 	 * The `display` function is used to display information about the Antispam plugin and provide options for
 	 * setup integration.
-	 *
-	 * @param string The "action" parameter is used to determine the specific action to be performed in the
-	 * "display" function. It is a string that can have two possible values:
 	 */
 	public function display( $action = '' ) {
 		echo sprintf(
@@ -252,9 +249,12 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		// Display the form
 		echo '<div class="wrap">';
 		echo '<form method="post" action="">';
-		printf( '<input type="submit" name="cf7a_submit" class="button button-primary" value="%s">', $checked ? __( 'Disable', 'cf7-antispam' ) : __( 'Enable', 'cf7-antispam' ) );
+		printf(
+			'<input type="submit" name="cf7a_submit" class="button button-primary" value="%s">',
+			$checked ? esc_html__( 'Disable', 'cf7-antispam' ) : esc_html__( 'Enable', 'cf7-antispam' )
+		);
 		if ( $checked ) {
-			echo '<a class="button" href="' . esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ) . '">Settings Page</a>';
+			printf( '<a class="button" href="%s">Settings Page</a>', esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ) );
 		}
 		echo '</form>';
 		echo '</div>';

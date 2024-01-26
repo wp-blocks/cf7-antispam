@@ -244,15 +244,15 @@ class CF7_AntiSpam_Filters {
 	public function cf7a_check_length_exclusive( $el, $n ) {
 		if ( strlen( $el ) >= 5 ) {
 			$l = explode( '-', $el );
-			if ( $n == 0 ) {
+			if ( 0 == $n ) {
 				return strtolower( $l[0] );
-			} elseif ( $n == 1 ) {
+			} elseif ( 1 == $n ) {
 				return strtoupper( $l[1] );
 			}
 		} elseif ( strlen( $el ) === 2 && ctype_alpha( $el ) ) {
-			if ( $n == 0 && ctype_lower( $el ) ) {
+			if ( 0 == $n && ctype_lower( $el ) ) {
 				return $el;
-			} elseif ( $n == 1 && ctype_upper( $el ) ) {
+			} elseif ( 1 == $n && ctype_upper( $el ) ) {
 				return $el;
 			}
 		}
@@ -270,9 +270,9 @@ class CF7_AntiSpam_Filters {
 	public function cf7a_get_languages_or_locales( $option, $key ) {
 		$languages = array();
 		foreach ( $option as $item ) {
-			if ( $key == 'languages' ) {
+			if ( 'languages' === $key ) {
 				$l = $this->cf7a_check_length_exclusive( $item, 0 );
-			} elseif ( $key == 'locales' ) {
+			} elseif ( 'locales' === $key ) {
 				$l = $this->cf7a_check_length_exclusive( $item, 1 );
 			}
 			if ( ! empty( $l ) ) {
