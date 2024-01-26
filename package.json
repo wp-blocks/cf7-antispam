@@ -2,7 +2,7 @@
 	"name": "cf7-antispam",
 	"author": "Erik Golinelli",
 	"license": "GPL-2.0-only",
-	"version": "0.6.1",
+	"version": "0.6.2",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
@@ -21,9 +21,9 @@
 	"scripts": {
 		"start": "wp-scripts start",
 		"build": "wp-scripts build",
-		"preplugin-zip": "wp-env run cli --env-cwd=wp-content/plugins/cf7-antispam \"composer install --no-dev && composer dump-autoload --optimize\"",
+		"preplugin----zip": "wp-env run cli --env-cwd=wp-content/plugins/cf7-antispam \"composer install --no-dev && composer dump-autoload --optimize\"",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"postplugin-zip": "wp-env run cli --env-cwd=wp-content/plugins/cf7-antispam \"composer install\"",
+		"postplugin----zip": "wp-env run cli --env-cwd=wp-content/plugins/cf7-antispam \"composer install\"",
 		"lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
 		"lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
 		"packages-update": "wp-scripts packages-update",
