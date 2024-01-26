@@ -440,7 +440,7 @@ function cf7a_str_array_to_uint_array( $str_array ) {
 		array_filter(
 			$str_array,
 			function ( $value ) {
-				return is_numeric( $value ) && $value > 0 && intval( $value ) == $value;
+				return is_int( $value ) || is_numeric( $value ) && $value > 0 && intval( $value ) == $value;
 			}
 		)
 	);

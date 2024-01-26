@@ -1007,6 +1007,20 @@ class CF7_AntiSpam_Admin_Customizations {
 		return $new_value;
 	}
 
+
+	private function cf7a_clean_agnostic( $value ) {
+		if ( is_numeric( $value ) ) {
+			$input = boolval( $value );
+		} elseif ( is_float( $value ) ) {
+			$input = floatval( $value );
+		} elseif ( is_int( $value ) ) {
+			$input = intval( $value );
+		} else {
+			$input = sanitize_text_field( $value );
+		}
+		return $input;
+	}
+
 	/**
 	 * Clean and sanitize a value recursively.
 	 *
@@ -1015,13 +1029,14 @@ class CF7_AntiSpam_Admin_Customizations {
 	 *
 	 * @return array|bool|int|string
 	 */
-	private function cf7a_clean_recursive( $key, $value ) {
-		if ( is_numeric( $value ) ) {
-			$input = boolval( $value );
-		} elseif ( is_numeric( $value ) ) {
-			$input = intval( $value );
-		} else {
-			$input = sanitize_text_field( $value );
+	private function cf7a_clean_recursive( $json_data ) {
+		$input = array();
+		foreach ( $json_data as $key => $value ) {
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$input[ $key ] = $this->cf7a_clean_recursive( $value );
+			} else {
+				$input[ $key ] = $this->cf7a_clean_agnostic( $value );
+			}
 		}
 		return $input;
 	}
@@ -1033,25 +1048,26 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return array $options sanitized
 	 */
 	public function cf7a_sanitize_options( $input ) {
-		/* get the existing options */
+		/* get the import options */
 		$new_input   = $this->options;
-		$import_data = $_POST['to-import'];
+		$import_data = isset( $_POST['to-import'] ) ? $_POST['to-import'] : false;
 		if ( ! empty( $import_data ) ) {
 			$json_data = json_decode( wp_unslash( $_POST['to-import'] ) );
-			foreach ( $json_data as $key => $value ) {
-				if ( is_array( $value ) || is_object( $value ) ) {
-					$array_of_values = array();
-					// if the value is an array, loop through it and clean it recursively
-					foreach ( $value as $k => $v ) {
-						$array_of_values[] = $this->cf7a_clean_recursive( $k, $v );
-					}
-					$input[ $key ] = implode( $array_of_values, ',' );
-				} else {
-					$input[ $key ] = $this->cf7a_clean_recursive( $key, $value );
-				}
-			}
+			$input     = $this->cf7a_clean_recursive( $json_data );
+			// monkey pathing arrays that needs to be imploded
+			$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
+			$input['ip_whitelist']                    = implode( ',', $input['ip_whitelist'] );
+			$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
+			$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] );
+			$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] );
+			$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] );
+			$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] );
+			$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] );
+			$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] );
+			$input['cf7a_enabled']                    = 1;
+			$input['cf7a_enable']                     = 1;
+			$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
 		}
-		error_log( print_r( $input, true ) );
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
@@ -1076,9 +1092,8 @@ class CF7_AntiSpam_Admin_Customizations {
 			$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
 		}
 
-		if ( empty( $import_data ) ) {
-			$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
-		}
+		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
+
 
 		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
@@ -1089,14 +1104,13 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['check_geo_location'] = isset( $input['check_geo_location'] ) ? 1 : 0;
 
 		/* languages allowed | disallowed */
-		if ( empty( $import_data ) ) {
-			$new_input['languages_locales']['allowed']    = isset( $input['languages_locales']['allowed'] )
-				? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['allowed'] ) )
-				: array();
-			$new_input['languages_locales']['disallowed'] = isset( $input['languages_locales']['disallowed'] )
-				? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
-				: array();
-		}
+		$new_input['languages_locales']['allowed']    = isset( $input['languages_locales']['allowed'] )
+			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['allowed'] ) )
+			: array();
+		$new_input['languages_locales']['disallowed'] = isset( $input['languages_locales']['disallowed'] )
+			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
+			: array();
+
 
 		/* max attempts before ban */
 		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 3;
@@ -1167,7 +1181,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* honeyform */
 		$new_input['check_honeyform']          = isset( $input['check_honeyform'] ) ? 1 : 0;
 		$new_input['honeyform_position']       = ! empty( $input['honeyform_position'] ) ? sanitize_title( $input['honeyform_position'] ) : 'wp_body_open';
-		$new_input['honeyform_excluded_pages'] = ! empty( $input['honeyform_excluded_pages'] ) ? cf7a_str_array_to_uint_array( $input['honeyform_excluded_pages'] ) : '';
+		$new_input['honeyform_excluded_pages'] = ! empty( $input['honeyform_excluded_pages'] ) ? cf7a_str_array_to_uint_array( $input['honeyform_excluded_pages'] ) : array();
 
 		/* identity protection */
 		$new_input['mailbox_protection_multiple_send'] = isset( $input['mailbox_protection_multiple_send'] ) ? 1 : 0;
@@ -1567,9 +1581,8 @@ class CF7_AntiSpam_Admin_Customizations {
 			}
 		}
 
-		$admin_options = get_option( 'cf7a_options' );
-		$excluded      = isset( $admin_options['honeyform_excluded_pages'] ) ? $admin_options['honeyform_excluded_pages'] : array();
-		$str_excluded  = '';
+		$excluded     = isset( $this->options['honeyform_excluded_pages'] ) ? $this->options['honeyform_excluded_pages'] : array();
+		$str_excluded = '';
 		if ( is_array( $excluded ) ) {
 			foreach ( $excluded as $entry ) {
 				$str_excluded .= '<option selected="true" value="' . $entry . '">' . get_the_title( $entry ) . '</option>';
