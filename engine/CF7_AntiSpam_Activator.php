@@ -39,53 +39,54 @@ class CF7_AntiSpam_Activator {
 	 */
 	public static function init_vars() {
 		self::$default_cf7a_options = array(
-			'cf7a_enable'                  => true,
-			'cf7a_version'                 => CF7ANTISPAM_VERSION,
-			'cf7a_customizations_class'    => CF7ANTISPAM_HONEYPOT_CLASS,
-			'cf7a_customizations_prefix'   => CF7ANTISPAM_PREFIX,
-			'cf7a_cipher'                  => 'aes-128-cbc',
-			'cf7a_score_preset'            => 'weak',
-			'cf7a_disable_reload'          => true,
-			'check_bot_fingerprint'        => true,
-			'check_bot_fingerprint_extras' => true,
-			'append_on_submit'             => true,
-			'check_time'                   => true,
-			'check_time_min'               => 6,
-			'check_time_max'               => YEAR_IN_SECONDS,
-			'check_bad_ip'                 => true,
-			'autostore_bad_ip'             => true,
-			'max_attempts'                 => 3,
-			'unban_after'                  => 'disabled',
-			'check_bad_words'              => true,
-			'check_bad_email_strings'      => true,
-			'check_bad_user_agent'         => true,
-			'check_dnsbl'                  => false,
-			'check_refer'                  => true,
-			'check_honeypot'               => true,
-			'check_honeyform'              => false,
-			'identity_protection_user'     => false,
-			'identity_protection_wp'       => false,
-			'enable_geoip_download'        => false,
-			'geoip_dbkey'                  => false,
-			'check_language'               => false,
-			'check_geo_location'           => false,
-			'honeyform_position'           => 'the_content',
-			'enable_b8'                    => true,
-			'b8_threshold'                 => 0.95,
-			'enable_advanced_settings'     => 0,
-			'bad_words_list'               => array(),
-			'bad_ip_list'                  => array(),
-			'ip_whitelist'                 => array(),
-			'bad_email_strings_list'       => array(),
-			'bad_user_agent_list'          => array(),
-			'dnsbl_list'                   => array(),
-			'honeypot_input_names'         => array(),
-			'honeyform_excluded_pages'     => array(),
-			'languages_locales'            => array(
+			'cf7a_enable'                      => true,
+			'cf7a_version'                     => CF7ANTISPAM_VERSION,
+			'cf7a_customizations_class'        => CF7ANTISPAM_HONEYPOT_CLASS,
+			'cf7a_customizations_prefix'       => CF7ANTISPAM_PREFIX,
+			'cf7a_cipher'                      => 'aes-128-cbc',
+			'cf7a_score_preset'                => 'weak',
+			'cf7a_disable_reload'              => true,
+			'check_bot_fingerprint'            => true,
+			'check_bot_fingerprint_extras'     => true,
+			'append_on_submit'                 => true,
+			'check_time'                       => true,
+			'check_time_min'                   => 6,
+			'check_time_max'                   => YEAR_IN_SECONDS,
+			'check_bad_ip'                     => true,
+			'autostore_bad_ip'                 => true,
+			'max_attempts'                     => 3,
+			'unban_after'                      => 'disabled',
+			'check_bad_words'                  => true,
+			'check_bad_email_strings'          => true,
+			'check_bad_user_agent'             => true,
+			'check_dnsbl'                      => false,
+			'check_refer'                      => true,
+			'check_honeypot'                   => true,
+			'check_honeyform'                  => false,
+			'identity_protection_user'         => false,
+			'identity_protection_wp'           => false,
+			'enable_geoip_download'            => false,
+			'geoip_dbkey'                      => false,
+			'check_language'                   => false,
+			'check_geo_location'               => false,
+			'honeyform_position'               => 'the_content',
+			'enable_b8'                        => true,
+			'b8_threshold'                     => 0.95,
+			'enable_advanced_settings'         => 0,
+			'mailbox_protection_multiple_send' => 0,
+			'bad_words_list'                   => array(),
+			'bad_ip_list'                      => array(),
+			'ip_whitelist'                     => array(),
+			'bad_email_strings_list'           => array(),
+			'bad_user_agent_list'              => array(),
+			'dnsbl_list'                       => array(),
+			'honeypot_input_names'             => array(),
+			'honeyform_excluded_pages'         => array(),
+			'languages_locales'                => array(
 				'allowed'    => array(),
 				'disallowed' => array(),
 			),
-			'score'                        => array(
+			'score'                            => array(
 				'_fingerprinting' => 0.1,
 				'_time'           => 0.3,
 				'_bad_string'     => 0.5,
@@ -213,7 +214,19 @@ class CF7_AntiSpam_Activator {
 
 		$options = get_option( 'cf7a_options' );
 
-		if ( false !== $options && ! $reset_options ) {
+		if ( false === $options || $reset_options ) {
+
+			// Delete all options
+			if ( $reset_options === true ) {
+				delete_option( 'cf7a_options' );
+			}
+
+			/* if the plugin options are missing Init the plugin with the default option + the default settings */
+			$new_options = array_merge( self::$default_cf7a_options, self::$default_cf7a_options_bootstrap );
+
+			add_option( 'cf7a_options', $new_options );
+
+		} else {
 
 			/* update the plugin options but add the new options automatically */
 			if ( isset( $options['cf7a_version'] ) ) {
@@ -226,11 +239,6 @@ class CF7_AntiSpam_Activator {
 			cf7a_log( 'CF7-antispam plugin options updated', 1 );
 
 			update_option( 'cf7a_options', $new_options );
-		} else {
-			/* if the plugin options are missing Init the plugin with the default option + the default settings */
-			$new_options = array_merge( self::$default_cf7a_options, self::$default_cf7a_options_bootstrap );
-
-			add_option( 'cf7a_options', $new_options );
 		}
 
 		cf7a_log( $new_options, 1 );

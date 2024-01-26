@@ -5,6 +5,7 @@ namespace CF7_AntiSpam\Admin;
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 use WP_Query;
+use function cli\err;
 
 /**
  * The plugin settings.
@@ -1007,6 +1008,37 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
+	private function cf7a_clean_agnostic( $value ) {
+		if ( is_bool( $value ) ) {
+			$input = boolval( $value );
+		} elseif ( is_numeric( $value ) ) {
+			$input = floatval( $value );
+		} else {
+			$input = sanitize_text_field( $value );
+		}
+		return $input;
+	}
+
+	/**
+	 * Clean and sanitize a value recursively.
+	 *
+	 * @param string $key The key of the value to be cleaned.
+	 * @param mixed  $value The value to be cleaned.
+	 *
+	 * @return array|bool|int|string
+	 */
+	private function cf7a_clean_recursive( $json_data ) {
+		$input = array();
+		foreach ( $json_data as $key => $value ) {
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$input[ $key ] = $this->cf7a_clean_recursive( $value );
+			} else {
+				$input[ $key ] = $this->cf7a_clean_agnostic( $value );
+			}
+		}
+		return $input;
+	}
+
 	/**
 	 * Sanitize each setting field as needed
 	 *
@@ -1014,10 +1046,29 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @return array $options sanitized
 	 */
 	public function cf7a_sanitize_options( $input ) {
-		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
+		/* get the import options */
+		$new_input   = $this->options;
+		$import_data = isset( $_POST['to-import'] ) ? $_POST['to-import'] : false;
+		if ( ! empty( $import_data ) ) {
+			$json_data = json_decode( wp_unslash( $_POST['to-import'] ) );
+			$input     = $this->cf7a_clean_recursive( $json_data );
+			// monkey pathing arrays that needs to be imploded
+			$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
+			$input['ip_whitelist']                    = implode( ',', $input['ip_whitelist'] );
+			$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
+			$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] );
+			$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] );
+			$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] );
+			$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] );
+			$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] );
+			$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] );
+			$input['cf7a_enabled']                    = 1;
+			$input['cf7a_enable']                     = 1;
+			$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
+		}
+		error_log( print_r( $input, true ) );
 
-		/* get the existing options */
-		$new_input = $this->options;
+		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
 		$new_input['cf7a_enable'] = isset( $input['cf7a_enable'] ) ? $input['cf7a_enable'] : $new_input['cf7a_enable'];
 
@@ -1036,15 +1087,17 @@ class CF7_AntiSpam_Admin_Customizations {
 		 * Checking if the enable_geoip_download is not set (note the name is $new_input but actually is the copy of the stored options)
 		 * and the user has chosen to enable the geoip, in this case download the database if needed
 		 */
-		if ( empty( $new_input['enable_geoip_download'] ) && isset( $input['enable_geoip_download'] ) ) {
+		if ( empty( $import_data ) && empty( $new_input['enable_geoip_download'] ) && isset( $input['enable_geoip_download'] ) ) {
 			$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
 		}
 
 		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
-		$new_input['geoip_dbkey']           = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
+
+
+		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
 		/* browser language check enabled */
-		$new_input['check_language'] = isset( $input['check_language'] ) ? 1 : 0;
+		$new_input['check_language'] = ! empty( $input['check_language'] ) ? 1 : 0;
 
 		/* geo-ip location check enabled */
 		$new_input['check_geo_location'] = isset( $input['check_geo_location'] ) ? 1 : 0;
@@ -1056,6 +1109,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['languages_locales']['disallowed'] = isset( $input['languages_locales']['disallowed'] )
 			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
 			: array();
+
 
 		/* max attempts before ban */
 		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 3;
@@ -1526,9 +1580,8 @@ class CF7_AntiSpam_Admin_Customizations {
 			}
 		}
 
-		$admin_options = get_option( 'cf7a_options' );
-		$excluded      = isset( $admin_options['honeyform_excluded_pages'] ) ? $admin_options['honeyform_excluded_pages'] : array();
-		$str_excluded  = '';
+		$excluded     = isset( $this->options['honeyform_excluded_pages'] ) ? $this->options['honeyform_excluded_pages'] : array();
+		$str_excluded = '';
 		if ( is_array( $excluded ) ) {
 			foreach ( $excluded as $entry ) {
 				$str_excluded .= '<option selected="true" value="' . $entry . '">' . get_the_title( $entry ) . '</option>';
