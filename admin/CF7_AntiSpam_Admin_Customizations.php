@@ -828,6 +828,8 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It prints the dnsbl info text */
 	public function cf7a_print_dnsbl() {
 		printf( '<p>%s</p>', esc_html__( 'Check sender ip on DNS Blacklists, DNSBL are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers, BUT they could also be users behind a proxy and that is why the method is no longer 100 per cent reliable. Add a DSNBL server url each line ', 'cf7-antispam' ) );
+		/** Translators: %s%s%s - a spam score of xyz will be added  */
+		printf( '<p><span class="cf7a-option-notice">%s%s%s</span></p>', esc_html__( '⚠️ Use the servers you trust as safe, and consider that for each server reporting the ip a spam score of ', 'cf7-antispam' ), floatval( $this->options['score']['_dnsbl'] ), esc_html__( ' will be added.', 'cf7-antispam' ) );
 	}
 
 	/** It prints the honeypot info text */
