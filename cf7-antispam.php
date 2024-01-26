@@ -133,16 +133,11 @@ function cf7_antispam_register_service() {
 }
 add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
 
-
+/**
+ * Executes CF7-AntiSpam
+ */
 function run_cf7a() {
-	$options = get_option( 'cf7a_options' );
-
-	if ( ! empty( $options['cf7a_enable'] ) ) {
-		$cf7a = new \CF7_AntiSpam\Core\CF7_AntiSpam();
-		$cf7a->run();
-	} else {
-		/* Must call style enqueue to apply styles in integration page even if the plugin is deactivated */
-		wp_enqueue_style( CF7ANTISPAM_NAME, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), CF7ANTISPAM_VERSION );
-	}
+	$cf7a = new \CF7_AntiSpam\Core\CF7_AntiSpam();
+	$cf7a->run();
 }
 add_action( 'init', 'run_cf7a', 11, 0 );
