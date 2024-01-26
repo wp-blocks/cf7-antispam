@@ -36,6 +36,10 @@ class CF7_AntiSpam_Uninstaller {
 		self::uninstall( false );
 		CF7_AntiSpam_Activator::install();
 
+		// reset options
+		update_option( 'cf7a_db_version', '1' );
+		CF7_AntiSpam_Activator::update_options( true );
+
 		return true;
 	}
 
@@ -81,7 +85,7 @@ class CF7_AntiSpam_Uninstaller {
 	 * @param bool $force If set to true, the cf7-antispam database and options tables delete will be forced otherwise it will be skipped.
 	 */
 	public static function uninstall( $force = true ) {
-		if ( ( defined( CF7ANTISPAM_DEBUG_EXTENDED ) && CF7ANTISPAM_DEBUG_EXTENDED === true ) || ! $force ) {
+		if ( ( defined( CF7ANTISPAM_DEBUG_EXTENDED ) && CF7ANTISPAM_DEBUG_EXTENDED === true ) || $force === false ) {
 			cf7a_log( 'CONTACT FORM 7 ANTISPAM - constant "CF7ANTISPAM_DEBUG_EXTENDED" is set so options and database will NOT be deleted.' );
 			return false;
 		} else {
