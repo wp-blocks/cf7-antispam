@@ -1007,6 +1007,24 @@ class CF7_AntiSpam_Admin_Customizations {
 		return $new_value;
 	}
 
+	/**
+	 * Clean and sanitize a value recursively.
+	 *
+	 * @param string $key The key of the value to be cleaned.
+	 * @param mixed  $value The value to be cleaned.
+	 *
+	 * @return array|bool|int|string
+	 */
+	private function cf7a_clean_recursive( $key, $value ) {
+		if ( is_numeric( $value ) ) {
+			$input = boolval( $value );
+		} elseif ( is_numeric( $value ) ) {
+			$input = intval( $value );
+		} else {
+			$input = sanitize_text_field( $value );
+		}
+		return $input;
+	}
 
 	/**
 	 * Sanitize each setting field as needed
@@ -1019,19 +1037,21 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input   = $this->options;
 		$import_data = $_POST['to-import'];
 		if ( ! empty( $import_data ) ) {
-			$import_data                    = json_decode( $import_data );
-			$input['enable_geoip_download'] = false;
-
-			foreach ( json_decode( $import_data ) as $key => $value ) {
-				if ( is_numeric( $value ) ) {
-					$input[ $key ] = boolval( $value );
-				} elseif ( is_numeric( $value ) ) {
-					$input[ $key ] = intval( $value );
+			$json_data = json_decode( wp_unslash( $_POST['to-import'] ) );
+			foreach ( $json_data as $key => $value ) {
+				if ( is_array( $value ) || is_object( $value ) ) {
+					$array_of_values = array();
+					// if the value is an array, loop through it and clean it recursively
+					foreach ( $value as $k => $v ) {
+						$array_of_values[] = $this->cf7a_clean_recursive( $k, $v );
+					}
+					$input[ $key ] = implode( $array_of_values, ',' );
 				} else {
-					$input[ $key ] = sanitize_text_field( $value );
+					$input[ $key ] = $this->cf7a_clean_recursive( $key, $value );
 				}
 			}
 		}
+		error_log( print_r( $input, true ) );
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
