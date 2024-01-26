@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e7338049a31dbce7667fad9e96e54a2",
+    "content-hash": "43d68d85b076c309f6c851955e71237d",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -135,16 +135,6 @@
                 "maxmind"
             ],
             "time": "2022-08-05T20:32:58+00:00"
-        },
-        {
-            "name": "l3u/b8",
-            "version": "1",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/l3u/b8.git",
-                "reference": "master"
-            },
-            "type": "library"
         },
         {
             "name": "maxmind-db/reader",

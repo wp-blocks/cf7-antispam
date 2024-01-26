@@ -28,7 +28,6 @@
   },
   "require": {
 	"geoip2/geoip2": "~2.0",
-	"l3u/b8": "*",
     "ext-json": "*",
 	  "ext-openssl": "*"
   },
@@ -40,21 +39,6 @@
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "repositories": [
-	{
-	  "type": "package",
-	  "package": {
-		"name": "l3u/b8",
-		"version": "1",
-		"type": "library",
-		"source": {
-		  "url": "https://gitlab.com/l3u/b8.git",
-		  "type": "git",
-		  "reference": "master"
-		}
-	  }
-	}
-  ],
   "config": {
 	"allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
@@ -63,7 +47,7 @@
   },
 	"autoload": {
 		"psr-4": {
-			"b8\\": "vendor/l3u/b8/b8/",
+			"b8\\": "core/b8/b8/",
 			"CF7_AntiSpam\\Core\\": "core/",
 			"CF7_AntiSpam\\Engine\\": "engine/",
 			"CF7_AntiSpam\\Admin\\": "admin/"
