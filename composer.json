@@ -28,7 +28,9 @@
   },
   "require": {
 	"geoip2/geoip2": "~2.0",
-	"l3u/b8": "*"
+	"l3u/b8": "*",
+    "ext-json": "*",
+	  "ext-openssl": "*"
   },
   "scripts": {
 	"PHPCS": "vendor/bin/phpcs --standard=phpcs.xml.dist -s --report=full,summary,source",
