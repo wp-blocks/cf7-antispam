@@ -1009,12 +1009,10 @@ class CF7_AntiSpam_Admin_Customizations {
 
 
 	private function cf7a_clean_agnostic( $value ) {
-		if ( is_numeric( $value ) ) {
+		if ( is_bool( $value ) ) {
 			$input = boolval( $value );
-		} elseif ( is_float( $value ) ) {
+		} elseif ( is_numeric( $value ) ) {
 			$input = floatval( $value );
-		} elseif ( is_int( $value ) ) {
-			$input = intval( $value );
 		} else {
 			$input = sanitize_text_field( $value );
 		}
@@ -1068,6 +1066,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			$input['cf7a_enable']                     = 1;
 			$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
 		}
+		error_log( print_r( $input, true ) );
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
