@@ -162,6 +162,16 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 == Changelog ==
 
+= 0.6.2 =
+* Fix/honeyform init (bug report, thanks to @oceandigitals)
+* Import and export options metabox (feature request, @Wendihihihi)
+* Fixes the plugin update function that was removing the "enabled" flag…
+* Resend to custom email address (bug report, thanks to @oceandigitals and @Wendihihihi)
+* Admin options page ui updates
+* Dnsbl removes some default servers and adds additional notes
+* B8 moved as plugin library
+* startup optimization
+
 = 0.6.0 =
 * Fix: new config validator: unsafe email (Zodiac1978)
 * Fix: Warning- Uninitialized string (bug report, thanks to @benjaminvandenberg)
