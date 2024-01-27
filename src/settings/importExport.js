@@ -1,3 +1,14 @@
+const loader = () => {
+	// create an element to show loading with a svg loader
+	const i = document.createElement('div');
+	i.innerHTML = `<svg viewBox="0 0 50 50" class="circular-loader">
+    <circle cx="25" cy="25" r="20" fill="none" stroke-linecap="round" stroke="#222" stroke-width="6" stroke-dasharray="140,250" stroke-dashoffset="360" >
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="3s" additive="sum" repeatCount="indefinite" />
+    </circle></svg>`;
+	i.className = 'cf7a-loader';
+	return i;
+};
+
 window.onload = function () {
 	// Example for download button
 	document
@@ -38,12 +49,19 @@ function importExportOptions(e) {
 		alert('Invalid JSON. Please check your file and try again.');
 		return;
 	}
+
 	/**
 	 * Get the submit form data and append the cf7-ntispam options to the form data options
 	 * @type {FormData}
 	 */
 	const data = new FormData(e.target);
-	data.append('to-import', encodeURIComponent(JSON.stringify(cf7aOptions)));
+	data.append('to-import', JSON.stringify(cf7aOptions));
+
+	// append after the form data options a spinning loader
+	const loaderElement = loader();
+	e.target
+		.querySelector('#cf7a_import_button')
+		.insertAdjacentElement('afterend', loaderElement);
 
 	// Make an AJAX request to save the merged options
 	fetch(e.target.getAttribute('action'), {
@@ -53,8 +71,6 @@ function importExportOptions(e) {
 		.then((response) => response)
 		.then((response) => {
 			// Handle the response
-			// eslint-disable-next-line no-console
-			console.log(response);
 			if (response.status === 200) {
 				// emulate the php non async behavior
 				window.location.href = response.url;
@@ -64,6 +80,7 @@ function importExportOptions(e) {
 			// Handle the error
 			// eslint-disable-next-line no-console
 			console.error(error);
+			loaderElement.innerHTML = null;
 		});
 }
 

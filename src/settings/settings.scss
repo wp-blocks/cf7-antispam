@@ -62,6 +62,15 @@ $color__info: $color__blue;
 		max-width: 900px;
 	}
 
+	.cf7a-loader {
+		display: inline-block;
+		height: 25px;
+		vertical-align: middle;
+		width: 25px;
+		margin: 3px 12px;
+		opacity: 0.5;
+	}
+
 	form {
 		// input style
 		h2 {
@@ -142,6 +151,7 @@ $color__info: $color__blue;
 	.cf7a-option-notice {
 		padding: 4px 8px;
 		border: 2px solid $color__yellow;
+		display: block;
 		border-radius: 8px;
 	}
 

@@ -829,7 +829,13 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_print_dnsbl() {
 		printf( '<p>%s</p>', esc_html__( 'Check sender ip on DNS Blacklists, DNSBL are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers, BUT they could also be users behind a proxy and that is why the method is no longer 100 per cent reliable. Add a DSNBL server url each line ', 'cf7-antispam' ) );
 		/** Translators: %s%s%s - a spam score of xyz will be added  */
-		printf( '<p><span class="cf7a-option-notice">%s%s%s</span></p>', esc_html__( '⚠️ Use the servers you trust as safe, and consider that for each server reporting the ip a spam score of ', 'cf7-antispam' ), floatval( $this->options['score']['_dnsbl'] ), esc_html__( ' will be added.', 'cf7-antispam' ) );
+		printf( '<p><span class="cf7a-option-notice">%s%s%s</span></p>', esc_html__( '⚠️ Use FEW servers, those you tested reliable, and consider that for each server reporting the ip a spam score of ', 'cf7-antispam' ), floatval( $this->options['score']['_dnsbl'] ), esc_html__( ' will be added to the spam rating, 1 equal spam.', 'cf7-antispam' ) );
+		printf(
+			'<p>%s<a href="%s" target="_blank">%s</a></p>',
+			esc_html__( 'Here a you can find a list of servers: ', 'cf7-antispam' ),
+			esc_url( 'https://gist.github.com/search?q=dnsbl+list&ref=searchresults' ),
+			esc_url_raw( 'gist.github.com/search?q=dnsbl+list' )
+		);
 	}
 
 	/** It prints the honeypot info text */
@@ -1049,24 +1055,29 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_sanitize_options( $input ) {
 		/* get the import options */
-		$new_input   = $this->options;
-		$import_data = isset( $_POST['to-import'] ) ? sanitize_text_field( $_POST['to-import'] ) : false;
-		if ( ! empty( $import_data ) ) {
-			$json_data = json_decode( wp_unslash( $import_data ) );
-			$input     = $this->cf7a_clean_recursive( $json_data );
-			// monkey pathing arrays that needs to be imploded
-			$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
-			$input['ip_whitelist']                    = implode( ',', $input['ip_whitelist'] );
-			$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
-			$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] );
-			$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] );
-			$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] );
-			$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] );
-			$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] );
-			$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] );
-			$input['cf7a_enabled']                    = 1;
-			$input['cf7a_enable']                     = 1;
-			$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
+		$new_input = $this->options;
+		if ( isset( $_POST['to-import'] ) ) {
+			$json_data = json_decode( stripslashes( $_POST['to-import'] ) );
+			if ( ! empty( $json_data ) && is_object( $json_data ) ) {
+				$input = $this->cf7a_clean_recursive( $json_data );
+				// monkey pathing arrays that needs to be imploded
+				$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
+				$input['ip_whitelist']                    = implode( ',', $input['ip_whitelist'] );
+				$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
+				$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] );
+				$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] );
+				$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] );
+				$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] );
+				$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] );
+				$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] );
+				$input['cf7a_enabled']                    = 1;
+				$input['cf7a_enable']                     = 1;
+				$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
+			} else {
+				cf7a_log( print_r( $_POST['to-import'], true ) );
+				cf7a_log( 'CF7 AntiSpam: The import data is invalid' );
+				return $this->options;
+			}
 		}
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
