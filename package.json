@@ -2,7 +2,7 @@
 	"name": "cf7-antispam",
 	"author": "Erik Golinelli",
 	"license": "GPL-2.0-only",
-	"version": "0.6.2",
+	"version": "0.6.3",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
@@ -33,7 +33,7 @@
 		"test:e2e": "wp-scripts test-e2e",
 		"test:e2e:watch": "npm run test:e2e --watch",
 		"postinstall": "husky install",
-		"makepot": "wp i18n make-pot . languages/cf7-antispam.pot --exclude=node_modules,vendor",
+		"makepot": "npx @wp-blocks/make-pot",
 		"PHPCS": "wp-env run composer \"composer PHPCS\"",
 		"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
 	},

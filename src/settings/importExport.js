@@ -13,11 +13,11 @@ window.onload = function () {
 	// Example for download button
 	document
 		.getElementById('cf7a_download_button')
-		.addEventListener('click', () => downloadOptions());
+		?.addEventListener('click', () => downloadOptions());
 
 	document
 		.getElementById('import-export-options')
-		.addEventListener('submit', (e) => importExportOptions(e));
+		?.addEventListener('submit', (e) => importExportOptions(e));
 };
 
 /**
