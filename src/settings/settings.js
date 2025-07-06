@@ -14,8 +14,9 @@ function adminSettingsHelper() {
 
 		function confirmationAlert(e, message) {
 			// eslint-disable-next-line no-alert,no-undef
-			if (confirm(message || alertMessage))
+			if (confirm(message || alertMessage)) {
 				window.location.href = e.dataset.href;
+			}
 		}
 
 		alerts.forEach((alert) => {
@@ -63,13 +64,17 @@ function adminSettingsHelper() {
 				AdvSettingsForm[AdvSettingsForm.length - 1];
 
 			if (advancedCheckbox.checked !== false) {
-				if (AdvSettingsCard) AdvSettingsCard.classList.remove('hidden');
+				if (AdvSettingsCard) {
+					AdvSettingsCard.classList.remove('hidden');
+				}
 
 				AdvSettingsTitleEl.classList.remove('hidden');
 				AdvSettingsTxtEl.classList.remove('hidden');
 				AdvSettingsFormEl.classList.remove('hidden');
 			} else {
-				if (AdvSettingsCard) AdvSettingsCard.classList.add('hidden');
+				if (AdvSettingsCard) {
+					AdvSettingsCard.classList.add('hidden');
+				}
 
 				AdvSettingsTitleEl.classList.add('hidden');
 				AdvSettingsTxtEl.classList.add('hidden');
