@@ -176,6 +176,7 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 * Enhancement: Enhanced canvas fingerprinting with proper error handling
 * Performance: Moved form-specific variables inside loops to prevent cross-contamination
 * Performance: Added proper type annotations and safer innerHTML assignments
+* Tests: switch to Playwright tests
 
 = 0.6.3 =
 * Quick fix for null is not an object (evaluating 'document.getElementById("cf7a_download_button") (bug report, thanks to @WebCodePoet)
