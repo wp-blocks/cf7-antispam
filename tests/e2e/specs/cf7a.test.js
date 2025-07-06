@@ -16,7 +16,7 @@ async function loginToWordPressAdmin(page) {
 	await page.fill('#user_pass', adminPassword);
 
 	await Promise.all([
-		page.waitForNavigation({ waitUntil: 'networkidle' }),
+		page.waitForURL('**/wp-admin/**', { timeout: 30000 }),
 		page.click('#wp-submit'),
 	]);
 
