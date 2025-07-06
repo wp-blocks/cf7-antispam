@@ -5,7 +5,7 @@
  * Author: Codekraft
  * Text Domain: cf7-antispam
  * Domain Path: /languages/
- * Version: 0.6.3
+ * Version: 0.6.4
  *
  * @package cf7-antispam
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 /* CONSTANTS */
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
-define( 'CF7ANTISPAM_VERSION', '0.6.3' );
+define( 'CF7ANTISPAM_VERSION', '0.6.4' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
@@ -131,7 +131,7 @@ function cf7_antispam_register_service() {
 		\CF7_AntiSpam\Core\CF7_Antispam_Service::get_instance()
 	);
 }
-add_action( 'wpcf7_init', 'cf7_antispam_register_service', 1, 0 );
+add_action( 'wpcf7_init', 'cf7_antispam_register_service', 2, 0 );
 
 /**
  * Executes CF7-AntiSpam
