@@ -66,10 +66,16 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.4
+          php-version: 8.2
           tools: composer
           extensions: mysql
           coverage: none
+
+      - name: Install SVN
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: update dependencies
+        run: composer update
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
@@ -79,12 +85,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-
-      - name: Install SVN
-        run: sudo apt-get update && sudo apt-get install -y subversion
-
-      - name: update dependencies
-        run: composer update
 
       - name: Installing NPM dependencies
         run: npm install
