@@ -30,8 +30,8 @@
 		"wp-env:start": "wp-env start",
 		"wp-env:stop": "wp-env stop",
 		"wp-env:destroy": "wp-env destroy",
-		"test:e2e": "wp-scripts test-e2e",
-		"test:e2e:watch": "npm run test:e2e --watch",
+		"test:e2e": "wp-scripts test-playwright",
+		"test:e2e:watch": "npm run test:playwright --watch",
 		"postinstall": "husky install",
 		"makepot": "npx @wp-blocks/make-pot",
 		"PHPCS": "wp-env run composer \"composer PHPCS\"",
@@ -47,11 +47,11 @@
 	"homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
 	"devDependencies": {
 		"@wordpress/e2e-test-utils": "^11.26.0",
+		"@wordpress/e2e-test-utils-playwright": "^1.26.0",
 		"@wordpress/env": "^10.26.0",
 		"@wordpress/eslint-plugin": "^22.12.0",
 		"@wordpress/scripts": "^30.19.0",
 		"chart.js": "^4.5.0",
-		"expect-puppeteer": "^11.0.0",
 		"husky": "^9.1.7",
 		"prettier": "^3.6.2",
 		"typescript": "^5.8.3"
