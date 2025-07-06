@@ -298,10 +298,7 @@ class CF7_AntiSpam_Flamingo {
 				}
 			}
 
-			return $additional_settings;
-		}
-
-		return false;
+		return $additional_settings;
 	}
 
 	/**
@@ -324,7 +321,10 @@ class CF7_AntiSpam_Flamingo {
 		$additional_settings = self::cf7a_get_mail_additional_data( $result['contact_form_id'] );
 
 		/* this is a real monkey patching to remove the "] [" */
-		$message_list = sanitize_text_field( implode( ' ', explode( '] [', $additional_settings['message'] ) ) );
+		$message_list = '';
+		if ( is_array( $additional_settings ) && isset( $additional_settings['message'] ) && is_string( $additional_settings['message'] ) ) {
+			$message_list = sanitize_text_field( implode( ' ', explode( '] [', $additional_settings['message'] ) ) );
+		}
 
 		/* update post meta and add the cf7-antispam customized tags form_id and message_field */
 		$stored_fields = (array) get_post_meta( $result['flamingo_inbound_id'], '_meta', true );
