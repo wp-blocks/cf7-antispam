@@ -56,12 +56,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [lts/*]
         wp: [ '6.5', 'latest' ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -81,13 +80,16 @@ jobs:
         run: composer install --no-interaction --no-progress
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 'lts/*'
           cache: 'npm'
 
       - name: Installing NPM dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
 
       - name: Build
         run: npm run build
@@ -97,3 +99,23 @@ jobs:
 
       - name: Running e2e tests
         run: npm run test:e2e
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 30
+
+      - name: Upload screenshots on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-screenshots-wp-${{ matrix.wp }}
+          path: |
+            tests/e2e/screenshots/
+            debug-*.png
+          retention-days: 7
