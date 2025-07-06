@@ -276,17 +276,18 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @param int $form_post_id The ID of the form post.
 	 *
-	 * @return array|false The additional settings of the form.
+	 * @return array The additional settings of the form.
 	 */
 	public static function cf7a_get_mail_additional_data( $form_post_id ) {
 
 		/* get the additional setting of the form */
 		$form_additional_settings = get_post_meta( $form_post_id, '_additional_settings', true );
 
+		// Always return an array, even if empty
+		$additional_settings = array();
+
 		if ( ! empty( $form_additional_settings ) ) {
 			$lines = explode( "\n", $form_additional_settings );
-
-			$additional_settings = array();
 
 			/* extract the flamingo_key = value; */
 			foreach ( $lines as $line ) {
@@ -297,6 +298,7 @@ class CF7_AntiSpam_Flamingo {
 					}
 				}
 			}
+		}
 
 		return $additional_settings;
 	}
