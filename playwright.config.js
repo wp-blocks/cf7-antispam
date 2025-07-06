@@ -7,6 +7,7 @@ const config = defineConfig({
 	fullyParallel: false, // Disable parallel execution for WordPress tests
 	forbidOnly: !!process.env.CI,
 	workers: process.env.CI ? 1 : undefined, // Use single worker in CI
+	retries: 0,
 	testDir: './tests/e2e',
 	timeout: 60000,
 });

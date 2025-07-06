@@ -1,327 +1,261 @@
-// Load utilities from Playwright and WordPress
-import { test, expect } from '@playwright/test';
+/**
+ * WordPress dependencies
+ */
+const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
 
-// WordPress admin credentials (should be set in your config)
-const adminUsername = process.env.WP_USERNAME || 'admin';
-const adminPassword = process.env.WP_PASSWORD || 'password';
-const baseURL = process.env.WP_BASE_URL || 'http://localhost:8889';
+test.describe('CF7 AntiSpam Plugin', () => {
+	const pluginActivationSlug = 'antispam-for-contact-form-7'; // For activation/deactivation
+	const pluginSlug = 'cf7-antispam'; // For HTML elements and admin pages
+	const pluginName = 'AntiSpam for Contact Form 7';
 
-// Helper function to login to WordPress admin
-async function loginToWordPressAdmin(page) {
-	await page.goto(`${baseURL}/wp-login.php`);
-	await page.waitForSelector('#user_login', { state: 'visible' });
-
-	await page.fill('#user_login', adminUsername);
-	await page.fill('#user_pass', adminPassword);
-
-	await Promise.all([
-		page.waitForURL('**/wp-admin/**', { timeout: 30000 }),
-		page.click('#wp-submit'),
-	]);
-
-	// Check for login errors
-	const loginError = page.locator('#login_error, .login-error');
-	if ((await loginError.count()) > 0) {
-		const errorText = await loginError.textContent();
-		throw new Error(`Login failed: ${errorText}`);
-	}
-
-	// Navigate to wp-admin if not already there
-	const currentURL = page.url();
-	if (!currentURL.includes('/wp-admin/')) {
-		await page.goto(`${baseURL}/wp-admin/`);
-		await page.waitForLoadState('networkidle');
-	}
-
-	// Verify login success
-	const adminBar = page.locator('#wpadminbar, .wp-admin, #adminmenumain');
-	await expect(adminBar.first()).toBeVisible({ timeout: 10000 });
-}
-
-// Helper function to visit admin page
-async function visitAdminPage(page, path) {
-	await page.goto(`${baseURL}/wp-admin/${path}`);
-	await page.waitForLoadState('networkidle');
-}
-
-// Helper function to activate plugin
-async function activatePlugin(page, pluginSlug) {
-	await visitAdminPage(page, 'plugins.php');
-	await page.waitForLoadState('networkidle');
-
-	const pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
-
-	if ((await pluginRow.count()) === 0) {
-		const allPluginRows = page.locator('tr[data-slug]');
-		const pluginSlugs = await allPluginRows.evaluateAll((rows) =>
-			rows.map((row) => row.getAttribute('data-slug'))
-		);
-		throw new Error(
-			`Plugin ${pluginSlug} not found. Available plugins: ${pluginSlugs.join(', ')}`
-		);
-	}
-
-	// Check if already active
-	const pluginInfo = await pluginRow.evaluate((row) => ({
-		isActive: row.classList.contains('active'),
-		hasActivateLink:
-			row.querySelector('a[href*="action=activate"]') !== null,
-	}));
-
-	if (pluginInfo.isActive) {
-		return; // Already active
-	}
-
-	const activateLink = pluginRow.locator('a:has-text("Activate")');
-	if ((await activateLink.count()) > 0) {
-		const activateUrl = await activateLink.getAttribute('href');
-		if (!activateUrl.includes('action=activate')) {
-			throw new Error(`Expected activation URL but got: ${activateUrl}`);
-		}
-
-		await activateLink.click();
-		await page.waitForLoadState('networkidle');
-
-		// Check for visible error messages
-		const visibleErrorMessages = page.locator(
-			'.error:visible, .notice-error:visible'
-		);
-		if ((await visibleErrorMessages.count()) > 0) {
-			const errorText = await visibleErrorMessages.first().textContent();
-			throw new Error(`Plugin activation failed: ${errorText}`);
-		}
-
-		// Verify activation success
-		await page.reload();
-		await page.waitForLoadState('networkidle');
-
-		const refreshedPluginRow = page.locator(
-			`tr[data-slug="${pluginSlug}"]`
-		);
-		const deactivateLink = refreshedPluginRow.locator(
-			'a:has-text("Deactivate")'
-		);
-
-		if ((await deactivateLink.count()) === 0) {
-			// Check for fatal errors
-			const pageContent = await page.content();
-			if (
-				pageContent.includes('fatal error') ||
-				pageContent.includes('Fatal error')
-			) {
-				throw new Error('Plugin activation failed with fatal error');
-			}
-			throw new Error(`Plugin ${pluginSlug} activation failed`);
-		}
-	}
-}
-
-// Helper function to ensure plugin is in desired state
-async function ensurePluginState(page, pluginSlug, shouldBeActive = true) {
-	await visitAdminPage(page, 'plugins.php');
-	await page.waitForLoadState('networkidle');
-
-	const pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
-	if ((await pluginRow.count()) === 0) {
-		throw new Error(`Plugin ${pluginSlug} not found`);
-	}
-
-	const pluginInfo = await pluginRow.evaluate((row) => ({
-		isActive: row.classList.contains('active'),
-	}));
-
-	if (pluginInfo.isActive === shouldBeActive) {
-		return; // Already in desired state
-	}
-
-	if (shouldBeActive && !pluginInfo.isActive) {
-		await activatePlugin(page, pluginSlug);
-	} else if (!shouldBeActive && pluginInfo.isActive) {
-		await deactivatePlugin(page, pluginSlug);
-	}
-}
-
-async function deactivatePlugin(page, pluginSlug) {
-	await visitAdminPage(page, 'plugins.php');
-	await page.waitForLoadState('networkidle');
-
-	const pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
-	if ((await pluginRow.count()) === 0) {
-		throw new Error(`Plugin ${pluginSlug} not found`);
-	}
-
-	const deactivateLink = pluginRow.locator('a:has-text("Deactivate")');
-	if ((await deactivateLink.count()) > 0) {
-		await deactivateLink.click();
-		await page.waitForLoadState('networkidle');
-
-		// Verify deactivation
-		const activateLink = pluginRow.locator('a:has-text("Activate")');
-		await expect(activateLink).toBeVisible({ timeout: 10000 });
-	}
-}
-
-// Helper function to check if plugin admin page is accessible
-async function isPluginAdminPageAccessible(page, pluginSlug) {
-	try {
-		await page.goto(`${baseURL}/wp-admin/admin.php?page=${pluginSlug}`);
-		await page.waitForLoadState('networkidle');
-
-		const currentURL = page.url();
-		if (!currentURL.includes(`page=${pluginSlug}`)) {
-			return false;
-		}
-
-		// Check for error messages
-		const errorSelectors = [
-			'.error',
-			'.notice-error',
-			'.wp-die-message',
-			'[class*="error"]',
-			'p:has-text("not found")',
-			'p:has-text("does not exist")',
-		];
-
-		for (const selector of errorSelectors) {
-			const errorElement = page.locator(selector);
-			if ((await errorElement.count()) > 0) {
-				return false;
-			}
-		}
-
-		// Check for admin content
-		const adminContent = page.locator('#wpbody-content, .wrap');
-		return (await adminContent.count()) > 0;
-	} catch (error) {
-		return false;
-	}
-}
-
-// Playwright Tests
-test.describe('installation', () => {
-	test.beforeEach(async ({ page }) => {
-		await loginToWordPressAdmin(page);
-	});
-
-	test('works', () => {
-		expect(true).toBeTruthy();
-	});
-
-	test('debug plugin activation', async ({ page }) => {
-		await visitAdminPage(page, 'plugins.php');
-
-		// Take screenshot for debugging
-		await page.screenshot({
-			path: 'debug-plugins-page.png',
-			fullPage: true,
-		});
-
-		// List all plugins
-		const allPlugins = await page
-			.locator('tr[data-slug]')
-			.evaluateAll((rows) =>
-				rows.map((row) => ({
-					slug: row.getAttribute('data-slug'),
-					pluginName:
-						row.querySelector('.plugin-title strong')
-							?.textContent || 'Unknown',
-					isActive: row.classList.contains('active'),
-				}))
-			);
-
-		console.log(
-			'Available plugins:',
-			allPlugins.map((p) => `${p.slug} (${p.pluginName})`)
-		);
-
-		// Check for target plugin
-		const targetPlugin = allPlugins.find((p) => p.slug === 'cf7-antispam');
-		if (!targetPlugin) {
-			console.log('Target plugin cf7-antispam not found');
+	test.beforeAll(async ({ requestUtils }) => {
+		// Ensure clean state - deactivate plugin if active
+		try {
+			await requestUtils.deactivatePlugin(pluginActivationSlug);
+		} catch (error) {
+			// Plugin might not be active, ignore error
+			console.log('Plugin not active or not found, continuing...');
 		}
 	});
 
-	test('verifies the plugin is active', async ({ page }) => {
-		await ensurePluginState(page, 'cf7-antispam', true);
+	test.afterAll(async ({ requestUtils }) => {
+		// Clean up after tests
+		try {
+			await requestUtils.deactivatePlugin(pluginActivationSlug);
+		} catch (error) {
+			// Ignore cleanup errors
+		}
+	});
 
-		await visitAdminPage(page, 'plugins.php');
-		const pluginRow = page.locator('tr[data-slug="cf7-antispam"]');
+	test('plugin can be activated', async ({ admin, page, requestUtils }) => {
+		// Activate the plugin
+		await requestUtils.activatePlugin(pluginActivationSlug);
+
+		// Visit plugins page to verify activation
+		await admin.visitAdminPage('plugins.php');
+
+		// Check if plugin is listed as active
+		const pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
 		await expect(pluginRow).toBeVisible();
+		await expect(pluginRow).toHaveClass(/active/);
 
-		const activePlugin = page.locator(
-			'tr.active[data-slug="cf7-antispam"]'
-		);
-		await expect(activePlugin).toBeVisible();
-
+		// Check for deactivate link (indicates plugin is active)
 		const deactivateLink = pluginRow.locator('a:has-text("Deactivate")');
 		await expect(deactivateLink).toBeVisible();
 	});
 
-	test('is enabled and admin page is accessible', async ({ page }) => {
-		await ensurePluginState(page, 'cf7-antispam', true);
-		await page.waitForTimeout(2000);
-
-		const isAccessible = await isPluginAdminPageAccessible(
-			page,
-			'cf7-antispam'
-		);
-		expect(isAccessible).toBeTruthy();
-
-		if (isAccessible) {
-			await page.goto(`${baseURL}/wp-admin/admin.php?page=cf7-antispam`);
-			await page.waitForLoadState('networkidle');
-
-			const pluginHeading = page.locator('h1, h2, h3').first();
-			await expect(pluginHeading).toBeVisible();
-			await expect(pluginHeading).toContainText(
-				/Contact Form 7|AntiSpam|CF7/i
-			);
-		}
-	});
-
-	test('can be disabled and admin page becomes inaccessible', async ({
+	test('plugin admin page is accessible when active', async ({
+		admin,
 		page,
+		requestUtils,
 	}) => {
-		// Ensure plugin is active first
-		await ensurePluginState(page, 'cf7-antispam', true);
+		// Ensure plugin is active
+		await requestUtils.activatePlugin(pluginActivationSlug);
 
-		let isAccessible = await isPluginAdminPageAccessible(
-			page,
-			'cf7-antispam'
+		// Visit the plugin admin page
+		await admin.visitAdminPage(`admin.php?page=${pluginSlug}`);
+
+		// Check that we're on the right page
+		await expect(page).toHaveURL(new RegExp(`page=${pluginSlug}`));
+
+		// Check for plugin content (adjust selector based on your plugin)
+		const pluginContent = page.locator('#wpbody-content .wrap');
+		await expect(pluginContent).toBeVisible();
+
+		// Check for plugin title or specific content
+		const pageTitle = page.locator('h1, h2').first();
+		await expect(pageTitle).toBeVisible();
+		await expect(pageTitle).toContainText(
+			new RegExp(pluginName.split(' ')[0], 'i')
 		);
-		expect(isAccessible).toBeTruthy();
-
-		// Deactivate plugin
-		await ensurePluginState(page, 'cf7-antispam', false);
-		await page.waitForTimeout(1000);
-
-		// Verify admin page is no longer accessible
-		isAccessible = await isPluginAdminPageAccessible(page, 'cf7-antispam');
-		expect(isAccessible).toBeFalsy();
 	});
 
-	test('plugin status consistency check', async ({ page }) => {
-		// Test deactivation
-		await ensurePluginState(page, 'cf7-antispam', false);
-		await visitAdminPage(page, 'plugins.php');
+	test('plugin can be deactivated', async ({ admin, page, requestUtils }) => {
+		// First activate the plugin
+		await requestUtils.activatePlugin(pluginActivationSlug);
 
-		let pluginRow = page.locator('tr[data-slug="cf7-antispam"]');
+		// Then deactivate it
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
+
+		// Visit plugins page to verify deactivation
+		await admin.visitAdminPage('plugins.php');
+
+		// Check if plugin is listed as inactive
+		const pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
+		await expect(pluginRow).toBeVisible();
+		await expect(pluginRow).toHaveClass(/inactive/);
+
+		// Check for activate link (indicates plugin is inactive)
 		const activateLink = pluginRow.locator('a:has-text("Activate")');
 		await expect(activateLink).toBeVisible();
+	});
 
-		// Test activation
-		await ensurePluginState(page, 'cf7-antispam', true);
-		await visitAdminPage(page, 'plugins.php');
+	test('plugin admin page is not accessible when inactive', async ({
+		admin,
+		page,
+		requestUtils,
+	}) => {
+		// Ensure plugin is deactivated
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
 
-		pluginRow = page.locator('tr[data-slug="cf7-antispam"]');
-		const deactivateLink = pluginRow.locator('a:has-text("Deactivate")');
-		await expect(deactivateLink).toBeVisible();
+		// Try to visit the plugin admin page
+		await admin.visitAdminPage(`admin.php?page=${pluginSlug}`);
 
-		// Verify admin page accessibility
-		const isAccessible = await isPluginAdminPageAccessible(
-			page,
-			'cf7-antispam'
-		);
-		expect(isAccessible).toBeTruthy();
+		// Should be redirected or show error
+		// Check if we're NOT on the plugin page or if there's an error
+		const currentUrl = page.url();
+		const isOnPluginPage = currentUrl.includes(`page=${pluginSlug}`);
+
+		if (isOnPluginPage) {
+			// If we're on the page, check for error messages
+			const errorMessage = page.locator(
+				'.error, .notice-error, .wp-die-message'
+			);
+			await expect(errorMessage).toBeVisible();
+		} else {
+			// We should be redirected away from the plugin page
+			expect(isOnPluginPage).toBeFalsy();
+		}
+	});
+
+	test('plugin activation and deactivation cycle', async ({
+		admin,
+		page,
+		requestUtils,
+	}) => {
+		// Start with deactivated plugin
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
+
+		// Activate
+		await requestUtils.activatePlugin(pluginActivationSlug);
+
+		// Verify activation
+		await admin.visitAdminPage('plugins.php');
+		let pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
+		await expect(pluginRow).toHaveClass(/active/);
+
+		// Verify admin page is accessible
+		await admin.visitAdminPage(`admin.php?page=${pluginSlug}`);
+		await expect(page).toHaveURL(new RegExp(`page=${pluginSlug}`));
+
+		// Deactivate
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
+
+		// Verify deactivation
+		await admin.visitAdminPage('plugins.php');
+		pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
+		await expect(pluginRow).toHaveClass(/inactive/);
+	});
+
+	test('plugin shows correct information on plugins page', async ({
+		admin,
+		page,
+		requestUtils,
+	}) => {
+		await admin.visitAdminPage('plugins.php');
+
+		const pluginRow = page.locator(`tr[data-slug="${pluginSlug}"]`);
+		await expect(pluginRow).toBeVisible();
+
+		// Check plugin name
+		const pluginTitle = pluginRow.locator('.plugin-title strong');
+		await expect(pluginTitle).toBeVisible();
+		await expect(pluginTitle).toContainText(pluginName.split(' ')[0]);
+
+		// Check plugin description (if visible)
+		const pluginDescription = pluginRow.locator('.plugin-description');
+		if ((await pluginDescription.count()) > 0) {
+			await expect(pluginDescription).toBeVisible();
+		}
+
+		// Check version information
+		const versionInfo = pluginRow.locator('.plugin-version-author-uri');
+		if ((await versionInfo.count()) > 0) {
+			await expect(versionInfo).toBeVisible();
+		}
+	});
+
+	/*test('plugin functionality works when active', async ({
+                                                          admin,
+                                                          page,
+                                                          requestUtils,
+                                                        }) => {
+    // Activate plugin
+    await requestUtils.activatePlugin(pluginActivationSlug);
+
+    // Visit plugin admin page
+    await admin.visitAdminPage(`admin.php?page=${pluginSlug}`);
+
+    // TODO: Add tests for specific plugin functionality
+
+    // Check for settings sections
+    const settingsForm = page.locator('form');
+    if ((await settingsForm.count()) > 0) {
+      await expect(settingsForm).toBeVisible();
+    }
+
+    // Check for specific plugin elements
+    const pluginElements = page.locator(
+      '.cf7-antispam, [class*="cf7"], [id*="cf7"]'
+    );
+    if ((await pluginElements.count()) > 0) {
+      await expect(pluginElements.first()).toBeVisible();
+    }
+
+    // TODO: Add more tests for specific plugin functionality here
+  });
+*/
+	// Test plugin with Contact Form 7 integration (if applicable)
+	test('plugin integrates with Contact Form 7', async ({
+		admin,
+		page,
+
+		requestUtils,
+	}) => {
+		// Activate both plugins
+		await requestUtils.activatePlugin('contact-form-7');
+		await requestUtils.activatePlugin(pluginActivationSlug);
+
+		// Visit Contact Form 7 forms page
+		await admin.visitAdminPage('admin.php?page=wpcf7');
+
+		// Check if CF7 is working
+		const cf7Content = page.locator('.wrap');
+		await expect(cf7Content).toBeVisible();
+
+		// TODO: Test integration with CF7
+	});
+});
+
+// Additional helper tests for edge cases
+test.describe('CF7 AntiSpam Plugin - Edge Cases', () => {
+	const pluginActivationSlug = 'antispam-for-contact-form-7'; // For activation/deactivation
+
+	test('handles multiple activation attempts gracefully', async ({
+		requestUtils,
+	}) => {
+		// Activate multiple times - should not cause errors
+		await requestUtils.activatePlugin(pluginActivationSlug);
+		await requestUtils.activatePlugin(pluginActivationSlug);
+		await requestUtils.activatePlugin(pluginActivationSlug);
+
+		// Should still work normally
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
+	});
+
+	test('handles multiple deactivation attempts gracefully', async ({
+		requestUtils,
+	}) => {
+		// Activate first
+		await requestUtils.activatePlugin(pluginActivationSlug);
+
+		// Deactivate multiple times - should not cause errors
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
+
+		// Should still work normally
+		await requestUtils.activatePlugin(pluginActivationSlug);
+		await requestUtils.deactivatePlugin(pluginActivationSlug);
 	});
 });
