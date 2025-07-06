@@ -168,6 +168,7 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 * Fix: FormData constructor error with incorrect reference (thanks to @ohhcee for the report)
 * Fix: WebGL renderer null reference causing indexOf errors
 * Fix: FormData support condition logic inverted
+* Fix: as suggested by @filipr fixed the issue with the additional data in the email related to flamingo (thanks to @apterix for the bug report)
 * Enhancement: Added MutationObserver support for dynamically loaded forms (implemented @dmbur idea, thanks!)
 * Enhancement: Added duplicate form processing prevention
 * Enhancement: Wrapped main execution in IIFE to prevent global scope pollution
