@@ -1,6 +1,5 @@
 // Load utilities from Playwright and WordPress
 import { test, expect } from '@playwright/test';
-import { RequestUtils } from '@wordpress/e2e-test-utils-playwright';
 
 // WordPress admin credentials (should be set in your config)
 const adminUsername = process.env.WP_USERNAME || 'admin';
