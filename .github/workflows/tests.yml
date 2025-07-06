@@ -35,6 +35,12 @@ jobs:
           extensions: mysql
           coverage: none
 
+      - name: Install SVN
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: update dependencies
+        run: composer update
+
       - name: Install dependencies
         run: composer install --no-interaction --no-progress
 
@@ -51,7 +57,7 @@ jobs:
     strategy:
       matrix:
         node-version: [lts/*]
-        wp: [ '6.2', 'latest' ]
+        wp: [ '6.5', 'latest' ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
