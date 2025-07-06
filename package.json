@@ -1,6 +1,6 @@
 {
 	"name": "cf7-antispam",
-	"author": "Erik Golinelli",
+	"author": "Erik Golinelli <erik@codekraft.it>",
 	"license": "GPL-2.0-only",
 	"version": "0.6.4",
 	"description": "AntiSpam for Contact Form 7",
