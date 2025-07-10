@@ -27,9 +27,14 @@
 		// next to the .js files
 		"outDir": "build",
 		"typeRoots": [
+			"src/**/*",
 			"node_modules/@types",
 			"@types"
 		]
 	},
+	"include": [
+		"src/**/*",
+		"tests/**/*"
+	],
 	"exclude": [ "build", "coverage" ]
 }
