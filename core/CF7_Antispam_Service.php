@@ -131,9 +131,10 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 				'stroke-miterlimit' => true,
 			),
 		);
-		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7ANTISPAM_PLUGIN_DIR . '/assets/icon.svg' ), $allowed_html ) . '</div>';
-		// inline css isn't the best idea generally speaking, but in this case will avoid to enqueue the css before to know if the plugin is enabled
-		echo '<style>#cf7-antispam input { margin: 0 5px 0 0; } #cf7-antispam .integration-icon { display: inline-block; padding-block: inherit; margin: 0 0 0 0.7em; width: 30px; }</style>';
+		printf(
+			'<img src="%s" class="integration-icon" style="width: 32px;display: block;margin: 10px;">',
+			CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg'
+		);
 	}
 
 	/**
