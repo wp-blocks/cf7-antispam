@@ -12,7 +12,6 @@
   ],
   "homepage": "https://wordpress.org/plugins/cf7-antispam/",
   "require-dev": {
-	"php": ">=7.4",
 	"friendsofphp/php-cs-fixer": "3.*",
 	"squizlabs/php_codesniffer": "^3",
 	"phpcompatibility/php-compatibility": "*",
@@ -27,6 +26,7 @@
 	  "ext-libxml": "*"
   },
   "require": {
+  	"php": ">=7.4",
 	"geoip2/geoip2": "~2.0",
     "ext-json": "*",
 	  "ext-openssl": "*"
@@ -35,15 +35,16 @@
 	"PHPCS": "vendor/bin/phpcs --standard=phpcs.xml.dist -s --report=full,summary,source",
 	"PHPCBF": "vendor/bin/phpcbf --standard=phpcs.xml.dist --report=full,summary,source",
 	"test": "vendor/bin/phpunit -c phpunit.xml.dist",
-	"test-multisite": "WP_MULTISITE=1 vendor/bin/phpunit -c tests/multisite.xml --verbose"
+	"test-multisite": "WP_MULTISITE=1 vendor/bin/phpunit -c tests/multisite.xml --verbose",
+  	"start_dev": "composer install",
+	"build": "composer install --no-dev && composer dump-autoload --optimize"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
   	"platform-check": false,
 	"allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true,
-      "phpstan/extension-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
 	"autoload": {
