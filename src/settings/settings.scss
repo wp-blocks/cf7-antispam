@@ -1,3 +1,4 @@
+@use "sass:color";
 // VARS
 $color__white: #fff;
 $color__black: #000;
@@ -130,7 +131,7 @@ $color__info: $color__blue;
 				div {
 					text-align: center;
 					box-sizing: border-box;
-					border: 1px solid darken($color__dark_blue, 10%);
+					border: 1px solid color.adjust($color__dark_blue, $lightness: -10%);
 				}
 			}
 		}
@@ -138,7 +139,7 @@ $color__info: $color__blue;
 
 	#debug-info {
 		pre {
-			background: darken($color__white, 5%);
+			background: color.adjust($color__white, $lightness: -5%);
 			padding: 2rem;
 			box-sizing: border-box;
 			width: 100%;
@@ -165,7 +166,7 @@ $color__info: $color__blue;
 			font-size: 12px;
 			margin-bottom: 8px;
 			padding-bottom: 8px;
-			border-bottom: 1px solid darken($color__white, 4%);
+			border-bottom: 1px solid color.adjust($color__white, $lightness: -4%);
 
 			&:last-child {
 				border: 0;
@@ -190,7 +191,7 @@ $color__info: $color__blue;
 					color: $color__white;
 					font-size: 20px;
 					font-weight: 700;
-					text-shadow: 0 1px 1px transparentize($color__black, 0.7);
+					text-shadow: 0 1px 1px color.adjust($color__black, $alpha: -0.7);
 				}
 			}
 
@@ -317,7 +318,7 @@ body.flamingo_page_flamingo_inbound {
 		b {
 			color: $color__white;
 			font-size: 11px;
-			text-shadow: 0 1px 1px transparentize($color__black, 0.7);
+			text-shadow: 0 1px 1px color.adjust($color__black, $alpha: -0.7);
 			vertical-align: text-bottom;
 		}
 	}

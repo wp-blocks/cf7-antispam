@@ -46,7 +46,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	public function __construct() {
 		 $this->options = CF7_AntiSpam::get_options();
 
-		if ( isset( $_POST['cf7a_submit'] ) ) {
+		if ( isset( $_POST['cf7a_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
 			$this->options['cf7a_enable'] = empty( $this->options['cf7a_enable'] ) ? true : ! $this->options['cf7a_enable'];
 			CF7_AntiSpam::update_plugin_options( $this->options );
 			echo '<div class="updated"><p>Settings saved.</p></div>';
@@ -131,9 +131,10 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 				'stroke-miterlimit' => true,
 			),
 		);
-		echo '<div class="integration-icon">' . wp_kses( file_get_contents( CF7ANTISPAM_PLUGIN_DIR . '/assets/icon.svg' ), $allowed_html ) . '</div>';
-		// inline css isn't the best idea generally speaking, but in this case will avoid to enqueue the css before to know if the plugin is enabled
-		echo '<style>#cf7-antispam input { margin: 0 5px 0 0; } #cf7-antispam .integration-icon { display: inline-block; padding-block: inherit; margin: 0 0 0 0.7em; width: 30px; }</style>';
+		printf(
+			'<img src="%s" class="integration-icon" style="width: 32px;display: block;margin: 10px;">',
+			CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg'
+		);
 	}
 
 	/**
@@ -249,6 +250,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		// Display the form
 		echo '<div class="wrap">';
 		echo '<form method="post" action="">';
+		wp_nonce_field( 'cf7a_toggle', 'cf7a_nonce' );
 		printf(
 			'<input type="submit" name="cf7a_submit" class="button button-primary" value="%s">',
 			$checked ? esc_html__( 'Disable', 'cf7-antispam' ) : esc_html__( 'Enable', 'cf7-antispam' )

@@ -1,8 +1,8 @@
 {
 	"name": "cf7-antispam",
-	"author": "Erik Golinelli",
+	"author": "Erik Golinelli <erik@codekraft.it>",
 	"license": "GPL-2.0-only",
-	"version": "0.6.3",
+	"version": "0.6.4",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
@@ -30,8 +30,8 @@
 		"wp-env:start": "wp-env start",
 		"wp-env:stop": "wp-env stop",
 		"wp-env:destroy": "wp-env destroy",
-		"test:e2e": "wp-scripts test-e2e",
-		"test:e2e:watch": "npm run test:e2e --watch",
+		"test:e2e": "wp-scripts test-playwright",
+		"test:e2e:watch": "npm run test:playwright --watch",
 		"postinstall": "husky install",
 		"makepot": "npx @wp-blocks/make-pot",
 		"PHPCS": "wp-env run composer \"composer PHPCS\"",
@@ -46,13 +46,14 @@
 	},
 	"homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
 	"devDependencies": {
-		"@wordpress/e2e-test-utils": "^10.21.0",
-		"@wordpress/env": "^9.2.0",
-		"@wordpress/eslint-plugin": "^17.7.0",
-		"@wordpress/scripts": "^27.1.0",
-		"chart.js": "^4.4.1",
-		"expect-puppeteer": "^9.0.2",
-		"husky": "^9.0.6"
+		"@wordpress/e2e-test-utils-playwright": "^1.26.0",
+		"@wordpress/env": "^10.26.0",
+		"@wordpress/eslint-plugin": "^22.12.0",
+		"@wordpress/scripts": "^30.19.0",
+		"chart.js": "^4.5.0",
+		"husky": "^9.1.7",
+		"prettier": "^3.6.2",
+		"typescript": "^5.8.3"
 	},
 	"engines": {
 		"node": ">=16.0.0",

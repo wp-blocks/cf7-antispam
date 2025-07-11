@@ -1,10 +1,10 @@
 === AntiSpam for Contact Form 7 ===
 Contributors: codekraft, gardenboi
-Tags: antispam, blacklist, honeypot, geoip, security, contact form 7
+Tags: antispam, blacklist, honeypot, geoip, security
 Requires at least: 5.4
-Tested up to: 6.5.5
-Requires PHP: 5.6
-Stable tag: 0.6.3
+Tested up to: 6.8.1
+Requires PHP: 7.4
+Stable tag: 0.6.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -161,6 +161,22 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.6.4 =
+* Migration from JavaScript to TypeScript for better type safety
+* Fix: webdriver detection logic returning null instead of boolean
+* Fix: FormData constructor error with incorrect reference (thanks to @ohhcee for the report)
+* Fix: WebGL renderer null reference causing indexOf errors
+* Fix: FormData support condition logic inverted
+* Fix: as suggested by @filipr fixed the issue with the additional data in the email related to flamingo (thanks to @apterix for the bug report)
+* Enhancement: Added MutationObserver support for dynamically loaded forms (implemented @dmbur idea, thanks!)
+* Enhancement: Added duplicate form processing prevention
+* Enhancement: Wrapped main execution in IIFE to prevent global scope pollution
+* Enhancement: Improved browser compatibility with graceful fallbacks
+* Enhancement: Enhanced canvas fingerprinting with proper error handling
+* Performance: Moved form-specific variables inside loops to prevent cross-contamination
+* Performance: Added proper type annotations and safer innerHTML assignments
+* Tests: switch to Playwright tests
 
 = 0.6.3 =
 * Quick fix for null is not an object (evaluating 'document.getElementById("cf7a_download_button") (bug report, thanks to @WebCodePoet)

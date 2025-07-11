@@ -276,17 +276,18 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @param int $form_post_id The ID of the form post.
 	 *
-	 * @return array|false The additional settings of the form.
+	 * @return array The additional settings of the form.
 	 */
 	public static function cf7a_get_mail_additional_data( $form_post_id ) {
 
 		/* get the additional setting of the form */
 		$form_additional_settings = get_post_meta( $form_post_id, '_additional_settings', true );
 
+		// Always return an array, even if empty
+		$additional_settings = array();
+
 		if ( ! empty( $form_additional_settings ) ) {
 			$lines = explode( "\n", $form_additional_settings );
-
-			$additional_settings = array();
 
 			/* extract the flamingo_key = value; */
 			foreach ( $lines as $line ) {
@@ -297,11 +298,9 @@ class CF7_AntiSpam_Flamingo {
 					}
 				}
 			}
-
-			return $additional_settings;
 		}
 
-		return false;
+		return $additional_settings;
 	}
 
 	/**
@@ -324,7 +323,10 @@ class CF7_AntiSpam_Flamingo {
 		$additional_settings = self::cf7a_get_mail_additional_data( $result['contact_form_id'] );
 
 		/* this is a real monkey patching to remove the "] [" */
-		$message_list = sanitize_text_field( implode( ' ', explode( '] [', $additional_settings['message'] ) ) );
+		$message_list = '';
+		if ( is_array( $additional_settings ) && isset( $additional_settings['message'] ) && is_string( $additional_settings['message'] ) ) {
+			$message_list = sanitize_text_field( implode( ' ', explode( '] [', $additional_settings['message'] ) ) );
+		}
 
 		/* update post meta and add the cf7-antispam customized tags form_id and message_field */
 		$stored_fields = (array) get_post_meta( $result['flamingo_inbound_id'], '_meta', true );

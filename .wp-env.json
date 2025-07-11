@@ -11,5 +11,5 @@
 	"SCRIPT_DEBUG": true,
 	"FS_METHOD": "direct"
   },
-  "phpVersion": "7.4"
+  "phpVersion": "8.2"
 }

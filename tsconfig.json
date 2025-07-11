@@ -1,0 +1,40 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"jsx": "react-jsx",
+		// Search under node_modules for non-relative imports.
+		"moduleResolution": "node",
+		"sourceMap": true,
+
+		// Enable the strictest settings like strictNullChecks & noImplicitAny.
+		"strict": true,
+
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
+		"strictNullChecks": true,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true,
+		// Import non-ES modules as default imports."esModuleInterop": true,
+
+		// Tells TypeScript to read JS files, as
+		// normally they are ignored as source files
+		"allowJs": true,
+		"pretty": true,
+
+		// Types should go into this directory.
+		// Removing this would place the .d.ts files
+		// next to the .js files
+		"outDir": "build",
+		"typeRoots": [
+			"src/**/*",
+			"node_modules/@types",
+			"@types"
+		]
+	},
+	"include": [
+		"src/**/*",
+		"tests/**/*"
+	],
+	"exclude": [ "build", "coverage" ]
+}

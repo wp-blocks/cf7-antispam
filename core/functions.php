@@ -377,7 +377,7 @@ function cf7a_compress_array( $array, $is_html = false ) {
  */
 function cf7a_log( $log_data, $log_level = 0 ) {
 	if ( ! empty( $log_data ) ) {
-		if ( 0 === $log_level || 1 === $log_level && CF7ANTISPAM_DEBUG || 2 === $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
+		if ( 0 === $log_level || 1 >= $log_level && CF7ANTISPAM_DEBUG || 2 >= $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
 			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log(
 				is_string( $log_data )
