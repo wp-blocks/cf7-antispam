@@ -66,14 +66,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Section Bot Fingerprint */
 		add_settings_section(
-			'cf7a_subtitle',
-			__( 'Settings', 'cf7-antispam' ),
-			array( $this, 'cf7a_print_section_main_subtitle' ),
-			'cf7a-settings'
-		);
-
-		/* Section Bot Fingerprint */
-		add_settings_section(
 			'cf7a_auto_blacklist',
 			__( 'Ban automatically spammers', 'cf7-antispam' ),
 			array( $this, 'cf7a_print_section_auto_blacklist' ),
@@ -676,60 +668,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_score_warn_callback' ),
 			'cf7a-settings',
 			'cf7a_scoring'
-		);
-	}
-
-
-	/**
-	 * It returns a random tip from an array of tips
-	 *
-	 * @return string a random tip from the array of tips.
-	 */
-	public function cf7a_get_a_random_tip() {
-		$tips = array(
-			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
-			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
-			sprintf(
-				/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
-				'%s <a href="%s" target="_blank">%s</a>',
-				__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
-				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
-				__( 'Give a try', 'cf7-antispam' )
-			),
-			sprintf(
-				/* translators: %s is the link to Flamingo documentation. */
-				"%s <a href='%s' target='_blank'>%s</a>. %s",
-				__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
-				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
-				__( 'fields with multiple tags', 'cf7-antispam' ),
-				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
-			),
-		);
-
-		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
-	}
-
-	/**
-	 * It prints The main setting text below the title
-	 *
-	 * TODO: some random tips to protect the website like don't use as page title "contacts" an so on
-	 */
-	public function cf7a_print_section_main_subtitle() {
-		$tips_wpkses_format = array(
-			'a' => array(
-				'href'   => array(),
-				'target' => array(),
-			),
-		);
-
-		printf(
-			'<p>%s</p><div class="cf7a-tip"><p><strong>💡 %s</strong> %s</p></div>',
-			esc_html__( 'For most cases the following settings are fine, but you can have fun configuring the antispam to achieve the level of protection you prefer!', 'cf7-antispam' ),
-			esc_html__( 'Tip:', 'cf7-antispam' ),
-			wp_kses(
-				self::cf7a_get_a_random_tip(),
-				$tips_wpkses_format
-			)
 		);
 	}
 

@@ -6,20 +6,26 @@ function adminSettingsHelper() {
 		document.body.classList.contains('cf7-antispam-admin') ||
 		document.body.classList.contains('flamingo_page_flamingo_inbound')
 	) {
-		// eslint-disable-next-line
-    const alertMessage = cf7a_admin_settings.alertMessage;
+		// eslint-disable-next-line camelcase
+		const alertMessage = cf7a_admin_settings.alertMessage;
 
 		// the confirmation alert script
-		const alerts = document.querySelectorAll('.cf7a_alert');
+		const alerts = document.querySelectorAll(
+			'.cf7a_alert'
+		) as NodeListOf<HTMLElement>;
 
-		function confirmationAlert(e, message) {
-			// eslint-disable-next-line no-alert,no-undef
-			if (confirm(message || alertMessage)) {
-				window.location.href = e.dataset.href;
+		function confirmationAlert(e: HTMLElement, message: any) {
+			if (
+				// eslint-disable-next-line no-alert
+				confirm(message || alertMessage) &&
+				'dataset' in e
+			) {
+				const dataset = e.dataset as { [key: string]: string };
+				window.location.href = dataset.href;
 			}
 		}
 
-		alerts.forEach((alert) => {
+		alerts.forEach((alert: HTMLElement) => {
 			alert.addEventListener('click', () => {
 				confirmationAlert(alert, alert.dataset.message || false);
 			});
@@ -32,7 +38,7 @@ function adminSettingsHelper() {
 		document.addEventListener('keydown', (e) => {
 			if (e.ctrlKey && e.key === 's') {
 				e.preventDefault();
-				document.getElementById('submit').click();
+				document.getElementById('submit')?.click();
 			}
 		});
 	}
@@ -44,26 +50,28 @@ function adminSettingsHelper() {
 		const showAdvanced = () => {
 			const advancedCheckbox = document.getElementById(
 				'enable_advanced_settings'
-			);
+			) as HTMLInputElement;
 			const AdvSettingsCard = document.getElementById(
 				'advanced-setting-card'
-			);
-			const AdvSettingsTitle =
-				document.querySelectorAll('#cf7a_settings h2');
+			) as HTMLElement;
+			const AdvSettingsTitle = document.querySelectorAll(
+				'#cf7a_settings h2'
+			) as NodeListOf<HTMLElement>;
 			const AdvSettingsTitleEl =
 				AdvSettingsTitle[AdvSettingsTitle.length - 1];
 
-			const AdvSettingsTxt =
-				document.querySelectorAll('#cf7a_settings p');
+			const AdvSettingsTxt = document.querySelectorAll(
+				'#cf7a_settings p'
+			) as NodeListOf<HTMLElement>;
 			const AdvSettingsTxtEl = AdvSettingsTxt[AdvSettingsTxt.length - 2];
 
 			const AdvSettingsForm = document.querySelectorAll(
 				'#cf7a_settings table'
-			);
+			) as NodeListOf<HTMLElement>;
 			const AdvSettingsFormEl =
 				AdvSettingsForm[AdvSettingsForm.length - 1];
 
-			if (advancedCheckbox.checked !== false) {
+			if (advancedCheckbox.checked) {
 				if (AdvSettingsCard) {
 					AdvSettingsCard.classList.remove('hidden');
 				}
@@ -82,12 +90,20 @@ function adminSettingsHelper() {
 			}
 		};
 
-		// Honeyform page exlusion logic
+		// Honeyform page exclusion logic
 		if (document.body.classList.contains('cf7-antispam-admin')) {
-			const addListButton = document.querySelector('.add-list');
-			const addSelect = document.querySelector('.add-select');
-			const removeListButton = document.querySelector('.remove-list');
-			const removeSelect = document.querySelector('.remove-select');
+			const addListButton = document.querySelector(
+				'.add-list'
+			) as HTMLButtonElement;
+			const addSelect = document.querySelector(
+				'.add-select'
+			) as HTMLSelectElement;
+			const removeListButton = document.querySelector(
+				'.remove-list'
+			) as HTMLButtonElement;
+			const removeSelect = document.querySelector(
+				'.remove-select'
+			) as HTMLSelectElement;
 
 			for (const remove of removeSelect) {
 				for (const add of addSelect) {
@@ -102,9 +118,9 @@ function adminSettingsHelper() {
 						const name = option.textContent;
 						const value = option.value;
 
-						if (!removeSelect.options[value]) {
+						if (!removeSelect.options[Number(value)]) {
 							const newOption = document.createElement('option');
-							newOption.setAttribute('selected', true);
+							newOption.selected = true;
 							newOption.value = value;
 							newOption.textContent = name;
 
@@ -121,7 +137,7 @@ function adminSettingsHelper() {
 						const name = option.textContent;
 						const value = option.value;
 
-						if (!removeSelect.options[value]) {
+						if (!removeSelect.options[Number(value)]) {
 							const newOption = document.createElement('option');
 							newOption.value = value;
 							newOption.textContent = name;
@@ -137,7 +153,7 @@ function adminSettingsHelper() {
 		/* on click show advanced options */
 		document
 			.getElementById('enable_advanced_settings')
-			.addEventListener('click', showAdvanced);
+			?.addEventListener('click', showAdvanced);
 		showAdvanced();
 	}
 }
