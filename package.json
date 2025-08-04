@@ -33,7 +33,7 @@
 		"test:e2e": "wp-scripts test-playwright",
 		"test:e2e:watch": "npm run test:playwright --watch",
 		"postinstall": "husky install",
-		"makepot": "npx @wp-blocks/make-pot",
+		"makepot": "npx make-pot",
 		"PHPCS": "wp-env run composer \"composer PHPCS\"",
 		"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
 	},
@@ -53,7 +53,8 @@
 		"chart.js": "^4.5.0",
 		"husky": "^9.1.7",
 		"prettier": "^3.6.2",
-		"typescript": "^5.8.3"
+		"typescript": "^5.8.3",
+		"@wp-blocks/make-pot": "^1.6.2"
 	},
 	"engines": {
 		"node": ">=16.0.0",

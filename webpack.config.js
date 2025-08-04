@@ -5,6 +5,6 @@ module.exports = {
 	...defaultConfig,
 	entry: {
 		script: path.resolve(process.cwd(), `src/script.ts`),
-		'admin-scripts': path.resolve(process.cwd(), `src/admin-scripts.js`),
+		'admin-scripts': path.resolve(process.cwd(), `src/admin-scripts.ts`),
 	},
 };
