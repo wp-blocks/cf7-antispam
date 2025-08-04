@@ -220,8 +220,8 @@ function get_honeypot_input_names( $custom_names = array() ) {
 
 	return array_unique(
 		array_merge(
-			$defaults,
-			(array) $custom_names
+			(array) $custom_names,
+			$defaults
 		)
 	);
 }
