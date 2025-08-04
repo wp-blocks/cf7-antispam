@@ -137,7 +137,7 @@ class CF7_Antispam_Geoip {
 	private function cf7a_geo_init() {
 		// This creates the Reader object, which should be reused across lookups.
 		try {
-			return new Reader( self::cf7a_get_upload_dir() . '/GeoLite2-Country.mmdb' );
+			return new Reader( self::cf7a_get_upload_dir() . DIRECTORY_SEPARATOR . 'GeoLite2-Country.mmdb' );
 		} catch ( Exception $exception ) {
 			cf7a_log( 'GeoIP Database init error, unable to read the stored file ', 1 );
 			cf7a_log( $exception->getMessage(), 2 );
@@ -181,7 +181,7 @@ class CF7_Antispam_Geoip {
 	private static function cf7a_get_upload_dir() {
 		$upload_dir = wp_upload_dir();
 
-		return trailingslashit( $upload_dir['basedir'] . '/' . CF7ANTISPAM_NAME );
+		return trailingslashit( $upload_dir['basedir'] . DIRECTORY_SEPARATOR . CF7ANTISPAM_NAME );
 	}
 
 	/**
