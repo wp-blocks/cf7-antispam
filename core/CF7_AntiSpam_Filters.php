@@ -84,9 +84,9 @@ class CF7_AntiSpam_Filters {
 	 *
 	 * @param string $ip - The IP address to check.
 	 *
-	 * @return array|false|object|stdClass|null - the row from the database that matches the IP address.
+	 * @return array|object|null - the row from the database that matches the IP address.
 	 */
-	public function cf7a_blacklist_get_ip( $ip ) {
+	public static function cf7a_blacklist_get_ip( $ip ) {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 		if ( $ip ) {
 			global $wpdb;
@@ -96,7 +96,7 @@ class CF7_AntiSpam_Filters {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
