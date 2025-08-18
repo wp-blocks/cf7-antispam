@@ -549,7 +549,6 @@ class CF7_AntiSpam_Filters {
 		 * This will save server computing power, this ip has already been banned so there's no reason for further processing
 		 */
 		if ( $spam_score < 1 && ! $spam ) {
-
 			/**
 			 * Check the client http refer
 			 * it is much more likely that it is a bot that lands on the page without a referrer than a human that pastes in the address bar the url of the contact form.
