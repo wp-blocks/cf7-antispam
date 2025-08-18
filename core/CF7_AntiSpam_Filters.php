@@ -84,9 +84,9 @@ class CF7_AntiSpam_Filters {
 	 *
 	 * @param string $ip - The IP address to check.
 	 *
-	 * @return array|false|object|stdClass|null - the row from the database that matches the IP address.
+	 * @return array|object|null - the row from the database that matches the IP address.
 	 */
-	public function cf7a_blacklist_get_ip( $ip ) {
+	public static function cf7a_blacklist_get_ip( $ip ) {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 		if ( $ip ) {
 			global $wpdb;
@@ -96,7 +96,7 @@ class CF7_AntiSpam_Filters {
 			}
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -129,25 +129,28 @@ class CF7_AntiSpam_Filters {
 		if ( $ip ) {
 			$ip_row = self::cf7a_blacklist_get_ip( $ip );
 
-			global $wpdb;
+			if ( $ip_row ) {
 
-			$r = $wpdb->replace(
-				$wpdb->prefix . 'cf7a_blacklist',
-				array(
-					'ip'     => $ip,
-					'status' => isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1,
-					'meta'   => serialize(
-						array(
-							'reason' => $reason,
-							'meta'   => null,
-						)
+				global $wpdb;
+
+				$r = $wpdb->replace(
+					$wpdb->prefix . 'cf7a_blacklist',
+					array(
+						'ip'     => $ip,
+						'status' => isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1,
+						'meta'   => serialize(
+							array(
+								'reason' => $reason,
+								'meta'   => null,
+							)
+						),
 					),
-				),
-				array( '%s', '%d', '%s' )
-			);
+					array( '%s', '%d', '%s' )
+				);
 
-			if ( $r > - 1 ) {
-				return true;
+				if ( $r > - 1 ) {
+					return true;
+				}
 			}
 		}
 
@@ -224,11 +227,13 @@ class CF7_AntiSpam_Filters {
 		global $wpdb;
 
 		/* removes a status count at each balcklisted ip */
-		$updated = $wpdb->query( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
+		$status_update_query = $wpdb->prepare( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
+		$updated = $wpdb->query( $status_update_query);
 		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
 
 		/* when the line has 0 in status we can remove it from the blacklist  */
-		$updated = $wpdb->query( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0" );
+		$status_update_set_zero = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0");
+		$updated = $wpdb->query( $status_update_set_zero);
 		cf7a_log( "Removed $updated users from blacklist", 1 );
 
 		return true;
@@ -503,10 +508,10 @@ class CF7_AntiSpam_Filters {
 		if ( $remote_ip && $options['max_attempts'] ) {
 			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
-			$max_attemps    = intval( $options['max_attempts'] );
+			$max_attempts    = intval( $options['max_attempts'] );
 
 			/* if the current ip has tried more times than allowed */
-			if ( $ip_data_status >= $max_attemps ) {
+			if ( $ip_data_status >= $max_attempts ) {
 				++ $spam_score;
 				$spam                        = true;
 				$reason['blacklisted score'] = $ip_data_status + $spam_score;
@@ -518,7 +523,7 @@ class CF7_AntiSpam_Filters {
 				cf7a_log(
 					sprintf(
 						"The $remote_ip is already blacklisted (score $ip_data_status) but still has %d attempts left",
-						$max_attemps - $ip_data_status
+						$max_attempts - $ip_data_status
 					),
 					1
 				);
@@ -544,7 +549,6 @@ class CF7_AntiSpam_Filters {
 		 * This will save server computing power, this ip has already been banned so there's no reason for further processing
 		 */
 		if ( $spam_score < 1 && ! $spam ) {
-
 			/**
 			 * Check the client http refer
 			 * it is much more likely that it is a bot that lands on the page without a referrer than a human that pastes in the address bar the url of the contact form.
@@ -825,10 +829,10 @@ class CF7_AntiSpam_Filters {
 					}
 				}
 
-				if ( isset( $reason['email_blackilisted'] ) ) {
-					$reason['email_blackilisted'] = implode( ',', $reason['email_blackilisted'] );
+				if ( isset( $reason['email_blacklisted'] ) ) {
+					$reason['email_blacklisted'] = implode( ',', $reason['email_blacklisted'] );
 
-					cf7a_log( "The ip address $remote_ip sent a mail using the email address {$reason['email_blackilisted']} that contains the bad string {$reason['email_blackilisted']}", 1 );
+					cf7a_log( "The ip address $remote_ip sent a mail using the email address {$reason['email_blacklisted']} that contains the bad string {$reason['email_blacklisted']}", 1 );
 				}
 			}
 
@@ -844,12 +848,12 @@ class CF7_AntiSpam_Filters {
 				} else {
 					foreach ( $bad_user_agent_list as $bad_user_agent ) {
 						if ( false !== stripos( strtolower( $user_agent ), strtolower( $bad_user_agent ) ) ) {
-							$spam_score          += $score_bad_string;
-							$reason['user_agent'] = $bad_user_agent;
+							$spam_score += $score_bad_string;
+							$reason['user_agent'][] = $bad_user_agent;
 						}
 					}
 
-					if ( ! empty( $user_agent_found ) ) {
+					if ( isset( $reason['user_agent'] ) && is_array( $reason['user_agent'] ) ) {
 						$reason['user_agent'] = implode( ', ', $reason['user_agent'] );
 						cf7a_log( "The $remote_ip ip user agent was listed into bad user agent list - $user_agent contains " . $reason['user_agent'], 1 );
 					}
@@ -897,13 +901,9 @@ class CF7_AntiSpam_Filters {
 						$reason['dsnbl'][] = $dnsbl;
 						$spam_score       += $score_dnsbl;
 					}
-					// if ( $this->cf7a_check_emailbl( $dnsbl ) ) {
-					// $reason['dsnbl'][] = $dnsbl;
-					// $spam_score       += $score_dnsbl;
-					// }
 				}
 
-				if ( isset( $reason['dsnbl'] ) ) {
+				if ( isset( $reason['dsnbl'] ) && is_array( $reason['dsnbl'] ) ) {
 					$dsnbl_count     = count( $reason['dsnbl'] );
 					$reason['dsnbl'] = implode( ', ', $reason['dsnbl'] );
 

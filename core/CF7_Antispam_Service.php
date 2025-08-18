@@ -132,7 +132,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			),
 		);
 		printf(
-			'<img src="%s" class="integration-icon" style="width: 32px;display: block;margin: 10px;">',
+			'<img src="%s" class="integration-icon" style="width: 32px;margin: 10px;">',
 			CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg'
 		);
 	}
