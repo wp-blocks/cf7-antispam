@@ -311,10 +311,15 @@ class CF7_AntiSpam_Flamingo {
 	 * @return bool|void
 	 */
 	public function cf7a_flamingo_store_additional_data( $result ) {
+		// If "result" is not an array, return false
+		if ( empty( $result ) || ! is_array( $result ) ) {
+			return;
+		}
+
 		$submission = WPCF7_Submission::get_instance();
 
 		if ( ! $submission ) {
-			return true;
+			return;
 		}
 
 		$posted_data = $submission->get_posted_data();
