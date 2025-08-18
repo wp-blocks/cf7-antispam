@@ -129,25 +129,28 @@ class CF7_AntiSpam_Filters {
 		if ( $ip ) {
 			$ip_row = self::cf7a_blacklist_get_ip( $ip );
 
-			global $wpdb;
+			if ( $ip_row ) {
 
-			$r = $wpdb->replace(
-				$wpdb->prefix . 'cf7a_blacklist',
-				array(
-					'ip'     => $ip,
-					'status' => isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1,
-					'meta'   => serialize(
-						array(
-							'reason' => $reason,
-							'meta'   => null,
-						)
+				global $wpdb;
+
+				$r = $wpdb->replace(
+					$wpdb->prefix . 'cf7a_blacklist',
+					array(
+						'ip'     => $ip,
+						'status' => isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1,
+						'meta'   => serialize(
+							array(
+								'reason' => $reason,
+								'meta'   => null,
+							)
+						),
 					),
-				),
-				array( '%s', '%d', '%s' )
-			);
+					array( '%s', '%d', '%s' )
+				);
 
-			if ( $r > - 1 ) {
-				return true;
+				if ( $r > - 1 ) {
+					return true;
+				}
 			}
 		}
 
