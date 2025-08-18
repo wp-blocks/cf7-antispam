@@ -7,6 +7,7 @@ use Exception;
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
+
 /**
  * The plugin notices and ui stuff.
  *
@@ -29,7 +30,6 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private $options;
 
-
 	/**
 	 * Init the class and get the options stored in the database.
 	 */
@@ -44,48 +44,107 @@ class CF7_AntiSpam_Admin_Display {
 		?>
 		<div class="wrap">
 			<div class="cf7-antispam">
-			<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂️' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
-			<?php
-			add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_content' ), 22 );
-			?>
+				<h1><span class="icon"><?php echo wp_rand( 0, 1 ) > .5 ? '☂️' : '☔'; ?></span> Contact Form 7 AntiSpam</h1>
+				<?php $this->render_tabbed_interface(); ?>
 			</div>
 		</div>
 		<?php
-
-		add_action( 'cf7a_dashboard', array( $this, 'cf7a_display_debug' ), 30 );
-
-		do_action( 'cf7a_dashboard' );
 	}
 
 	/**
-	 * It displays the content of the widget
+	 * Render the tabbed interface
 	 */
-	public function cf7a_display_content() {
+	private function render_tabbed_interface() {
+		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'dashboard';
+		?>
+		<div class="cf7a-nav-tab-wrapper">
+			<a href="<?php echo esc_url( $this->get_tab_url( 'dashboard' ) ); ?>"
+				 class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'cf7-antispam' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $this->get_tab_url( 'settings' ) ); ?>"
+				 class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Settings', 'cf7-antispam' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $this->get_tab_url( 'blacklist' ) ); ?>"
+				 class="cf7a-nav-tab tab-blacklist <?php echo $active_tab === 'blacklist' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blacklist', 'cf7-antispam' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $this->get_tab_url( 'tools' ) ); ?>"
+				 class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
+			</a>
+			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
+				<a href="<?php echo esc_url( $this->get_tab_url( 'debug' ) ); ?>"
+					 class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
+					<span class="dashicons dashicons-code-standards"></span> <?php esc_html_e( 'Debug', 'cf7-antispam' ); ?>
+				</a>
+			<?php endif; ?>
+		</div>
+
+		<div class="cf7a-tab-content">
+			<div id="dashboard" class="cf7a-tab-panel <?php echo $active_tab === 'dashboard' ? 'active' : ''; ?>">
+				<?php $this->render_dashboard_tab(); ?>
+			</div>
+			<div id="settings" class="cf7a-tab-panel <?php echo $active_tab === 'settings' ? 'active' : ''; ?>">
+				<?php $this->render_settings_tab(); ?>
+			</div>
+			<div id="blacklist" class="cf7a-tab-panel <?php echo $active_tab === 'blacklist' ? 'active' : ''; ?>">
+				<?php $this->render_blacklist_tab(); ?>
+			</div>
+			<div id="tools" class="cf7a-tab-panel <?php echo $active_tab === 'tools' ? 'active' : ''; ?>">
+				<?php $this->render_tools_tab(); ?>
+			</div>
+			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
+				<div id="debug" class="cf7a-tab-panel <?php echo $active_tab === 'debug' ? 'active' : ''; ?>">
+					<?php $this->render_debug_tab(); ?>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Get tab URL
+	 */
+	private function get_tab_url( $tab ) {
+		return add_query_arg( 'tab', $tab, menu_page_url( 'cf7-antispam', false ) );
+	}
+
+	/**
+	 * Render Dashboard Tab
+	 */
+	private function render_dashboard_tab() {
 		$dismissible_banner_class = get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ? 'hidden' : '';
 		?>
-	<div id="welcome-panel" class="card banner dismissible <?php echo sanitize_html_class( $dismissible_banner_class ); ?>">
-		<div class="inside">
+
+		<?php $this->cf7a_print_section_main_subtitle(); ?>
+
+		<?php $this->render_stats_overview(); ?>
+
+		<div id="welcome-panel" class="cf7a-card dismissible <?php echo sanitize_html_class( $dismissible_banner_class ); ?>">
 			<a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
-			<?php if ( ! is_plugin_active( 'flamingo/flamingo.php' ) ) { ?>
-			<h3><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo esc_html( __( 'Before you cry over spilt mail&#8230;', 'contact-form-7' ) ); ?></h3>
-			<p><?php echo esc_html( __( 'Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.', 'contact-form-7' ) ); ?></p>
-			<p>
-				<?php
-				printf( /* translators: %s: link labeled 'Flamingo' */
-					esc_html__( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ),
-					esc_html__( 'https://contactform7.com/save-submitted-messages-with-flamingo/', 'contact-form-7' ),
-					esc_html__( 'Flamingo', 'contact-form-7' )
-				)
-				?>
-			</p>
-			<hr />
-			<?php } ?>
+
+			<?php if ( ! is_plugin_active( 'flamingo/flamingo.php' ) ) : ?>
+				<h3><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo esc_html( __( 'Before you cry over spilt mail&#8230;', 'contact-form-7' ) ); ?></h3>
+				<p><?php echo esc_html( __( 'Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.', 'contact-form-7' ) ); ?></p>
+				<p>
+					<?php
+					printf( /* translators: %s: link labeled 'Flamingo' */
+						esc_html__( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ),
+						'<a href="https://contactform7.com/save-submitted-messages-with-flamingo/" target="_blank">' . esc_html__( 'Flamingo', 'contact-form-7' ) . '</a>'
+					);
+					?>
+				</p>
+				<hr />
+			<?php endif; ?>
+
 			<h3 class="blink"><span class="dashicons dashicons-megaphone" aria-hidden="true"></span> <?php echo esc_html( __( "PLEASE don't forget to add ", 'cf7-antispam' ) ); ?></h3>
 			<b><code class="blink"><?php echo esc_html( __( 'flamingo_message: "[your-message]" ', 'cf7-antispam' ) ); ?></code></b>
 			<p>
 				<?php
 				printf(
-					"%s <b>%s</b> %s <a href='https://contactform7.com/additional-settings/'>%s</a> %s",
+					"%s <b>%s</b> %s <a href='https://contactform7.com/additional-settings/' target='_blank'>%s</a> %s",
 					esc_html__( 'Please replace ', 'cf7-antispam' ),
 					'[your-message]',
 					esc_html__( 'with the message field used in your form because that is the field scanned with b8. You need add this string to each form', 'cf7-antispam' ),
@@ -95,43 +154,349 @@ class CF7_AntiSpam_Admin_Display {
 				?>
 			</p>
 		</div>
-	</div>
-
-	<div class="card main-options">
-		<h3><?php esc_html__( 'Options', 'cf7-antispam' ); ?></h3>
-		<form method="post" action="options.php" id="cf7a_settings">
-			<?php
-
-			/* This prints out all hidden setting fields */
-			settings_fields( 'cf7_antispam_options' );
-			do_settings_sections( 'cf7a-settings' );
-			submit_button();
-
-			?>
-		</form>
-	</div>
-
 		<?php
-		// Export/Import Options
-		$this->cf7a_export_options();
+	}
+
+	/**
+	 * It returns a random tip from an array of tips
+	 *
+	 * @return string a random tip from the array of tips.
+	 */
+	public function cf7a_get_a_random_tip() {
+		$tips = array(
+			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
+			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
+			sprintf(
+			/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
+				'%s <a href="%s" target="_blank">%s</a>',
+				__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
+				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
+				__( 'Give a try', 'cf7-antispam' )
+			),
+			sprintf(
+			/* translators: %s is the link to Flamingo documentation. */
+				"%s <a href='%s' target='_blank'>%s</a>. %s",
+				__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
+				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
+				__( 'fields with multiple tags', 'cf7-antispam' ),
+				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
+			),
+		);
+
+		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
+	}
+
+	/**
+	 * It prints The main setting text below the title
+	 */
+	public function cf7a_print_section_main_subtitle() {
+		$tips_wpkses_format = array(
+			'a' => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+		);
+
+		printf(
+			'<div class="cf7a-tip"><p><strong>💡 %s</strong> %s</p></div>',
+			esc_html__( 'Tip:', 'cf7-antispam' ),
+			wp_kses(
+				self::cf7a_get_a_random_tip(),
+				$tips_wpkses_format
+			)
+		);
+	}
+
+	/**
+	 * Render stats overview
+	 */
+	private function render_stats_overview() {
+		global $wpdb;
+
+		// Get basic stats
+		$total_blocked = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}cf7a_blacklist" );
+
+		// Get status breakdown with proper grouping
+		$status_data = $wpdb->get_results( "
+        SELECT status, COUNT(*) as count
+        FROM {$wpdb->prefix}cf7a_blacklist
+        GROUP BY status
+        ORDER BY status ASC
+    " );
+
+		// Group status into ranges
+		$status_ranges = array(
+			'1-5' => 0,
+			'6-10' => 0,
+			'11-25' => 0,
+			'26-50' => 0,
+			'51-100' => 0,
+			'100+' => 0
+		);
+
+		foreach ( $status_data as $status ) {
+			$status_num = intval( $status->status );
+			$count = intval( $status->count );
+
+			if ( $status_num >= 1 && $status_num <= 5 ) {
+				$status_ranges['1-5'] += $count;
+			} elseif ( $status_num >= 6 && $status_num <= 10 ) {
+				$status_ranges['6-10'] += $count;
+			} elseif ( $status_num >= 11 && $status_num <= 25 ) {
+				$status_ranges['11-25'] += $count;
+			} elseif ( $status_num >= 26 && $status_num <= 50 ) {
+				$status_ranges['26-50'] += $count;
+			} elseif ( $status_num >= 51 && $status_num <= 100 ) {
+				$status_ranges['51-100'] += $count;
+			} else {
+				$status_ranges['100+'] += $count;
+			}
+		}
+
+		// Remove empty ranges for cleaner display
+		$status_ranges = array_filter( $status_ranges, function($count) {
+			return $count > 0;
+		});
+
+		// Get detailed reason stats from serialized meta
+		$meta_data = $wpdb->get_results( "
+        SELECT meta
+        FROM {$wpdb->prefix}cf7a_blacklist
+        WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'
+    " );
+
+		$reason_counts = array();
+		foreach ( $meta_data as $row ) {
+			$decoded_meta = unserialize( $row->meta );
+
+			if ( is_array( $decoded_meta ) ) {
+				foreach ( $decoded_meta as $entry ) {
+					if ( is_array( $entry ) ) {
+						// Count each reason type within the reason array
+						foreach ( $entry as $reason_key => $reason_value ) {
+							// Convert reason key to readable format
+							$reason_name = $this->format_reason_name( $reason_key );
+
+							if ( !isset( $reason_counts[$reason_name] ) ) {
+								$reason_counts[$reason_name] = 0;
+							}
+							$reason_counts[$reason_name]++;
+						}
+					}
+				}
+			}
+		}
+
+		// Sort reasons by count and get top 5
+		arsort( $reason_counts );
+		$top_reasons = array_slice( $reason_counts, 0, 5, true );
+
+		?>
+		<div class="cf7a-stats-grid">
+			<div class="cf7a-stat-card fit-center">
+				<div class="cf7a-stat-number"><?php echo esc_html( $total_blocked ?: '0' ); ?></div>
+				<div class="cf7a-stat-label"><?php esc_html_e( 'Total Blocked IPs', 'cf7-antispam' ); ?></div>
+			</div>
+
+			<!-- Status Breakdown by Ranges -->
+			<div class="cf7a-stat-card cf7a-stat-card-wide">
+				<div class="cf7a-stat-label"><?php esc_html_e( 'Warning Count Ranges', 'cf7-antispam' ); ?></div>
+				<div class="cf7a-status-breakdown">
+					<?php if ( !empty( $status_ranges ) ) : ?>
+						<?php foreach ( $status_ranges as $range => $count ) : ?>
+							<div class="cf7a-status-item">
+                            <span class="cf7a-status-badge cf7a-range-<?php echo esc_attr( str_replace( array( '-', '+' ), array( '_', 'plus' ), $range ) ); ?>">
+                                <?php echo esc_html( $range . ' warnings' ); ?>
+                            </span>
+								<span class="cf7a-status-count"><?php echo esc_html( $count ); ?> IPs</span>
+							</div>
+						<?php endforeach; ?>
+					<?php else : ?>
+						<p><?php esc_html_e( 'No warning data available', 'cf7-antispam' ); ?></p>
+					<?php endif; ?>
+				</div>
+			</div>
+
+			<!-- Top Reasons -->
+			<div class="cf7a-stat-card cf7a-stat-card-wide">
+				<div class="cf7a-stat-label"><?php esc_html_e( 'Top Block Reasons', 'cf7-antispam' ); ?></div>
+				<div class="cf7a-reasons-breakdown">
+					<?php if ( !empty( $top_reasons ) ) : ?>
+						<?php foreach ( $top_reasons as $reason => $count ) : ?>
+							<div class="cf7a-reason-item">
+                            <span class="cf7a-reason-name" title="<?php echo esc_attr( $reason ); ?>">
+                                <?php echo esc_html( strlen( $reason ) > 40 ? substr( $reason, 0, 40 ) . '...' : $reason ); ?>
+                            </span>
+								<span class="cf7a-reason-count"><?php echo esc_html( $count ); ?></span>
+							</div>
+						<?php endforeach; ?>
+
+						<!-- Show total unique reasons if more than 5 -->
+						<?php if ( count( $reason_counts ) > 5 ) : ?>
+							<div class="cf7a-reason-item cf7a-reason-summary">
+                            <span class="cf7a-reason-name">
+                                <em><?php printf( esc_html__( 'Total unique reasons: %d', 'cf7-antispam' ), count( $reason_counts ) ); ?></em>
+                            </span>
+								<span class="cf7a-reason-count">
+                                <em><?php echo esc_html( array_sum( $reason_counts ) ); ?></em>
+                            </span>
+							</div>
+						<?php endif; ?>
+					<?php else : ?>
+						<p><?php esc_html_e( 'No reason data available', 'cf7-antispam' ); ?></p>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Format reason names for better display
+	 */
+	private function format_reason_name( $reason_key ) {
+		// Handle special cases
+		$reason_mappings = array(
+			'blacklisted_score' => 'Recidive',
+			'blacklisted score' => 'Recidive',
+			'data_mismatch' => 'Data Mismatch',
+			'bot_fingerprint' => 'Bot Fingerprint',
+			'bot_fingerprint_extras' => 'Bot Fingerprint Extras',
+			'browser_language' => 'Browser Language',
+			'honeypot' => 'Honeypot',
+			'b8' => 'B8 Filter',
+			'geo_location' => 'Geo Location',
+			'ip_reputation' => 'IP Reputation',
+			'user_agent' => 'User Agent',
+			'disposable_email' => 'Disposable Email',
+			'spam_words' => 'Spam Words'
+		);
+
+		// Check if we have a custom mapping
+		if ( isset( $reason_mappings[$reason_key] ) ) {
+			return $reason_mappings[$reason_key];
+		}
+
+		// Default formatting: replace underscores with spaces and capitalize
+		return ucwords( str_replace( '_', ' ', $reason_key ) );
+	}
+
+	/**
+	 * Render Settings Tab
+	 */
+	private function render_settings_tab() {
+		?>
+		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'Plugin Settings', 'cf7-antispam' ); ?></h3>
+			<form method="post" action="options.php" id="cf7a_settings">
+				<?php
+				settings_fields( 'cf7_antispam_options' );
+				do_settings_sections( 'cf7a-settings' );
+				submit_button();
+				?>
+			</form>
+		</div>
+
+		<?php $this->cf7a_export_options(); ?>
+		<?php
+	}
+
+	/**
+	 * Render Blacklist Tab
+	 */
+	private function render_blacklist_tab() {
+		?>
+		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'Blacklisted IPs', 'cf7-antispam' ); ?></h3>
+			<p><?php esc_html_e( 'Here you can see all the IPs that have been blacklisted by the plugin.', 'cf7-antispam' ); ?></p>
+			<?php $this->cf7a_get_blacklisted_table(); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render Tools Tab
+	 */
+	private function render_tools_tab() {
+		?>
+		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'Advanced Tools', 'cf7-antispam' ); ?></h3>
+			<p><?php esc_html_e( 'This section contains features that completely change what is stored in the cf7-antispam database, use them with caution!', 'cf7-antispam' ); ?></p>
+
+			<?php $this->render_advanced_tools(); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render advanced tools section
+	 */
+	private function render_advanced_tools() {
+		?>
+		<div class="cf7a-danger-zone">
+			<h3><?php esc_html_e( 'Danger Zone', 'cf7-antispam' ); ?></h3>
+			<p><?php esc_html_e( 'These actions are irreversible. Please make sure you know what you are doing.', 'cf7-antispam' ); ?></p>
+
+			<h4><?php esc_html_e( 'Blacklist Reset', 'cf7-antispam' ); ?></h4>
+			<p><?php esc_html_e( 'Remove all blacklisted IPs from the database.', 'cf7-antispam' ); ?></p>
+			<?php
+			$url = wp_nonce_url( add_query_arg( 'action', 'reset-blacklist', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+			?>
+			<button class="cf7a-alert-button cf7a_alert" data-href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Remove all blacklisted IP', 'cf7-antispam' ); ?></button>
+
+			<h4><?php esc_html_e( 'Dictionary Reset', 'cf7-antispam' ); ?></h4>
+			<p><?php esc_html_e( 'Reset the entire b8 dictionary used for spam detection.', 'cf7-antispam' ); ?></p>
+			<?php
+			$url = wp_nonce_url( add_query_arg( 'action', 'reset-dictionary', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+			?>
+			<button class="cf7a-alert-button cf7a_alert" data-href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Reset b8 dictionary', 'cf7-antispam' ); ?></button>
+
+			<h4><?php esc_html_e( 'Rebuild Dictionary', 'cf7-antispam' ); ?></h4>
+			<p><?php esc_html_e( 'Reanalyze all Flamingo inbound emails to rebuild the dictionary.', 'cf7-antispam' ); ?></p>
+			<?php
+			$url = wp_nonce_url( add_query_arg( 'action', 'rebuild-dictionary', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+			?>
+			<button class="cf7a-alert-button cf7a_alert" data-href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Rebuild b8 dictionary', 'cf7-antispam' ); ?></button>
+
+			<h4><?php esc_html_e( 'Full Reset', 'cf7-antispam' ); ?></h4>
+			<p><?php esc_html_e( 'Completely reset the plugin to its initial state.', 'cf7-antispam' ); ?></p>
+			<?php
+			$url = wp_nonce_url( add_query_arg( 'action', 'cf7a-full-reset', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+			?>
+			<button class="cf7a-alert-button cf7a_alert" data-href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render Debug Tab
+	 */
+	private function render_debug_tab() {
+		?>
+		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'Debug Information', 'cf7-antispam' ); ?></h3>
+			<p><?php esc_html_e( 'Debug information is only visible when WP_DEBUG or CF7ANTISPAM_DEBUG are enabled.', 'cf7-antispam' ); ?></p>
+			<?php $this->cf7a_get_debug_info(); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * It displays the content of the widget (legacy method for backward compatibility)
+	 */
+	public function cf7a_display_content() {
+		// This method is kept for backward compatibility but redirects to the new tabbed interface
+		$this->render_dashboard_tab();
 	}
 
 	/**
 	 * It prints the blacklisted ip, the rating and some information, returns the plugins debug information and the
-	 * plugins debug information
+	 * plugins debug information (legacy method for backward compatibility)
 	 */
 	public function cf7a_display_debug() {
-
-		/* The blacklisted ip, the rating and some information. */
-		$this->cf7a_get_blacklisted_table();
-
-		/* Returns the plugins debug information. */
-		$this->cf7a_advanced_settings();
-
-		/* Returns the plugins debug information. */
-		$this->cf7a_get_debug_info();
+		// This method is kept for backward compatibility but content is now in separate tabs
+		$this->render_debug_tab();
 	}
-
 
 	/**
 	 * It gets the blacklisted IPs from the database and displays them in a table
@@ -145,34 +510,26 @@ class CF7_AntiSpam_Admin_Display {
 			$rows  = '';
 
 			foreach ( $blacklisted as $row ) {
-
-				/* the row url */
 				$unban_url = wp_nonce_url( add_query_arg( 'action', 'unban_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
 				$ban_url   = wp_nonce_url( add_query_arg( 'action', 'ban_forever_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
 
 				$meta = unserialize( $row->meta );
-
-				/* max_attempts */
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
-				/* the row */
-				$rows .=
-					sprintf(
-						'<div class="row"><div class="status">%s</div><div><p class="ip">%s<small class="actions"><a href="%s">%s</a> <a href="%s">%s</a></small></p><span class="data">%s</span></div></div>',
-						cf7a_format_status( $row->status - $max_attempts ),
-						esc_html( $row->ip ),
-						esc_url( $unban_url ),
-						esc_html__( '[unban ip]' ),
-						esc_url( $ban_url ),
-						esc_html__( '[ban forever]' ),
-						cf7a_compress_array( $meta['reason'], true )
-					);
+				$rows .= sprintf(
+					'<div class="row"><div class="status">%s</div><div><p class="ip">%s<small class="actions"><a href="%s">%s</a> <a href="%s">%s</a></small></p><span class="data">%s</span></div></div>',
+					cf7a_format_status( $row->status - $max_attempts ),
+					esc_html( $row->ip ),
+					esc_url( $unban_url ),
+					esc_html__( '[unban ip]' ),
+					esc_url( $ban_url ),
+					esc_html__( '[ban forever]' ),
+					cf7a_compress_array( $meta['reason'], true )
+				);
 			}
 
 			printf(
-				'<div id="blacklist-section"  class="cf7-antispam card"><h3>%s<small> (%s)</small></h3><div class="widefat blacklist-table">%s</div></div>',
-				esc_html( 'Blacklist' ),
-				intval( $count ) . esc_html__( ' ip banned' ),
+				'<div class="widefat blacklist-table">%s</div><p><small>%s</small></p>',
 				wp_kses(
 					$rows,
 					array(
@@ -186,15 +543,17 @@ class CF7_AntiSpam_Admin_Display {
 							'style' => array(),
 						),
 					)
-				)
+				),
+				sprintf( esc_html__( 'Showing %d blacklisted IPs', 'cf7-antispam' ), intval( $count ) )
 			);
+		} else {
+			echo '<p>' . esc_html__( 'No blacklisted IPs found.', 'cf7-antispam' ) . '</p>';
 		}
 	}
 
 	private function cf7a_export_options() {
-
 		?>
-		<div id="cf7a_export_import" class="cf7-antispam card">
+		<div class="cf7a-card">
 			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
 			<form id="import-export-options" method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
 				<?php
@@ -206,12 +565,10 @@ class CF7_AntiSpam_Admin_Display {
 				<input type="hidden" name="type" value="import">
 				<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
 
-				<!-- Form field -->
-				<label for="cf7a_options_area"><?php esc_html__( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-				<textarea id="cf7a_options_area" rows="5"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+				<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
+				<textarea id="cf7a_options_area" rows="5" style="width: 100%;"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
 
-				<!-- buttons -->
-				<div class="cf7a_buttons cf7a_buttons_export_import">
+				<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
 					<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
 					<button type="submit" id="cf7a_import_button" class="button button-secondary">Import</button>
 				</div>
@@ -226,70 +583,9 @@ class CF7_AntiSpam_Admin_Display {
 	 * @return string the html
 	 */
 	public static function cf7a_advanced_settings() {
-
-		/* the header */
-		$html = printf(
-			'<div id="advanced-setting-card" class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
-			esc_html__( 'Advanced settings', 'cf7-antispam' ),
-			esc_html__( 'This section contains features that completely change what is stored in the cf7-antispam database, use them with caution!', 'cf7-antispam' )
-		);
-
-		/* output the button to remove all the entries in the blacklist database */
-		$html .= printf(
-			'<hr/><h3>%s</h3><p>%s</p>',
-			esc_html__( 'Blacklist Reset', 'cf7-antispam' ),
-			esc_html__( 'If you need to remove or reset the whole blacklist data on your server.', 'cf7-antispam' )
-		);
-		$url   = wp_nonce_url( add_query_arg( 'action', 'reset-blacklist', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-		$html .= printf(
-			'<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>',
-			esc_url( $url ),
-			esc_html__( 'Remove all blacklisted IP', 'cf7-antispam' )
-		);
-
-		/* output the button to remove all the words into dictionary */
-		$html .= printf(
-			'<hr/><h3>%s</h3><p>%s</p>',
-			esc_html__( 'Dictionary Reset', 'cf7-antispam' ),
-			esc_html__( 'Use only if you need to reset the whole b8 dictionary.', 'cf7-antispam' )
-		);
-		$url   = wp_nonce_url( add_query_arg( 'action', 'reset-dictionary', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-		$html .= printf(
-			'<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>',
-			esc_url( $url ),
-			esc_html__( 'Reset b8 dictionary', 'cf7-antispam' )
-		);
-
-		/* output the button to rebuild b8 dictionary */
-		$html .= printf(
-			'<hr/><h3>%s</h3><p>%s<br/>%s</p>',
-			esc_html__( 'Rebuid Dictionary', 'cf7-antispam' ),
-			esc_html__( 'Reanalyze all the Flamingo inbound emails (you may need to reset dictionary before).', 'cf7-antispam' ),
-			esc_html__( 'Use this function after correctly sorting spam and non-spam mails or if you have experienced a Bayesian poisoning attack, will maximise the accuracy of the algorithm', 'cf7-antispam' )
-		);
-		$url   = wp_nonce_url( add_query_arg( 'action', 'rebuild-dictionary', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-		$html .= printf(
-			'<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>',
-			esc_url( $url ),
-			esc_html__( 'Rebuild b8 dictionary', 'cf7-antispam' )
-		);
-
-		/* output the button to full reset cf7-antispam */
-		$html .= printf(
-			'<hr/><h3>%s</h3><p>%s</p>',
-			esc_html__( 'Full Reset', 'cf7-antispam' ),
-			esc_html__( 'Fully reinitialize cf7-antispam plugin database and options', 'cf7-antispam' )
-		);
-		$url   = wp_nonce_url( add_query_arg( 'action', 'cf7a-full-reset', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-		$html .= printf(
-			'<pre><button class="button cf7a_alert" data-href="%s">%s</button></pre>',
-			esc_url( $url ),
-			esc_html__( 'FULL RESET', 'cf7-antispam' )
-		);
-
-		$html .= printf( '</div>' );
-
-		return $html;
+		// This method is now integrated into the Tools tab
+		// Keeping for backward compatibility but functionality moved to render_advanced_tools()
+		return '';
 	}
 
 	/**
@@ -297,14 +593,6 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	public function cf7a_get_debug_info() {
 		if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) {
-
-			/* the header */
-			printf(
-				'<div id="debug-info" class="cf7-antispam card"><h3><span class="dashicons dashicons-shortcode"></span> %s</h3><p>%s</p>',
-				esc_html__( 'Debug info', 'cf7-antispam' ),
-				esc_html__( 'If you can see this panel WP_DEBUG or CF7ANTISPAM_DEBUG are true', 'cf7-antispam' )
-			);
-
 			if ( CF7ANTISPAM_DEBUG ) {
 				printf(
 					'<p class="debug">%s</p>',
@@ -327,7 +615,6 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
-			/* output the options */
 			$this->cf7a_get_debug_info_options();
 
 			if ( ! empty( $this->options['check_geoip_enabled'] ) ) {
@@ -337,12 +624,8 @@ class CF7_AntiSpam_Admin_Display {
 			if ( ! empty( $this->options['check_dnsbl'] ) && ! empty( $this->options['dnsbl_list'] ) ) {
 				$this->cf7a_get_debug_info_dnsbl();
 			}
-
-			printf( '</div>' );
 		}
 	}
-
-
 
 	/**
 	 * It returns a string containing a formatted HTML table with the plugin's options
@@ -424,8 +707,8 @@ class CF7_AntiSpam_Admin_Display {
 				'<p class="debug"><code>%s</code> %s</p>',
 				esc_html__( 'Geo-IP', 'cf7-antispam' ),
 				! empty( $cf7a_geo->next_update )
-							? esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
-							: esc_html__( 'Disabled', 'cf7-antispam' ) . get_option( 'cf7a_geodb_update', 0 )
+					? esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
+					: esc_html__( 'Disabled', 'cf7-antispam' ) . get_option( 'cf7a_geodb_update', 0 )
 			);
 
 			$your_ip     = cf7a_get_real_ip();
