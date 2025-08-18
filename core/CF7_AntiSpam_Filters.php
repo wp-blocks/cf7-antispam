@@ -508,10 +508,10 @@ class CF7_AntiSpam_Filters {
 		if ( $remote_ip && $options['max_attempts'] ) {
 			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
-			$max_attemps    = intval( $options['max_attempts'] );
+			$max_attempts    = intval( $options['max_attempts'] );
 
 			/* if the current ip has tried more times than allowed */
-			if ( $ip_data_status >= $max_attemps ) {
+			if ( $ip_data_status >= $max_attempts ) {
 				++ $spam_score;
 				$spam                        = true;
 				$reason['blacklisted score'] = $ip_data_status + $spam_score;
@@ -523,7 +523,7 @@ class CF7_AntiSpam_Filters {
 				cf7a_log(
 					sprintf(
 						"The $remote_ip is already blacklisted (score $ip_data_status) but still has %d attempts left",
-						$max_attemps - $ip_data_status
+						$max_attempts - $ip_data_status
 					),
 					1
 				);
@@ -830,10 +830,10 @@ class CF7_AntiSpam_Filters {
 					}
 				}
 
-				if ( isset( $reason['email_blackilisted'] ) ) {
-					$reason['email_blackilisted'] = implode( ',', $reason['email_blackilisted'] );
+				if ( isset( $reason['email_blacklisted'] ) ) {
+					$reason['email_blacklisted'] = implode( ',', $reason['email_blacklisted'] );
 
-					cf7a_log( "The ip address $remote_ip sent a mail using the email address {$reason['email_blackilisted']} that contains the bad string {$reason['email_blackilisted']}", 1 );
+					cf7a_log( "The ip address $remote_ip sent a mail using the email address {$reason['email_blacklisted']} that contains the bad string {$reason['email_blacklisted']}", 1 );
 				}
 			}
 
@@ -849,12 +849,12 @@ class CF7_AntiSpam_Filters {
 				} else {
 					foreach ( $bad_user_agent_list as $bad_user_agent ) {
 						if ( false !== stripos( strtolower( $user_agent ), strtolower( $bad_user_agent ) ) ) {
-							$spam_score          += $score_bad_string;
-							$reason['user_agent'] = $bad_user_agent;
+							$spam_score += $score_bad_string;
+							$reason['user_agent'][] = $bad_user_agent;
 						}
 					}
 
-					if ( ! empty( $user_agent_found ) ) {
+					if ( isset( $reason['user_agent'] ) && is_array( $reason['user_agent'] ) ) {
 						$reason['user_agent'] = implode( ', ', $reason['user_agent'] );
 						cf7a_log( "The $remote_ip ip user agent was listed into bad user agent list - $user_agent contains " . $reason['user_agent'], 1 );
 					}
@@ -902,13 +902,9 @@ class CF7_AntiSpam_Filters {
 						$reason['dsnbl'][] = $dnsbl;
 						$spam_score       += $score_dnsbl;
 					}
-					// if ( $this->cf7a_check_emailbl( $dnsbl ) ) {
-					// $reason['dsnbl'][] = $dnsbl;
-					// $spam_score       += $score_dnsbl;
-					// }
 				}
 
-				if ( isset( $reason['dsnbl'] ) ) {
+				if ( isset( $reason['dsnbl'] ) && is_array( $reason['dsnbl'] ) ) {
 					$dsnbl_count     = count( $reason['dsnbl'] );
 					$reason['dsnbl'] = implode( ', ', $reason['dsnbl'] );
 
