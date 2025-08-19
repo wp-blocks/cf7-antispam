@@ -576,7 +576,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Section advanced settings */
 		add_settings_section(
 			'cf7a_advanced',
-			__( 'Enable advanced settings', 'cf7-antispam' ),
+			__( 'Spam Score Rating', 'cf7-antispam' ),
 			array( $this, 'cf7a_print_advanced_settings' ),
 			'cf7a-settings'
 		);
@@ -584,7 +584,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Score Preset */
 		add_settings_field(
 			'cf7a_score_preset',
-			__( 'Severity of anti-spam control', 'cf7-antispam' ),
+			__( 'Anti-spam control level', 'cf7-antispam' ),
 			array( $this, 'cf7a_score_preset_callback' ),
 			'cf7a-settings',
 			'cf7a_advanced'
