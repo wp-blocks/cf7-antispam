@@ -234,77 +234,21 @@ class CF7_AntiSpam {
 		}
 	}
 
-	/**
-	 * Register all the hooks related to the frontend area functionality
-	 * of the plugin.
-	 *
-	 * @since    0.1.0
-	 * @access   private
-	 */
-	private function load_frontend() {
-		if ( ! is_admin() ) {
-			global $post;
-			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
+    /**
+     * Register all the hooks related to the frontend area functionality
+     * of the plugin.
+     * The frontend area is loaded only if the page has a cf7 form
+     *
+     * @since    0.1.0
+     * @access   private
+     */
+    private function load_frontend() {
+        if ( ! is_admin() ) {
+            $plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
-			/* It adds hidden fields to the form */
-			$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_add_hidden_fields', 1 );
-			$this->loader->add_filter( 'wpcf7_config_validator_available_error_codes', $plugin_frontend, 'cf7a_remove_cf7_error_message', 10, 2 );
-
-			/* adds the javascript script to frontend */
-			$this->loader->add_action( 'wp_footer', $plugin_frontend, 'enqueue_scripts' );
-
-			if ( $post ) {
-				$this->options['check_bot_fingerprint'] = apply_filters( $this->options['check_bot_fingerprint'], $post->ID );
-			}
-
-			/* It adds a hidden field to the form with a unique value that is encrypted with a cipher */
-			if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
-				$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_add_bot_fingerprinting', 100 );
-			}
-
-			/* It adds a new field to the form, which is a hidden field that will be populated with the bot fingerprinting extras */
-			if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval( $this->options['check_bot_fingerprint_extras'] ) === 1 ) {
-				$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_add_bot_fingerprinting_extras', 100 );
-			}
-
-			/* It adds a new field to the form, called `cf7a_append_on_submit`, and sets it to false */
-			if ( isset( $this->options['append_on_submit'] ) && intval( $this->options['append_on_submit'] ) === 1 ) {
-				$this->loader->add_filter( 'wpcf7_form_hidden_fields', $plugin_frontend, 'cf7a_append_on_submit', 100 );
-			}
-
-			/* It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to the form */
-			if ( isset( $this->options['check_honeypot'] ) && intval( $this->options['check_honeypot'] ) === 1 ) {
-				$this->loader->add_filter( 'wpcf7_form_elements', $plugin_frontend, 'cf7a_honeypot_add' );
-			}
-
-			/* It gets the form, formats it, and then echoes it out */
-			if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
-				$this->loader->add_filter( 'the_content', $plugin_frontend, 'cf7a_honeyform', 99 );
-			}
-
-			/* Checking if the user has selected the option to protect the user's identity. If they have, it will call the function to protect the user's identity. */
-			if ( isset( $this->options['identity_protection_user'] ) && intval( $this->options['identity_protection_user'] ) === 1 ) {
-				$plugin_frontend->cf7a_protect_user();
-			}
-
-			/* It removes the WordPress version from the header, removes the REST API link from the header, removes headers that disposes information */
-			if ( isset( $this->options['identity_protection_wp'] ) && intval( $this->options['identity_protection_wp'] ) === 1 ) {
-				$this->loader->add_filter( 'wp_headers', $plugin_frontend, 'cf7a_protect_wp', 999 );
-			}
-
-			/* Will check if the form has been submitted more than once, blocking all emails that were sent after the first one for a period of 5 seconds */
-			if ( isset( $this->options['mailbox_protection_multiple_send'] ) && intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
-				$this->loader->add_action( 'wpcf7_before_send_mail', $plugin_frontend, 'cf7a_check_resend', 9, 3 );
-			}
-
-			/* It adds a CSS style to the page that hides the honeypot field */
-			if (
-				( isset( $this->options['check_honeypot'] ) && 1 === intval( $this->options['check_honeypot'] ) ) || ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) )
-			) {
-				$this->loader->add_action( 'wp_footer', $plugin_frontend, 'cf7a_add_honeypot_css', 11 );
-			}
-		}
-	}
+            $this->loader->add_action( 'wp', $plugin_frontend, 'setup' );
+        }
+    }
 
 	/**
 	 * Run the loader to execute all the hooks with WordPress.
@@ -414,6 +358,14 @@ class CF7_AntiSpam {
 		return false;
 	}
 
+	/**
+	 * This function is used to generate the spam report email.
+	 *
+	 * @param $mail_body string The email body
+	 * @param $last_report_timestamp int The last report timestamp
+	 *
+	 * @return string The email body
+	 */
 	public function spam_mail_report( $mail_body, $last_report_timestamp ) {
 		global $wpdb;
 
