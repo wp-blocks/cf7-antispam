@@ -56,6 +56,7 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private function render_tabbed_interface() {
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'dashboard';
+		print_r( $active_tab );
 		?>
 		<div class="cf7a-nav-tab-wrapper">
 			<a href="<?php echo esc_url( $this->get_tab_url( 'dashboard' ) ); ?>"
@@ -73,6 +74,10 @@ class CF7_AntiSpam_Admin_Display {
 			<a href="<?php echo esc_url( $this->get_tab_url( 'tools' ) ); ?>"
 				 class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $this->get_tab_url( 'import-export' ) ); ?>"
+				 class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import/Export', 'cf7-antispam' ); ?>
 			</a>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<a href="<?php echo esc_url( $this->get_tab_url( 'debug' ) ); ?>"
@@ -94,6 +99,9 @@ class CF7_AntiSpam_Admin_Display {
 			</div>
 			<div id="tools" class="cf7a-tab-panel <?php echo $active_tab === 'tools' ? 'active' : ''; ?>">
 				<?php $this->render_tools_tab(); ?>
+			</div>
+			<div id="import-export" class="cf7a-tab-panel <?php echo $active_tab === 'import-export' ? 'active' : ''; ?>">
+				<?php $this->render_import_export_tab(); ?>
 			</div>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<div id="debug" class="cf7a-tab-panel <?php echo $active_tab === 'debug' ? 'active' : ''; ?>">
@@ -354,7 +362,7 @@ class CF7_AntiSpam_Admin_Display {
 	/**
 	 * Format reason names for better display
 	 */
-	private function format_reason_name( $reason_key ) {
+	private function format_reason_name( $reason_key ): string {
 		// Handle special cases
 		$reason_mappings = array(
 			'blacklisted_score' => 'Recidive',
@@ -396,8 +404,6 @@ class CF7_AntiSpam_Admin_Display {
 				?>
 			</form>
 		</div>
-
-		<?php $this->cf7a_export_options(); ?>
 		<?php
 	}
 
@@ -410,6 +416,18 @@ class CF7_AntiSpam_Admin_Display {
 			<h3><?php esc_html_e( 'Blacklisted IPs', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'Here you can see all the IPs that have been blacklisted by the plugin.', 'cf7-antispam' ); ?></p>
 			<?php $this->cf7a_get_blacklisted_table(); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render Blacklist Tab
+	 */
+	private function render_import_export_tab() {
+		?>
+		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
+			<?php $this->cf7a_export_options(); ?>
 		</div>
 		<?php
 	}
@@ -465,6 +483,32 @@ class CF7_AntiSpam_Admin_Display {
 			?>
 			<button class="cf7a-alert-button cf7a_alert" data-href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Render Import/Export Tab
+	 */
+	private function cf7a_export_options() {
+		?>
+		<form id="import-export-options" method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
+			<?php
+			$option_group = 'cf7_antispam_options';
+			wp_nonce_field( "$option_group-options" );
+			?>
+			<input type="hidden" name="option_page" value="cf7_antispam_options">
+			<input type="hidden" name="action" value="update">
+			<input type="hidden" name="type" value="import">
+			<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
+
+			<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
+			<textarea id="cf7a_options_area" rows="20" style="width: 100%;"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+
+			<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
+				<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
+				<button type="submit" id="cf7a_import_button" class="button button-secondary">Import</button>
+			</div>
+		</form>
 		<?php
 	}
 
@@ -549,32 +593,6 @@ class CF7_AntiSpam_Admin_Display {
 		} else {
 			echo '<p>' . esc_html__( 'No blacklisted IPs found.', 'cf7-antispam' ) . '</p>';
 		}
-	}
-
-	private function cf7a_export_options() {
-		?>
-		<div class="cf7a-card">
-			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
-			<form id="import-export-options" method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
-				<?php
-				$option_group = 'cf7_antispam_options';
-				wp_nonce_field( "$option_group-options" );
-				?>
-				<input type="hidden" name="option_page" value="cf7_antispam_options">
-				<input type="hidden" name="action" value="update">
-				<input type="hidden" name="type" value="import">
-				<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
-
-				<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-				<textarea id="cf7a_options_area" rows="5" style="width: 100%;"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
-
-				<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
-					<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
-					<button type="submit" id="cf7a_import_button" class="button button-secondary">Import</button>
-				</div>
-			</form>
-		</div>
-		<?php
 	}
 
 	/**
