@@ -513,6 +513,21 @@ $color__info: $color__blue;
 		width: 100%;
 	}
 
+	.codeblock {
+		background: #f1f1f1;
+		border: 1px solid #ccc;
+		padding: 10px;
+		margin: 10px 0;
+		border-radius: 3px;
+		overflow: auto;
+
+		code {
+			background: transparent;
+			padding: 0;
+			margin: 0;
+		}
+	}
+
 	/* Range-based color coding */
 	.cf7a-range-1_5 { background-color: $color__success; } /* Green - Low warnings */
 	.cf7a-range-6_10 { background-color: $color__yellow; color: $color__black; } /* Yellow - Medium warnings */
