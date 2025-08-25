@@ -623,13 +623,16 @@ class CF7_AntiSpam_Admin_Display {
 					'<p class="debug">%s</p>',
 					'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
 				);
-			}
 
-			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
 				printf(
 					'<p class="debug"><code>%s</code> %s</p>',
 					esc_html__( 'Your ip address', 'cf7-antispam' ),
 					filter_var( cf7a_get_real_ip(), FILTER_VALIDATE_IP )
+				);
+			} else {
+				printf(
+					'<p class="debug">%s</p>',
+					'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is disabled, use CF7ANTISPAM_DEBUG_EXTENDED to enable it if needed', 'cf7-antispam' ) )
 				);
 			}
 
@@ -637,10 +640,20 @@ class CF7_AntiSpam_Admin_Display {
 
 			if ( ! empty( $this->options['check_geoip_enabled'] ) ) {
 				$this->cf7a_get_debug_info_geoip();
+			} else {
+				printf(
+					'<p>%s</p>',
+					esc_html__( 'GeoIP is disabled', 'cf7-antispam' )
+				);
 			}
 
 			if ( ! empty( $this->options['check_dnsbl'] ) && ! empty( $this->options['dnsbl_list'] ) ) {
 				$this->cf7a_get_debug_info_dnsbl();
+			} else {
+				printf(
+					'<p>%s</p>',
+					esc_html__( 'DNSBL is disabled', 'cf7-antispam' )
+				);
 			}
 		}
 	}
@@ -651,7 +664,7 @@ class CF7_AntiSpam_Admin_Display {
 	 * @return void the HTML for the debug info options.
 	 */
 	private function cf7a_get_debug_info_options() {
-		printf( '<hr/><h3>%s</h3>', esc_html__( 'Options debug', 'cf7-antispam' ) );
+		printf( '<h3>%s</h3>', esc_html__( 'Options debug', 'cf7-antispam' ) );
 		printf(
 			'<p>%s</p><pre>%s</pre>',
 			esc_html__( 'Those are the options of this plugin', 'cf7-antispam' ),
