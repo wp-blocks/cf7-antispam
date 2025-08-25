@@ -1144,19 +1144,23 @@ class CF7_AntiSpam_Admin_Customizations {
 		$threshold                 = floatval( $input['b8_threshold'] );
 		$new_input['b8_threshold'] = $threshold >= 0 && $threshold < 1 ? $threshold : 1;
 
+		/* Advanced settings */
+		$new_input['enable_advanced_settings'] = isset( $input['enable_advanced_settings'] ) ? 1 : 0;
 		$score_preset = $this->cf7a_get_scores_presets();
 
-		/* Scoring:  if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
+		/* Scoring: if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
 		if ( $input['score'] !== $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) {
-			if ( 'weak' === $input['cf7a_score_preset'] ) {
-				$new_input['score']             = $score_preset['weak'];
-				$new_input['cf7a_score_preset'] = 'weak';
-			} elseif ( 'standard' === $input['cf7a_score_preset'] ) {
-				$new_input['score']             = $score_preset['standard'];
-				$new_input['cf7a_score_preset'] = 'standard';
-			} elseif ( 'secure' === $input['cf7a_score_preset'] ) {
-				$new_input['score']             = $score_preset['secure'];
-				$new_input['cf7a_score_preset'] = 'secure';
+			if ( in_array( $input['cf7a_score_preset'], ['weak', 'standard', 'secure']  ) ) {
+				if ( 'weak' === $input['cf7a_score_preset'] ) {
+					$new_input['score']             = $score_preset['weak'];
+					$new_input['cf7a_score_preset'] = 'weak';
+				} elseif ( 'standard' === $input['cf7a_score_preset'] ) {
+					$new_input['score']             = $score_preset['standard'];
+					$new_input['cf7a_score_preset'] = 'standard';
+				} elseif ( 'secure' === $input['cf7a_score_preset'] ) {
+					$new_input['score']             = $score_preset['secure'];
+					$new_input['cf7a_score_preset'] = 'secure';
+				}
 			} else {
 				$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting'] ) : 0.25;
 				$new_input['score']['_time']           = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time'] ) : 1;
@@ -1168,9 +1172,6 @@ class CF7_AntiSpam_Admin_Customizations {
 				$new_input['cf7a_score_preset']        = 'custom';
 			}
 		}
-
-		/* Advanced settings */
-		$new_input['enable_advanced_settings'] = isset( $input['enable_advanced_settings'] ) ? 1 : 0;
 
 		/* Customizations */
 		$new_input['cf7a_disable_reload'] = isset( $input['cf7a_disable_reload'] ) ? 1 : 0;
