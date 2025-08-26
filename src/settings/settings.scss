@@ -214,9 +214,9 @@ $color__info: $color__blue;
 		margin-bottom: 20px;
 		box-shadow: 0 2px 4px $color__shadow;
 
-		h3 {
-			margin-top: 0;
-			padding-bottom: 10px;
+		.title {
+			margin-top: 2rem;
+			padding-bottom: .25rem;
 			border-bottom: 2px solid $color__white-smoke;
 		}
 	}

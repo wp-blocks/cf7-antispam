@@ -56,7 +56,6 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private function render_tabbed_interface() {
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'dashboard';
-		print_r( $active_tab );
 		?>
 		<div class="cf7a-nav-tab-wrapper">
 			<a href="<?php echo esc_url( $this->get_tab_url( 'dashboard' ) ); ?>"
@@ -636,11 +635,11 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
-			if ( ! empty( $this->options['check_geoip_enabled'] ) || ! empty( $this->options['check_geo_location'] ) ) {
+			if ( ! empty( $this->options['check_geoip_enabled'] ) || empty( $this->options['check_geo_location'] ) ) {
 				$this->cf7a_get_debug_info_geoip();
 			} else {
 				printf(
-					'<p><b>GeoIP</b> %s</p>',
+					'<h3 class="title"><span class="dashicons dashicons-location"></span> GeoIP</h3><p><b>GeoIP</b> %s</p>',
 					esc_html__( 'is disabled', 'cf7-antispam' )
 				);
 			}
@@ -649,7 +648,7 @@ class CF7_AntiSpam_Admin_Display {
 				$this->cf7a_get_debug_info_dnsbl();
 			} else {
 				printf(
-					'<p><b>DNSBL</b> %s</p>',
+					'<h3 class="title"><span class="dashicons dashicons-networking"></span> DNSBL</h3><p><b>DNSBL</b> %s</p>',
 					esc_html__( 'is disabled', 'cf7-antispam' )
 				);
 			}
@@ -664,7 +663,7 @@ class CF7_AntiSpam_Admin_Display {
 	 * @return void the HTML for the debug info options.
 	 */
 	private function cf7a_get_debug_info_options() {
-		printf( '<hr /> <h2 class="title">%s</h2>', esc_html__( 'Options debug', 'cf7-antispam' ) );
+		printf( '<h2 class="title">%s</h2>', esc_html__( 'Options debug', 'cf7-antispam' ) );
 		printf(
 			'<p>%s</p><pre class="codeblock"><code>%s</code></pre>',
 			esc_html__( 'The plugin options are:', 'cf7-antispam' ),
@@ -708,7 +707,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			if ( ! empty( $performance_test ) ) {
 				printf(
-					'<hr/><h3><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><p>%s: %s</p><table class="dnsbl_table">%s</table>',
+					'<h3 class="title"><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><p>%s: %s</p><table class="dnsbl_table">%s</table>',
 					esc_html__( 'DNSBL performance test:' ),
 					esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers' ),
 					esc_html__( 'Your IP address' ),
@@ -752,7 +751,7 @@ class CF7_AntiSpam_Admin_Display {
 			/* The recap of Geo-ip test */
 			if ( ! empty( $cf7a_geo->next_update ) ) {
 				printf(
-					'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
+					'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
 					esc_html__( 'Geo-IP test', 'cf7-antispam' ),
 					wp_kses(
 						$html_update_schedule,
