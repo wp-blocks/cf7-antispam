@@ -38,19 +38,21 @@ function spamCharts() {
 			},
 		};
 
-		const antispamDashWidget = document.getElementById(
-			'cf7a-widget'
-		) as HTMLDivElement | null;
+		const chartsWrapper =
+			document.getElementById('cf7a-widget') ||
+			(document.querySelector(
+				'.antispam-charts-container'
+			) as HTMLDivElement | null);
 
-		if (antispamDashWidget !== null) {
-			const lineChartWrapper = antispamDashWidget.querySelector(
+		if (chartsWrapper !== null) {
+			const lineChartWrapper = chartsWrapper.querySelector(
 				'#line-chart'
 			) as HTMLCanvasElement | null;
 			if (lineChartWrapper) {
 				cf7aCharts.lineChart = new Chart(lineChartWrapper, lineConfig);
 			}
 
-			const pieChartWrapper = antispamDashWidget.querySelector(
+			const pieChartWrapper = chartsWrapper.querySelector(
 				'#pie-chart'
 			) as HTMLCanvasElement | null;
 			if (pieChartWrapper) {
