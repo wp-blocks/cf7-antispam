@@ -1,7 +1,11 @@
-import './dashboard/dashboard';
-import './dashboard/dashboard.scss';
+/** The admin styles */
+import './admin-style.scss';
 
+/** The charts scripts */
+import './charts/charts';
+
+/** The settings scripts */
 import './settings/settings';
-import './settings/settings.scss';
 
+/** The import/export scripts */
 import './settings/importExport';

@@ -1,0 +1,127 @@
+@use "colors";
+
+.cf7-antispam-admin {
+
+	#welcome-panel {
+		position: relative;
+		margin-top: 20px;
+		padding: 0.7em 2em 1em;
+
+		h3 {
+			font-size: 16px;
+			font-weight: 600;
+			line-height: 32px;
+			margin: 1em 0 1.2em;
+
+			.dashicons {
+				position: relative;
+				top: -2px;
+				display: inline-block;
+				width: 60px;
+				color: colors.$color__dark-grey;
+				font-size: 40px;
+			}
+		}
+
+		p a {
+			font-weight: 700;
+		}
+
+		.welcome-panel-column,
+		.welcome-panel-column:first-child {
+			width: 48%;
+			padding: 0 2% 0 0;
+			margin: 0 0 1em 0;
+
+			@media screen and (max-width: 870px) {
+				display: block;
+				float: none;
+				width: 100%;
+			}
+		}
+
+		&:hover {
+
+			h3.blink {
+				animation: 5s blink;
+			}
+
+			code.blink {
+				animation: 4s 1s blink;
+			}
+		}
+
+		.welcome-panel-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			padding: 10px 15px 10px 24px;
+			font-size: 13px;
+			line-height: 1.23076923;
+			text-decoration: none;
+
+			&::before {
+				position: absolute;
+				top: 8px;
+				left: 0;
+				transition: all 0.1s ease-in-out;
+				content: "\f335";
+				color: #1d2327;
+				display: block;
+				font: 400 16px/20px dashicons;
+				height: 20px;
+				text-align: center;
+				width: 20px;
+			}
+		}
+	}
+
+	.cf7a-nav-tab-wrapper {
+		border-bottom: 1px solid colors.$color__light-grey;
+		margin: 20px 0;
+		padding: 0;
+	}
+
+	.cf7a-nav-tab {
+		display: inline-block;
+		padding: 10px 15px;
+		margin-right: 5px;
+		background: colors.$color__light-background;
+		border: 1px solid colors.$color__light-grey;
+		border-bottom: none;
+		text-decoration: none;
+		color: colors.$color__medium-grey;
+		border-radius: 4px 4px 0 0;
+		position: relative;
+		top: 1px;
+
+		&:hover {
+			background: colors.$color__hover-grey;
+			color: colors.$color__text-grey;
+		}
+
+		&.nav-tab-active {
+			background: colors.$color__white;
+			color: colors.$color__text-grey;
+			border-bottom: 1px solid colors.$color__white;
+		}
+	}
+
+	.cf7a-tab-content {
+		padding: 20px 0;
+	}
+
+	.cf7a-tab-panel {
+		display: none;
+
+		&.active {
+			display: block;
+
+			&#dashboard {
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+			}
+		}
+	}
+}

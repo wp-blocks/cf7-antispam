@@ -38,18 +38,26 @@ function spamCharts() {
 			},
 		};
 
-		const lineChartWrapper = document.getElementById(
-			'line-chart'
-		) as HTMLCanvasElement | null;
-		if (lineChartWrapper) {
-			cf7aCharts.lineChart = new Chart(lineChartWrapper, lineConfig);
-		}
+		const chartsWrapper =
+			document.getElementById('cf7a-widget') ||
+			(document.querySelector(
+				'.antispam-charts-container'
+			) as HTMLDivElement | null);
 
-		const pieChartWrapper = document.getElementById(
-			'pie-chart'
-		) as HTMLCanvasElement | null;
-		if (pieChartWrapper) {
-			cf7aCharts.pieChart = new Chart(pieChartWrapper, PieConfig);
+		if (chartsWrapper !== null) {
+			const lineChartWrapper = chartsWrapper.querySelector(
+				'#line-chart'
+			) as HTMLCanvasElement | null;
+			if (lineChartWrapper) {
+				cf7aCharts.lineChart = new Chart(lineChartWrapper, lineConfig);
+			}
+
+			const pieChartWrapper = chartsWrapper.querySelector(
+				'#pie-chart'
+			) as HTMLCanvasElement | null;
+			if (pieChartWrapper) {
+				cf7aCharts.pieChart = new Chart(pieChartWrapper, PieConfig);
+			}
 		}
 
 		return cf7aCharts;

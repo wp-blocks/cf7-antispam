@@ -91,7 +91,7 @@ jobs:
           npx playwright install
 
       - name: Installing NPM dependencies
-        run: npm ci
+        run: npm i
 
       - name: Build
         run: npm run build

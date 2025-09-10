@@ -1,15 +1,18 @@
 {
-  "core": null,
-  "plugins": [
-	".",
-	"https://downloads.wordpress.org/plugin/contact-form-7.zip",
-	"https://downloads.wordpress.org/plugin/flamingo.zip"
-  ],
-  "config": {
-	"WP_DEBUG": true,
-	"WP_DEBUG_DISPLAY": true,
-	"SCRIPT_DEBUG": true,
-	"FS_METHOD": "direct"
-  },
-  "phpVersion": "8.2"
+	"core": null,
+	"plugins": [
+		".",
+		"https://downloads.wordpress.org/plugin/contact-form-7.zip",
+		"https://downloads.wordpress.org/plugin/flamingo.zip"
+	],
+	"config": {
+		"WP_DEBUG": true,
+		"WP_DEBUG_DISPLAY": true,
+		"SCRIPT_DEBUG": true,
+		"FS_METHOD": "direct"
+	},
+	"phpVersion": "8.2",
+	"mappings": {
+		"/var/www/html/wp-content/plugins/cf7-antispam": "./"
+	}
 }

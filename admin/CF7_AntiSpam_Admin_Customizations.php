@@ -576,7 +576,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Section advanced settings */
 		add_settings_section(
 			'cf7a_advanced',
-			__( 'Enable advanced settings', 'cf7-antispam' ),
+			__( 'Spam Score Rating', 'cf7-antispam' ),
 			array( $this, 'cf7a_print_advanced_settings' ),
 			'cf7a-settings'
 		);
@@ -584,7 +584,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Score Preset */
 		add_settings_field(
 			'cf7a_score_preset',
-			__( 'Severity of anti-spam control', 'cf7-antispam' ),
+			__( 'Anti-spam control level', 'cf7-antispam' ),
 			array( $this, 'cf7a_score_preset_callback' ),
 			'cf7a-settings',
 			'cf7a_advanced'
@@ -1144,33 +1144,31 @@ class CF7_AntiSpam_Admin_Customizations {
 		$threshold                 = floatval( $input['b8_threshold'] );
 		$new_input['b8_threshold'] = $threshold >= 0 && $threshold < 1 ? $threshold : 1;
 
-		$score_preset = $this->cf7a_get_scores_presets();
-
-		/* Scoring:  if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
-		if ( $input['score'] !== $this->options['score'] || $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] ) {
-			if ( 'weak' === $input['cf7a_score_preset'] ) {
-				$new_input['score']             = $score_preset['weak'];
-				$new_input['cf7a_score_preset'] = 'weak';
-			} elseif ( 'standard' === $input['cf7a_score_preset'] ) {
-				$new_input['score']             = $score_preset['standard'];
-				$new_input['cf7a_score_preset'] = 'standard';
-			} elseif ( 'secure' === $input['cf7a_score_preset'] ) {
-				$new_input['score']             = $score_preset['secure'];
-				$new_input['cf7a_score_preset'] = 'secure';
-			} else {
-				$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting'] ) : 0.25;
-				$new_input['score']['_time']           = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time'] ) : 1;
-				$new_input['score']['_bad_string']     = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string'] ) : 1;
-				$new_input['score']['_dnsbl']          = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl'] ) : 0.2;
-				$new_input['score']['_honeypot']       = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot'] ) : 1;
-				$new_input['score']['_detection']      = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection'] ) : 5;
-				$new_input['score']['_warn']           = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn'] ) : 1;
-				$new_input['cf7a_score_preset']        = 'custom';
-			}
-		}
-
 		/* Advanced settings */
 		$new_input['enable_advanced_settings'] = isset( $input['enable_advanced_settings'] ) ? 1 : 0;
+		$score_preset = $this->cf7a_get_scores_presets();
+
+		$preset_changed = ($input['cf7a_score_preset'] !== $this->options['cf7a_score_preset']);
+		$scores_changed = ($input['score'] != $this->options['score']);
+
+		/* Scoring: if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
+		if ($preset_changed) {
+			// User selected a different preset - use preset values
+			if (in_array($input['cf7a_score_preset'], ['weak', 'standard', 'secure'])) {
+				$new_input['score'] = $score_preset[$input['cf7a_score_preset']];
+				$new_input['cf7a_score_preset'] = $input['cf7a_score_preset'];
+			}
+		} elseif ($scores_changed) {
+			// User manually changed scores (preset didn't change) - use custom values
+			$new_input['score']['_fingerprinting'] = isset($input['score']['_fingerprinting']) ? floatval($input['score']['_fingerprinting']) : 0.25;
+			$new_input['score']['_time']           = isset($input['score']['_time']) ? floatval($input['score']['_time']) : 1;
+			$new_input['score']['_bad_string']     = isset($input['score']['_bad_string']) ? floatval($input['score']['_bad_string']) : 1;
+			$new_input['score']['_dnsbl']          = isset($input['score']['_dnsbl']) ? floatval($input['score']['_dnsbl']) : 0.2;
+			$new_input['score']['_honeypot']       = isset($input['score']['_honeypot']) ? floatval($input['score']['_honeypot']) : 1;
+			$new_input['score']['_detection']      = isset($input['score']['_detection']) ? floatval($input['score']['_detection']) : 5;
+			$new_input['score']['_warn']           = isset($input['score']['_warn']) ? floatval($input['score']['_warn']) : 1;
+			$new_input['cf7a_score_preset'] = 'custom';
+		}
 
 		/* Customizations */
 		$new_input['cf7a_disable_reload'] = isset( $input['cf7a_disable_reload'] ) ? 1 : 0;

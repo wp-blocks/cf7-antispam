@@ -1,3 +1,4 @@
+import apiFetch from '@wordpress/api-fetch';
 window.addEventListener('load', adminSettingsHelper);
 
 function adminSettingsHelper() {
@@ -21,7 +22,26 @@ function adminSettingsHelper() {
 				'dataset' in e
 			) {
 				const dataset = e.dataset as { [key: string]: string };
-				window.location.href = dataset.href;
+
+				apiFetch({
+					path: '/cf7-antispam/v1/resend_message',
+					method: 'POST',
+					data: {
+						id: dataset.id,
+						nonce: dataset.nonce,
+					},
+				})
+					.then((res) => {
+						if (res) {
+							alert(res);
+						} else {
+							alert('Error');
+						}
+					})
+					.catch((error: any) => {
+						console.error('API Error:', error);
+						alert('Request failed');
+					});
 			}
 		}
 

@@ -74,6 +74,10 @@ class CF7_AntiSpam_Admin_Display {
 				 class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
 			</a>
+			<a href="<?php echo esc_url( $this->get_tab_url( 'import-export' ) ); ?>"
+				 class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import/Export', 'cf7-antispam' ); ?>
+			</a>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<a href="<?php echo esc_url( $this->get_tab_url( 'debug' ) ); ?>"
 					 class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
@@ -95,6 +99,9 @@ class CF7_AntiSpam_Admin_Display {
 			<div id="tools" class="cf7a-tab-panel <?php echo $active_tab === 'tools' ? 'active' : ''; ?>">
 				<?php $this->render_tools_tab(); ?>
 			</div>
+			<div id="import-export" class="cf7a-tab-panel <?php echo $active_tab === 'import-export' ? 'active' : ''; ?>">
+				<?php $this->render_import_export_tab(); ?>
+			</div>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<div id="debug" class="cf7a-tab-panel <?php echo $active_tab === 'debug' ? 'active' : ''; ?>">
 					<?php $this->render_debug_tab(); ?>
@@ -115,13 +122,18 @@ class CF7_AntiSpam_Admin_Display {
 	 * Render Dashboard Tab
 	 */
 	private function render_dashboard_tab() {
+
+		 $this->render_one_time_alert_banner();
+
+		 $this->render_antispam_charts();
+
+		 $this->render_stats_overview();
+
+	}
+
+	private function render_one_time_alert_banner() {
 		$dismissible_banner_class = get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ? 'hidden' : '';
 		?>
-
-		<?php $this->cf7a_print_section_main_subtitle(); ?>
-
-		<?php $this->render_stats_overview(); ?>
-
 		<div id="welcome-panel" class="cf7a-card dismissible <?php echo sanitize_html_class( $dismissible_banner_class ); ?>">
 			<a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
 
@@ -130,7 +142,8 @@ class CF7_AntiSpam_Admin_Display {
 				<p><?php echo esc_html( __( 'Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.', 'contact-form-7' ) ); ?></p>
 				<p>
 					<?php
-					printf( /* translators: %s: link labeled 'Flamingo' */
+					printf(
+						/* translators: %s: link labeled 'Flamingo' */
 						esc_html__( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ),
 						'<a href="https://contactform7.com/save-submitted-messages-with-flamingo/" target="_blank">' . esc_html__( 'Flamingo', 'contact-form-7' ) . '</a>'
 					);
@@ -157,54 +170,15 @@ class CF7_AntiSpam_Admin_Display {
 		<?php
 	}
 
-	/**
-	 * It returns a random tip from an array of tips
-	 *
-	 * @return string a random tip from the array of tips.
-	 */
-	public function cf7a_get_a_random_tip() {
-		$tips = array(
-			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
-			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
-			sprintf(
-			/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
-				'%s <a href="%s" target="_blank">%s</a>',
-				__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
-				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
-				__( 'Give a try', 'cf7-antispam' )
-			),
-			sprintf(
-			/* translators: %s is the link to Flamingo documentation. */
-				"%s <a href='%s' target='_blank'>%s</a>. %s",
-				__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
-				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
-				__( 'fields with multiple tags', 'cf7-antispam' ),
-				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
-			),
-		);
+	private function render_antispam_charts() {
+		$cf7a_charts = new CF7_AntiSpam_Admin_Charts();
 
-		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
-	}
+		echo '<div class="dashboard-charts-section cf7a-stat-card cf7a-stat-card-wide">';
+		echo '<h2>' . esc_html__('Email Statistics', 'cf7-antispam') . '</h2>';
 
-	/**
-	 * It prints The main setting text below the title
-	 */
-	public function cf7a_print_section_main_subtitle() {
-		$tips_wpkses_format = array(
-			'a' => array(
-				'href'   => array(),
-				'target' => array(),
-			),
-		);
+		$cf7a_charts->cf7a_dash_charts();
 
-		printf(
-			'<div class="cf7a-tip"><p><strong>💡 %s</strong> %s</p></div>',
-			esc_html__( 'Tip:', 'cf7-antispam' ),
-			wp_kses(
-				self::cf7a_get_a_random_tip(),
-				$tips_wpkses_format
-			)
-		);
+		echo '</div>';
 	}
 
 	/**
@@ -291,16 +265,36 @@ class CF7_AntiSpam_Admin_Display {
 		arsort( $reason_counts );
 		$top_reasons = array_slice( $reason_counts, 0, 5, true );
 
+		// Get top 10 spam words
+		$top_spam_words = $wpdb->get_results( "
+				SELECT token, count_spam
+				FROM {$wpdb->prefix}cf7a_wordlist
+				WHERE count_spam > 0
+				ORDER BY count_spam DESC
+				LIMIT 10
+		" );
+
+		// Get top 10 ham words
+		$top_ham_words = $wpdb->get_results( "
+				SELECT token, count_ham
+				FROM {$wpdb->prefix}cf7a_wordlist
+				WHERE count_ham > 0
+				ORDER BY count_ham DESC
+				LIMIT 10
+		" );
+
 		?>
 		<div class="cf7a-stats-grid">
-			<div class="cf7a-stat-card fit-center">
-				<div class="cf7a-stat-number"><?php echo esc_html( $total_blocked ?: '0' ); ?></div>
-				<div class="cf7a-stat-label"><?php esc_html_e( 'Total Blocked IPs', 'cf7-antispam' ); ?></div>
-			</div>
 
 			<!-- Status Breakdown by Ranges -->
 			<div class="cf7a-stat-card cf7a-stat-card-wide">
 				<div class="cf7a-stat-label"><?php esc_html_e( 'Warning Count Ranges', 'cf7-antispam' ); ?></div>
+
+				<div class="cf7a-stat-recap fit-center">
+					<div class="cf7a-stat-number"><?php echo esc_html( $total_blocked ?: '0' ); ?></div>
+					<div class="cf7a-stat-label"><?php esc_html_e( 'Total Blocked IPs', 'cf7-antispam' ); ?></div>
+				</div>
+
 				<div class="cf7a-status-breakdown">
 					<?php if ( !empty( $status_ranges ) ) : ?>
 						<?php foreach ( $status_ranges as $range => $count ) : ?>
@@ -316,6 +310,48 @@ class CF7_AntiSpam_Admin_Display {
 					<?php endif; ?>
 				</div>
 			</div>
+
+			<!-- B8 wordlist -->
+			<div class="cf7a-stat-card cf7a-stat-card-wide">
+				<div class="cf7a-stat-label"><?php esc_html_e( 'B8 Wordlist', 'cf7-antispam' ); ?></div>
+
+				<div class="cf7a-wordlist-breakdown">
+					<!-- Top Spam Words -->
+					<div class="cf7a-wordlist-column">
+						<h4><?php esc_html_e( 'Top Spam Words', 'cf7-antispam' ); ?></h4>
+						<?php if ( !empty( $top_spam_words ) ) : ?>
+							<?php foreach ( $top_spam_words as $word ) : ?>
+								<div class="cf7a-word-item">
+                        <span class="cf7a-word-name" title="<?php echo esc_attr( $word->token ); ?>">
+                            <?php echo esc_html( $word->token ); ?>
+                        </span>
+									<span class="cf7a-word-count"><?php echo esc_html( $word->count_spam ); ?></span>
+								</div>
+							<?php endforeach; ?>
+						<?php else : ?>
+							<p><?php esc_html_e( 'No spam words available', 'cf7-antispam' ); ?></p>
+						<?php endif; ?>
+					</div>
+
+					<!-- Top Ham Words -->
+					<div class="cf7a-wordlist-column">
+						<h4><?php esc_html_e( 'Top Ham Words', 'cf7-antispam' ); ?></h4>
+						<?php if ( !empty( $top_ham_words ) ) : ?>
+							<?php foreach ( $top_ham_words as $word ) : ?>
+								<div class="cf7a-word-item">
+                        <span class="cf7a-word-name" title="<?php echo esc_attr( $word->token ); ?>">
+                            <?php echo esc_html( $word->token ); ?>
+                        </span>
+									<span class="cf7a-word-count"><?php echo esc_html( $word->count_ham ); ?></span>
+								</div>
+							<?php endforeach; ?>
+						<?php else : ?>
+							<p><?php esc_html_e( 'No ham words available', 'cf7-antispam' ); ?></p>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
+
 
 			<!-- Top Reasons -->
 			<div class="cf7a-stat-card cf7a-stat-card-wide">
@@ -354,7 +390,7 @@ class CF7_AntiSpam_Admin_Display {
 	/**
 	 * Format reason names for better display
 	 */
-	private function format_reason_name( $reason_key ) {
+	private function format_reason_name( $reason_key ): string {
 		// Handle special cases
 		$reason_mappings = array(
 			'blacklisted_score' => 'Recidive',
@@ -382,12 +418,63 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
+	 * It returns a random tip from an array of tips
+	 *
+	 * @return string a random tip from the array of tips.
+	 */
+	public function cf7a_get_a_random_tip() {
+		$tips = array(
+			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
+			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
+			sprintf(
+			/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
+				'%s <a href="%s" target="_blank">%s</a>',
+				__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
+				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
+				__( 'Give a try', 'cf7-antispam' )
+			),
+			sprintf(
+			/* translators: %s is the link to Flamingo documentation. */
+				"%s <a href='%s' target='_blank'>%s</a>. %s",
+				__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
+				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
+				__( 'fields with multiple tags', 'cf7-antispam' ),
+				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
+			),
+		);
+
+		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
+	}
+
+	/**
+	 * It prints The main setting text below the title
+	 */
+	public function cf7a_print_section_options_subtitle() {
+		$tips_wpkses_format = array(
+			'a' => array(
+				'href'   => array(),
+				'target' => array(),
+			),
+		);
+
+		printf(
+			'<div class="cf7a-tip"><p><strong>💡 %s</strong> %s</p></div>',
+			esc_html__( 'Tip:', 'cf7-antispam' ),
+			wp_kses(
+				self::cf7a_get_a_random_tip(),
+				$tips_wpkses_format
+			)
+		);
+	}
+
+	/**
 	 * Render Settings Tab
 	 */
 	private function render_settings_tab() {
 		?>
 		<div class="cf7a-card">
 			<h3><?php esc_html_e( 'Plugin Settings', 'cf7-antispam' ); ?></h3>
+			<?php $this->cf7a_print_section_options_subtitle(); ?>
 			<form method="post" action="options.php" id="cf7a_settings">
 				<?php
 				settings_fields( 'cf7_antispam_options' );
@@ -396,8 +483,6 @@ class CF7_AntiSpam_Admin_Display {
 				?>
 			</form>
 		</div>
-
-		<?php $this->cf7a_export_options(); ?>
 		<?php
 	}
 
@@ -407,9 +492,26 @@ class CF7_AntiSpam_Admin_Display {
 	private function render_blacklist_tab() {
 		?>
 		<div class="cf7a-card">
+			<?php
+				/* The export button */
+				$export_url = wp_nonce_url( add_query_arg( 'action', 'export-blacklist', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+				printf( '<p class="cf7a-export-blacklist-button alignright"><a href="%s" class="button">%s</a></p>', $export_url, esc_html__( 'Export blacklist', 'cf7-antispam' ) );
+			?>
 			<h3><?php esc_html_e( 'Blacklisted IPs', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'Here you can see all the IPs that have been blacklisted by the plugin.', 'cf7-antispam' ); ?></p>
 			<?php $this->cf7a_get_blacklisted_table(); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render Blacklist Tab
+	 */
+	private function render_import_export_tab() {
+		?>
+		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
+			<?php $this->cf7a_export_options(); ?>
 		</div>
 		<?php
 	}
@@ -469,12 +571,38 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
+	 * Render Import/Export Tab
+	 */
+	private function cf7a_export_options() {
+		?>
+		<form id="import-export-options" method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
+			<?php
+			$option_group = 'cf7_antispam_options';
+			wp_nonce_field( "$option_group-options" );
+			?>
+			<input type="hidden" name="option_page" value="cf7_antispam_options">
+			<input type="hidden" name="action" value="update">
+			<input type="hidden" name="type" value="import">
+			<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
+
+			<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
+			<textarea id="cf7a_options_area" rows="20" style="width: 100%;"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+
+			<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
+				<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
+				<button type="submit" id="cf7a_import_button" class="button button-secondary">Import</button>
+			</div>
+		</form>
+		<?php
+	}
+
+	/**
 	 * Render Debug Tab
 	 */
 	private function render_debug_tab() {
 		?>
-		<div class="cf7a-card">
-			<h3><?php esc_html_e( 'Debug Information', 'cf7-antispam' ); ?></h3>
+		<div class="cf7a-card card-debug">
+			<h2 class="title cf7a-card-title"><?php esc_html_e( 'Debug Information', 'cf7-antispam' ); ?></h2>
 			<p><?php esc_html_e( 'Debug information is only visible when WP_DEBUG or CF7ANTISPAM_DEBUG are enabled.', 'cf7-antispam' ); ?></p>
 			<?php $this->cf7a_get_debug_info(); ?>
 		</div>
@@ -528,6 +656,7 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
+			/* The table */
 			printf(
 				'<div class="widefat blacklist-table">%s</div><p><small>%s</small></p>',
 				wp_kses(
@@ -549,32 +678,6 @@ class CF7_AntiSpam_Admin_Display {
 		} else {
 			echo '<p>' . esc_html__( 'No blacklisted IPs found.', 'cf7-antispam' ) . '</p>';
 		}
-	}
-
-	private function cf7a_export_options() {
-		?>
-		<div class="cf7a-card">
-			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
-			<form id="import-export-options" method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
-				<?php
-				$option_group = 'cf7_antispam_options';
-				wp_nonce_field( "$option_group-options" );
-				?>
-				<input type="hidden" name="option_page" value="cf7_antispam_options">
-				<input type="hidden" name="action" value="update">
-				<input type="hidden" name="type" value="import">
-				<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
-
-				<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-				<textarea id="cf7a_options_area" rows="5" style="width: 100%;"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
-
-				<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
-					<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
-					<button type="submit" id="cf7a_import_button" class="button button-secondary">Import</button>
-				</div>
-			</form>
-		</div>
-		<?php
 	}
 
 	/**
@@ -605,25 +708,45 @@ class CF7_AntiSpam_Admin_Display {
 					'<p class="debug">%s</p>',
 					'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
 				);
-			}
 
-			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
 				printf(
 					'<p class="debug"><code>%s</code> %s</p>',
 					esc_html__( 'Your ip address', 'cf7-antispam' ),
 					filter_var( cf7a_get_real_ip(), FILTER_VALIDATE_IP )
 				);
+			} else {
+				printf(
+					'<p class="debug">%s</p>',
+					'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is disabled, use CF7ANTISPAM_DEBUG_EXTENDED to enable it if needed', 'cf7-antispam' ) )
+				);
 			}
 
-			$this->cf7a_get_debug_info_options();
-
-			if ( ! empty( $this->options['check_geoip_enabled'] ) ) {
-				$this->cf7a_get_debug_info_geoip();
+			if ( ! empty( $this->options['check_geoip_enabled'] ) || empty( $this->options['check_geo_location'] ) ) {
+				$result = $this->cf7a_get_debug_info_geoip();
+				if ( $result ) {
+					printf(
+					'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3>%s',
+						$result['title'],
+						$result['content']
+					);
+				}
+			} else {
+				printf(
+					'<h3 class="title"><span class="dashicons dashicons-location"></span> GeoIP</h3><p><b>GeoIP</b> %s</p>',
+					esc_html__( 'is disabled', 'cf7-antispam' )
+				);
 			}
 
 			if ( ! empty( $this->options['check_dnsbl'] ) && ! empty( $this->options['dnsbl_list'] ) ) {
 				$this->cf7a_get_debug_info_dnsbl();
+			} else {
+				printf(
+					'<h3 class="title"><span class="dashicons dashicons-networking"></span> DNSBL</h3><p><b>DNSBL</b> %s</p>',
+					esc_html__( 'is disabled', 'cf7-antispam' )
+				);
 			}
+
+			$this->cf7a_get_debug_info_options();
 		}
 	}
 
@@ -633,10 +756,10 @@ class CF7_AntiSpam_Admin_Display {
 	 * @return void the HTML for the debug info options.
 	 */
 	private function cf7a_get_debug_info_options() {
-		printf( '<hr/><h3>%s</h3>', esc_html__( 'Options debug', 'cf7-antispam' ) );
+		printf( '<h2 class="title">%s</h2>', esc_html__( 'Options debug', 'cf7-antispam' ) );
 		printf(
-			'<p>%s</p><pre>%s</pre>',
-			esc_html__( 'Those are the options of this plugin', 'cf7-antispam' ),
+			'<p>%s</p><pre class="codeblock"><code>%s</code></pre>',
+			esc_html__( 'The plugin options are:', 'cf7-antispam' ),
 			esc_html(
 				htmlentities(
 					print_r( $this->options, true )
@@ -677,7 +800,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			if ( ! empty( $performance_test ) ) {
 				printf(
-					'<hr/><h3><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><p>%s: %s</p><table class="dnsbl_table">%s</table>',
+					'<h3 class="title"><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><p>%s: %s</p><table class="dnsbl_table">%s</table>',
 					esc_html__( 'DNSBL performance test:' ),
 					esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers' ),
 					esc_html__( 'Your IP address' ),
@@ -696,6 +819,8 @@ class CF7_AntiSpam_Admin_Display {
 
 	/**
 	 * It checks if the GeoIP database is enabled, and if so, it checks the next update date and displays it
+	 *
+	 * @return array an array with the title and content of the debug info geoip.
 	 */
 	private static function cf7a_get_debug_info_geoip() {
 		try {
@@ -703,45 +828,60 @@ class CF7_AntiSpam_Admin_Display {
 
 			$geoip_update = $cf7a_geo->next_update ? esc_html( date_i18n( get_option( 'date_format' ), $cf7a_geo->next_update ) ) : esc_html__( 'not set', 'cf7-antispam' );
 
-			$html_update_schedule = sprintf(
-				'<p class="debug"><code>%s</code> %s</p>',
-				esc_html__( 'Geo-IP', 'cf7-antispam' ),
-				! empty( $cf7a_geo->next_update )
-					? esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
-					: esc_html__( 'Disabled', 'cf7-antispam' ) . get_option( 'cf7a_geodb_update', 0 )
-			);
-
+			/* get the usar IP and check it against the GeoIP database */
 			$your_ip     = cf7a_get_real_ip();
 			$server_data = $cf7a_geo->cf7a_geoip_check_ip( $your_ip );
 
+			/* if the server_data is empty, set it to a string */
 			if ( empty( $server_data ) ) {
 				$server_data = 'Unable to retrieve geoip information for ' . $your_ip;
 			}
 
+			$res = array(
+				"title" => esc_html__( 'Geo-IP test', 'cf7-antispam' ),
+			);
+
 			/* The recap of Geo-ip test */
 			if ( ! empty( $cf7a_geo->next_update ) ) {
-				printf(
-					'<h3><span class="dashicons dashicons-location"></span> %s</h3><p>%s</p><p>%s: %s</p><pre>%s</pre>',
-					esc_html__( 'Geo-IP test', 'cf7-antispam' ),
-					wp_kses(
-						$html_update_schedule,
-						array(
-							'p'    => array( 'class' => array() ),
-							'code' => array(),
-						)
-					),
-					esc_html__( 'Your IP address', 'cf7-antispam' ),
-					filter_var( $your_ip, FILTER_VALIDATE_IP ),
-					// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
-					wp_kses( print_r( $server_data, true ), array( 'pre' => array() ) )
+
+				$html_update_schedule = sprintf(
+					'<p class="debug"><code>%s</code> %s</p>',
+					esc_html__( 'Geo-IP', 'cf7-antispam' ),
+						esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
+				);
+
+				$res['content'] = sprintf(
+						'<p>%s</p><p>%s: %s</p><pre>%s</pre>',
+						wp_kses(
+							$html_update_schedule,
+							array(
+								'p'    => array( 'class' => array() ),
+								'code' => array(),
+							)
+						),
+						esc_html__( 'Your IP address', 'cf7-antispam' ),
+						filter_var( $your_ip, FILTER_VALIDATE_IP ),
+						// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
+						wp_kses( print_r( $server_data, true ), array( 'pre' => array() ) )
+				);
+			} else {
+				$res['content'] = sprintf(
+						'<p><b>%s</b> %s</p><p>%s %s</p>',
+						esc_html__( 'Geo-IP', 'cf7-antispam' ),
+						esc_html__( 'is disabled', 'cf7-antispam' ),
+						esc_html__( 'Your IP address', 'cf7-antispam' ),
+						$your_ip
 				);
 			}
+
+			# return the result to the frontend
+			return $res;
+
 		} catch ( Exception $e ) {
 			$error_message = $e->getMessage();
-			printf(
-				'<p>%s</p><pre>%s</pre>',
-				esc_html__( 'Geo-IP Test Error', 'cf7-antispam' ),
-				$error_message && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error'
+			return array(
+				"title"   => esc_html__( 'Geo-IP test', 'cf7-antispam' ),
+				"content" => sprintf( '<p>%s</p><pre>%s</pre>', esc_html__( 'Geo-IP Test Error', 'cf7-antispam' ), $error_message && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error' )
 			);
 		}
 	}

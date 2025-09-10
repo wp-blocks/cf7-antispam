@@ -1,0 +1,35 @@
+@use "colors";
+
+// Flamingo customization
+body.flamingo_page_flamingo_inbound {
+
+	span.flamingo-rating-label {
+		display: inline-block;
+		min-width: 24px;
+		height: 20px;
+		line-height: 20px;
+		text-align: center;
+		border-radius: 15px;
+		padding: 5px;
+
+		b {
+			color: colors.$color__white;
+			font-size: 11px;
+			text-shadow: 0 1px 1px colors.$color__text-shadow;
+			vertical-align: text-bottom;
+		}
+	}
+
+	.column {
+
+		&-d8 {
+			width: 120px;
+			text-align: center;
+		}
+
+		&-resend {
+			width: 180px;
+			text-align: right;
+		}
+	}
+}

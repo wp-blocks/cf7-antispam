@@ -2,7 +2,7 @@
 	"name": "cf7-antispam",
 	"author": "Erik Golinelli <erik@codekraft.it>",
 	"license": "GPL-2.0-only",
-	"version": "0.6.4",
+	"version": "0.6.5",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
@@ -25,9 +25,10 @@
 		"plugin-zip": "wp-scripts plugin-zip",
 		"postplugin----zip": "wp-env run cli --env-cwd=wp-content/plugins/cf7-antispam \"composer install\"",
 		"lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
-		"lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
+		"lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
 		"packages-update": "wp-scripts packages-update",
 		"wp-env:start": "wp-env start",
+		"wp-env:xdebug": "wp-env start --xdebug --phpmyadminPort 15553",
 		"wp-env:stop": "wp-env stop",
 		"wp-env:destroy": "wp-env destroy",
 		"test:e2e": "wp-scripts test-playwright",
@@ -50,11 +51,12 @@
 		"@wordpress/env": "^10.26.0",
 		"@wordpress/eslint-plugin": "^22.12.0",
 		"@wordpress/scripts": "^30.19.0",
+		"@wp-blocks/make-pot": "^1.6.2",
 		"chart.js": "^4.5.0",
 		"husky": "^9.1.7",
 		"prettier": "^3.6.2",
-		"typescript": "^5.8.3",
-		"@wp-blocks/make-pot": "^1.6.2"
+		"@wordpress/api-fetch": "^7.30.0",
+		"typescript": "^5.8.3"
 	},
 	"engines": {
 		"node": ">=16.0.0",
