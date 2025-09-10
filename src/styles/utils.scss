@@ -1,0 +1,69 @@
+@use "colors";
+
+.cf7-antispam-admin {
+	// utils
+	.ellipsis {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	.hidden,
+	&.hidden {
+		display: none;
+	}
+
+	// extra
+	.monospace {
+		font-family: monospace;
+	}
+
+	.fit-center {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.cf7a-card {
+		background: colors.$color__white;
+		border: 1px solid colors.$color__white-smoke;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 20px;
+		box-shadow: 0 2px 4px colors.$color__shadow;
+
+		.title {
+			margin-top: 2rem;
+			padding-bottom: .25rem;
+			border-bottom: 2px solid colors.$color__white-smoke;
+		}
+	}
+
+	.cf7a-alert-button {
+		background: colors.$color__danger;
+		color: colors.$color__white;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 4px;
+		cursor: pointer;
+		margin-right: 10px;
+		margin-bottom: 10px;
+
+		&:hover {
+			background: colors.$color__danger-hover;
+		}
+	}
+
+	.alert {
+		color: colors.$color__alert;
+
+		&.label {
+			font-size: 12px;
+		}
+	}
+
+	.info {
+		color: colors.$color__info;
+	}
+}

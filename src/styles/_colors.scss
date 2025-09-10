@@ -1,0 +1,42 @@
+// VARS - Uniform Color Variables
+$color__white: #fff;
+$color__black: #000;
+$color__white-smoke: #f3f3f3;
+$color__light-grey: #ccc;
+$color__medium-grey: #666;
+$color__dark-grey: #575757;
+$color__very-light-grey: #f8f9fa;
+$color__border-grey: #eee;
+$color__light-background: #f1f1f1;
+$color__hover-grey: #e8e8e8;
+$color__text-grey: #333;
+$color__muted-text: #6c757d;
+$color__debug-background: #f0f0f0;
+$color__border-light: #dee2e6;
+$color__background-light: #e9ecef;
+
+$color__red: #f44336;
+$color__danger: #dc3545;
+$color__danger-hover: #c82333;
+$color__danger-background: #fff5f5;
+$color__orange: #ff5722;
+$color__orange-light: #fd7e14;
+$color__yellow: #ffc107;
+$color__yellow-background: #fff6db;
+$color__yellow-border: #edc03b;
+$color__green: #8bc34a;
+$color__blue: #008bff;
+$color__dark-blue: #31314b;
+$color__purple: #6f42c1;
+$color__dark: #343a40;
+$color__text-dark: #040404;
+$color__shadow: rgba(0, 0, 0, 0.1);
+$color__text-shadow: rgba(0, 0, 0, 0.3);
+
+// Semantic Colors
+$color__primary: $color__orange;
+$color__error: $color__red;
+$color__alert: $color__orange;
+$color__warn: $color__yellow;
+$color__success: $color__green;
+$color__info: $color__blue;

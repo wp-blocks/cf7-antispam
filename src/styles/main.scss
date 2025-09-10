@@ -1,0 +1,311 @@
+@use "sass:color";
+@use "colors";
+@use "utils";
+@use "flamingo";
+@use "tabs";
+@use "../charts/charts";
+@use "../settings/settings";
+
+// Plugin Admin style
+.cf7-antispam-admin {
+
+	/* Widget Stats */
+	.cf7a-stats-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 2rem;
+		margin-bottom: 30px;
+
+		@media (max-width: 768px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.cf7a-stat-card {
+		background: colors.$color__white;
+		border: 1px solid colors.$color__white-smoke;
+		border-radius: 8px;
+		padding: 20px;
+		text-align: center;
+		box-shadow: 0 2px 4px colors.$color__shadow;
+
+		&.cf7a-stat-card-wide {
+			grid-column: span 2;
+			text-align: left;
+
+			@media (max-width: 768px) {
+				grid-column: span 1;
+			}
+		}
+	}
+
+	// Dashboard widget B8 Wordlist
+	.cf7a-wordlist-breakdown {
+		display: flex;
+		gap: 30px;
+		flex-wrap: wrap;
+
+		.cf7a-wordlist-column {
+			flex: 1 1 45%;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+
+			h4 {
+				font-size: 1em;
+				font-weight: 600;
+				color: colors.$color__medium-grey;
+				margin: 0 0 10px 0;
+				padding-bottom: 4px;
+				border-bottom: 1px solid colors.$color__white-smoke;
+			}
+		}
+
+		.cf7a-word-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+			background: colors.$color__very-light-grey;
+			border-radius: 4px;
+
+			.cf7a-word-name {
+				font-weight: 500;
+				color: colors.$color__medium-grey;
+				flex: 1;
+				margin-right: 10px;
+				@extend .ellipsis;
+			}
+
+			.cf7a-word-count {
+				font-weight: 700;
+				color: colors.$color__text-grey;
+			}
+		}
+	}
+
+	.cf7a-wordlist-column:first-child .cf7a-word-item {
+		border-left: 4px solid colors.$color__danger; // spam -> red
+	}
+
+	.cf7a-wordlist-column:last-child .cf7a-word-item {
+		border-left: 4px solid colors.$color__success; // ham -> green
+	}
+
+	// Plugin Dashboard widget
+	.cf7a-stat-card {
+		.cf7a-status-item,
+		.cf7a-reason-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+			background: colors.$color__very-light-grey;
+			border-radius: 4px;
+		}
+
+		.cf7a-status-count,
+		.cf7a-reason-count {
+			font-weight: 700;
+			color: colors.$color__text-grey;
+		}
+
+		.cf7a-reason-name {
+			font-weight: 500;
+			color: #555;
+			flex: 1;
+			margin-right: 10px;
+		}
+
+		.cf7a-reason-summary {
+			background: colors.$color__background-light;
+			border-top: 1px solid colors.$color__border-light;
+			margin-top: 5px;
+
+			.cf7a-reason-name,
+			.cf7a-reason-count {
+				color: colors.$color__muted-text;
+			}
+		}
+	}
+
+	// Plugin Dashboard widget - Warning Count Ranges
+	.cf7a-stat-recap {
+		padding-top: 2rem;
+		padding-bottom: 2rem;
+
+		.cf7a-stat-number {
+			font-size: 2.5em;
+			font-weight: 700;
+			color: colors.$color__text-grey;
+			margin-bottom: 10px;
+		}
+
+		.cf7a-stat-label {
+			font-size: 1.1em;
+			color: colors.$color__medium-grey;
+			font-weight: 500;
+			margin-bottom: 15px;
+		}
+	}
+
+	// Plugin Dashboard widget - Top Block Reasons
+	.cf7a-status-breakdown,
+	.cf7a-reasons-breakdown {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.cf7a-status-breakdown {
+
+		.cf7a-status-badge {
+			padding: 4px 8px;
+			border-radius: 12px;
+			font-size: 0.9em;
+			font-weight: 500;
+			color: colors.$color__white;
+		}
+
+		/* Range-based color coding */
+		.cf7a-range-1_5 {
+			background-color: colors.$color__success;
+		}
+
+		/* Green - Low warnings */
+		.cf7a-range-6_10 {
+			background-color: colors.$color__yellow;
+			color: colors.$color__black;
+		}
+
+		/* Yellow - Medium warnings */
+		.cf7a-range-11_25 {
+			background-color: colors.$color__orange-light;
+		}
+
+		/* Orange - High warnings */
+		.cf7a-range-26_50 {
+			background-color: colors.$color__danger;
+		}
+
+		/* Red - Very high warnings */
+		.cf7a-range-51_100 {
+			background-color: colors.$color__purple;
+		}
+
+		/* Purple - Extremely high warnings */
+		.cf7a-range-100plus {
+			background-color: colors.$color__dark;
+		}
+
+		/* Dark - Maximum warnings */
+		.cf7a-range-100plus {
+			background-color: colors.$color__black;
+			color: colors.$color__white;
+		}
+	}
+
+	/* TOOLS - Danger Zone style*/
+	.cf7a-danger-zone {
+		border: 2px solid colors.$color__danger;
+		border-radius: 8px;
+		padding: 20px;
+		margin-top: 20px;
+		background: colors.$color__danger-background;
+
+		h3 {
+			color: colors.$color__danger;
+			margin-top: 0;
+		}
+	}
+
+	/* Blacklist info Tab */
+	.blacklist-table {
+		display: block;
+		max-width: 100%;
+		width: 100%;
+
+		div.row {
+			display: flex;
+			font-size: 12px;
+			margin-bottom: 8px;
+			padding-bottom: 8px;
+			border-bottom: 1px solid color.adjust(colors.$color__white, $lightness: -4%);
+
+			&:last-child {
+				border: 0;
+			}
+
+			.status {
+				width: 50px;
+				margin-right: 8px;
+
+				.ico {
+					display: inline-block;
+					font-family: monospace;
+					text-align: center;
+					border-radius: 50%;
+					width: 40px;
+					height: 40px;
+					line-height: 30px;
+					box-sizing: border-box;
+					padding: 5px;
+					margin: 0;
+					color: colors.$color__white;
+					font-size: 20px;
+					font-weight: 700;
+					text-shadow: 0 1px 1px colors.$color__text-shadow;
+				}
+			}
+
+			.ip {
+				font-family: monospace;
+				font-weight: 700;
+				margin: 0;
+
+				.actions a {
+					transition: 0.5s;
+					color: colors.$color__light-grey;
+
+					&:hover {
+						color: colors.$color__red;
+					}
+				}
+			}
+
+			.data {
+				display: block;
+				max-width: 400px;
+				font-size: 11px;
+				color: colors.$color__medium-grey;
+
+				b {
+					color: colors.$color__black;
+				}
+			}
+		}
+	}
+
+	/* DNSBL info Tab */
+	.dnsbl_table {
+		width: 100%;
+	}
+
+	/* Debug Tab */
+	.card-debug {
+		.codeblock {
+			background: #f1f1f1;
+			border: 1px solid #ccc;
+			padding: 10px;
+			margin: 10px 0;
+			border-radius: 3px;
+			overflow: auto;
+
+			code {
+				background: transparent;
+				padding: 0;
+				margin: 0;
+			}
+		}
+	}
+}
