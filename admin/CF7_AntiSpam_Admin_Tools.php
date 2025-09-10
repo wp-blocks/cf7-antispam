@@ -34,6 +34,16 @@ class CF7_AntiSpam_Admin_Tools {
 		set_transient( 'cf7a_notice', $notice );
 	}
 
+	public static function cf7a_export_blacklist() {
+		global $wpdb;
+		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC" );
+		foreach ( $blacklisted as $row ) {
+			$meta = unserialize( $row->meta );
+			$row->meta = $meta;
+		}
+		return $blacklisted;
+	}
+
 	/**
 	 * It handles the actions that are triggered by the user
 	 */
