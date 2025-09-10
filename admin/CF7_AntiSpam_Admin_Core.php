@@ -3,7 +3,6 @@
 namespace CF7_AntiSpam\Admin;
 
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
-use WP_Query;
 
 /**
  * The admin-specific functionality of the plugin.
@@ -159,7 +158,6 @@ class CF7_AntiSpam_Admin_Core {
 	 * @since    0.1.0
 	 */
 	public function enqueue_styles() {
-
 		/**
 		 *
 		 * An instance of this class should be passed to the run() function
@@ -170,7 +168,6 @@ class CF7_AntiSpam_Admin_Core {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
 		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), $this->version );
 	}
 
@@ -226,162 +223,7 @@ class CF7_AntiSpam_Admin_Core {
 	 */
 	public function cf7a_dashboard_widget() {
 		global $wp_meta_boxes;
-		wp_add_dashboard_widget( 'cf7a-widget', __( 'Stats for CF7 Antispam', 'cf7-antispam' ), array( $this, 'cf7a_flamingo_recap' ) );
-	}
-
-	/**
-	 * Prints a widget with a chart displaying spam and ham mails received
-	 *
-	 * It queries the database for all the emails received in the last week, then it creates two lists: one with the number of
-	 * emails received per day, and one with the number of emails received per type (ham or spam)
-	 */
-	public function cf7a_flamingo_recap() {
-		$max_mail_count = apply_filters( 'cf7a_dashboard_max_mail_count', 25 );
-
-		$args = array(
-			'post_type'      => 'flamingo_inbound',
-			'post_status'    => array( 'flamingo-spam', 'publish' ),
-			'posts_per_page' => $max_mail_count,
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-			'date_query'     => array(
-				array(
-					'after' => '1 week ago',
-				),
-			),
-		);
-
-		$mail_collection = array(
-			'by_type' => array(
-				'ham'  => 0,
-				'spam' => 0,
-			),
-			'by_date' => array(),
-		);
-
-		$query = new WP_Query( $args );
-
-		if ( $query->have_posts() ) :
-			/* this is needed to parse and create a list of emails. */
-			?>
-			<div id="antispam-widget">
-				<canvas id="line-chart" width="400" height="200"></canvas>
-				<hr>
-				<canvas id="pie-chart" width="50" height="50"></canvas>
-				<div id="antispam-widget-list" class="activity-block"><h3> <?php esc_html_e( 'Last Week Emails', 'cf7-antispam' ); ?></h3><ul>
-				<?php
-				/* print the received mail list */
-
-				while ( $query->have_posts() ) :
-					$query->the_post();
-					global $post;
-
-					$is_ham = 'flamingo-spam' !== $post->post_status;
-
-					if ( wp_date( 'Y-m-d' ) > wp_date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
-						printf(
-							'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
-							get_the_date( 'Y-m-d' ),
-							admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
-							$post->ID,
-							$is_ham ? '🔵' : '🔴',
-							esc_html( get_post_meta( $post->ID, '_from' )[0] ),
-							esc_html( $post->post_title )
-						);
-					}
-
-					$today = esc_html( get_the_date( 'Y-m-d' ) );
-
-					// for each post collect the main information like spam/ham or date.
-					if ( ! isset( $mail_collection['by_date'][ $today ] ) ) {
-						$mail_collection['by_date'][ $today ] = array();
-					}
-					$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
-					$mail_collection['by_date'][ $today ][] = array( 'status' => $is_ham ? 'ham' : 'spam' );
-				endwhile;
-
-				wp_reset_postdata();
-
-				$count = array();
-
-				$mail_collection['by_date'] = array_reverse( $mail_collection['by_date'] );
-
-				/* for each date */
-				foreach ( $mail_collection['by_date'] as $date => $items ) {
-
-					/* add the date to the list if not yet added */
-					if ( ! isset( $count[ $date ] ) ) {
-						$count[ $date ] = array(
-							'ham'  => 0,
-							'spam' => 0,
-						); }
-
-					/* for each item of that date feed the count by email type */
-					foreach ( $items as $item ) {
-						'spam' === $item['status'] ? $count[ $date ]['spam'] ++ : $count[ $date ]['ham'] ++; }
-				}
-
-				/* Create two lists where the key is the date and the value is the number of mails of that type */
-				foreach ( $count as $date ) {
-					$ham[]  = $date['ham'];
-					$spam[] = $date['spam'];
-				}
-				?>
-				</ul></div>
-				<p class="community-events-footer">
-					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>"><?php esc_html_e( 'Flamingo Inbound Messages', 'flamingo' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
-					|
-					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=cf7-antispam' ) ); ?>"><?php esc_html_e( 'CF7-Antispam setup', 'cf7-antispam' ); ?><span aria-hidden="true" class="dashicons dashicons-external"></span></a>
-				</p>
-				<script>
-					var spamChartData = {
-						lineData: {
-							labels: ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_date'] ) ), array() ); ?>"],
-							datasets: [{
-								label: 'Ham',
-								backgroundColor: 'rgb(38,137,218)',
-								borderColor: 'rgb(34 113 177)',
-								tension: 0.25,
-								data: [
-									<?php
-									if ( isset( $ham ) ) {
-										echo esc_html( implode( ',', $ham ) );}
-									?>
-								],
-							},
-							{
-								label: 'Spam',
-								backgroundColor: 'rgb(255,4,0)',
-								borderColor: 'rgb(248, 49, 47)',
-								tension: 0.25,
-								data: [
-									<?php
-									if ( isset( $spam ) ) {
-										echo esc_html( implode( ',', $spam ) );
-									}
-									?>
-								],
-							}]
-						},
-						pieData: {
-							labels: ["<?php echo wp_kses( implode( '","', array_keys( $mail_collection['by_type'] ) ), array() ); ?>"],
-							datasets: [{
-								data: [<?php echo esc_html( $mail_collection['by_type']['ham'] . ', ' . $mail_collection['by_type']['spam'] ); ?>],
-								backgroundColor: [
-									'rgb(38,137,218)',
-									'rgb(248,49,47)'
-								]
-							}]
-						}
-					}
-				</script>
-			</div>
-			<?php
-		else :
-			printf(
-				'<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>%s</p></div>',
-				esc_html__( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' )
-			);
-		endif;
+		$cf7a_charts = new CF7_AntiSpam_Admin_Charts();
+		wp_add_dashboard_widget( 'cf7a-widget', __( 'Stats for CF7 Antispam', 'cf7-antispam' ), array( $cf7a_charts, 'cf7a_flamingo_widget' ) );
 	}
 }
