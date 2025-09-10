@@ -28,7 +28,7 @@
 		"lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
 		"packages-update": "wp-scripts packages-update",
 		"wp-env:start": "wp-env start",
-		"wp-env:xdebug": "wp-env start --xdebug",
+		"wp-env:xdebug": "wp-env start --xdebug --phpmyadminPort 15553",
 		"wp-env:stop": "wp-env stop",
 		"wp-env:destroy": "wp-env destroy",
 		"test:e2e": "wp-scripts test-playwright",
