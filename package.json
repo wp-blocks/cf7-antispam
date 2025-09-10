@@ -25,7 +25,7 @@
 		"plugin-zip": "wp-scripts plugin-zip",
 		"postplugin----zip": "wp-env run cli --env-cwd=wp-content/plugins/cf7-antispam \"composer install\"",
 		"lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
-		"lint:js": "wp-scripts lint-js ./src/**/*.js --fix",
+		"lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
 		"packages-update": "wp-scripts packages-update",
 		"wp-env:start": "wp-env start",
 		"wp-env:xdebug": "wp-env start --xdebug",
