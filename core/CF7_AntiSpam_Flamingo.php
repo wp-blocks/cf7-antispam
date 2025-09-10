@@ -151,7 +151,7 @@ class CF7_AntiSpam_Flamingo {
 	/**
 	 * It gets the message content from a Flamingo post
 	 *
-	 * @warning this work only if the flamingo message has the channel stored,
+	 * @warning this will work only if the flamingo message has the channel stored,
 	 * usually the contact form the contact form and its shortcode must be
 	 * configured properly (you can figure out from how in flamingo inbound you have two items e.g. Contact Form 7 / form name).
 	 *
@@ -235,19 +235,39 @@ class CF7_AntiSpam_Flamingo {
 
 		// TODO: we are skipping the mail_2 for now
 
-		// Get the mail recipient
-		$form       = WPCF7_ContactForm::get_instance( $form_id );
-		$form_props = $form->get_properties();
-		$recipient  = $form_props['mail']['recipient'];
-		if ( $form_props['mail']['recipient'] || ! empty( $flamingo_data->meta['recipient'] ) ) {
-			if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) && ! empty( $recipient ) ) {
-				if ( '[_site_admin_email]' === $recipient ) {
-					$recipient = $flamingo_data->meta['site_admin_email'];
-				} elseif ( '[_post_author]' === $recipient ) {
-					$recipient = get_option( 'post_author_email' ); // check this, not sure 🤔
-				} else {
-					$recipient = get_option( 'admin_email' );
+		// Get the mail recipient from CF7 form configuration
+		$recipient = null;
+		$form = WPCF7_ContactForm::get_instance( $form_id );
+
+		if ( !empty( $form ) ) {
+			$form_props = $form->get_properties();
+
+			if ( isset( $form_props['mail']['recipient'] ) ) {
+				$recipient = $form_props['mail']['recipient'];
+
+				// Handle special CF7 tags
+				if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) && ! empty( $recipient ) ) {
+					if ( '[_site_admin_email]' === $recipient || '[_post_author]' === $recipient ) {
+						$recipient = $flamingo_data->meta['site_admin_email'] ?? get_option( 'admin_email' );
+					} else {
+						// Handle form field references like [your-email]
+						$recipient = $this->cf7a_parse_mail_tags( $recipient, $flamingo_data );
+
+						// If still not a valid email, fallback to admin
+						if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) ) {
+							$recipient = get_option( 'admin_email' );
+						}
+					}
 				}
+			}
+		}
+
+		// Fallback to stored recipient or admin email
+		if ( empty( $recipient ) || ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) ) {
+			if ( ! empty( $flamingo_data->meta['recipient'] ) ) {
+				$recipient = $flamingo_data->meta['recipient'];
+			} else {
+				$recipient = get_option( 'admin_email' );
 			}
 		}
 
@@ -255,20 +275,50 @@ class CF7_AntiSpam_Flamingo {
 		 * Filter cf7-antispam before resend an email who was spammed
 		 *
 		 * @param string $body the mail message content
-		 * @param string  $sender  the mail message sender
-		 * @param string  $subject  the mail message subject
+		 * @param string $sender the mail message sender
+		 * @param string $subject the mail message subject
+		 * @param string $recipient the mail recipient
 		 *
 		 * @returns string the mail body content
 		 */
-		$body = apply_filters( 'cf7a_before_resend_email', $body, $sender, $subject );
+		$body = apply_filters( 'cf7a_before_resend_email', $body, $sender, $subject, $recipient );
 
-		$headers  = "From: {$recipient}\n";
+		// Set up headers correctly
+		$site_name = get_bloginfo( 'name' );
+		$from_email = get_option( 'admin_email' );
+
+		$headers  = "From: {$site_name} <{$from_email}>\n";
 		$headers .= "Content-Type: text/html\n";
 		$headers .= "X-WPCF7-Content-Type: text/html\n";
-		$headers .= "Reply-To: $sender\n";
+		$headers .= "Reply-To: {$sender}\n";
 
 		/* send the email */
 		return wp_mail( $recipient, $subject, $body, $headers );
+	}
+
+	/**
+	 * Parse CF7 mail tags in recipient field
+	 *
+	 * @param string $recipient The recipient string that may contain CF7 tags
+	 * @param Flamingo_Inbound_Message $flamingo_data The flamingo message data
+	 * @return string The parsed recipient email
+	 */
+	private function cf7a_parse_mail_tags( $recipient, $flamingo_data ) {
+		// Handle form field references like [your-email]
+		if ( preg_match( '/\[([^\]]+)\]/', $recipient, $matches ) ) {
+			$field_name = $matches[1];
+
+			if ( isset( $flamingo_data->fields[ $field_name ] ) ) {
+				$field_value = $flamingo_data->fields[ $field_name ];
+
+				// If it's an email field, return the email
+				if ( filter_var( $field_value, FILTER_VALIDATE_EMAIL ) ) {
+					return $field_value;
+				}
+			}
+		}
+
+		return $recipient;
 	}
 
 	/**
@@ -449,10 +499,11 @@ class CF7_AntiSpam_Flamingo {
 	 */
 	public static function flamingo_resend_column( $column, $post_id ) {
 		if ( 'resend' === $column ) {
-			$url = wp_nonce_url( add_query_arg( 'action', 'cf7a_resend_' . $post_id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
+			$nonce = wp_create_nonce( 'cf7a-nonce' );
 			printf(
-				'<a class="button cf7a_alert" data-href="%s" data-message="%s">%s</a>',
-				esc_url_raw( $url ),
+				'<button class="button cf7a_alert" data-nonce="%s" data-id="%s" data-message="%s">%s</button>',
+				$nonce,
+				$post_id,
 				esc_html__( 'Are you sure?', 'cf7-antispam' ),
 				esc_html__( 'Resend Email', 'cf7-antispam' )
 			);
