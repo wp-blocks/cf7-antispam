@@ -25,7 +25,7 @@ class CF7_AntiSpam_Admin_Tools {
 	 *
 	 * @param string  $message The message you want to display.
 	 * @param string  $type error, warning, success, info.
-	 * @param boolean $dismissible when the notice need the close button.
+	 * @param boolean $dismissible when the notice needs the close button.
 	 */
 	public static function cf7a_push_notice( $message = 'generic', $type = 'error', $dismissible = true ) {
 		$class  = "notice notice-$type";
@@ -123,6 +123,59 @@ class CF7_AntiSpam_Admin_Tools {
 				exit();
 			}
 
+			if ( 'export-blacklist' === $action ) {
+
+				$blacklist = $this->cf7a_export_blacklist();
+
+				if ( ! empty( $blacklist ) ) {
+					// Convert to CSV format with all fields
+					$csv = "";
+
+					// Add CSV header
+					$csv .= "ID,IP,Status,Meta,Modified,Created\n";
+
+					foreach ( $blacklist as $row ) {
+						// Escape CSV values
+						$id = $row->id;
+						$ip = '"' . str_replace('"', '""', $row->ip) . '"';
+						$status = $row->status ?? '';
+
+						// Handle the metadata array - convert to JSON string for CSV
+						$meta = '';
+						if ( is_array( $row->meta ) && ! empty( $row->meta ) ) {
+							$meta = '"' . str_replace('"', '""', json_encode( $row->meta, JSON_UNESCAPED_UNICODE )) . '"';
+						} elseif ( ! empty( $row->meta ) ) {
+							$meta = '"' . str_replace('"', '""', $row->meta) . '"';
+						}
+
+						$modified = '"' . str_replace('"', '""', $row->modified ?? '') . '"';
+						$created = '"' . str_replace('"', '""', $row->created ?? '') . '"';
+
+						// Build CSV row
+						$csv .= $id . ',' . $ip . ',' . $status . ',' . $meta . ',' . $modified . ',' . $created . "\n";
+					}
+				} else {
+					// Handle empty blacklist case
+					$csv = "ID,IP,Status,Meta,Modified,Created\n";
+					$csv .= "No blacklisted IPs found\n";
+				}
+
+				// Set headers for file download
+				$filename = 'cf7-antispam-blacklist-' . date('Y-m-d-H-i-s') . '.csv';
+
+				// Set download headers
+				header('Content-Type: text/csv; charset=utf-8');
+				header('Content-Disposition: attachment; filename="' . $filename . '"');
+				header('Content-Length: ' . strlen($csv));
+				header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+				header('Pragma: no-cache');
+				header('Expires: 0');
+
+				// Output the CSV content
+				echo $csv;
+				exit();
+			}
+
 			/* Purge the blacklist */
 			if ( 'reset-blacklist' === $action ) {
 
@@ -181,37 +234,6 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 
 				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Resend an email */
-			if ( 'cf7a_resend_' === substr( $action, 0, 12 ) ) {
-				$mail_id = (int) substr( $action, 12 );
-
-				$refer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : false;
-
-				if ( $mail_id > 1 ) {
-					$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
-					$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
-
-					if ( 'empty' === $r ) {
-						/* translators: %s is the mail id. */
-						self::cf7a_push_notice( sprintf( __( 'Email id %s has an empty body', 'success cf7-antispam' ), $mail_id ) );
-						wp_safe_redirect( $refer );
-						exit();
-					}
-
-					if ( $r ) {
-						/* translators: %s is the mail id. */
-						self::cf7a_push_notice( sprintf( __( 'Email id %s sent with success', 'success cf7-antispam' ), $mail_id ) );
-						wp_safe_redirect( $refer );
-						exit();
-					}
-				}
-
-				/* translators: %s is the mail id. */
-				self::cf7a_push_notice( sprintf( __( 'Ops! something went wrong... unable to resend %s email', 'error cf7-antispam' ), $mail_id ) );
-				wp_safe_redirect( $refer );
 				exit();
 			}
 		}
