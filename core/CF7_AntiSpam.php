@@ -195,6 +195,10 @@ class CF7_AntiSpam {
 	private function load_admin() {
 		if ( is_admin() ) {
 
+			/** the rest api */
+			$rest_api = new CF7_AntiSpam_Rest_Api();
+			add_action( 'rest_api_init', array( $rest_api, 'cf7a_register_routes') );
+
 			/* It handles the actions that are triggered by the user */
 			$tools = new CF7_AntiSpam_Admin_Tools();
 			add_action( 'admin_init', array( $tools, 'cf7a_handle_actions' ), 1 );
