@@ -124,6 +124,10 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return WP_Error|WP_REST_Response A response object or a WP_Error object. The response object contains the message.
 	 */
 	public function cf7a_resend_message( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response( array( 'message' => __( 'Invalid nonce', 'cf7-antispam' ) ) );
+		}
 
 		$mail_id = intval( $request['id']);
 
