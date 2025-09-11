@@ -247,8 +247,10 @@ class CF7_AntiSpam_Flamingo {
 
 				// Handle special CF7 tags
 				if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) && ! empty( $recipient ) ) {
-					if ( '[_site_admin_email]' === $recipient || '[_post_author]' === $recipient ) {
+					if ( '[_site_admin_email]' === $recipient ) {
 						$recipient = $flamingo_data->meta['site_admin_email'] ?? get_option( 'admin_email' );
+					} elseif ('[_post_author]' === $recipient)  {
+						$recipient = $flamingo_data->meta['post_author_email'];
 					} else {
 						// Handle form field references like [your-email]
 						$recipient = $this->cf7a_parse_mail_tags( $recipient, $flamingo_data );

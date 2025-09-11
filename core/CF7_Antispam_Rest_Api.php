@@ -125,7 +125,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 */
 	public function cf7a_resend_message( $request ) {
 
-		$mail_id = (int) substr( $request['id'], 12 );
+		$mail_id = intval( $request['id']);
 
 		if ( $mail_id > 1 ) {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
