@@ -170,6 +170,28 @@ function adminSettingsHelper() {
 			});
 		}
 
+		// Rest API status
+		const restApiStatus = document.getElementById(
+			'rest-api-status'
+		) as HTMLDivElement | null;
+		if (restApiStatus) {
+			apiFetch({
+				url: '/cf7-antispam/v1/rest_api_status',
+				method: 'GET',
+			})
+				.then((response) => {
+					if (response) {
+						restApiStatus.textContent = JSON.stringify(response);
+					} else {
+						restApiStatus.textContent = 'No response';
+					}
+				})
+				.catch((error) => {
+					restApiStatus.textContent = 'Error: ' + error.message;
+					console.error('CF7A Error:', error.message, error.code);
+				});
+		}
+
 		/* on click show advanced options */
 		document
 			.getElementById('enable_advanced_settings')

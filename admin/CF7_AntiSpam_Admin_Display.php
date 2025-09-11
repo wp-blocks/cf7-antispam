@@ -610,23 +610,6 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * It displays the content of the widget (legacy method for backward compatibility)
-	 */
-	public function cf7a_display_content() {
-		// This method is kept for backward compatibility but redirects to the new tabbed interface
-		$this->render_dashboard_tab();
-	}
-
-	/**
-	 * It prints the blacklisted ip, the rating and some information, returns the plugins debug information and the
-	 * plugins debug information (legacy method for backward compatibility)
-	 */
-	public function cf7a_display_debug() {
-		// This method is kept for backward compatibility but content is now in separate tabs
-		$this->render_debug_tab();
-	}
-
-	/**
 	 * It gets the blacklisted IPs from the database and displays them in a table
 	 */
 	public static function cf7a_get_blacklisted_table() {
@@ -746,8 +729,23 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
+
+			$this->cf7a_get_debug_info_rest_api();
+
 			$this->cf7a_get_debug_info_options();
 		}
+	}
+
+	/**
+	 * It returns a string containing a formatted HTML table with the plugin's options
+	 *
+	 * @return void the HTML for the debug info options.
+	 */
+	private function cf7a_get_debug_info_rest_api() {
+		printf(
+			'<h3 class="title"><span class="dashicons dashicons-rest-api"></span> Rest API</h3><p><b>Rest API</b><div id="rest-api-status" class="waiting">%s</div></p>',
+			esc_html__( 'Waiting for Rest API Status...')
+		);
 	}
 
 	/**
