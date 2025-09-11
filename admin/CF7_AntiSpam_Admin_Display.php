@@ -173,7 +173,7 @@ class CF7_AntiSpam_Admin_Display {
 	private function render_antispam_charts() {
 		$cf7a_charts = new CF7_AntiSpam_Admin_Charts();
 
-		echo '<div class="dashboard-charts-section cf7a-stat-card cf7a-stat-card-wide">';
+		echo '<div class="cf7a-stat-card dashboard-charts-section cf7a-stat-card cf7a-stat-card-wide">';
 		echo '<h2>' . esc_html__('Email Statistics', 'cf7-antispam') . '</h2>';
 
 		$cf7a_charts->cf7a_dash_charts();
