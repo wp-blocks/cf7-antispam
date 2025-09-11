@@ -19,7 +19,7 @@ use WP_Error;
 /**
  * Handles REST API endpoints for the CF7 AntiSpam plugin
  */
-class CF7_AntiSpam_RestApi extends WP_REST_Controller {
+class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 	/**
 	 * The namespace of this controller's route.
