@@ -160,7 +160,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'cf7a_get_status' ),
-					'permission_callback' => array( $this, 'cf7a_get_status_permissions_check' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
 				),
 			)
 		);
