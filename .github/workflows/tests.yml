@@ -80,7 +80,7 @@ jobs:
         run: composer install --no-interaction --no-progress
 
       - name: Regenerate the autoloader files
-        run: composer dump-autoload
+        run: composer dump-autoload --optimize
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
