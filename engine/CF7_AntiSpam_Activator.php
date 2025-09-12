@@ -203,17 +203,6 @@ class CF7_AntiSpam_Activator {
 				cf7a_log("{$table_blacklist} table creation/update failed", 1);
 			}
 
-		} else {
-			// check if the table has the modified and created column
-			// this is needed after the upgrade to 0.7.0 that introduced the new fields
-			if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$table_blacklist} LIKE 'modified'" ) ) {
-				$cf7a_database = "ALTER TABLE `{$table_blacklist}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
-				dbDelta( $cf7a_database );
-			}
-			if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$table_blacklist} LIKE 'created'" ) ) {
-				$cf7a_database = "ALTER TABLE `{$table_blacklist}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
-				dbDelta( $cf7a_database );
-			}
 		}
 	}
 
