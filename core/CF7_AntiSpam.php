@@ -193,6 +193,10 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function load_admin() {
+
+		/** the rest api */
+		new CF7_AntiSpam_Rest_Api();
+
 		if ( is_admin() ) {
 
 			/* It handles the actions that are triggered by the user */

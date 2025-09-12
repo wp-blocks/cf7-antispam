@@ -1,4 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
+import { __ } from '@wordpress/i18n';
+
 window.addEventListener('load', adminSettingsHelper);
 
 function adminSettingsHelper() {
@@ -168,6 +170,33 @@ function adminSettingsHelper() {
 					}
 				}
 			});
+		}
+
+		// Rest API status
+		const restApiStatus = document.getElementById(
+			'rest-api-status'
+		) as HTMLDivElement | null;
+		if (restApiStatus) {
+			apiFetch({
+				path: '/cf7-antispam/v1/status',
+				method: 'GET',
+			})
+				.then((response) => {
+					if (response) {
+						const { status, version, timestamp } = response as {
+							status: string;
+							version: string;
+							timestamp: string;
+						};
+						restApiStatus.innerHTML = `<p>${__('Status', 'cf7-antispam')}: ${status}</p><p>${__('CF7 Antispam plugin version is', 'cf7-antispam')} ${version} - (${__('Request timestamp', 'cf7-antispam')}: ${timestamp})</p>`;
+					} else {
+						restApiStatus.textContent = 'No response';
+					}
+				})
+				.catch((error) => {
+					restApiStatus.textContent = 'Error: ' + error.message;
+					console.error('CF7A Error:', error.message, error.code);
+				});
 		}
 
 		/* on click show advanced options */
