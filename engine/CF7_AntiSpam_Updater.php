@@ -1,5 +1,7 @@
 <?php
 
+namespace CF7_AntiSpam\Engine;
+
 class CF7_AntiSpam_Updater {
 
 	public $hc_version;
