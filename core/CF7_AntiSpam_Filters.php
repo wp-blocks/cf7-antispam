@@ -334,6 +334,16 @@ class CF7_AntiSpam_Filters {
 		return $validEmails;
 	}
 
+	/**
+	 * Simplify a text removing spaces and converting it to lowercase
+	 * @param $text string Text to simplify
+	 *
+	 * @return string Simplified text
+	 */
+	public function cf7a_simplify_text( $text ) {
+		return str_replace( ' ', '', strtolower( $text ) );
+	}
+
 
 	/**
 	 * CF7_AntiSpam_Filters The antispam filter
@@ -866,10 +876,10 @@ class CF7_AntiSpam_Filters {
 			if ( 1 === intval( $options['check_bad_words'] ) && '' !== $message ) {
 
 				/* to search strings into message without space and case-insensitive */
-				$message_compressed = str_replace( ' ', '', strtolower( $message ) );
+				$message_compressed = $this->cf7a_simplify_text( $message );
 
 				foreach ( $bad_words as $bad_word ) {
-					if ( false !== stripos( $message_compressed, str_replace( ' ', '', strtolower( $bad_word ) ) ) ) {
+					if ( false !== stripos( $message_compressed, $this->cf7a_simplify_text(  $bad_word ) ) )  {
 						$spam_score          += $score_bad_string;
 						$reason['bad_word'][] = $bad_word;
 					}
