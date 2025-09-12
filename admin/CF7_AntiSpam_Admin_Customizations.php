@@ -940,7 +940,9 @@ class CF7_AntiSpam_Admin_Customizations {
 				}
 
 				/* add the new scheduled event */
-				wp_schedule_event( time() + $schedule[ $new_value ]['interval'], $new_value, $cron_task );
+				$interval_seconds = $schedule[ $new_value ]['interval'];
+				$next_run = ceil(time() / $interval_seconds) * $interval_seconds;
+				wp_schedule_event( $next_run, $new_value, $cron_task );
 			}
 		} else {
 			/* Get the timestamp for the next event. */
