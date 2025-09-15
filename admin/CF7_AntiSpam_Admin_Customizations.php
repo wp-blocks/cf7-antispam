@@ -676,7 +676,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__( 'How many failed attempts before being banned', 'cf7-antispam' ) . '</p>' );
-		if ( wp_next_scheduled( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG ) {
+		if ( wp_next_scheduled( 'cf7a_cron' ) ) {
 			printf(
 				'<small class="monospace">%s %s <br/>Server time %s</small>',
 				esc_html__( 'Next scheduled unban event:', 'cf7-antispam' ),
@@ -920,19 +920,34 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * Handles WP-cron task registrations
 	 *
-	 * @param array  $input      - The post input values.
+	 * @param array  $input      - The post-input values.
 	 * @param string $input_name - The value of the input field.
 	 * @param string $cron_task  - The slug of the Post value.
-	 * @param array  $schedule   - The schedules list obtained with wp_get_schedules().
+	 * @param array  $schedule   - The schedule list obtained with wp_get_schedules().
 	 *
 	 * @return array|false the new value that the user has selected
 	 */
 	private function cf7a_input_cron_schedule( $input, $input_name, $cron_task, $schedule ) {
-		$new_value = false;
+		$new_value = $this->options[ $input_name ];
 
-		if ( ! empty( $input[ $input_name ] ) && in_array( $input[ $input_name ], array_keys( $schedule ), true ) ) {
-			if ( $this->options[ $input_name ] !== $input[ $input_name ] ) {
+		// if the value has changed
+		if ( $this->options[ $input_name ] !== $input[ $input_name ] ) {
+			// if the user has disabled the cron task
+			if ( $input[ $input_name ] === 'disabled' ) {
+
+				/* Get the timestamp for the next event. */
+				$timestamp = wp_next_scheduled( $cron_task );
+				if ( $timestamp ) {
+					wp_clear_scheduled_hook( $cron_task );
+				}
+				return 'disabled';
+			}
+
+			// if the value is not empty and is a valid schedule
+			if ( ! empty( $input[ $input_name ] ) && in_array( $input[ $input_name ], array_keys( $schedule ), true ) ) {
+				// if the user has enabled the cron task and selected a schedule
 				$new_value = $input[ $input_name ];
+
 				/* delete previous scheduled events */
 				$timestamp = wp_next_scheduled( $cron_task );
 				if ( $timestamp ) {
@@ -944,14 +959,9 @@ class CF7_AntiSpam_Admin_Customizations {
 				$next_run = ceil(time() / $interval_seconds) * $interval_seconds;
 				wp_schedule_event( $next_run, $new_value, $cron_task );
 			}
-		} else {
-			/* Get the timestamp for the next event. */
-			$timestamp = wp_next_scheduled( $cron_task );
-			if ( $timestamp ) {
-				wp_clear_scheduled_hook( $cron_task );
-			}
-			return 'disabled';
 		}
+
+		// return the new value
 		return $new_value;
 	}
 
