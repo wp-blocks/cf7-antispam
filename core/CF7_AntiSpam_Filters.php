@@ -118,40 +118,47 @@ class CF7_AntiSpam_Filters {
 	 * It adds an IP address to the blacklist.
 	 *
 	 * @param string $ip The IP address to ban.
-	 * @param array  $reason The reason why the IP is being banned.
+	 * @param array $reason The reason why the IP is being banned.
 	 * @param float  $spam_score This is the number of points that will be added to the IP's spam score.
 	 *
 	 * @return bool true if the given id was banned
 	 */
-	public function cf7a_ban_by_ip( $ip, $reason = array(), $spam_score = 1 ) {
+	public function cf7a_ban_by_ip( string $ip, array $reason = array(), $spam_score = 1 ): bool {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 
 		if ( $ip ) {
+			global $wpdb;
+
 			$ip_row = self::cf7a_blacklist_get_ip( $ip );
 
 			if ( $ip_row ) {
+				// if the ip is in the blacklist, update the status
+				$status = isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1;
 
-				global $wpdb;
-
-				$r = $wpdb->replace(
-					$wpdb->prefix . 'cf7a_blacklist',
-					array(
-						'ip'     => $ip,
-						'status' => isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1,
-						'meta'   => serialize(
-							array(
-								'reason' => $reason,
-								'meta'   => null,
-							)
-						),
-					),
-					array( '%s', '%d', '%s' )
-				);
-
-				if ( $r > - 1 ) {
-					return true;
-				}
+			} else {
+				// if the ip is not in the blacklist, add it and initialize the status
+				$status = floatval($spam_score);
 			}
+
+			$r = $wpdb->replace(
+				$wpdb->prefix . 'cf7a_blacklist',
+				array(
+					'ip'     => $ip,
+					'status' => $status,
+					'meta'   => serialize(
+						array(
+							'reason' => $reason,
+							'meta'   => null,
+						)
+					),
+				),
+				array( '%s', '%d', '%s' )
+			);
+
+			if ( $r > - 1 ) {
+				return true;
+			}
+
 		}
 
 		return false;
