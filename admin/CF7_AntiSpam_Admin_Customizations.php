@@ -1247,13 +1247,17 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_unban_after_callback() {
 		/* the list of available schedules */
-		$schedules   = array_keys( wp_get_schedules() );
-		$schedules[] = 'disabled';
+		$schedules   = wp_get_schedules();
+		$valid_schedules = array_keys( array_filter($schedules, function($s) {
+			return ! empty($s['interval']) && $s['interval'] > 0;
+		}));
+		$valid_schedules[] = 'disabled';
+
 		printf(
 			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
 			wp_kses(
 				$this->cf7a_generate_options(
-					$schedules,
+					$valid_schedules,
 					! empty( $this->options['unban_after'] ) ? $this->options['unban_after'] : ''
 				),
 				array(
