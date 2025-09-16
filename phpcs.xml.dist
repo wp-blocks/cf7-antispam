@@ -14,7 +14,7 @@
 	<!-- Usage instructions: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage -->
 	<!-- Annotated ruleset: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml -->
 	<arg value="sp"/> <!-- Show sniff and progress -->
-	<arg name="basepath" value="."/><!-- Strip the file paths down to the relevant bit -->
+	<arg name="basepath" value="./"/><!-- Strip the file paths down to the relevant bit -->
 	<arg name="extensions" value="php"/>
 	<arg name="parallel" value="100"/><!-- Enables parallel processing when available for faster results. -->
 
@@ -23,6 +23,7 @@
 	<config name="testVersion" value="5.6-"/>
 
 	<!-- Rules: WordPress Coding Standards -->
+
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards -->
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties -->
 	<config name="minimum_supported_wp_version" value="5.6"/>
@@ -56,9 +57,13 @@
 
 	<!-- What to scan -->
 	<file>.</file>
+
+	<!-- What to exclude -->
+	<exclude-pattern>/.git/*</exclude-pattern>
 	<exclude-pattern>/.github/*</exclude-pattern>
 	<exclude-pattern>/.husky/*</exclude-pattern>
 	<exclude-pattern>/assets/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
 	<exclude-pattern>/core/b8/*</exclude-pattern>
 	<exclude-pattern>/languages/*</exclude-pattern>
 	<exclude-pattern>/node_modules/*</exclude-pattern>
