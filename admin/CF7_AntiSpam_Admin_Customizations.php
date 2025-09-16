@@ -935,10 +935,9 @@ class CF7_AntiSpam_Admin_Customizations {
 			// if the user has disabled the cron task
 			if ( $input[ $input_name ] === 'disabled' ) {
 
-				/* Get the timestamp for the next event. */
-				$timestamp = wp_next_scheduled( $cron_task );
-				if ( $timestamp ) {
-					wp_clear_scheduled_hook( $cron_task );
+				/* Get the timestamp for the next event and unschedule it. */
+				while ( $timestamp = wp_next_scheduled( 'cf7a_cron' ) ) {
+					wp_unschedule_event( $timestamp, 'cf7a_cron' );
 				}
 				return 'disabled';
 			}
@@ -948,16 +947,21 @@ class CF7_AntiSpam_Admin_Customizations {
 				// if the user has enabled the cron task and selected a schedule
 				$new_value = $input[ $input_name ];
 
-				/* delete previous scheduled events */
-				$timestamp = wp_next_scheduled( $cron_task );
-				if ( $timestamp ) {
-					wp_clear_scheduled_hook( $cron_task );
+				/* delete all the previous scheduled events */
+				while ( $timestamp = wp_next_scheduled( 'cf7a_cron' ) ) {
+					wp_unschedule_event( $timestamp, 'cf7a_cron' );
 				}
 
 				/* add the new scheduled event */
-				$interval_seconds = $schedule[ $new_value ]['interval'];
-				$next_run = ceil(time() / $interval_seconds) * $interval_seconds;
-				wp_schedule_event( $next_run, $new_value, $cron_task );
+				$interval_seconds = isset( $schedule[ $new_value ]['interval'] ) ? (int) $schedule[ $new_value ]['interval'] : 0;
+
+				if ( $interval_seconds > 0 ) {
+					$next_run = time() + $interval_seconds;
+
+					wp_schedule_event( $next_run, $new_value, $cron_task );
+				} else {
+					error_log( "Unable to schedule event for " . $cron_task );
+				}
 			}
 		}
 
