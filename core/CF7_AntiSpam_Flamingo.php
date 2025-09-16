@@ -237,9 +237,9 @@ class CF7_AntiSpam_Flamingo {
 
 		// Get the mail recipient from CF7 form configuration
 		$recipient = null;
-		$form = WPCF7_ContactForm::get_instance( $form_id );
+		$form      = WPCF7_ContactForm::get_instance( $form_id );
 
-		if ( !empty( $form ) ) {
+		if ( ! empty( $form ) ) {
 			$form_props = $form->get_properties();
 
 			if ( isset( $form_props['mail']['recipient'] ) ) {
@@ -249,7 +249,7 @@ class CF7_AntiSpam_Flamingo {
 				if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) && ! empty( $recipient ) ) {
 					if ( '[_site_admin_email]' === $recipient ) {
 						$recipient = $flamingo_data->meta['site_admin_email'] ?? get_option( 'admin_email' );
-					} elseif ('[_post_author]' === $recipient)  {
+					} elseif ( '[_post_author]' === $recipient ) {
 						$recipient = $flamingo_data->meta['post_author_email'];
 					} else {
 						// Handle form field references like [your-email]
@@ -286,7 +286,7 @@ class CF7_AntiSpam_Flamingo {
 		$body = apply_filters( 'cf7a_before_resend_email', $body, $sender, $subject, $recipient );
 
 		// Set up headers correctly
-		$site_name = get_bloginfo( 'name' );
+		$site_name  = get_bloginfo( 'name' );
 		$from_email = get_option( 'admin_email' );
 
 		$headers  = "From: {$site_name} <{$from_email}>\n";
@@ -301,7 +301,7 @@ class CF7_AntiSpam_Flamingo {
 	/**
 	 * Parse CF7 mail tags in recipient field
 	 *
-	 * @param string $recipient The recipient string that may contain CF7 tags
+	 * @param string                   $recipient The recipient string that may contain CF7 tags
 	 * @param Flamingo_Inbound_Message $flamingo_data The flamingo message data
 	 * @return string The parsed recipient email
 	 */

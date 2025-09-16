@@ -118,7 +118,7 @@ class CF7_AntiSpam_Filters {
 	 * It adds an IP address to the blacklist.
 	 *
 	 * @param string $ip The IP address to ban.
-	 * @param array $reason The reason why the IP is being banned.
+	 * @param array  $reason The reason why the IP is being banned.
 	 * @param float  $spam_score This is the number of points that will be added to the IP's spam score.
 	 *
 	 * @return bool true if the given id was banned
@@ -137,7 +137,7 @@ class CF7_AntiSpam_Filters {
 
 			} else {
 				// if the ip is not in the blacklist, add it and initialize the status
-				$status = floatval($spam_score);
+				$status = floatval( $spam_score );
 			}
 
 			$r = $wpdb->replace(
@@ -158,7 +158,6 @@ class CF7_AntiSpam_Filters {
 			if ( $r > - 1 ) {
 				return true;
 			}
-
 		}
 
 		return false;
@@ -235,12 +234,12 @@ class CF7_AntiSpam_Filters {
 
 		/* removes a status count at each balcklisted ip */
 		$status_update_query = $wpdb->prepare( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
-		$updated = $wpdb->query( $status_update_query);
+		$updated             = $wpdb->query( $status_update_query );
 		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
 
 		/* when the line has 0 in status we can remove it from the blacklist  */
-		$status_update_set_zero = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0");
-		$updated = $wpdb->query( $status_update_set_zero);
+		$status_update_set_zero = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0" );
+		$updated                = $wpdb->query( $status_update_set_zero );
 		cf7a_log( "Removed $updated users from blacklist", 1 );
 
 		return true;
@@ -343,6 +342,7 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Simplify a text removing spaces and converting it to lowercase
+	 *
 	 * @param $text string Text to simplify
 	 *
 	 * @return string Simplified text
@@ -491,7 +491,7 @@ class CF7_AntiSpam_Filters {
 		if ( ! $remote_ip ) {
 			$remote_ip = $cf7_remote_ip ? $cf7_remote_ip : null;
 
-			++ $spam_score;
+			++$spam_score;
 			$spam            = true;
 			$reason['no_ip'] = 'Address field empty';
 
@@ -506,7 +506,7 @@ class CF7_AntiSpam_Filters {
 				$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
 
 				if ( false !== stripos( (string) $remote_ip, (string) $bad_ip ) ) {
-					++ $spam_score;
+					++$spam_score;
 					$spam               = true;
 					$reason['bad_ip'][] = $bad_ip;
 				}
@@ -525,11 +525,11 @@ class CF7_AntiSpam_Filters {
 		if ( $remote_ip && $options['max_attempts'] ) {
 			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
-			$max_attempts    = intval( $options['max_attempts'] );
+			$max_attempts   = intval( $options['max_attempts'] );
 
 			/* if the current ip has tried more times than allowed */
 			if ( $ip_data_status >= $max_attempts ) {
-				++ $spam_score;
+				++$spam_score;
 				$spam                        = true;
 				$reason['blacklisted score'] = $ip_data_status + $spam_score;
 
@@ -555,7 +555,7 @@ class CF7_AntiSpam_Filters {
 
 			/* get the "marker" field */
 			if ( isset( $_POST[ '_wpcf7_' . $form_class ] ) ) {
-				++ $spam_score;
+				++$spam_score;
 				$spam                = true;
 				$reason['honeyform'] = 'true';
 			}
@@ -780,7 +780,7 @@ class CF7_AntiSpam_Filters {
 
 						if ( ! empty( $geo_data ) ) {
 							/*
-							 then check if the detected country is among the allowed and disallowed languages */
+							then check if the detected country is among the allowed and disallowed languages */
 							// Check if the country is allowed by country by splitting browser headers 2nd arg since ISO is coherent
 							if ( false === $this->cf7a_check_languages_locales_allowed( $geo_data, $locales_disallowed, $locales_allowed ) ) {
 								$reason['geo_ip'] = $geoip_continent . '-' . $geoip_country;
@@ -865,7 +865,7 @@ class CF7_AntiSpam_Filters {
 				} else {
 					foreach ( $bad_user_agent_list as $bad_user_agent ) {
 						if ( false !== stripos( strtolower( $user_agent ), strtolower( $bad_user_agent ) ) ) {
-							$spam_score += $score_bad_string;
+							$spam_score            += $score_bad_string;
 							$reason['user_agent'][] = $bad_user_agent;
 						}
 					}
@@ -886,7 +886,7 @@ class CF7_AntiSpam_Filters {
 				$message_compressed = $this->cf7a_simplify_text( $message );
 
 				foreach ( $bad_words as $bad_word ) {
-					if ( false !== stripos( $message_compressed, $this->cf7a_simplify_text(  $bad_word ) ) )  {
+					if ( false !== stripos( $message_compressed, $this->cf7a_simplify_text( $bad_word ) ) ) {
 						$spam_score          += $score_bad_string;
 						$reason['bad_word'][] = $bad_word;
 					}
@@ -947,7 +947,7 @@ class CF7_AntiSpam_Filters {
 
 					$mail_tag_count = count( $input_names );
 
-					for ( $i = 0; $i < $mail_tag_count; $i ++ ) {
+					for ( $i = 0; $i < $mail_tag_count; $i++ ) {
 
 						/* check if any posted input name value has a name from the honeypot names array, if yes the bot has fallen into the trap and filled the input */
 						$has_honeypot = ! empty( $_POST[ $input_names[ $i ] ] );
@@ -1047,5 +1047,4 @@ class CF7_AntiSpam_Filters {
 
 		return true;
 	}
-
 }

@@ -238,21 +238,21 @@ class CF7_AntiSpam {
 		}
 	}
 
-    /**
-     * Register all the hooks related to the frontend area functionality
-     * of the plugin.
-     * The frontend area is loaded only if the page has a cf7 form
-     *
-     * @since    0.1.0
-     * @access   private
-     */
-    private function load_frontend() {
-        if ( ! is_admin() ) {
-            $plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
+	/**
+	 * Register all the hooks related to the frontend area functionality
+	 * of the plugin.
+	 * The frontend area is loaded only if the page has a cf7 form
+	 *
+	 * @since    0.1.0
+	 * @access   private
+	 */
+	private function load_frontend() {
+		if ( ! is_admin() ) {
+			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
-            $this->loader->add_action( 'wp', $plugin_frontend, 'setup' );
-        }
-    }
+			$this->loader->add_action( 'wp', $plugin_frontend, 'setup' );
+		}
+	}
 
 	/**
 	 * Run the loader to execute all the hooks with WordPress.

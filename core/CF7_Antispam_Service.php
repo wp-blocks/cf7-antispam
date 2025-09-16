@@ -3,7 +3,7 @@
 namespace CF7_AntiSpam\Core;
 
 /*
- The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
+The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
 functionality. */
 
 /**
@@ -44,7 +44,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	}
 
 	public function __construct() {
-		 $this->options = CF7_AntiSpam::get_options();
+		$this->options = CF7_AntiSpam::get_options();
 
 		if ( isset( $_POST['cf7a_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
 			$this->options['cf7a_enable'] = empty( $this->options['cf7a_enable'] ) ? true : ! $this->options['cf7a_enable'];
@@ -205,7 +205,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 * setup integration.
 	 */
 	public function display( $action = '' ) {
-		echo sprintf(
+		printf(
 			'<p>%s<br>%s<br>%s<br>%s%s</p>',
 			esc_html__(
 				'Antispam for Contact Form 7 is a free plugin for Contact Form 7.',
@@ -229,7 +229,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			)
 		);
 
-		echo sprintf(
+		printf(
 			'<p><strong>%s</strong></p>',
 			// phpcs:ignore
 			wpcf7_link(
@@ -239,7 +239,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		);
 
 		if ( $this->is_active() ) {
-			echo sprintf(
+			printf(
 				'<p class="dashicons-before dashicons-yes">%s</p>',
 				esc_html( __( 'CF7-Antispam is active on this site.', 'contact-form-7' ) )
 			);

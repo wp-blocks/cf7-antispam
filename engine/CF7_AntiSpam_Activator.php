@@ -195,14 +195,13 @@ class CF7_AntiSpam_Activator {
 	             UNIQUE KEY `id` (`ip`)
 			) $charset_collate;";
 
-			$result = dbDelta($cf7a_database);
+			$result = dbDelta( $cf7a_database );
 
-			if ($result) {
-				cf7a_log("{$table_blacklist} table creation/update succeeded", 2);
+			if ( $result ) {
+				cf7a_log( "{$table_blacklist} table creation/update succeeded", 2 );
 			} else {
-				cf7a_log("{$table_blacklist} table creation/update failed", 1);
+				cf7a_log( "{$table_blacklist} table creation/update failed", 1 );
 			}
-
 		}
 	}
 
@@ -245,7 +244,10 @@ class CF7_AntiSpam_Activator {
 
 		cf7a_log( $new_options, 1 );
 
-		CF7_AntiSpam_Admin_Tools::cf7a_push_notice( esc_html__( 'CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ), 'success cf7-antispam' );
+		CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
+			esc_html__( 'CF7 AntiSpam updated successful! Please flush cache to refresh hidden form data', 'cf7-antispam' ),
+			'success cf7-antispam'
+		);
 	}
 
 	/**
@@ -292,5 +294,4 @@ class CF7_AntiSpam_Activator {
 			self::activate();
 		}
 	}
-
 }

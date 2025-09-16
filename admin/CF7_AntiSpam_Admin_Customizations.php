@@ -960,7 +960,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 					wp_schedule_event( $next_run, $new_value, $cron_task );
 				} else {
-					error_log( "Unable to schedule event for " . $cron_task );
+					error_log( 'Unable to schedule event for ' . $cron_task );
 				}
 			}
 		}
@@ -1059,7 +1059,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
 
-
 		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
 		/* browser language check enabled */
@@ -1076,7 +1075,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
 			: array();
 
-
 		/* max attempts before ban */
 		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 3;
 
@@ -1090,7 +1088,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['unban_after'] = $this->cf7a_input_cron_schedule( $input, 'unban_after', 'cf7a_cron', $schedule );
 
 		/*
-		 report by mail */
+		report by mail */
 		// $new_input['mail_report'] = $this->cf7a_input_cron_schedule( $schedule, 'mail_report', 'cf7a_cron_report' );
 
 		/* bad ip */
@@ -1162,28 +1160,28 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Advanced settings */
 		$new_input['enable_advanced_settings'] = isset( $input['enable_advanced_settings'] ) ? 1 : 0;
-		$score_preset = $this->cf7a_get_scores_presets();
+		$score_preset                          = $this->cf7a_get_scores_presets();
 
-		$preset_changed = ($input['cf7a_score_preset'] !== $this->options['cf7a_score_preset']);
-		$scores_changed = ($input['score'] != $this->options['score']);
+		$preset_changed = ( $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] );
+		$scores_changed = ( $input['score'] != $this->options['score'] );
 
 		/* Scoring: if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
-		if ($preset_changed) {
+		if ( $preset_changed ) {
 			// User selected a different preset - use preset values
-			if (in_array($input['cf7a_score_preset'], ['weak', 'standard', 'secure'])) {
-				$new_input['score'] = $score_preset[$input['cf7a_score_preset']];
+			if ( in_array( $input['cf7a_score_preset'], array( 'weak', 'standard', 'secure' ) ) ) {
+				$new_input['score']             = $score_preset[ $input['cf7a_score_preset'] ];
 				$new_input['cf7a_score_preset'] = $input['cf7a_score_preset'];
 			}
-		} elseif ($scores_changed) {
+		} elseif ( $scores_changed ) {
 			// User manually changed scores (preset didn't change) - use custom values
-			$new_input['score']['_fingerprinting'] = isset($input['score']['_fingerprinting']) ? floatval($input['score']['_fingerprinting']) : 0.25;
-			$new_input['score']['_time']           = isset($input['score']['_time']) ? floatval($input['score']['_time']) : 1;
-			$new_input['score']['_bad_string']     = isset($input['score']['_bad_string']) ? floatval($input['score']['_bad_string']) : 1;
-			$new_input['score']['_dnsbl']          = isset($input['score']['_dnsbl']) ? floatval($input['score']['_dnsbl']) : 0.2;
-			$new_input['score']['_honeypot']       = isset($input['score']['_honeypot']) ? floatval($input['score']['_honeypot']) : 1;
-			$new_input['score']['_detection']      = isset($input['score']['_detection']) ? floatval($input['score']['_detection']) : 5;
-			$new_input['score']['_warn']           = isset($input['score']['_warn']) ? floatval($input['score']['_warn']) : 1;
-			$new_input['cf7a_score_preset'] = 'custom';
+			$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting'] ) : 0.25;
+			$new_input['score']['_time']           = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time'] ) : 1;
+			$new_input['score']['_bad_string']     = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string'] ) : 1;
+			$new_input['score']['_dnsbl']          = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl'] ) : 0.2;
+			$new_input['score']['_honeypot']       = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot'] ) : 1;
+			$new_input['score']['_detection']      = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection'] ) : 5;
+			$new_input['score']['_warn']           = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn'] ) : 1;
+			$new_input['cf7a_score_preset']        = 'custom';
 		}
 
 		/* Customizations */
@@ -1251,10 +1249,15 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_unban_after_callback() {
 		/* the list of available schedules */
-		$schedules   = wp_get_schedules();
-		$valid_schedules = array_keys( array_filter($schedules, function($s) {
-			return ! empty($s['interval']) && $s['interval'] > 0;
-		}));
+		$schedules         = wp_get_schedules();
+		$valid_schedules   = array_keys(
+			array_filter(
+				$schedules,
+				function ( $s ) {
+					return ! empty( $s['interval'] ) && $s['interval'] > 0;
+				}
+			)
+		);
 		$valid_schedules[] = 'disabled';
 
 		printf(
@@ -1741,7 +1744,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_score_preset_callback() {
 		$options = ! empty( $this->options['enable_advanced_settings'] )
-				   || ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] )
+					|| ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] )
 			? array( 'weak', 'standard', 'secure', 'custom' )
 			: array( 'weak', 'standard', 'secure' );
 		printf(

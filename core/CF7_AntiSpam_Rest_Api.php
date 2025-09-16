@@ -57,7 +57,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * Validate and sanitize API parameters.
 	 *
 	 * @since    0.6.5
-	 * @param    mixed $value   The value to validate
+	 * @param    mixed  $value   The value to validate
 	 * @param    string $type   The expected type
 	 * @return   mixed|WP_Error
 	 */
@@ -119,6 +119,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 	/**
 	 * Resend a specific email.
+	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
 	 * @return WP_Error|WP_REST_Response A response object or a WP_Error object. The response object contains the message.
@@ -129,7 +130,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			return rest_ensure_response( array( 'message' => __( 'Invalid nonce', 'cf7-antispam' ) ) );
 		}
 
-		$mail_id = intval( $request['id']);
+		$mail_id = intval( $request['id'] );
 
 		if ( $mail_id > 1 ) {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
@@ -137,17 +138,17 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 			if ( 'empty' === $r ) {
 				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s has an empty body', 'success cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s has an empty body', 'cf7-antispam' ), $mail_id ) ) );
 			}
 
 			if ( $r ) {
 				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s sent with success', 'success cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s sent with success', 'cf7-antispam' ), $mail_id ) ) );
 			}
 		}
 
 		/* translators: %s is the mail id. */
-		return rest_ensure_response( array( 'message' => sprintf( __( 'Ops! something went wrong... unable to resend email with id %s', 'error cf7-antispam' ), $mail_id ) ) );
+		return rest_ensure_response( array( 'message' => sprintf( __( 'Ops! something went wrong... unable to resend email with id %s', 'cf7-antispam' ), $mail_id ) ) );
 	}
 
 	/**
@@ -178,20 +179,20 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 					'callback'            => array( $this, 'cf7a_resend_message' ),
 					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
 					'args'                => array(
-						'id' => array(
+						'id'    => array(
 							'required'          => true,
 							'type'              => 'string',
-							'validate_callback' => function( $param ) {
+							'validate_callback' => function ( $param ) {
 								return $this->cf7a_validate_param( $param );
 							},
 						),
 						'nonce' => array(
 							'required'          => true,
 							'type'              => 'string',
-							'validate_callback' => function( $param ) {
+							'validate_callback' => function ( $param ) {
 								return $this->cf7a_validate_param( $param );
 							},
-						)
+						),
 					),
 				),
 			)

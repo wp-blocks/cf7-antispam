@@ -155,5 +155,4 @@ class CF7_AntiSpam_B8 {
 			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::HAM );
 		}
 	}
-
 }

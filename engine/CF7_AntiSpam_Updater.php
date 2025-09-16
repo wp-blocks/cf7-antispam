@@ -26,28 +26,28 @@ class CF7_AntiSpam_Updater {
 	public function may_do_updates() {
 		$updated = false;
 
-		// Check if we need to update from older versions
+		/* Check if we need to update from older versions */
 		if ( version_compare( $this->hc_version, $this->current_options['cf7a_version'], '>' ) ) {
 
-			// Update to 0.6.0 if needed
+			/* Update to 0.6.0 if needed */
 			if ( version_compare( $this->current_options['cf7a_version'], '0.6.0', '<' ) ) {
 				$new_options = $this->update_db_procedure_to_0_6_0();
 				if ( ! empty( $new_options ) ) {
 					$this->current_options = $new_options;
-					$updated = true;
+					$updated               = true;
 				}
 			}
 
-			// Update to 0.7.0 if needed
+			/* Update to 0.7.0 if needed */
 			if ( version_compare( $this->current_options['cf7a_version'], '0.7.0', '<' ) ) {
 				$db_updated = $this->update_db_procedure_to_0_7_0();
 				if ( $db_updated ) {
 					$this->current_options['cf7a_version'] = $this->hc_version;
-					$updated = true;
+					$updated                               = true;
 				}
 			}
 
-			// Update the version to current if any updates were made
+			/* Update the version to current if any updates were made */
 			if ( $updated ) {
 				$this->current_options['cf7a_version'] = $this->hc_version;
 				return update_option( 'cf7a_options', $this->current_options );
@@ -89,7 +89,7 @@ class CF7_AntiSpam_Updater {
 		global $wpdb;
 
 		$table_blacklist = $wpdb->prefix . 'cf7a_blacklist';
-		$updated = false;
+		$updated         = false;
 
 		// Check if the table exists first
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table_blacklist}'" ) !== $table_blacklist ) {
@@ -101,7 +101,7 @@ class CF7_AntiSpam_Updater {
 
 		// Check if the 'modified' column exists, if not add it
 		if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$table_blacklist} LIKE 'modified'" ) ) {
-			$sql = "ALTER TABLE `{$table_blacklist}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
+			$sql    = "ALTER TABLE `{$table_blacklist}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
 			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {
@@ -114,7 +114,7 @@ class CF7_AntiSpam_Updater {
 
 		// Check if the 'created' column exists, if not add it
 		if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$table_blacklist} LIKE 'created'" ) ) {
-			$sql = "ALTER TABLE `{$table_blacklist}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
+			$sql    = "ALTER TABLE `{$table_blacklist}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
 			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {
@@ -127,7 +127,7 @@ class CF7_AntiSpam_Updater {
 			// if flamingo is enabled, try to get the created date from the flamingo post meta
 			if ( class_exists( 'Flamingo' ) ) {
 				// get all flamingo posts
-				//TODO: get the post by ip addr and get the related item of the backlist table, then copy the flamingo dates to the item found
+				// TODO: get the post by ip addr and get the related item of the backlist table, then copy the flamingo dates to the item found
 			}
 		}
 

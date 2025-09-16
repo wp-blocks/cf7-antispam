@@ -62,7 +62,7 @@ function cf7a_strip_weight( $str ) {
 function cf7a_init_languages_locales_array( $accept_language ) {
 	return array_reduce(
 		explode( ',', $accept_language ),
-		function( $res, $el ) {
+		function ( $res, $el ) {
 			$res[] = cf7a_strip_weight( $el );
 			return $res;
 		},
@@ -81,7 +81,7 @@ function cf7a_init_languages_locales_array( $accept_language ) {
 function cf7a_get_browser_languages_locales_array( $languages_locales ) {
 	$result = array_reduce(
 		explode( ',', $languages_locales ),
-		function( $res, $el ) {
+		function ( $res, $el ) {
 			$el = cf7a_strip_weight( $el );
 			if ( strlen( $el ) >= 5 ) {
 				/* split into key: language , value: locale */
@@ -345,44 +345,50 @@ function cf7a_format_status( $rank ) {
  * @return false|string Compress arrays into "key:value; " pair
  */
 function cf7a_compress_array( $array, $is_html = false ) {
-    if ( ! is_array( $array ) ) {
-	    return false;
-    }
-    $is_html = intval( $is_html );
+	if ( ! is_array( $array ) ) {
+		return false;
+	}
+	$is_html = intval( $is_html );
 
-    return implode(
-	    '; ',
-	    array_map(
-		    function ( $v, $k ) use ( $is_html ) {
-			    // Handles values by type
-			    if ( is_array( $v ) ) {
-				    if ( empty( $v ) ) {
-					    $v = '[]';
-				    } else {
-					    // Converte array in formato leggibile
-					    $v = '[' . implode( ', ', array_map( function( $item ) {
-							    return is_array( $item ) ? json_encode( $item ) : (string) $item;
-						    }, $v ) ) . ']';
-				    }
-			    } elseif ( is_object( $v ) ) {
-				    $v = json_encode( $v );
-			    } elseif ( is_bool( $v ) ) {
-				    $v = $v ? 'true' : 'false';
-			    } elseif ( is_null( $v ) ) {
-				    $v = 'null';
-			    }
+	return implode(
+		'; ',
+		array_map(
+			function ( $v, $k ) use ( $is_html ) {
+				// Handles values by type
+				if ( is_array( $v ) ) {
+					if ( empty( $v ) ) {
+						$v = '[]';
+					} else {
+						// Converte array in formato leggibile
+						$v = '[' . implode(
+							', ',
+							array_map(
+								function ( $item ) {
+									return is_array( $item ) ? json_encode( $item ) : (string) $item;
+								},
+								$v
+							)
+						) . ']';
+					}
+				} elseif ( is_object( $v ) ) {
+					$v = json_encode( $v );
+				} elseif ( is_bool( $v ) ) {
+					$v = $v ? 'true' : 'false';
+				} elseif ( is_null( $v ) ) {
+					$v = 'null';
+				}
 
 				// Handles HTML output
-			    if ( $is_html ) {
-				    return sprintf( '<b>%s</b>: %s', esc_html( $k ), esc_html( $v ) );
-			    } else {
-				    return sprintf( '%s: %s', $k, $v );
-			    }
-		    },
-		    $array,
-		    array_keys( $array )
-	    )
-    );
+				if ( $is_html ) {
+					return sprintf( '<b>%s</b>: %s', esc_html( $k ), esc_html( $v ) );
+				} else {
+					return sprintf( '%s: %s', $k, $v );
+				}
+			},
+			$array,
+			array_keys( $array )
+		)
+	);
 }
 
 /**

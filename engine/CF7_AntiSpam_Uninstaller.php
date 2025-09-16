@@ -113,5 +113,4 @@ class CF7_AntiSpam_Uninstaller {
 			self::cf7a_plugin_drop_options();
 		}
 	}
-
 }

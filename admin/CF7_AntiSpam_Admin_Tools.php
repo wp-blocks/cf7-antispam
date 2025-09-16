@@ -38,7 +38,7 @@ class CF7_AntiSpam_Admin_Tools {
 		global $wpdb;
 		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC" );
 		foreach ( $blacklisted as $row ) {
-			$meta = unserialize( $row->meta );
+			$meta      = unserialize( $row->meta );
 			$row->meta = $meta;
 		}
 		return $blacklisted;
@@ -129,47 +129,47 @@ class CF7_AntiSpam_Admin_Tools {
 
 				if ( ! empty( $blacklist ) ) {
 					// Convert to CSV format with all fields
-					$csv = "";
+					$csv = '';
 
 					// Add CSV header
 					$csv .= "ID,IP,Status,Meta,Modified,Created\n";
 
 					foreach ( $blacklist as $row ) {
 						// Escape CSV values
-						$id = $row->id;
-						$ip = '"' . str_replace('"', '""', $row->ip) . '"';
+						$id     = $row->id;
+						$ip     = '"' . str_replace( '"', '""', $row->ip ) . '"';
 						$status = $row->status ?? '';
 
 						// Handle the metadata array - convert to JSON string for CSV
 						$meta = '';
 						if ( is_array( $row->meta ) && ! empty( $row->meta ) ) {
-							$meta = '"' . str_replace('"', '""', json_encode( $row->meta, JSON_UNESCAPED_UNICODE )) . '"';
+							$meta = '"' . str_replace( '"', '""', json_encode( $row->meta, JSON_UNESCAPED_UNICODE ) ) . '"';
 						} elseif ( ! empty( $row->meta ) ) {
-							$meta = '"' . str_replace('"', '""', $row->meta) . '"';
+							$meta = '"' . str_replace( '"', '""', $row->meta ) . '"';
 						}
 
-						$modified = '"' . str_replace('"', '""', $row->modified ?? '') . '"';
-						$created = '"' . str_replace('"', '""', $row->created ?? '') . '"';
+						$modified = '"' . str_replace( '"', '""', $row->modified ?? '' ) . '"';
+						$created  = '"' . str_replace( '"', '""', $row->created ?? '' ) . '"';
 
 						// Build CSV row
 						$csv .= $id . ',' . $ip . ',' . $status . ',' . $meta . ',' . $modified . ',' . $created . "\n";
 					}
 				} else {
 					// Handle empty blacklist case
-					$csv = "ID,IP,Status,Meta,Modified,Created\n";
+					$csv  = "ID,IP,Status,Meta,Modified,Created\n";
 					$csv .= "No blacklisted IPs found\n";
 				}
 
 				// Set headers for file download
-				$filename = 'cf7-antispam-blacklist-' . date('Y-m-d-H-i-s') . '.csv';
+				$filename = 'cf7-antispam-blacklist-' . date( 'Y-m-d-H-i-s' ) . '.csv';
 
 				// Set download headers
-				header('Content-Type: text/csv; charset=utf-8');
-				header('Content-Disposition: attachment; filename="' . $filename . '"');
-				header('Content-Length: ' . strlen($csv));
-				header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-				header('Pragma: no-cache');
-				header('Expires: 0');
+				header( 'Content-Type: text/csv; charset=utf-8' );
+				header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+				header( 'Content-Length: ' . strlen( $csv ) );
+				header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
+				header( 'Pragma: no-cache' );
+				header( 'Expires: 0' );
 
 				// Output the CSV content
 				echo $csv;

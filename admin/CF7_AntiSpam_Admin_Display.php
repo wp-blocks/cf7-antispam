@@ -59,28 +59,28 @@ class CF7_AntiSpam_Admin_Display {
 		?>
 		<div class="cf7a-nav-tab-wrapper">
 			<a href="<?php echo esc_url( $this->get_tab_url( 'dashboard' ) ); ?>"
-				 class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( $this->get_tab_url( 'settings' ) ); ?>"
-				 class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Settings', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( $this->get_tab_url( 'blacklist' ) ); ?>"
-				 class="cf7a-nav-tab tab-blacklist <?php echo $active_tab === 'blacklist' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-blacklist <?php echo $active_tab === 'blacklist' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blacklist', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( $this->get_tab_url( 'tools' ) ); ?>"
-				 class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( $this->get_tab_url( 'import-export' ) ); ?>"
-				 class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import/Export', 'cf7-antispam' ); ?>
 			</a>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<a href="<?php echo esc_url( $this->get_tab_url( 'debug' ) ); ?>"
-					 class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
+					class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
 					<span class="dashicons dashicons-code-standards"></span> <?php esc_html_e( 'Debug', 'cf7-antispam' ); ?>
 				</a>
 			<?php endif; ?>
@@ -123,12 +123,11 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private function render_dashboard_tab() {
 
-		 $this->render_one_time_alert_banner();
+		$this->render_one_time_alert_banner();
 
-		 $this->render_antispam_charts();
+		$this->render_antispam_charts();
 
-		 $this->render_stats_overview();
-
+		$this->render_stats_overview();
 	}
 
 	private function render_one_time_alert_banner() {
@@ -174,7 +173,7 @@ class CF7_AntiSpam_Admin_Display {
 		$cf7a_charts = new CF7_AntiSpam_Admin_Charts();
 
 		echo '<div class="cf7a-stat-card dashboard-charts-section cf7a-stat-card cf7a-stat-card-wide">';
-		echo '<h2>' . esc_html__('Email Statistics', 'cf7-antispam') . '</h2>';
+		echo '<h2>' . esc_html__( 'Email Statistics', 'cf7-antispam' ) . '</h2>';
 
 		$cf7a_charts->cf7a_dash_charts();
 
@@ -191,26 +190,28 @@ class CF7_AntiSpam_Admin_Display {
 		$total_blocked = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}cf7a_blacklist" );
 
 		// Get status breakdown with proper grouping
-		$status_data = $wpdb->get_results( "
+		$status_data = $wpdb->get_results(
+			"
         SELECT status, COUNT(*) as count
         FROM {$wpdb->prefix}cf7a_blacklist
         GROUP BY status
         ORDER BY status ASC
-    " );
+    "
+		);
 
 		// Group status into ranges
 		$status_ranges = array(
-			'1-5' => 0,
-			'6-10' => 0,
-			'11-25' => 0,
-			'26-50' => 0,
+			'1-5'    => 0,
+			'6-10'   => 0,
+			'11-25'  => 0,
+			'26-50'  => 0,
 			'51-100' => 0,
-			'100+' => 0
+			'100+'   => 0,
 		);
 
 		foreach ( $status_data as $status ) {
 			$status_num = intval( $status->status );
-			$count = intval( $status->count );
+			$count      = intval( $status->count );
 
 			if ( $status_num >= 1 && $status_num <= 5 ) {
 				$status_ranges['1-5'] += $count;
@@ -228,16 +229,21 @@ class CF7_AntiSpam_Admin_Display {
 		}
 
 		// Remove empty ranges for cleaner display
-		$status_ranges = array_filter( $status_ranges, function($count) {
-			return $count > 0;
-		});
+		$status_ranges = array_filter(
+			$status_ranges,
+			function ( $count ) {
+				return $count > 0;
+			}
+		);
 
 		// Get detailed reason stats from serialized meta
-		$meta_data = $wpdb->get_results( "
+		$meta_data = $wpdb->get_results(
+			"
         SELECT meta
         FROM {$wpdb->prefix}cf7a_blacklist
         WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'
-    " );
+    "
+		);
 
 		$reason_counts = array();
 		foreach ( $meta_data as $row ) {
@@ -251,10 +257,10 @@ class CF7_AntiSpam_Admin_Display {
 							// Convert reason key to readable format
 							$reason_name = $this->format_reason_name( $reason_key );
 
-							if ( !isset( $reason_counts[$reason_name] ) ) {
-								$reason_counts[$reason_name] = 0;
+							if ( ! isset( $reason_counts[ $reason_name ] ) ) {
+								$reason_counts[ $reason_name ] = 0;
 							}
-							$reason_counts[$reason_name]++;
+							++$reason_counts[ $reason_name ];
 						}
 					}
 				}
@@ -266,22 +272,26 @@ class CF7_AntiSpam_Admin_Display {
 		$top_reasons = array_slice( $reason_counts, 0, 5, true );
 
 		// Get top 10 spam words
-		$top_spam_words = $wpdb->get_results( "
+		$top_spam_words = $wpdb->get_results(
+			"
 				SELECT token, count_spam
 				FROM {$wpdb->prefix}cf7a_wordlist
 				WHERE count_spam > 0
 				ORDER BY count_spam DESC
 				LIMIT 10
-		" );
+		"
+		);
 
 		// Get top 10 ham words
-		$top_ham_words = $wpdb->get_results( "
+		$top_ham_words = $wpdb->get_results(
+			"
 				SELECT token, count_ham
 				FROM {$wpdb->prefix}cf7a_wordlist
 				WHERE count_ham > 0
 				ORDER BY count_ham DESC
 				LIMIT 10
-		" );
+		"
+		);
 
 		?>
 		<div class="cf7a-stats-grid">
@@ -296,12 +306,12 @@ class CF7_AntiSpam_Admin_Display {
 				</div>
 
 				<div class="cf7a-status-breakdown">
-					<?php if ( !empty( $status_ranges ) ) : ?>
+					<?php if ( ! empty( $status_ranges ) ) : ?>
 						<?php foreach ( $status_ranges as $range => $count ) : ?>
 							<div class="cf7a-status-item">
-                            <span class="cf7a-status-badge cf7a-range-<?php echo esc_attr( str_replace( array( '-', '+' ), array( '_', 'plus' ), $range ) ); ?>">
-                                <?php echo esc_html( $range . ' warnings' ); ?>
-                            </span>
+							<span class="cf7a-status-badge cf7a-range-<?php echo esc_attr( str_replace( array( '-', '+' ), array( '_', 'plus' ), $range ) ); ?>">
+								<?php echo esc_html( $range . ' warnings' ); ?>
+							</span>
 								<span class="cf7a-status-count"><?php echo esc_html( $count ); ?> IPs</span>
 							</div>
 						<?php endforeach; ?>
@@ -319,12 +329,12 @@ class CF7_AntiSpam_Admin_Display {
 					<!-- Top Spam Words -->
 					<div class="cf7a-wordlist-column">
 						<h4><?php esc_html_e( 'Top Spam Words', 'cf7-antispam' ); ?></h4>
-						<?php if ( !empty( $top_spam_words ) ) : ?>
+						<?php if ( ! empty( $top_spam_words ) ) : ?>
 							<?php foreach ( $top_spam_words as $word ) : ?>
 								<div class="cf7a-word-item">
-                        <span class="cf7a-word-name" title="<?php echo esc_attr( $word->token ); ?>">
-                            <?php echo esc_html( $word->token ); ?>
-                        </span>
+						<span class="cf7a-word-name" title="<?php echo esc_attr( $word->token ); ?>">
+								<?php echo esc_html( $word->token ); ?>
+						</span>
 									<span class="cf7a-word-count"><?php echo esc_html( $word->count_spam ); ?></span>
 								</div>
 							<?php endforeach; ?>
@@ -336,12 +346,12 @@ class CF7_AntiSpam_Admin_Display {
 					<!-- Top Ham Words -->
 					<div class="cf7a-wordlist-column">
 						<h4><?php esc_html_e( 'Top Ham Words', 'cf7-antispam' ); ?></h4>
-						<?php if ( !empty( $top_ham_words ) ) : ?>
+						<?php if ( ! empty( $top_ham_words ) ) : ?>
 							<?php foreach ( $top_ham_words as $word ) : ?>
 								<div class="cf7a-word-item">
-                        <span class="cf7a-word-name" title="<?php echo esc_attr( $word->token ); ?>">
-                            <?php echo esc_html( $word->token ); ?>
-                        </span>
+						<span class="cf7a-word-name" title="<?php echo esc_attr( $word->token ); ?>">
+								<?php echo esc_html( $word->token ); ?>
+						</span>
 									<span class="cf7a-word-count"><?php echo esc_html( $word->count_ham ); ?></span>
 								</div>
 							<?php endforeach; ?>
@@ -357,12 +367,12 @@ class CF7_AntiSpam_Admin_Display {
 			<div class="cf7a-stat-card cf7a-stat-card-wide">
 				<div class="cf7a-stat-label"><?php esc_html_e( 'Top Block Reasons', 'cf7-antispam' ); ?></div>
 				<div class="cf7a-reasons-breakdown">
-					<?php if ( !empty( $top_reasons ) ) : ?>
+					<?php if ( ! empty( $top_reasons ) ) : ?>
 						<?php foreach ( $top_reasons as $reason => $count ) : ?>
 							<div class="cf7a-reason-item">
-                            <span class="cf7a-reason-name" title="<?php echo esc_attr( $reason ); ?>">
-                                <?php echo esc_html( strlen( $reason ) > 40 ? substr( $reason, 0, 40 ) . '...' : $reason ); ?>
-                            </span>
+							<span class="cf7a-reason-name" title="<?php echo esc_attr( $reason ); ?>">
+								<?php echo esc_html( strlen( $reason ) > 40 ? substr( $reason, 0, 40 ) . '...' : $reason ); ?>
+							</span>
 								<span class="cf7a-reason-count"><?php echo esc_html( $count ); ?></span>
 							</div>
 						<?php endforeach; ?>
@@ -370,12 +380,12 @@ class CF7_AntiSpam_Admin_Display {
 						<!-- Show total unique reasons if more than 5 -->
 						<?php if ( count( $reason_counts ) > 5 ) : ?>
 							<div class="cf7a-reason-item cf7a-reason-summary">
-                            <span class="cf7a-reason-name">
-                                <em><?php printf( esc_html__( 'Total unique reasons: %d', 'cf7-antispam' ), count( $reason_counts ) ); ?></em>
-                            </span>
+							<span class="cf7a-reason-name">
+								<em><?php printf( esc_html__( 'Total unique reasons: %d', 'cf7-antispam' ), count( $reason_counts ) ); ?></em>
+							</span>
 								<span class="cf7a-reason-count">
-                                <em><?php echo esc_html( array_sum( $reason_counts ) ); ?></em>
-                            </span>
+								<em><?php echo esc_html( array_sum( $reason_counts ) ); ?></em>
+							</span>
 							</div>
 						<?php endif; ?>
 					<?php else : ?>
@@ -393,24 +403,24 @@ class CF7_AntiSpam_Admin_Display {
 	private function format_reason_name( $reason_key ): string {
 		// Handle special cases
 		$reason_mappings = array(
-			'blacklisted_score' => 'Recidive',
-			'blacklisted score' => 'Recidive',
-			'data_mismatch' => 'Data Mismatch',
-			'bot_fingerprint' => 'Bot Fingerprint',
+			'blacklisted_score'      => 'Recidive',
+			'blacklisted score'      => 'Recidive',
+			'data_mismatch'          => 'Data Mismatch',
+			'bot_fingerprint'        => 'Bot Fingerprint',
 			'bot_fingerprint_extras' => 'Bot Fingerprint Extras',
-			'browser_language' => 'Browser Language',
-			'honeypot' => 'Honeypot',
-			'b8' => 'B8 Filter',
-			'geo_location' => 'Geo Location',
-			'ip_reputation' => 'IP Reputation',
-			'user_agent' => 'User Agent',
-			'disposable_email' => 'Disposable Email',
-			'spam_words' => 'Spam Words'
+			'browser_language'       => 'Browser Language',
+			'honeypot'               => 'Honeypot',
+			'b8'                     => 'B8 Filter',
+			'geo_location'           => 'Geo Location',
+			'ip_reputation'          => 'IP Reputation',
+			'user_agent'             => 'User Agent',
+			'disposable_email'       => 'Disposable Email',
+			'spam_words'             => 'Spam Words',
 		);
 
 		// Check if we have a custom mapping
-		if ( isset( $reason_mappings[$reason_key] ) ) {
-			return $reason_mappings[$reason_key];
+		if ( isset( $reason_mappings[ $reason_key ] ) ) {
+			return $reason_mappings[ $reason_key ];
 		}
 
 		// Default formatting: replace underscores with spaces and capitalize
@@ -624,7 +634,7 @@ class CF7_AntiSpam_Admin_Display {
 				$unban_url = wp_nonce_url( add_query_arg( 'action', 'unban_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
 				$ban_url   = wp_nonce_url( add_query_arg( 'action', 'ban_forever_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
 
-				$meta = unserialize( $row->meta );
+				$meta         = unserialize( $row->meta );
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
 				$rows .= sprintf(
@@ -708,7 +718,7 @@ class CF7_AntiSpam_Admin_Display {
 				$result = $this->cf7a_get_debug_info_geoip();
 				if ( $result ) {
 					printf(
-					'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3>%s',
+						'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3>%s',
 						$result['title'],
 						$result['content']
 					);
@@ -729,7 +739,6 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
-
 			$this->cf7a_get_debug_info_rest_api();
 
 			$this->cf7a_get_debug_info_options();
@@ -744,7 +753,7 @@ class CF7_AntiSpam_Admin_Display {
 	private function cf7a_get_debug_info_rest_api() {
 		printf(
 			'<h3 class="title"><span class="dashicons dashicons-rest-api"></span> Rest API</h3><p><b>Rest API</b><div id="rest-api-status" class="waiting">%s</div></p>',
-			esc_html__( 'Waiting for Rest API Status...')
+			esc_html__( 'Waiting for Rest API Status...' )
 		);
 	}
 
@@ -836,7 +845,7 @@ class CF7_AntiSpam_Admin_Display {
 			}
 
 			$res = array(
-				"title" => esc_html__( 'Geo-IP test', 'cf7-antispam' ),
+				'title' => esc_html__( 'Geo-IP test', 'cf7-antispam' ),
 			);
 
 			/* The recap of Geo-ip test */
@@ -845,41 +854,41 @@ class CF7_AntiSpam_Admin_Display {
 				$html_update_schedule = sprintf(
 					'<p class="debug"><code>%s</code> %s</p>',
 					esc_html__( 'Geo-IP', 'cf7-antispam' ),
-						esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
+					esc_html__( 'Enabled', 'cf7-antispam' ) . ' - ' . esc_html__( 'Geo-ip database next scheduled update: ', 'cf7-antispam' ) . $geoip_update
 				);
 
 				$res['content'] = sprintf(
-						'<p>%s</p><p>%s: %s</p><pre>%s</pre>',
-						wp_kses(
-							$html_update_schedule,
-							array(
-								'p'    => array( 'class' => array() ),
-								'code' => array(),
-							)
-						),
-						esc_html__( 'Your IP address', 'cf7-antispam' ),
-						filter_var( $your_ip, FILTER_VALIDATE_IP ),
+					'<p>%s</p><p>%s: %s</p><pre>%s</pre>',
+					wp_kses(
+						$html_update_schedule,
+						array(
+							'p'    => array( 'class' => array() ),
+							'code' => array(),
+						)
+					),
+					esc_html__( 'Your IP address', 'cf7-antispam' ),
+					filter_var( $your_ip, FILTER_VALIDATE_IP ),
 						// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
 						wp_kses( print_r( $server_data, true ), array( 'pre' => array() ) )
 				);
 			} else {
 				$res['content'] = sprintf(
-						'<p><b>%s</b> %s</p><p>%s %s</p>',
-						esc_html__( 'Geo-IP', 'cf7-antispam' ),
-						esc_html__( 'is disabled', 'cf7-antispam' ),
-						esc_html__( 'Your IP address', 'cf7-antispam' ),
-						$your_ip
+					'<p><b>%s</b> %s</p><p>%s %s</p>',
+					esc_html__( 'Geo-IP', 'cf7-antispam' ),
+					esc_html__( 'is disabled', 'cf7-antispam' ),
+					esc_html__( 'Your IP address', 'cf7-antispam' ),
+					$your_ip
 				);
 			}
 
-			# return the result to the frontend
+			// return the result to the frontend
 			return $res;
 
 		} catch ( Exception $e ) {
 			$error_message = $e->getMessage();
 			return array(
-				"title"   => esc_html__( 'Geo-IP test', 'cf7-antispam' ),
-				"content" => sprintf( '<p>%s</p><pre>%s</pre>', esc_html__( 'Geo-IP Test Error', 'cf7-antispam' ), $error_message && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error' )
+				'title'   => esc_html__( 'Geo-IP test', 'cf7-antispam' ),
+				'content' => sprintf( '<p>%s</p><pre>%s</pre>', esc_html__( 'Geo-IP Test Error', 'cf7-antispam' ), $error_message && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error' ),
 			);
 		}
 	}
