@@ -16,6 +16,8 @@ jobs:
         uses: 10up/wpcs-action@stable
         with:
           standard: 'WordPress'
+          paths: '.'
+          phpcs_bin_path: 'phpcs'
           extra_args: '--report-json=./phpcs.json'
           excludes: '.github/ tests/'
 
