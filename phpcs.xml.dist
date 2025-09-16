@@ -28,16 +28,10 @@
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties -->
 	<config name="minimum_supported_wp_version" value="5.6"/>
 
-	<!-- https://github.com/PHPCompatibility/PHPCompatibilityWP -->
-	<rule ref="PHPCompatibilityWP"/>
-
 	<rule ref="WordPress" />
 	<rule ref="WordPress-Docs"/>
 	<rule ref="WordPress-Extra"/>
-	<rule ref="WordPress-VIP-Go"/>
-	<rule ref="WordPressVIPMinimum"/>
 	<rule ref="WordPress-Docs"/>
-	<rule ref="VariableAnalysis"/>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
