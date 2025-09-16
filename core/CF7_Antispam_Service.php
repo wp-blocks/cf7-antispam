@@ -66,13 +66,13 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 * @return string "CF7-Antispam" with the translation "Contact Form 7 Antispam".
 	 */
 	public function get_title() {
-		return __( 'Antispam', 'Contact Form 7 Antispam' );
+		return __( 'Antispam', 'cf7-antispam' );
 	}
 
 	/**
 	 * The function checks if a certain option called "enabled" is set to true.
 	 *
-	 * @return bool value of the 'enabled' key in the  array.
+	 * @return bool value of the 'enabled' key in the array.
 	 */
 	public function is_active() {
 		return isset( $this->options['cf7a_enable'] ) ? $this->options['cf7a_enable'] : false;
@@ -229,13 +229,9 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			)
 		);
 
-		printf(
-			'<p><strong>%s</strong></p>',
-			// phpcs:ignore
-			wpcf7_link(
-				esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ),
-				esc_html__( 'CF7-Antispam (v' . CF7ANTISPAM_VERSION . ')', 'contact-form-7' )
-			)
+		printf( '<p><strong>%s</strong></p>',
+			wpcf7_link( esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ), sprintf( 'CF7-Antispam (v%s)', 'contact-form-7' ), CF7ANTISPAM_VERSION )
+
 		);
 
 		if ( $this->is_active() ) {

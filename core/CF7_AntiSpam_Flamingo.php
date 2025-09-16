@@ -423,7 +423,7 @@ class CF7_AntiSpam_Flamingo {
 
 		if ( isset( $options['check_honeypot'] ) && intval( $options['check_honeypot'] ) === 1 ) {
 			$submission             = WPCF7_Submission::get_instance();
-			$honeypot_default_names = get_honeypot_input_names( $options['honeypot_input_names'] );
+			$honeypot_default_names = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
 
 			if ( ! $submission ) {
 				return true;

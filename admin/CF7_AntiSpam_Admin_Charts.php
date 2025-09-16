@@ -15,9 +15,6 @@ use WP_Query;
  * @author     Codekraft Studio <info@codekraft.it>
  */
 
-/**
- * It creates a class called CF7_AntiSpam_Admin.
- */
 class CF7_AntiSpam_Admin_Charts {
 	/**
 	 * It queries the database for all the emails received in the last week, then it creates two lists:
@@ -67,15 +64,15 @@ class CF7_AntiSpam_Admin_Charts {
 					$is_ham = 'flamingo-spam' !== $post->post_status;
 					$today  = esc_html( get_the_date( 'Y-m-d' ) );
 
-					// Initialize the date array if not exists
+					/* Initialize the date array if not exists */
 				if ( ! isset( $mail_collection['by_date'][ $today ] ) ) {
 						$mail_collection['by_date'][ $today ] = array();
 				}
 
-					// Count by type
+					/* Count by type */
 					++$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ];
 
-					// Store by date
+					/* Store by date */
 					$mail_collection['by_date'][ $today ][] = array(
 						'status' => $is_ham ? 'ham' : 'spam',
 					);
@@ -129,7 +126,7 @@ class CF7_AntiSpam_Admin_Charts {
 			$mail_collection['by_date'] = array_reverse( $mail_collection['by_date'] );
 			$count                      = array();
 
-			// Process data by date
+			/* Process data by date */
 		foreach ( $mail_collection['by_date'] as $date => $items ) {
 			if ( ! isset( $count[ $date ] ) ) {
 					$count[ $date ] = array(
@@ -138,13 +135,13 @@ class CF7_AntiSpam_Admin_Charts {
 					);
 			}
 
-				// Count items by status for each date
+				/* Count items by status for each date */
 			foreach ( $items as $item ) {
 					++$count[ $date ][ $item['status'] ];
 			}
 		}
 
-			// Extract ham and spam arrays for chart
+			/* Extract ham and spam arrays for chart */
 			$ham  = array();
 			$spam = array();
 
@@ -209,7 +206,9 @@ class CF7_AntiSpam_Admin_Charts {
 		?>
 			<p class="community-events-footer">
 					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>">
-							<?php esc_html_e( 'Flamingo Inbound Messages', 'flamingo' ); ?>
+							<?php
+							/* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch */
+							esc_html_e( 'Flamingo Inbound Messages', 'flamingo' ); ?>
 							<span aria-hidden="true" class="dashicons dashicons-external"></span>
 					</a>
 					|
@@ -246,13 +245,13 @@ class CF7_AntiSpam_Admin_Charts {
 				return;
 		}
 
-			// Process the mail collection
+			/* Process the mail collection */
 			$mail_collection = $this->cf7a_process_mail_collection( $query );
 
-			// Prepare chart data
+			/* Prepare chart data */
 			$chart_data = $this->cf7a_prepare_chart_data( $mail_collection );
 
-			// Render the widget
+			/* Render the widget */
 		?>
 			<div id="antispam-widget">
 					<canvas id="line-chart" width="400" height="200"></canvas>
@@ -282,13 +281,13 @@ class CF7_AntiSpam_Admin_Charts {
 			return;
 		}
 
-		// Process the mail collection
+		/* Process the mail collection */
 		$mail_collection = $this->cf7a_process_mail_collection( $query );
 
-		// Prepare chart data
+		/* Prepare chart data */
 		$chart_data = $this->cf7a_prepare_chart_data( $mail_collection );
 
-		// Render the widget
+		/* Render the widget */
 		?>
 		<div id="antispam-charts">
 			<div class="antispam-charts-container">

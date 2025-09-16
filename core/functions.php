@@ -202,7 +202,7 @@ add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
  *
  * @return array An array of possible input names.
  */
-function get_honeypot_input_names( $custom_names = array() ) {
+function cf7a_get_honeypot_input_names( $custom_names = array() ) {
 	$defaults = array(
 		'name',
 		'email',
@@ -292,7 +292,7 @@ function cf7a_rgb2hex( $r, $g, $b ) {
  */
 function cf7a_format_rating( $rating ) {
 	if ( ! is_numeric( $rating ) ) {
-		return '<span class="flamingo-rating-label cf7a-tag-none" style="background-color: #999"><b>' . __( 'none' ) . '</b></span>';
+		return sprintf( '<span class="flamingo-rating-label cf7a-tag-none" style="background-color: #999"><b>%s</b></span>', __( 'none', 'cf7-antispam' ) );
 	}
 
 	$red   = floor( 200 * $rating );
@@ -300,7 +300,7 @@ function cf7a_format_rating( $rating ) {
 
 	$color = cf7a_rgb2hex( $red, $green, 0 );
 
-	return '<span class="flamingo-rating-label" style="background-color: ' . $color . '"><b>' . round( $rating * 100 ) . '% </b></span>';
+	return sprintf( '<span class="flamingo-rating-label" style="background-color: %s"><b>%s%% </b></span>', $color, round( $rating * 100 ) );
 }
 
 /**
@@ -315,11 +315,11 @@ function cf7a_format_status( $rank ) {
 	switch ( true ) {
 		case $rank < 0:
 			/* translators: warn because not yet banned but already listed */
-			$rank_clean = esc_html__( '⚠️' );
+			$rank_clean = esc_html__( '⚠️', 'cf7-antispam' );
 			break;
 		case $rank > 100:
 			/* translators: champion of spammer (>100 mail) */
-			$rank_clean = esc_html__( '🏆' );
+			$rank_clean = esc_html__( '🏆', 'cf7-antispam' );
 			break;
 		default:
 			$rank_clean = $rank;

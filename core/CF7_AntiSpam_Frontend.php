@@ -154,7 +154,7 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_honeypot_add( $form_elements ) {
 		/* A list of default names for the honeypot fields. */
 		$options     = get_option( 'cf7a_options', array() );
-		$input_names = ! empty( $options['honeypot_input_names'] ) ? get_honeypot_input_names( $options['honeypot_input_names'] ) : array();
+		$input_names = ! empty( $options['honeypot_input_names'] ) ? cf7a_get_honeypot_input_names( $options['honeypot_input_names'] ) : array();
 		$input_class = ! empty( $this->options['cf7a_customizations_class'] ) ? sanitize_html_class( $this->options['cf7a_customizations_class'] ) : 'cf7a';
 		/**
 		 * Controls the maximum number of honeypots.
@@ -579,7 +579,13 @@ class CF7_AntiSpam_Frontend {
 		} elseif ( get_transient( "mail_sent_$hash" ) ) {
 			// Set the status
 			$submission->set_status( 'mail_sent_multiple' );
-			$submission->set_response( esc_html__( "Slow down, please wait $expire seconds before resending.", 'cf7-antispam' ) );
+			$submission->set_response(
+				sprintf(
+					/* translators: % is the number of seconds to wait */
+					esc_html__( 'Slow down, please wait %s seconds before resending.', 'cf7-antispam' ),
+					$expire
+				)
+			);
 		} else {
 			delete_transient( "mail_sent_$hash" );
 			set_transient( "mail_sent_$hash", true, $expire );

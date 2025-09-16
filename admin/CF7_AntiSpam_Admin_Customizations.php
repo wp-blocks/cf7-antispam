@@ -1344,7 +1344,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>',
 			empty( $this->options['geoip_dbkey'] ) ? '' : 'value="' . esc_attr( $this->options['geoip_dbkey'] ) . '"',
 			// phpcs:ignore WordPress.Security.EscapeOutput
-			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="' . esc_attr__( 'KEY provided' ) . '"'
+			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="' . esc_attr__( 'KEY provided', 'cf7-antispam' ) . '"'
 		);
 	}
 

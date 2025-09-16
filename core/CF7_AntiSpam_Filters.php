@@ -943,7 +943,7 @@ class CF7_AntiSpam_Filters {
 				if ( ! empty( $mail_tag_text ) ) {
 
 					/* get the collection of the generated (fake) input name used as honeypots name value */
-					$input_names = get_honeypot_input_names( $options['honeypot_input_names'] );
+					$input_names = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
 
 					$mail_tag_count = count( $input_names );
 

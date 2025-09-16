@@ -91,7 +91,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return new WP_Error(
 				'rest_forbidden',
-				esc_html__( 'You cannot view the plugin status.' ),
+				esc_html__( 'You cannot view the plugin status.', 'cf7-antispam' ),
 				array( 'status' => 401 )
 			);
 		}

@@ -381,7 +381,11 @@ class CF7_AntiSpam_Admin_Display {
 						<?php if ( count( $reason_counts ) > 5 ) : ?>
 							<div class="cf7a-reason-item cf7a-reason-summary">
 							<span class="cf7a-reason-name">
-								<em><?php printf( esc_html__( 'Total unique reasons: %d', 'cf7-antispam' ), count( $reason_counts ) ); ?></em>
+								<em><?php printf(
+									/* translators: %d is the number of unique reasons */
+									esc_html__( 'Total unique reasons: %d', 'cf7-antispam' ),
+									count( $reason_counts ) );
+								?></em>
 							</span>
 								<span class="cf7a-reason-count">
 								<em><?php echo esc_html( array_sum( $reason_counts ) ); ?></em>
@@ -642,9 +646,9 @@ class CF7_AntiSpam_Admin_Display {
 					cf7a_format_status( $row->status - $max_attempts ),
 					esc_html( $row->ip ),
 					esc_url( $unban_url ),
-					esc_html__( '[unban ip]' ),
+					esc_html__( '[unban ip]', 'cf7-antispam' ),
 					esc_url( $ban_url ),
-					esc_html__( '[ban forever]' ),
+					esc_html__( '[ban forever]', 'cf7-antispam' ),
 					cf7a_compress_array( $meta['reason'], true )
 				);
 			}
@@ -666,7 +670,11 @@ class CF7_AntiSpam_Admin_Display {
 						),
 					)
 				),
-				sprintf( esc_html__( 'Showing %d blacklisted IPs', 'cf7-antispam' ), intval( $count ) )
+				sprintf(
+					/* translators: %d is the number of blacklisted IPs */
+					esc_html__( 'Showing %d blacklisted IPs', 'cf7-antispam' ),
+					intval( $count )
+				)
 			);
 		} else {
 			echo '<p>' . esc_html__( 'No blacklisted IPs found.', 'cf7-antispam' ) . '</p>';
@@ -753,7 +761,7 @@ class CF7_AntiSpam_Admin_Display {
 	private function cf7a_get_debug_info_rest_api() {
 		printf(
 			'<h3 class="title"><span class="dashicons dashicons-rest-api"></span> Rest API</h3><p><b>Rest API</b><div id="rest-api-status" class="waiting">%s</div></p>',
-			esc_html__( 'Waiting for Rest API Status...' )
+			esc_html__( 'Waiting for Rest API Status...', 'cf7-antispam' )
 		);
 	}
 
@@ -800,7 +808,7 @@ class CF7_AntiSpam_Admin_Display {
 					sprintf(
 						'<tr><td>%s</td><td>%s</td><td>%f sec</td></tr>',
 						$dnsbl,
-						$is_spam ? esc_html__( 'spam' ) : esc_html__( 'ham' ),
+						$is_spam ? esc_html__( 'spam', 'cf7-antispam' ) : esc_html__( 'ham', 'cf7-antispam' ),
 						$time_taken
 					);
 			}
@@ -808,9 +816,9 @@ class CF7_AntiSpam_Admin_Display {
 			if ( ! empty( $performance_test ) ) {
 				printf(
 					'<h3 class="title"><span class="dashicons dashicons-privacy"></span> %s</h3><p>%s</p><p>%s: %s</p><table class="dnsbl_table">%s</table>',
-					esc_html__( 'DNSBL performance test:' ),
-					esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers' ),
-					esc_html__( 'Your IP address' ),
+					esc_html__( 'DNSBL performance test:', 'cf7-antispam' ),
+					esc_html__( 'Results below 0.01 are fine, OK/Spam indicates the status of your ip on DNSBL servers', 'cf7-antispam' ),
+					esc_html__( 'Your IP address', 'cf7-antispam' ),
 					filter_var( $remote_ip, FILTER_VALIDATE_IP ),
 					wp_kses(
 						implode( '', $performance_test ),
