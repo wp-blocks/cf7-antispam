@@ -55,7 +55,7 @@ class CF7_AntiSpam_Admin_Display {
 	 * Render the tabbed interface
 	 */
 	private function render_tabbed_interface() {
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'dashboard';
+		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash($_GET['tab']) ) : 'dashboard';
 		?>
 		<div class="cf7a-nav-tab-wrapper">
 			<a href="<?php echo esc_url( $this->get_tab_url( 'dashboard' ) ); ?>"
@@ -381,11 +381,15 @@ class CF7_AntiSpam_Admin_Display {
 						<?php if ( count( $reason_counts ) > 5 ) : ?>
 							<div class="cf7a-reason-item cf7a-reason-summary">
 							<span class="cf7a-reason-name">
-								<em><?php printf(
+								<em>
+								<?php
+								printf(
 									/* translators: %d is the number of unique reasons */
 									esc_html__( 'Total unique reasons: %d', 'cf7-antispam' ),
-									count( $reason_counts ) );
-								?></em>
+									count( $reason_counts )
+								);
+								?>
+								</em>
 							</span>
 								<span class="cf7a-reason-count">
 								<em><?php echo esc_html( array_sum( $reason_counts ) ); ?></em>
@@ -509,7 +513,11 @@ class CF7_AntiSpam_Admin_Display {
 			<?php
 				/* The export button */
 				$export_url = wp_nonce_url( add_query_arg( 'action', 'export-blacklist', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-				printf( '<p class="cf7a-export-blacklist-button alignright"><a href="%s" class="button">%s</a></p>', $export_url, esc_html__( 'Export blacklist', 'cf7-antispam' ) );
+				printf(
+					'<p class="cf7a-export-blacklist-button alignright"><a href="%s" class="button">%s</a></p>',
+					esc_url( $export_url ),
+					esc_html__( 'Export blacklist', 'cf7-antispam' )
+				);
 			?>
 			<h3><?php esc_html_e( 'Blacklisted IPs', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'Here you can see all the IPs that have been blacklisted by the plugin.', 'cf7-antispam' ); ?></p>
@@ -600,7 +608,7 @@ class CF7_AntiSpam_Admin_Display {
 			<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
 
 			<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-			<textarea id="cf7a_options_area" rows="20" style="width: 100%;"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+			<textarea id="cf7a_options_area" rows="20" style="width: 100%;" data-nonce="<?php echo wp_create_nonce( 'cf7a-nonce' ); ?>"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
 
 			<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
 				<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
@@ -727,8 +735,8 @@ class CF7_AntiSpam_Admin_Display {
 				if ( $result ) {
 					printf(
 						'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3>%s',
-						$result['title'],
-						$result['content']
+						esc_html( $result['title'] ),
+						$result['content'] // phpcs:ignore WordPress.Security.EscapeOutput
 					);
 				}
 			} else {
@@ -777,7 +785,7 @@ class CF7_AntiSpam_Admin_Display {
 			esc_html__( 'The plugin options are:', 'cf7-antispam' ),
 			esc_html(
 				htmlentities(
-					print_r( $this->options, true )
+					print_r( $this->options, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				)
 			)
 		);

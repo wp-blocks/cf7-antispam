@@ -161,7 +161,7 @@ class CF7_AntiSpam_Admin_Tools {
 				}
 
 				// Set headers for file download
-				$filename = 'cf7-antispam-blacklist-' . date( 'Y-m-d-H-i-s' ) . '.csv';
+				$filename = 'cf7-antispam-blacklist-' . gmdate( 'Y-m-d-H-i-s' ) . '.csv';
 
 				// Set download headers
 				header( 'Content-Type: text/csv; charset=utf-8' );
@@ -172,7 +172,7 @@ class CF7_AntiSpam_Admin_Tools {
 				header( 'Expires: 0' );
 
 				// Output the CSV content
-				echo $csv;
+				echo $csv; // phpcs:ignore WordPress.Security.EscapeOutput
 				exit();
 			}
 
