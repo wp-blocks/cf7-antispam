@@ -960,7 +960,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 					wp_schedule_event( $next_run, $new_value, $cron_task );
 				} else {
-					error_log( 'Unable to schedule event for ' . $cron_task );
+					cf7a_log( 'Unable to schedule event for ' . $cron_task );
 				}
 			}
 		}
@@ -1010,11 +1010,14 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_sanitize_options( $input ) {
 		/* get the import options */
 		$new_input = $this->options;
-		if ( isset( $_POST['to-import'] ) ) {
-			$json_data = json_decode( stripslashes( $_POST['to-import'] ) );
+
+		if ( isset( $_POST['to-import'] ) and isset( $_POST['cf7a-nonce'] ) and wp_verify_nonce( wp_unslash($_POST['cf7a-nonce']), 'cf7a-nonce' ) ) {
+
+			$to_import = sanitize_text_field(wp_unslash($_POST['to-import'] ) );
+			$json_data = json_decode( $to_import );
+
 			if ( ! empty( $json_data ) && is_object( $json_data ) ) {
 				$input = $this->cf7a_clean_recursive( $json_data );
-				// monkey pathing arrays that needs to be imploded
 				$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
 				$input['ip_whitelist']                    = implode( ',', $input['ip_whitelist'] );
 				$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
@@ -1028,7 +1031,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				$input['cf7a_enable']                     = 1;
 				$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
 			} else {
-				cf7a_log( print_r( $_POST['to-import'], true ) );
+				cf7a_log( print_r( $to_import, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				cf7a_log( 'CF7 AntiSpam: The import data is invalid' );
 				return $this->options;
 			}
