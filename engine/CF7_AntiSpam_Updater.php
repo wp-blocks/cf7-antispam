@@ -89,10 +89,16 @@ class CF7_AntiSpam_Updater {
 		global $wpdb;
 
 		$table_blacklist = $wpdb->prefix . 'cf7a_blacklist';
-		$updated         = false;
+		$updated = false;
 
 		// Check if the table exists first
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table_blacklist}'" ) !== $table_blacklist ) {
+		// Note: It's generally safe to interpolate table names as they are derived from $wpdb->prefix
+		// and aren't user input, but preparing is still the best practice to avoid the warning.
+		$sql_check_table = $wpdb->prepare(
+			"SHOW TABLES LIKE %s",
+			$wpdb->esc_like( $table_blacklist )
+		);
+		if ( $wpdb->get_var( $sql_check_table ) !== $table_blacklist ) {
 			cf7a_log( 'CF7-antispam update to 0.7.0: blacklist table does not exist, skipping schema update', 2 );
 			return false;
 		}
@@ -100,8 +106,12 @@ class CF7_AntiSpam_Updater {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		// Check if the 'modified' column exists, if not add it
-		if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$table_blacklist} LIKE 'modified'" ) ) {
-			$sql    = "ALTER TABLE `{$table_blacklist}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
+		$sql_check_modified = $wpdb->prepare(
+			"SHOW COLUMNS FROM `{$table_blacklist}` LIKE %s",
+			'modified'
+		);
+		if ( ! $wpdb->get_var( $sql_check_modified ) ) {
+			$sql = "ALTER TABLE `{$table_blacklist}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
 			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {
@@ -113,8 +123,12 @@ class CF7_AntiSpam_Updater {
 		}
 
 		// Check if the 'created' column exists, if not add it
-		if ( ! $wpdb->get_var( "SHOW COLUMNS FROM {$table_blacklist} LIKE 'created'" ) ) {
-			$sql    = "ALTER TABLE `{$table_blacklist}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
+		$sql_check_created = $wpdb->prepare(
+			"SHOW COLUMNS FROM `{$table_blacklist}` LIKE %s",
+			'created'
+		);
+		if ( ! $wpdb->get_var( $sql_check_created ) ) {
+			$sql = "ALTER TABLE `{$table_blacklist}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
 			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {

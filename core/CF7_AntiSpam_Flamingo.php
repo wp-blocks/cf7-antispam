@@ -521,13 +521,36 @@ class CF7_AntiSpam_Flamingo {
 	 */
 	public static function cf7a_reset_dictionary() {
 		global $wpdb;
-		$r = $wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}cf7a_wordlist`" );
+
+		$table = $wpdb->prefix . 'cf7a_wordlist';
+
+		$r = $wpdb->query(
+			$wpdb->prepare( "TRUNCATE TABLE %s", $table )
+		);
 
 		if ( ! is_wp_error( $r ) ) {
-			$wpdb->query( 'INSERT INTO `' . $wpdb->prefix . "cf7a_wordlist` (`token`, `count_ham`) VALUES ('b8*dbversion', '3');" );
-			$wpdb->query( 'INSERT INTO `' . $wpdb->prefix . "cf7a_wordlist` (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');" );
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO %s (`token`, `count_ham`) VALUES (%s, %d)",
+					$table,
+					'b8*dbversion',
+					3
+				)
+			);
+
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO %s (`token`, `count_ham`, `count_spam`) VALUES (%s, %d, %d)",
+					$table,
+					'b8*texts',
+					0,
+					0
+				)
+			);
+
 			return true;
 		}
+
 		return false;
 	}
 
