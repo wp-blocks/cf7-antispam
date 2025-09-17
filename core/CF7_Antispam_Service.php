@@ -133,7 +133,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		);
 		printf(
 			'<img src="%s" class="integration-icon" style="width: 32px;margin: 10px;">',
-			CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg'
+			esc_url( CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg')
 		);
 	}
 
@@ -229,9 +229,12 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			)
 		);
 
-		printf( '<p><strong>%s</strong></p>',
-			wpcf7_link( esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ), sprintf( 'CF7-Antispam (v%s)', 'contact-form-7' ), CF7ANTISPAM_VERSION )
-
+		printf(
+			'<p><strong>%s</strong></p>',
+			wpcf7_link(
+				esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ),
+				sprintf( 'CF7-Antispam (v%s)', CF7ANTISPAM_VERSION ),
+			)
 		);
 
 		if ( $this->is_active() ) {

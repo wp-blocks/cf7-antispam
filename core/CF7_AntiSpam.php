@@ -390,9 +390,10 @@ class CF7_AntiSpam {
 
 		$mail_body .= '<p>' . sprintf(
 				/* translators: %1$s overall spam attempts, %2$s since last report */
-				__('%1$s overall spam attempts, %2$s since last report', 'cf7-antispam' ),
-				$all, $last
-			) . '</p>';
+			__( '%1$s overall spam attempts, %2$s since last report', 'cf7-antispam' ),
+			$all,
+			$last
+		) . '</p>';
 
 		return $mail_body;
 	}

@@ -103,8 +103,8 @@ class CF7_AntiSpam_Admin_Charts {
 					printf(
 						'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
 						get_the_date( 'Y-m-d' ),
-						admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
-						$post->ID,
+						esc_url( admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ) ),
+						(int) $post->ID,
 						$is_ham ? '🔵' : '🔴',
 						esc_html( get_post_meta( $post->ID, '_from' )[0] ),
 						esc_html( $post->post_title )
@@ -208,7 +208,8 @@ class CF7_AntiSpam_Admin_Charts {
 					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>">
 							<?php
 							/* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch */
-							esc_html_e( 'Flamingo Inbound Messages', 'flamingo' ); ?>
+							esc_html_e( 'Flamingo Inbound Messages', 'flamingo' );
+							?>
 							<span aria-hidden="true" class="dashicons dashicons-external"></span>
 					</a>
 					|
