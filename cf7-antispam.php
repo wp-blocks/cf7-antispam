@@ -6,6 +6,7 @@
  * Text Domain: cf7-antispam
  * Domain Path: /languages
  * Version: 0.7.0
+ * License: GPLv2 or later
  *
  * @package cf7-antispam
  */
