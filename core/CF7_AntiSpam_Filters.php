@@ -232,14 +232,18 @@ class CF7_AntiSpam_Filters {
 	public function cf7a_cron_unban() {
 		global $wpdb;
 
+		/* We remove 1 from the status column */
+		$status_decrement = 1;
+
+		/* Below 0 is not anymore a valid status for a blacklist entry, so we can remove it */
+		$lower_bound = 0;
+
 		/* removes a status count at each balcklisted ip */
-		$status_update_query = $wpdb->prepare( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - 1 WHERE 1" );
-		$updated             = $wpdb->query( $status_update_query );
+		$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - %d WHERE 1", $status_decrement ) );
 		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
 
-		/* when the line has 0 in status we can remove it from the blacklist  */
-		$status_update_set_zero = $wpdb->prepare( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  0" );
-		$updated                = $wpdb->query( $status_update_set_zero );
+		/* when the line has 0 in status, we can remove it from the blacklist */
+		$updated = $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  %d", $lower_bound ) );
 		cf7a_log( "Removed $updated users from blacklist", 1 );
 
 		return true;
@@ -988,7 +992,7 @@ class CF7_AntiSpam_Filters {
 			$cf7a_b8 = new CF7_AntiSpam_B8();
 			$rating  = round( $cf7a_b8->cf7a_b8_classify( $text ), 2 );
 
-			/* Checking the rating of the message and if it is greater than the threshold */
+			/* Checking the rating of the message, and if it is greater than the threshold */
 			if ( $rating >= $b8_threshold ) {
 				$reason['b8'] = $rating;
 				$spam_score  += $score_detection;

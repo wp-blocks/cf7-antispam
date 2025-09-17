@@ -504,8 +504,8 @@ class CF7_AntiSpam_Flamingo {
 			$nonce = wp_create_nonce( 'cf7a-nonce' );
 			printf(
 				'<button class="button cf7a_alert" data-nonce="%s" data-id="%s" data-message="%s">%s</button>',
-				$nonce,
-				$post_id,
+				$nonce, // phpcs:ignore WordPress.Security.EscapeOutput
+				(int) $post_id,
 				esc_html__( 'Are you sure?', 'cf7-antispam' ),
 				esc_html__( 'Resend Email', 'cf7-antispam' )
 			);
