@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 const loader = (): HTMLDivElement => {
 	// create an element to show loading with a svg loader
 	const i = document.createElement('div') as HTMLDivElement;
@@ -20,19 +21,22 @@ function importExportOptions(e: SubmitEvent) {
 	if (
 		// eslint-disable-next-line no-alert
 		!confirm(
-			'Are you sure you want to import options? This will overwrite your current settings.'
+			__(
+				'Are you sure you want to import options? This will overwrite your current settings.',
+				'cf7-antispam'
+			)
 		)
 	) {
 		return;
 	}
 
-	/**
-	 * Parse the JSON string and get the cf7-antispam options
-	 */
+	// Get the cf7-antispam options
 	const optionsArea = document.getElementById(
 		'cf7a_options_area'
 	) as HTMLTextAreaElement;
 	const optionsContent = optionsArea?.value;
+
+	// Parse the JSON string
 	let cf7aOptions = null;
 	try {
 		cf7aOptions = JSON.parse(optionsContent);
@@ -40,17 +44,22 @@ function importExportOptions(e: SubmitEvent) {
 		// eslint-disable-next-line no-console
 		console.error(err);
 		// eslint-disable-next-line no-alert
-		alert('Invalid JSON. Please check your file and try again.');
+		alert(
+			__(
+				'Invalid JSON. Please check your file and try again.',
+				'cf7-antispam'
+			)
+		);
 		return;
 	}
 
-	/**
-	 * Get the submit form data and append the cf7-ntispam options to the form data options
-	 */
+	// Get the submit form data and append the cf7-ntispam options to the form data options
 	const data: FormData = new FormData(e.target as HTMLFormElement);
+	const nonce = optionsArea.dataset.nonce || '';
+	data.append('cf7a-nonce', nonce);
 	data.append('to-import', JSON.stringify(cf7aOptions));
 
-	// append after the form data options a spinning loader
+	// Append after the form data options a spinning loader
 	const loaderElement = loader();
 	const targetElement = e.target as HTMLFormElement;
 	targetElement
@@ -66,10 +75,13 @@ function importExportOptions(e: SubmitEvent) {
 		})
 			.then((response) => response)
 			.then((response) => {
+				console.log(response);
 				// Handle the response
 				if (response.status === 200) {
+					// eslint-disable-next-line no-alert
+					alert('Data imported successfully');
 					// emulate the php non async behavior
-					window.location.href = response.url;
+					window.location.reload();
 				}
 			})
 			.catch((error) => {
@@ -81,6 +93,11 @@ function importExportOptions(e: SubmitEvent) {
 	}
 }
 
+/**
+ * Download the options content to a file
+ *
+ * @param optionsContent The options content to download
+ */
 function downloadText(optionsContent: string) {
 	try {
 		const blob = new Blob([optionsContent], {
@@ -102,6 +119,9 @@ function downloadText(optionsContent: string) {
 	}
 }
 
+/**
+ * Download the options content to a file
+ */
 function downloadOptions() {
 	const optionsArea = document.getElementById(
 		'cf7a_options_area'
@@ -114,6 +134,9 @@ function downloadOptions() {
 	alert('Your file has downloaded!');
 }
 
+/**
+ * Initialize the import and export options
+ */
 window.onload = function () {
 	// Example for download button
 	document

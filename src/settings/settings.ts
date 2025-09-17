@@ -17,6 +17,13 @@ function adminSettingsHelper() {
 			'.cf7a_alert'
 		) as NodeListOf<HTMLElement>;
 
+		/**
+		 * Resend message function
+		 * Displays a confirmation alert and sends a POST request to the API to resend a message.
+		 *
+		 * @param e       HTMLElement The button element
+		 * @param message string The message to display in the confirmation alert
+		 */
 		function confirmationAlert(e: HTMLElement, message: any) {
 			if (
 				// eslint-disable-next-line no-alert
