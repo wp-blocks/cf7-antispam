@@ -233,7 +233,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			'<p><strong>%s</strong></p>',
 			wpcf7_link(
 				esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ),
-				sprintf( 'CF7-Antispam (v%s)', CF7ANTISPAM_VERSION ),
+				sprintf( 'CF7-Antispam (v%s)', esc_html( CF7ANTISPAM_VERSION ) ),
 			)
 		);
 
