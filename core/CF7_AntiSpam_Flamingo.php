@@ -525,13 +525,13 @@ class CF7_AntiSpam_Flamingo {
 		$table = $wpdb->prefix . 'cf7a_wordlist';
 
 		$r = $wpdb->query(
-			$wpdb->prepare( "TRUNCATE TABLE %s", $table )
+			$wpdb->prepare( 'TRUNCATE TABLE %s', $table )
 		);
 
 		if ( ! is_wp_error( $r ) ) {
 			$wpdb->query(
 				$wpdb->prepare(
-					"INSERT INTO %s (`token`, `count_ham`) VALUES (%s, %d)",
+					'INSERT INTO %s (`token`, `count_ham`) VALUES (%s, %d)',
 					$table,
 					'b8*dbversion',
 					3
@@ -540,7 +540,7 @@ class CF7_AntiSpam_Flamingo {
 
 			$wpdb->query(
 				$wpdb->prepare(
-					"INSERT INTO %s (`token`, `count_ham`, `count_spam`) VALUES (%s, %d, %d)",
+					'INSERT INTO %s (`token`, `count_ham`, `count_spam`) VALUES (%s, %d, %d)',
 					$table,
 					'b8*texts',
 					0,
@@ -559,7 +559,13 @@ class CF7_AntiSpam_Flamingo {
 	 */
 	public static function cf7a_reset_b8_classification() {
 		global $wpdb;
-		$r = $wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
+		$r = $wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %s WHERE `meta_key` = %s',
+				$wpdb->prefix . 'postmeta',
+				'_cf7a_b8_classification'
+			)
+		);
 		return ( ! is_wp_error( $r ) );
 	}
 
