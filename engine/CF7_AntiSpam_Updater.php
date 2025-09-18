@@ -78,7 +78,6 @@ class CF7_AntiSpam_Updater {
 
 		return false;
 	}
-
 	/**
 	 * Update the database schema to 0.7.0
 	 * Add 'modified' and 'created' columns to blacklist table
@@ -111,8 +110,10 @@ class CF7_AntiSpam_Updater {
 			'modified'
 		);
 		if ( ! $wpdb->get_var( $sql_check_modified ) ) {
+			// Note: $wpdb->prepare cannot be used with ALTER TABLE statements.
+			// The table name is not user input, so it's safe to concatenate.
 			$sql = "ALTER TABLE `{$table_blacklist}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
-			$result = $wpdb->query( $sql );
+			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( $result !== false ) {
 				cf7a_log( 'CF7-antispam updated to 0.7.0: added modified column to blacklist table', 2 );
@@ -128,8 +129,10 @@ class CF7_AntiSpam_Updater {
 			'created'
 		);
 		if ( ! $wpdb->get_var( $sql_check_created ) ) {
+			// Note: $wpdb->prepare cannot be used with ALTER TABLE statements.
+			// The table name is not user input, so it's safe to concatenate.
 			$sql = "ALTER TABLE `{$table_blacklist}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
-			$result = $wpdb->query( $sql );
+			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( $result !== false ) {
 				cf7a_log( 'CF7-antispam updated to 0.7.0: added created column to blacklist table', 2 );
