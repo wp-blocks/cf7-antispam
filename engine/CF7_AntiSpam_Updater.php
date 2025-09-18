@@ -106,7 +106,8 @@ class CF7_AntiSpam_Updater {
 
 		// Check if the 'modified' column exists, if not add it
 		$sql_check_modified = $wpdb->prepare(
-			"SHOW COLUMNS FROM `{$table_blacklist}` LIKE %s",
+			"SHOW COLUMNS FROM %s LIKE %s",
+			$table_blacklist,
 			'modified'
 		);
 		if ( ! $wpdb->get_var( $sql_check_modified ) ) {
@@ -125,7 +126,8 @@ class CF7_AntiSpam_Updater {
 
 		// Check if the 'created' column exists, if not add it
 		$sql_check_created = $wpdb->prepare(
-			"SHOW COLUMNS FROM `{$table_blacklist}` LIKE %s",
+			"SHOW COLUMNS FROM %s LIKE %s",
+			$table_blacklist,
 			'created'
 		);
 		if ( ! $wpdb->get_var( $sql_check_created ) ) {
