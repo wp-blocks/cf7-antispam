@@ -183,8 +183,8 @@ class CF7_AntiSpam_Activator {
 		}
 
 		/* Create the blacklist database */
-		if ( $wpdb->get_var( "SHOW TABLES like '{$table_blacklist}'" ) !== $table_blacklist ) {
-			$cf7a_database = "CREATE TABLE IF NOT EXISTS `{$table_blacklist}` (
+		if ( $wpdb->get_var( $wpdb->prepare( "SHOW TABLES like %s" , $table_blacklist) ) !== $table_blacklist ) {
+			$cf7a_database =  "CREATE TABLE IF NOT EXISTS $table_blacklist (
 				 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				 `ip` varchar(45) NOT NULL,
 				 `status` int(10) unsigned DEFAULT NULL,
