@@ -51,10 +51,14 @@ class CF7_AntiSpam_Uninstaller {
 	protected static function cf7a_plugin_drop_tables() {
 		global $wpdb;
 
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' );
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' );
+		// Note: $wpdb->prepare cannot be used with DROP TABLE statements.
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		$wpdb->query( 'DELETE FROM ' . $wpdb->prefix . "postmeta WHERE `meta_key` = '_cf7a_b8_classification'" );
+		$wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->prefix}postmeta WHERE `meta_key` = %s",
+			'_cf7a_b8_classification'
+		) );
 	}
 
 	/**
