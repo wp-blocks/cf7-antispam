@@ -90,7 +90,7 @@ class CF7_AntiSpam_Filters {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 		if ( $ip ) {
 			global $wpdb;
-			$r = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE ip = %s", $ip ) );
+			$r = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %s WHERE ip = %s", $wpdb->prefix . 'cf7a_blacklist', $ip ) );
 			if ( $r ) {
 				return $r;
 			}
@@ -110,7 +110,7 @@ class CF7_AntiSpam_Filters {
 		if ( is_int( $id ) ) {
 			global $wpdb;
 
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist WHERE id = %s", $id ) );
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %s WHERE id = %s", $wpdb->prefix . 'cf7a_blacklist', $id ) );
 		}
 	}
 
@@ -153,7 +153,7 @@ class CF7_AntiSpam_Filters {
 					),
 				),
 				array( '%s', '%d', '%s' )
-			);
+			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 			if ( $r > - 1 ) {
 				return true;
@@ -184,7 +184,7 @@ class CF7_AntiSpam_Filters {
 				array(
 					'%s',
 				)
-			);
+			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 			return ! is_wp_error( $r ) ? $r : $wpdb->last_error;
 		}
@@ -212,7 +212,7 @@ class CF7_AntiSpam_Filters {
 			array(
 				'%d',
 			)
-		);
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		return ! is_wp_error( $r ) ? $r : $wpdb->last_error;
 	}
@@ -239,11 +239,11 @@ class CF7_AntiSpam_Filters {
 		$lower_bound = 0;
 
 		/* removes a status count at each balcklisted ip */
-		$updated = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}cf7a_blacklist SET `status` = `status` - %d WHERE 1", $status_decrement ) );
+		$updated = $wpdb->query( $wpdb->prepare( "UPDATE %s SET `status` = `status` - %d WHERE 1", $wpdb->prefix . 'cf7a_blacklist', $status_decrement ) );
 		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
 
 		/* when the line has 0 in status, we can remove it from the blacklist */
-		$updated = $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}cf7a_blacklist WHERE `status` =  %d", $lower_bound ) );
+		$updated = $wpdb->query( $wpdb->prepare( "DELETE FROM %s WHERE `status` =  %d", $wpdb->prefix . 'cf7a_blacklist', $lower_bound ) );
 		cf7a_log( "Removed $updated users from blacklist", 1 );
 
 		return true;
