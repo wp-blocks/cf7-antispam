@@ -190,12 +190,13 @@ function adminSettingsHelper() {
 			})
 				.then((response) => {
 					if (response) {
-						const { status, version, timestamp } = response as {
-							status: string;
-							version: string;
-							timestamp: string;
-						};
-						restApiStatus.innerHTML = `<p>${__('Status', 'cf7-antispam')}: ${status}</p><p>${__('CF7 Antispam plugin version is', 'cf7-antispam')} ${version} - (${__('Request timestamp', 'cf7-antispam')}: ${timestamp})</p>`;
+						const { status, plugin_version, timestamp } =
+							response as {
+								status: string;
+								plugin_version: string;
+								timestamp: string;
+							};
+						restApiStatus.innerHTML = `<p>${__('Status', 'cf7-antispam')}: ${status}</p><p>${__('CF7 Antispam plugin version is', 'cf7-antispam')} ${plugin_version} - (${__('Request timestamp', 'cf7-antispam')}: ${timestamp})</p>`;
 					} else {
 						restApiStatus.textContent = 'No response';
 					}
