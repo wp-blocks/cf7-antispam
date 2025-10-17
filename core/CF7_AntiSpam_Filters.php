@@ -90,6 +90,7 @@ class CF7_AntiSpam_Filters {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 		if ( $ip ) {
 			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$r = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %s WHERE ip = %s", $wpdb->prefix . 'cf7a_blacklist', $ip ) );
 			if ( $r ) {
 				return $r;
@@ -109,7 +110,7 @@ class CF7_AntiSpam_Filters {
 	public function cf7a_blacklist_get_id( $id ) {
 		if ( is_int( $id ) ) {
 			global $wpdb;
-
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %s WHERE id = %s", $wpdb->prefix . 'cf7a_blacklist', $id ) );
 		}
 	}
@@ -140,6 +141,7 @@ class CF7_AntiSpam_Filters {
 				$status = floatval( $spam_score );
 			}
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$r = $wpdb->replace(
 				$wpdb->prefix . 'cf7a_blacklist',
 				array(
@@ -153,7 +155,7 @@ class CF7_AntiSpam_Filters {
 					),
 				),
 				array( '%s', '%d', '%s' )
-			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			);
 
 			if ( $r > - 1 ) {
 				return true;
@@ -176,6 +178,7 @@ class CF7_AntiSpam_Filters {
 		if ( $ip ) {
 			global $wpdb;
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$r = $wpdb->delete(
 				$wpdb->prefix . 'cf7a_blacklist',
 				array(
@@ -184,7 +187,7 @@ class CF7_AntiSpam_Filters {
 				array(
 					'%s',
 				)
-			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			);
 
 			return ! is_wp_error( $r ) ? $r : $wpdb->last_error;
 		}
@@ -204,6 +207,7 @@ class CF7_AntiSpam_Filters {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$r = $wpdb->delete(
 			$wpdb->prefix . 'cf7a_blacklist',
 			array(
@@ -212,7 +216,7 @@ class CF7_AntiSpam_Filters {
 			array(
 				'%d',
 			)
-		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		);
 
 		return ! is_wp_error( $r ) ? $r : $wpdb->last_error;
 	}
@@ -239,10 +243,12 @@ class CF7_AntiSpam_Filters {
 		$lower_bound = 0;
 
 		/* removes a status count at each balcklisted ip */
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated = $wpdb->query( $wpdb->prepare( "UPDATE %s SET `status` = `status` - %d WHERE 1", $wpdb->prefix . 'cf7a_blacklist', $status_decrement ) );
 		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
 
 		/* when the line has 0 in status, we can remove it from the blacklist */
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated = $wpdb->query( $wpdb->prepare( "DELETE FROM %s WHERE `status` =  %d", $wpdb->prefix . 'cf7a_blacklist', $lower_bound ) );
 		cf7a_log( "Removed $updated users from blacklist", 1 );
 

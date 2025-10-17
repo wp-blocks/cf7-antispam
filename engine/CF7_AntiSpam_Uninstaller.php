@@ -25,6 +25,7 @@ class CF7_AntiSpam_Uninstaller {
 	 */
 	public static function cf7a_clean_blacklist() {
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$r = $wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}cf7a_blacklist`" );
 		return ! is_wp_error( $r );
 	}
@@ -52,9 +53,12 @@ class CF7_AntiSpam_Uninstaller {
 		global $wpdb;
 
 		// Note: $wpdb->prepare cannot be used with DROP TABLE statements.
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare(
 			"DELETE FROM {$wpdb->prefix}postmeta WHERE `meta_key` = %s",
 			'_cf7a_b8_classification'
@@ -99,6 +103,7 @@ class CF7_AntiSpam_Uninstaller {
 
 			if ( $is_multisite ) {
 				// Get all blogs in the network and uninstall the plugin on each one.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
 
 				foreach ( $blog_ids as $blog_id ) {

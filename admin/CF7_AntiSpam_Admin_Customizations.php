@@ -1011,7 +1011,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* get the import options */
 		$new_input = $this->options;
 
-		if ( isset( $_POST['to-import'] ) and isset( $_POST['cf7a-nonce'] ) and wp_verify_nonce( wp_unslash($_POST['cf7a-nonce']), 'cf7a-nonce' ) ) {
+		if ( isset( $_POST['to-import'] ) and isset( $_POST['cf7a-nonce'] ) and wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['cf7a-nonce'] ) ), 'cf7a-nonce' ) ) {
 
 			$to_import = sanitize_text_field(wp_unslash($_POST['to-import'] ) );
 			$json_data = json_decode( $to_import );
