@@ -345,7 +345,7 @@ class CF7_AntiSpam {
 
 		if ( isset( $plugin_options[ $option ] ) ) {
 			if ( is_string( $value ) ) {
-				/* if the value is a string sanitize and replace the option */
+				/* if the value is a string, sanitize and replace the option */
 				$plugin_options[ $option ] = sanitize_text_field( trim( $value ) );
 			} else {
 				/* if the value is an array sanitize each element then merge into option */
@@ -373,20 +373,20 @@ class CF7_AntiSpam {
 	public function spam_mail_report( $mail_body, $last_report_timestamp ) {
 		global $wpdb;
 
-		$all  = $wpdb->get_var(
-			"SELECT COUNT(*) AS cnt
-			 FROM {$wpdb->prefix}posts
-			 WHERE post_status = 'flamingo-spam';"
-		);
-		$last = $wpdb->get_var(
-			$wpdb->prepare(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$all  = $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(*) AS cnt FROM %s WHERE post_status = 'flamingo-spam';"
+			, $wpdb->prefix . 'posts' ) );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$last = $wpdb->get_var( $wpdb->prepare(
 				"SELECT COUNT(*) AS cnt
-		 	 FROM {$wpdb->prefix}posts
+		 	 FROM %s
 		 	 WHERE post_date_gmt >= FROM_UNIXTIME( %d )
 			 AND post_status = 'flamingo-spam';",
+				$wpdb->prefix . 'posts',
 				$last_report_timestamp
-			)
-		);
+			) );
 
 		$mail_body .= '<p>' . sprintf(
 				/* translators: %1$s overall spam attempts, %2$s since last report */
