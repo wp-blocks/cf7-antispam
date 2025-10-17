@@ -200,12 +200,12 @@ class CF7_AntiSpam_Admin_Display {
 
 		// Get basic stats
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$total_blocked = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s", $wpdb->prefix . 'cf7a_blacklist' ) );
+		$total_blocked = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $wpdb->prefix . 'cf7a_blacklist' ) );
 
 		// Get status breakdown with proper grouping
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$status_data = $wpdb->get_results( $wpdb->prepare( "SELECT status, COUNT(*) as count
-						FROM %s
+						FROM %i
 						GROUP BY status
 						ORDER BY status ASC",
 			$wpdb->prefix . 'cf7a_blacklist' ) );
@@ -252,7 +252,7 @@ class CF7_AntiSpam_Admin_Display {
 		$meta_data = $wpdb->get_results(
 			$wpdb->prepare("
 					SELECT meta
-					FROM %s
+					FROM %i
 					WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'
 			", $wpdb->prefix . 'cf7a_blacklist' )
 		);
@@ -285,24 +285,22 @@ class CF7_AntiSpam_Admin_Display {
 
 		// Get top 10 spam words
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$top_spam_words = $wpdb->get_results(
+		$top_spam_words = $wpdb->get_results( $wpdb->prepare(
 			"SELECT token, count_spam
-				FROM {$wpdb->prefix}cf7a_wordlist
+				FROM %i
 				WHERE count_spam > 0
 				ORDER BY count_spam DESC
-				LIMIT 10"
-		);
+				LIMIT 10",
+				$wpdb->prefix . 'cf7a_wordlist'
+		) );
 
 		// Get top 10 ham words
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$top_ham_words = $wpdb->get_results(
-			"SELECT token, count_ham
-				FROM {$wpdb->prefix}cf7a_wordlist
+		$top_ham_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_ham
+				FROM %i
 				WHERE count_ham > 0
 				ORDER BY count_ham DESC
-				LIMIT 10"
-		);
-
+				LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
 		?>
 		<div class="cf7a-stats-grid">
 
@@ -647,7 +645,7 @@ class CF7_AntiSpam_Admin_Display {
 	public static function cf7a_get_blacklisted_table() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklisted = $wpdb->get_results( $wpdb->prepare("SELECT * FROM %s ORDER BY `status` DESC LIMIT 1000", $wpdb->prefix . 'cf7a_blacklist' ) );
+		$blacklisted = $wpdb->get_results( $wpdb->prepare("SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000", $wpdb->prefix . 'cf7a_blacklist' ) );
 
 		if ( $blacklisted ) {
 			$count = count( $blacklisted );
