@@ -55,32 +55,44 @@ class CF7_AntiSpam_Admin_Display {
 	 * Render the tabbed interface
 	 */
 	private function render_tabbed_interface() {
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash($_GET['tab']) ) : 'dashboard';
+
+		$active_tab = 'dashboard'; // Default tab
+
+		// Check if 'tab' is present in the GET request.
+		$nonce_action = 'cf7a_admin_tab_switch';
+
+		if ( isset( $_GET['tab'] ) ) {
+			if ( isset( $_GET[ '_wpnonce' ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ '_wpnonce' ] ) ), $nonce_action ) ) {
+				$active_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
+			} else {
+				die();
+			}
+		}
 		?>
 		<div class="cf7a-nav-tab-wrapper">
-			<a href="<?php echo esc_url( $this->get_tab_url( 'dashboard' ) ); ?>"
-				class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'dashboard' ), $nonce_action ) ); ?>"
+				 class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'cf7-antispam' ); ?>
 			</a>
-			<a href="<?php echo esc_url( $this->get_tab_url( 'settings' ) ); ?>"
-				class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'settings' ), $nonce_action ) ); ?>"
+				 class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Settings', 'cf7-antispam' ); ?>
 			</a>
-			<a href="<?php echo esc_url( $this->get_tab_url( 'blacklist' ) ); ?>"
-				class="cf7a-nav-tab tab-blacklist <?php echo $active_tab === 'blacklist' ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'blacklist' ), $nonce_action ) ); ?>"
+				 class="cf7a-nav-tab tab-blacklist <?php echo $active_tab === 'blacklist' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blacklist', 'cf7-antispam' ); ?>
 			</a>
-			<a href="<?php echo esc_url( $this->get_tab_url( 'tools' ) ); ?>"
-				class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'tools' ), $nonce_action ) ); ?>"
+				 class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
 			</a>
-			<a href="<?php echo esc_url( $this->get_tab_url( 'import-export' ) ); ?>"
-				class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'import-export' ), $nonce_action ) ); ?>"
+				 class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'import-export' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import/Export', 'cf7-antispam' ); ?>
 			</a>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
-				<a href="<?php echo esc_url( $this->get_tab_url( 'debug' ) ); ?>"
-					class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
+				<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'debug' ), $nonce_action ) ); ?>"
+					 class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
 					<span class="dashicons dashicons-code-standards"></span> <?php esc_html_e( 'Debug', 'cf7-antispam' ); ?>
 				</a>
 			<?php endif; ?>
@@ -187,17 +199,16 @@ class CF7_AntiSpam_Admin_Display {
 		global $wpdb;
 
 		// Get basic stats
-		$total_blocked = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}cf7a_blacklist" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total_blocked = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s", $wpdb->prefix . 'cf7a_blacklist' ) );
 
 		// Get status breakdown with proper grouping
-		$status_data = $wpdb->get_results(
-			"
-        SELECT status, COUNT(*) as count
-        FROM {$wpdb->prefix}cf7a_blacklist
-        GROUP BY status
-        ORDER BY status ASC
-    "
-		);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$status_data = $wpdb->get_results( $wpdb->prepare( "SELECT status, COUNT(*) as count
+						FROM %s
+						GROUP BY status
+						ORDER BY status ASC",
+			$wpdb->prefix . 'cf7a_blacklist' ) );
 
 		// Group status into ranges
 		$status_ranges = array(
@@ -237,12 +248,13 @@ class CF7_AntiSpam_Admin_Display {
 		);
 
 		// Get detailed reason stats from serialized meta
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$meta_data = $wpdb->get_results(
-			"
-        SELECT meta
-        FROM {$wpdb->prefix}cf7a_blacklist
-        WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'
-    "
+			$wpdb->prepare("
+					SELECT meta
+					FROM %s
+					WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'
+			", $wpdb->prefix . 'cf7a_blacklist' )
 		);
 
 		$reason_counts = array();
@@ -272,25 +284,23 @@ class CF7_AntiSpam_Admin_Display {
 		$top_reasons = array_slice( $reason_counts, 0, 5, true );
 
 		// Get top 10 spam words
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$top_spam_words = $wpdb->get_results(
-			"
-				SELECT token, count_spam
+			"SELECT token, count_spam
 				FROM {$wpdb->prefix}cf7a_wordlist
 				WHERE count_spam > 0
 				ORDER BY count_spam DESC
-				LIMIT 10
-		"
+				LIMIT 10"
 		);
 
 		// Get top 10 ham words
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$top_ham_words = $wpdb->get_results(
-			"
-				SELECT token, count_ham
+			"SELECT token, count_ham
 				FROM {$wpdb->prefix}cf7a_wordlist
 				WHERE count_ham > 0
 				ORDER BY count_ham DESC
-				LIMIT 10
-		"
+				LIMIT 10"
 		);
 
 		?>
@@ -486,7 +496,7 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * Render Settings Tab
+	 * Render the Settings Tab
 	 */
 	private function render_settings_tab() {
 		?>
@@ -505,7 +515,7 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * Render Blacklist Tab
+	 * Render the Blacklist Tab
 	 */
 	private function render_blacklist_tab() {
 		?>
@@ -527,7 +537,7 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * Render Blacklist Tab
+	 * Render the Blacklist Tab
 	 */
 	private function render_import_export_tab() {
 		?>
@@ -539,7 +549,7 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * Render Tools Tab
+	 * Render the Tools Tab
 	 */
 	private function render_tools_tab() {
 		?>
@@ -553,7 +563,7 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * Render advanced tools section
+	 * Render the advanced tools section
 	 */
 	private function render_advanced_tools() {
 		?>
@@ -608,7 +618,7 @@ class CF7_AntiSpam_Admin_Display {
 			<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
 
 			<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-			<textarea id="cf7a_options_area" rows="20" style="width: 100%;" data-nonce="<?php echo wp_create_nonce( 'cf7a-nonce' ); ?>"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+			<textarea id="cf7a_options_area" rows="20" style="width: 100%;" data-nonce="<?php echo esc_attr(wp_create_nonce( 'cf7a-nonce' )); ?>"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
 
 			<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
 				<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
@@ -636,7 +646,8 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	public static function cf7a_get_blacklisted_table() {
 		global $wpdb;
-		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC LIMIT 1000" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$blacklisted = $wpdb->get_results( $wpdb->prepare("SELECT * FROM %s ORDER BY `status` DESC LIMIT 1000", $wpdb->prefix . 'cf7a_blacklist' ) );
 
 		if ( $blacklisted ) {
 			$count = count( $blacklisted );
