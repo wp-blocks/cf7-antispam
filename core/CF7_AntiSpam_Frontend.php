@@ -542,8 +542,6 @@ class CF7_AntiSpam_Frontend {
 		);
 	}
 
-	// Prevent the email sending step for specific form
-
 	/**
 	 * Check if the form should be aborted if mail was sent or invalid
 	 *
@@ -556,7 +554,7 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_check_resend( $cf7, &$abort, $submission ) {
 
 		// Get the hash from the form data if it exists
-		$raw_hash = ! empty( $_POST['_cf7a_hash'] ) ? sanitize_text_field( $_POST['_cf7a_hash'] ) : false;
+		$raw_hash = ! empty( $_POST['_cf7a_hash'] ) ? sanitize_text_field( wp_unslash($_POST['_cf7a_hash'] ) ) : false; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ! $raw_hash ) {
 			return;
 		}
