@@ -87,17 +87,16 @@ class CF7_AntiSpam_Updater {
 	public function update_db_procedure_to_0_7_0() {
 		global $wpdb;
 
-		$table_blacklist = $wpdb->prefix . 'cf7a_blacklist';
+		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
 		$updated = false;
 
 		// Check if the table exists first
-		// Note: It's generally safe to interpolate table names as they are derived from $wpdb->prefix
-		// and aren't user input, but preparing is still the best practice to avoid the warning.
-		$sql_check_table = $wpdb->prepare(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$has_blacklist_table = $wpdb->get_var( $wpdb->prepare(
 			"SHOW TABLES LIKE %s",
-			$wpdb->esc_like( $table_blacklist )
-		);
-		if ( $wpdb->get_var( $sql_check_table ) !== $table_blacklist ) {
+			$wpdb->esc_like( $blacklist_table )
+		) );
+		if ( $has_blacklist_table !== $blacklist_table ) {
 			cf7a_log( 'CF7-antispam update to 0.7.0: blacklist table does not exist, skipping schema update', 2 );
 			return false;
 		}
@@ -105,16 +104,18 @@ class CF7_AntiSpam_Updater {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		// Check if the 'modified' column exists, if not add it
-		$sql_check_modified = $wpdb->prepare(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$has_blacklist_modified_col = $wpdb->get_var( $wpdb->prepare(
 			"SHOW COLUMNS FROM %s LIKE %s",
-			$table_blacklist,
+			$blacklist_table,
 			'modified'
-		);
-		if ( ! $wpdb->get_var( $sql_check_modified ) ) {
+		) );
+		if ( ! $has_blacklist_modified_col ) {
 			// Note: $wpdb->prepare cannot be used with ALTER TABLE statements.
-			// The table name is not user input, so it's safe to concatenate.
-			$sql = "ALTER TABLE `{$table_blacklist}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
-			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$sql = "ALTER TABLE `{$blacklist_table}` ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;";
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {
 				cf7a_log( 'CF7-antispam updated to 0.7.0: added modified column to blacklist table', 2 );
@@ -125,16 +126,17 @@ class CF7_AntiSpam_Updater {
 		}
 
 		// Check if the 'created' column exists, if not add it
-		$sql_check_created = $wpdb->prepare(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$has_blacklist_created_col =  $wpdb->get_var( $wpdb->prepare(
 			"SHOW COLUMNS FROM %s LIKE %s",
-			$table_blacklist,
+			$blacklist_table,
 			'created'
-		);
-		if ( ! $wpdb->get_var( $sql_check_created ) ) {
+		) );
+		if ( ! $has_blacklist_created_col ) {
 			// Note: $wpdb->prepare cannot be used with ALTER TABLE statements.
-			// The table name is not user input, so it's safe to concatenate.
-			$sql = "ALTER TABLE `{$table_blacklist}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
-			$result = $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$sql = "ALTER TABLE `{$blacklist_table}` ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;";
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {
 				cf7a_log( 'CF7-antispam updated to 0.7.0: added created column to blacklist table', 2 );
