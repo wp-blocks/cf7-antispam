@@ -176,67 +176,6 @@ class CF7_AntiSpam_Admin_Tools {
 				echo $csv; // phpcs:ignore WordPress.Security.EscapeOutput
 				exit();
 			}
-
-			/* Purge the blacklist */
-			if ( 'reset-blacklist' === $action ) {
-
-				/* uninstall class contains the database utility functions */
-				$r = CF7_AntiSpam_Uninstaller::cf7a_clean_blacklist();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'Success: ip blacklist cleaned', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' ) );
-				}
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Reset Dictionary */
-			if ( 'reset-dictionary' === $action ) {
-
-				/* uninstall class contains the database utility functions */
-				$r = CF7_AntiSpam_Flamingo::cf7a_reset_dictionary();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'b8 dictionary reset successful', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
-				}
-
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Reset plugin data */
-			if ( 'cf7a-full-reset' === $action ) {
-
-				/* uninstall class contains the database utility functions */
-				$r = CF7_AntiSpam_Uninstaller::cf7a_full_reset();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 manually if needed', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Ops! something went wrong... Please refresh and try again!', 'cf7-antispam' ) );
-				}
-
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Rebuild Dictionary */
-			if ( 'rebuild-dictionary' === $action ) {
-				$r = CF7_AntiSpam_Flamingo::cf7a_rebuild_dictionary();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'b8 dictionary rebuild successful', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Something goes wrong while rebuilding b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
-				}
-
-				wp_safe_redirect( $url );
-				exit();
-			}
 		}
 	}
 }
