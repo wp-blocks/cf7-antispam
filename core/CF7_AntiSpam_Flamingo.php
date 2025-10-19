@@ -525,14 +525,14 @@ class CF7_AntiSpam_Flamingo {
 		$table = $wpdb->prefix . 'cf7a_wordlist';
 
 		$r = $wpdb->query(
-			$wpdb->prepare( 'TRUNCATE TABLE %s', $table )
+			$wpdb->prepare( 'TRUNCATE TABLE %i', $table )
 		);
 
 		if ( ! is_wp_error( $r ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $wpdb->prepare( 'INSERT INTO %s (`token`, `count_ham`) VALUES (%s, %d)', $table, 'b8*dbversion', 3 ) );
+			$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (`token`, `count_ham`) VALUES (%s, %d)', $table, 'b8*dbversion', 3 ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query( $wpdb->prepare( 'INSERT INTO %s (`token`, `count_ham`, `count_spam`) VALUES (%s, %d, %d)', $table, 'b8*texts', 0, 0 ) );
+			$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (`token`, `count_ham`, `count_spam`) VALUES (%s, %d, %d)', $table, 'b8*texts', 0, 0 ) );
 
 			return true;
 		}
@@ -547,7 +547,7 @@ class CF7_AntiSpam_Flamingo {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$r = $wpdb->query( $wpdb->prepare(
-				'DELETE FROM %s WHERE `meta_key` = %s',
+				'DELETE FROM %i WHERE `meta_key` = %s',
 				$wpdb->prefix . 'postmeta',
 				'_cf7a_b8_classification'
 			) );
