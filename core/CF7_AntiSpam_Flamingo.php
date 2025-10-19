@@ -503,10 +503,10 @@ class CF7_AntiSpam_Flamingo {
 		if ( 'resend' === $column ) {
 			$nonce = wp_create_nonce( 'cf7a-nonce' );
 			printf(
-				'<button class="button cf7a_action cf7a_action_flamingo" data-action="cf7a_resend_message" data-nonce="%s" data-id="%s" data-message="%s">%s</button>',
+				'<button class="button cf7a_action cf7a_action_flamingo" data-action="resend_message" data-nonce="%s" data-id="%s" data-message="%s">%s</button>',
 				$nonce, // phpcs:ignore WordPress.Security.EscapeOutput
 				(int) $post_id,
-				esc_html__( 'Are you sure?', 'cf7-antispam' ),
+				esc_html__( 'Do you want to resend this email?', 'cf7-antispam' ),
 				esc_html__( 'Resend Email', 'cf7-antispam' )
 			);
 		}

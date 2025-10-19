@@ -582,7 +582,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			<h4><?php esc_html_e( 'Full Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Completely reset the plugin to its initial state.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action" data-action="cf7a-full-reset" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
+			<button class="cf7a_action-button cf7a_action" data-action="full-reset" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-message="<?php esc_html_e( 'Are you sure? This will reset the plugin to its initial state.', 'cf7-antispam' ); ?>" data-><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
 		</div>
 		<?php
 	}

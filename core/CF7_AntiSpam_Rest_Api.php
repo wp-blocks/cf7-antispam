@@ -142,17 +142,22 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 			if ( 'empty' === $r ) {
 				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s has an empty body', 'cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'success' => true, 'message' => sprintf( __( 'Email id %s has an empty body', 'cf7-antispam' ), $mail_id ) ) );
 			}
 
 			if ( $r ) {
 				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s sent with success', 'cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'success' => true, 'message' => sprintf( __( 'Email id %s sent with success', 'cf7-antispam' ), $mail_id ) ) );
 			}
 		}
 
-		/* translators: %s is the mail id. */
-		return rest_ensure_response( array( 'message' => sprintf( __( 'Ops! something went wrong... unable to resend email with id %s', 'cf7-antispam' ), $mail_id ) ) );
+
+		return rest_ensure_response( array(
+			'success' => false,
+			/* translators: %s is the mail id. */
+			'message' => sprintf( __( 'Ops! something went wrong... unable to resend email with id %s', 'cf7-antispam' ), $mail_id )
+			)
+		);
 	}
 
 	/**
@@ -336,9 +341,9 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 					'args'                => array(
 						'id'    => array(
 							'required'          => true,
-							'type'              => 'string',
+							'type'              => 'integer',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return $this->cf7a_validate_param( $param, 'int' );
 							},
 						),
 						'nonce' => array(
