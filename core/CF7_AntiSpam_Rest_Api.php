@@ -10,6 +10,7 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
 use WP_REST_Controller;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -64,6 +65,9 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	private function cf7a_validate_param( $value, $type = 'string' ) {
 
 		switch ( $type ) {
+			case 'nonce':
+				return wp_verify_nonce( $value, 'cf7a-nonce' );
+
 			case 'string':
 				return is_string( $value ) ? sanitize_text_field( $value ) : new WP_Error( 'invalid_param', 'Parameter must be a string' );
 
@@ -341,7 +345,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return $this->cf7a_validate_param( $param, 'nonce' );
 							},
 						),
 					),
@@ -362,7 +366,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return $this->cf7a_validate_param( $param, 'nonce' );
 							},
 						),
 					),
@@ -383,7 +387,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return $this->cf7a_validate_param( $param, 'nonce' );
 							},
 						),
 					),
@@ -404,7 +408,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return $this->cf7a_validate_param( $param, 'nonce' );
 							},
 						),
 					),
@@ -425,7 +429,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return $this->cf7a_validate_param( $param, 'nonce' );
 							},
 						),
 					),

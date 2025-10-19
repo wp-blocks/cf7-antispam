@@ -3,60 +3,84 @@ import { __ } from '@wordpress/i18n';
 
 window.addEventListener('load', adminSettingsHelper);
 
+/**
+ * Resend message function
+ * Displays a confirmation alert and sends a POST request to the API to resend a message.
+ *
+ * @param e               HTMLElement The button element
+ * @param dataset         object The dataset of the button element
+ * @param dataset.message string The message to display in the confirmation alert
+ * @param dataset.nonce   string T
+ * @param dataset.action
+ * @param dataset.id
+ */
+function actionHandler(e: HTMLElement) {
+	const { action, message, nonce } = e.dataset as {
+		action: string;
+		message: string;
+		nonce: string;
+		id?: string;
+	};
+
+	/**
+	 * Confirmation alert
+	 * We are going to ask the user to confirm the action before proceeding using the confirm() function
+	 */
+	if (
+		// eslint-disable-next-line no-alert
+		message &&
+		!confirm(message)
+	) {
+		return;
+	}
+
+	/**
+	 * Data object
+	 * We are going to create a data object to send to the API
+	 * because we cannot send the dataset directly to the API
+	 */
+	const data: { nonce: string; id?: number } = {
+		nonce,
+	};
+
+	if (e.dataset.id) {
+		data.id = Number(e.dataset.id);
+	}
+
+	apiFetch({
+		path: '/cf7-antispam/v1/' + action,
+		method: 'POST',
+		data,
+	})
+		.then((res) => {
+			const { message, success } = res as {
+				message: string;
+				success: boolean;
+			};
+			if (success) {
+				alert(message);
+			}
+		})
+		.catch((error: any) => {
+			console.error('API Error:', error.message);
+			alert('Request failed: ' + error.message);
+		});
+}
+
 function adminSettingsHelper() {
 	/* This is the code that adds the confirmation alert to the delete buttons on the settings page. */
 	if (
 		document.body.classList.contains('cf7-antispam-admin') ||
 		document.body.classList.contains('flamingo_page_flamingo_inbound')
 	) {
-		// eslint-disable-next-line camelcase
-		const alertMessage = cf7a_admin_settings.alertMessage;
-
 		// the confirmation alert script
-		const alerts = document.querySelectorAll(
-			'.cf7a_alert'
+		const actions = document.querySelectorAll(
+			'.cf7a_action'
 		) as NodeListOf<HTMLElement>;
 
-		/**
-		 * Resend message function
-		 * Displays a confirmation alert and sends a POST request to the API to resend a message.
-		 *
-		 * @param e       HTMLElement The button element
-		 * @param message string The message to display in the confirmation alert
-		 */
-		function confirmationAlert(e: HTMLElement, message: any) {
-			if (
-				// eslint-disable-next-line no-alert
-				confirm(message || alertMessage) &&
-				'dataset' in e
-			) {
-				const dataset = e.dataset as { [key: string]: string };
-
-				apiFetch({
-					path: '/cf7-antispam/v1/resend_message',
-					method: 'POST',
-					data: {
-						id: dataset.id,
-						nonce: dataset.nonce,
-					},
-				})
-					.then((res) => {
-						if (res) {
-							alert(res);
-						} else {
-							alert('Error');
-						}
-					})
-					.catch((error: any) => {
-						console.error('API Error:', error);
-						alert('Request failed');
-					});
-			}
-		}
-
-		alerts.forEach((alert: HTMLElement) => {
-			alert.addEventListener('click', () => {
-				confirmationAlert(alert, alert.dataset.message || false);
+		actions.forEach((action: HTMLElement) => {
+			action.addEventListener('click', () => {
+				actionHandler(action);
 			});
 		});
 	}
