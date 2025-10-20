@@ -53,16 +53,19 @@ function actionHandler(e: HTMLElement) {
 		data,
 	})
 		.then((res) => {
-			const { message, success } = res as {
+			const { message, success, log } = res as {
 				message: string;
 				success: boolean;
+				log?: string;
 			};
 			if (success) {
 				alert(message);
+			} else {
+				console.error('Error:', message, log as string);
 			}
 		})
 		.catch((error: any) => {
-			console.error('API Error:', error.message);
+			console.error('Error:', error.message);
 			alert('Request failed: ' + error.message);
 		});
 }
