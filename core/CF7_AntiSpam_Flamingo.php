@@ -180,7 +180,7 @@ class CF7_AntiSpam_Flamingo {
 				}
 			} else {
 				/* the message field could be multiple */
-				$message_meta = isset( $additional_settings[ $field ] ) ? $additional_settings[ $field ] : false;
+				$message_meta = $additional_settings[ $field ] ?? false;
 				$message      = cf7a_maybe_split_mail_meta( $flamingo_post->fields, $message_meta, ' ' );
 
 				if ( ! empty( $message ) ) {
@@ -208,21 +208,14 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @param int $mail_id The ID of the mail to resend.
 	 *
-	 * @return bool|mixed|null
+	 * @return array { success: boolean, message: string }
 	 */
 	public function cf7a_resend_mail( $mail_id ) {
 		$flamingo_data = new Flamingo_Inbound_Message( $mail_id );
-
-		if ( ! empty( $flamingo_data->meta['message_field'] ) && ! empty( $flamingo_data->fields[ $flamingo_data->meta['message_field'] ] ) ) {
-			$message = $flamingo_data->fields[ $flamingo_data->meta['message_field'] ];
-		}
+		$message = self::cf7a_get_mail_field( $flamingo_data, 'message' );
 
 		if ( empty( $message ) ) {
-			$message = self::cf7a_get_mail_field( $flamingo_data, 'message' );
-		}
-
-		if ( empty( $message ) ) {
-			return 'empty';
+			return array( 'success' => false, 'message' => __( 'Cannot find the original post', 'cf7-antispam' ), 'log' => $flamingo_data );
 		}
 
 		/* the mail data */
@@ -295,7 +288,12 @@ class CF7_AntiSpam_Flamingo {
 		$headers .= "Reply-To: {$sender}\n";
 
 		/* send the email */
-		return wp_mail( $recipient, $subject, $body, $headers );
+		$result = wp_mail( $recipient, $subject, $body, $headers );
+		if ( $result ) {
+			return array( 'success'=> true, 'message' => __( 'Email sent with success', 'cf7-antispam' ) );
+		}
+
+		return array( 'success' => false, 'message' => __( 'Ops! something went wrong... unable to resend email', 'cf7-antispam' ), 'log' => array( 'recipient' => $recipient, 'subject' => $subject, 'body' => $body, 'headers' => $headers ) );
 	}
 
 	/**
@@ -503,8 +501,8 @@ class CF7_AntiSpam_Flamingo {
 		if ( 'resend' === $column ) {
 			$nonce = wp_create_nonce( 'cf7a-nonce' );
 			printf(
-				'<button class="button cf7a_action cf7a_action_flamingo" data-action="resend_message" data-nonce="%s" data-id="%s" data-message="%s">%s</button>',
-				$nonce, // phpcs:ignore WordPress.Security.EscapeOutput
+				'<a class="button cf7a_action cf7a_action_flamingo" data-action="resend_message" data-nonce="%s" data-id="%s" data-message="%s">%s</a>',
+				esc_attr($nonce),
 				(int) $post_id,
 				esc_html__( 'Do you want to resend this email?', 'cf7-antispam' ),
 				esc_html__( 'Resend Email', 'cf7-antispam' )
