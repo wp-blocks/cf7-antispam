@@ -140,14 +140,13 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 			$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
-			if ( 'empty' === $r ) {
+			if ( ! $r['success'] ) {
 				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'success' => true, 'message' => sprintf( __( 'Email id %s has an empty body', 'cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'success' => false, 'message' => sprintf( __( 'Error: unable to resend email with id %s.', 'cf7-antispam' ), $mail_id ) . ' ' . $r['message'], 'log' =>  $r['log'] ) );
 			}
 
 			if ( $r ) {
-				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'success' => true, 'message' => sprintf( __( 'Email id %s sent with success', 'cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'success' => true, 'message' => $r['message'] ) );
 			}
 		}
 
