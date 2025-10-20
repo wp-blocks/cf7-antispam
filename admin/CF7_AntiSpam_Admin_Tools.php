@@ -36,9 +36,10 @@ class CF7_AntiSpam_Admin_Tools {
 
 	public static function cf7a_export_blacklist() {
 		global $wpdb;
-		$blacklisted = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cf7a_blacklist ORDER BY `status` DESC" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$blacklisted = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i ORDER BY `status` DESC", $wpdb->prefix . 'cf7a_blacklist' ) );
 		foreach ( $blacklisted as $row ) {
-			$meta = unserialize( $row->meta );
+			$meta      = unserialize( $row->meta );
 			$row->meta = $meta;
 		}
 		return $blacklisted;
@@ -129,111 +130,50 @@ class CF7_AntiSpam_Admin_Tools {
 
 				if ( ! empty( $blacklist ) ) {
 					// Convert to CSV format with all fields
-					$csv = "";
+					$csv = '';
 
 					// Add CSV header
 					$csv .= "ID,IP,Status,Meta,Modified,Created\n";
 
 					foreach ( $blacklist as $row ) {
 						// Escape CSV values
-						$id = $row->id;
-						$ip = '"' . str_replace('"', '""', $row->ip) . '"';
+						$id     = $row->id;
+						$ip     = '"' . str_replace( '"', '""', $row->ip ) . '"';
 						$status = $row->status ?? '';
 
 						// Handle the metadata array - convert to JSON string for CSV
 						$meta = '';
 						if ( is_array( $row->meta ) && ! empty( $row->meta ) ) {
-							$meta = '"' . str_replace('"', '""', json_encode( $row->meta, JSON_UNESCAPED_UNICODE )) . '"';
+							$meta = '"' . str_replace( '"', '""', json_encode( $row->meta, JSON_UNESCAPED_UNICODE ) ) . '"';
 						} elseif ( ! empty( $row->meta ) ) {
-							$meta = '"' . str_replace('"', '""', $row->meta) . '"';
+							$meta = '"' . str_replace( '"', '""', $row->meta ) . '"';
 						}
 
-						$modified = '"' . str_replace('"', '""', $row->modified ?? '') . '"';
-						$created = '"' . str_replace('"', '""', $row->created ?? '') . '"';
+						$modified = '"' . str_replace( '"', '""', $row->modified ?? '' ) . '"';
+						$created  = '"' . str_replace( '"', '""', $row->created ?? '' ) . '"';
 
 						// Build CSV row
 						$csv .= $id . ',' . $ip . ',' . $status . ',' . $meta . ',' . $modified . ',' . $created . "\n";
 					}
 				} else {
 					// Handle empty blacklist case
-					$csv = "ID,IP,Status,Meta,Modified,Created\n";
+					$csv  = "ID,IP,Status,Meta,Modified,Created\n";
 					$csv .= "No blacklisted IPs found\n";
 				}
 
 				// Set headers for file download
-				$filename = 'cf7-antispam-blacklist-' . date('Y-m-d-H-i-s') . '.csv';
+				$filename = 'cf7-antispam-blacklist-' . gmdate( 'Y-m-d-H-i-s' ) . '.csv';
 
 				// Set download headers
-				header('Content-Type: text/csv; charset=utf-8');
-				header('Content-Disposition: attachment; filename="' . $filename . '"');
-				header('Content-Length: ' . strlen($csv));
-				header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-				header('Pragma: no-cache');
-				header('Expires: 0');
+				header( 'Content-Type: text/csv; charset=utf-8' );
+				header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+				header( 'Content-Length: ' . strlen( $csv ) );
+				header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
+				header( 'Pragma: no-cache' );
+				header( 'Expires: 0' );
 
 				// Output the CSV content
-				echo $csv;
-				exit();
-			}
-
-			/* Purge the blacklist */
-			if ( 'reset-blacklist' === $action ) {
-
-				/* uninstall class contains the database utility functions */
-				$r = CF7_AntiSpam_Uninstaller::cf7a_clean_blacklist();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'Success: ip blacklist cleaned', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' ) );
-				}
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Reset Dictionary */
-			if ( 'reset-dictionary' === $action ) {
-
-				/* uninstall class contains the database utility functions */
-				$r = CF7_AntiSpam_Flamingo::cf7a_reset_dictionary();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'b8 dictionary reset successful', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
-				}
-
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Reset plugin data */
-			if ( 'cf7a-full-reset' === $action ) {
-
-				/* uninstall class contains the database utility functions */
-				$r = CF7_AntiSpam_Uninstaller::cf7a_full_reset();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 manually if needed', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Ops! something went wrong... Please refresh and try again!', 'cf7-antispam' ) );
-				}
-
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Rebuild Dictionary */
-			if ( 'rebuild-dictionary' === $action ) {
-				$r = CF7_AntiSpam_Flamingo::cf7a_rebuild_dictionary();
-
-				if ( $r ) {
-					self::cf7a_push_notice( __( 'b8 dictionary rebuild successful', 'cf7-antispam' ), 'success' );
-				} else {
-					self::cf7a_push_notice( __( 'Something goes wrong while rebuilding b8 dictionary. Please refresh and try again!', 'cf7-antispam' ) );
-				}
-
-				wp_safe_redirect( $url );
+				echo $csv; // phpcs:ignore WordPress.Security.EscapeOutput
 				exit();
 			}
 		}

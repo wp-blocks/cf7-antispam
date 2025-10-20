@@ -67,35 +67,35 @@ class CF7_AntiSpam_Frontend {
 		}
 
 		/* It adds hidden fields to the form */
-		add_filter( 'wpcf7_form_hidden_fields', array($this, 'cf7a_add_hidden_fields'), 1 );
-		add_filter( 'wpcf7_config_validator_available_error_codes', array($this, 'cf7a_remove_cf7_error_message'), 10, 2 );
+		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields' ), 1 );
+		add_filter( 'wpcf7_config_validator_available_error_codes', array( $this, 'cf7a_remove_cf7_error_message' ), 10, 2 );
 
 		/* adds the javascript script to frontend */
-		add_action( 'wp_footer', array($this, 'enqueue_scripts') );
+		add_action( 'wp_footer', array( $this, 'enqueue_scripts' ) );
 
 		/* It adds a hidden field to the form with a unique value that is encrypted with a cipher */
 		if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
-			add_filter( 'wpcf7_form_hidden_fields', array($this, 'cf7a_add_bot_fingerprinting'), 100 );
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting' ), 100 );
 		}
 
 		/* It adds a new field to the form, which is a hidden field that will be populated with the bot fingerprinting extras */
 		if ( isset( $this->options['check_bot_fingerprint_extras'] ) && intval( $this->options['check_bot_fingerprint_extras'] ) === 1 ) {
-			add_filter( 'wpcf7_form_hidden_fields', array($this, 'cf7a_add_bot_fingerprinting_extras'), 100 );
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_bot_fingerprinting_extras' ), 100 );
 		}
 
 		/* It adds a new field to the form, called `cf7a_append_on_submit`, and sets it to false */
 		if ( isset( $this->options['append_on_submit'] ) && intval( $this->options['append_on_submit'] ) === 1 ) {
-			add_filter( 'wpcf7_form_hidden_fields', array($this, 'cf7a_append_on_submit'), 100 );
+			add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_append_on_submit' ), 100 );
 		}
 
 		/* It takes the form elements, clones the text inputs, adds a class to the cloned inputs, and adds the cloned inputs to the form */
 		if ( isset( $this->options['check_honeypot'] ) && intval( $this->options['check_honeypot'] ) === 1 ) {
-			add_filter( 'wpcf7_form_elements', array($this, 'cf7a_honeypot_add') );
+			add_filter( 'wpcf7_form_elements', array( $this, 'cf7a_honeypot_add' ) );
 		}
 
 		/* It gets the form, formats it, and then echoes it out */
 		if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
-			add_filter( 'the_content', array($this, 'cf7a_honeyform'), 99 );
+			add_filter( 'the_content', array( $this, 'cf7a_honeyform' ), 99 );
 		}
 
 		/* Checking if the user has selected the option to protect the user's identity. If they have, it will call the function to protect the user's identity. */
@@ -105,19 +105,19 @@ class CF7_AntiSpam_Frontend {
 
 		/* It removes the WordPress version from the header, removes the REST API link from the header, removes headers that dispose information */
 		if ( isset( $this->options['identity_protection_wp'] ) && intval( $this->options['identity_protection_wp'] ) === 1 ) {
-			add_filter( 'wp_headers', array( $this, 'cf7a_protect_wp'), 999 );
+			add_filter( 'wp_headers', array( $this, 'cf7a_protect_wp' ), 999 );
 		}
 
 		/* Will check if the form has been submitted more than once, blocking all emails that were sent after the first one for a period of 5 seconds */
 		if ( isset( $this->options['mailbox_protection_multiple_send'] ) && intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
-			add_action( 'wpcf7_before_send_mail', array( $this, 'cf7a_check_resend'), 9, 3 );
+			add_action( 'wpcf7_before_send_mail', array( $this, 'cf7a_check_resend' ), 9, 3 );
 		}
 
 		/* It adds a CSS style to the page that hides the honeypot field */
 		if (
 			( isset( $this->options['check_honeypot'] ) && 1 === intval( $this->options['check_honeypot'] ) ) || ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) )
 		) {
-			add_action( 'wp_footer', array( $this, 'cf7a_add_honeypot_css'), 11 );
+			add_action( 'wp_footer', array( $this, 'cf7a_add_honeypot_css' ), 11 );
 		}
 	}
 
@@ -154,7 +154,7 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_honeypot_add( $form_elements ) {
 		/* A list of default names for the honeypot fields. */
 		$options     = get_option( 'cf7a_options', array() );
-		$input_names = ! empty( $options['honeypot_input_names'] ) ? get_honeypot_input_names( $options['honeypot_input_names'] ) : array();
+		$input_names = ! empty( $options['honeypot_input_names'] ) ? cf7a_get_honeypot_input_names( $options['honeypot_input_names'] ) : array();
 		$input_class = ! empty( $this->options['cf7a_customizations_class'] ) ? sanitize_html_class( $this->options['cf7a_customizations_class'] ) : 'cf7a';
 		/**
 		 * Controls the maximum number of honeypots.
@@ -241,7 +241,7 @@ class CF7_AntiSpam_Frontend {
 			$wpcf7 = WPCF7_ContactForm::get_template();
 
 			static $global_count = 0;
-			++ $global_count;
+			++$global_count;
 
 			$unit_tag = sprintf(
 				'wpcf7-f%1$d-p%2$d-o%3$d',
@@ -460,7 +460,7 @@ class CF7_AntiSpam_Frontend {
 		if ( ! is_user_logged_in() ) {
 			add_filter(
 				'rest_endpoints',
-				function( $endpoints ) {
+				function ( $endpoints ) {
 					if ( isset( $endpoints['/wp/v2/users'] ) ) {
 						unset( $endpoints['/wp/v2/users'] );
 					}
@@ -542,8 +542,6 @@ class CF7_AntiSpam_Frontend {
 		);
 	}
 
-	// Prevent the email sending step for specific form
-
 	/**
 	 * Check if the form should be aborted if mail was sent or invalid
 	 *
@@ -556,7 +554,7 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_check_resend( $cf7, &$abort, $submission ) {
 
 		// Get the hash from the form data if it exists
-		$raw_hash = ! empty( $_POST['_cf7a_hash'] ) ? sanitize_text_field( $_POST['_cf7a_hash'] ) : false;
+		$raw_hash = ! empty( $_POST['_cf7a_hash'] ) ? sanitize_text_field( wp_unslash($_POST['_cf7a_hash'] ) ) : false; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ! $raw_hash ) {
 			return;
 		}
@@ -579,7 +577,13 @@ class CF7_AntiSpam_Frontend {
 		} elseif ( get_transient( "mail_sent_$hash" ) ) {
 			// Set the status
 			$submission->set_status( 'mail_sent_multiple' );
-			$submission->set_response( esc_html__( "Slow down, please wait $expire seconds before resending.", 'cf7-antispam' ) );
+			$submission->set_response(
+				sprintf(
+					/* translators: % is the number of seconds to wait */
+					esc_html__( 'Slow down, please wait %s seconds before resending.', 'cf7-antispam' ),
+					$expire
+				)
+			);
 		} else {
 			delete_transient( "mail_sent_$hash" );
 			set_transient( "mail_sent_$hash", true, $expire );

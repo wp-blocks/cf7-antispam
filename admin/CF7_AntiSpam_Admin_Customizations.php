@@ -676,7 +676,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__( 'How many failed attempts before being banned', 'cf7-antispam' ) . '</p>' );
-		if ( wp_next_scheduled( 'cf7a_cron' ) && CF7ANTISPAM_DEBUG ) {
+		if ( wp_next_scheduled( 'cf7a_cron' ) ) {
 			printf(
 				'<small class="monospace">%s %s <br/>Server time %s</small>',
 				esc_html__( 'Next scheduled unban event:', 'cf7-antispam' ),
@@ -920,36 +920,52 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * Handles WP-cron task registrations
 	 *
-	 * @param array  $input      - The post input values.
+	 * @param array  $input      - The post-input values.
 	 * @param string $input_name - The value of the input field.
 	 * @param string $cron_task  - The slug of the Post value.
-	 * @param array  $schedule   - The schedules list obtained with wp_get_schedules().
+	 * @param array  $schedule   - The schedule list obtained with wp_get_schedules().
 	 *
 	 * @return array|false the new value that the user has selected
 	 */
 	private function cf7a_input_cron_schedule( $input, $input_name, $cron_task, $schedule ) {
-		$new_value = false;
+		$new_value = $this->options[ $input_name ];
 
-		if ( ! empty( $input[ $input_name ] ) && in_array( $input[ $input_name ], array_keys( $schedule ), true ) ) {
-			if ( $this->options[ $input_name ] !== $input[ $input_name ] ) {
+		// if the value has changed
+		if ( $this->options[ $input_name ] !== $input[ $input_name ] ) {
+			// if the user has disabled the cron task
+			if ( $input[ $input_name ] === 'disabled' ) {
+
+				/* Get the timestamp for the next event and unschedule it. */
+				while ( $timestamp = wp_next_scheduled( 'cf7a_cron' ) ) {
+					wp_unschedule_event( $timestamp, 'cf7a_cron' );
+				}
+				return 'disabled';
+			}
+
+			// if the value is not empty and is a valid schedule
+			if ( ! empty( $input[ $input_name ] ) && in_array( $input[ $input_name ], array_keys( $schedule ), true ) ) {
+				// if the user has enabled the cron task and selected a schedule
 				$new_value = $input[ $input_name ];
-				/* delete previous scheduled events */
-				$timestamp = wp_next_scheduled( $cron_task );
-				if ( $timestamp ) {
-					wp_clear_scheduled_hook( $cron_task );
+
+				/* delete all the previous scheduled events */
+				while ( $timestamp = wp_next_scheduled( 'cf7a_cron' ) ) {
+					wp_unschedule_event( $timestamp, 'cf7a_cron' );
 				}
 
 				/* add the new scheduled event */
-				wp_schedule_event( time() + $schedule[ $new_value ]['interval'], $new_value, $cron_task );
+				$interval_seconds = isset( $schedule[ $new_value ]['interval'] ) ? (int) $schedule[ $new_value ]['interval'] : 0;
+
+				if ( $interval_seconds > 0 ) {
+					$next_run = time() + $interval_seconds;
+
+					wp_schedule_event( $next_run, $new_value, $cron_task );
+				} else {
+					cf7a_log( 'Unable to schedule event for ' . $cron_task );
+				}
 			}
-		} else {
-			/* Get the timestamp for the next event. */
-			$timestamp = wp_next_scheduled( $cron_task );
-			if ( $timestamp ) {
-				wp_clear_scheduled_hook( $cron_task );
-			}
-			return 'disabled';
 		}
+
+		// return the new value
 		return $new_value;
 	}
 
@@ -994,11 +1010,14 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_sanitize_options( $input ) {
 		/* get the import options */
 		$new_input = $this->options;
-		if ( isset( $_POST['to-import'] ) ) {
-			$json_data = json_decode( stripslashes( $_POST['to-import'] ) );
+
+		if ( isset( $_POST['to-import'] ) and isset( $_POST['cf7a-nonce'] ) and wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['cf7a-nonce'] ) ), 'cf7a-nonce' ) ) {
+
+			$to_import = sanitize_text_field(wp_unslash($_POST['to-import'] ) );
+			$json_data = json_decode( $to_import );
+
 			if ( ! empty( $json_data ) && is_object( $json_data ) ) {
 				$input = $this->cf7a_clean_recursive( $json_data );
-				// monkey pathing arrays that needs to be imploded
 				$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
 				$input['ip_whitelist']                    = implode( ',', $input['ip_whitelist'] );
 				$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
@@ -1012,7 +1031,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				$input['cf7a_enable']                     = 1;
 				$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
 			} else {
-				cf7a_log( print_r( $_POST['to-import'], true ) );
+				cf7a_log( print_r( $to_import, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				cf7a_log( 'CF7 AntiSpam: The import data is invalid' );
 				return $this->options;
 			}
@@ -1043,7 +1062,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
 
-
 		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
 		/* browser language check enabled */
@@ -1060,7 +1078,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			? $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['languages_locales']['disallowed'] ) )
 			: array();
 
-
 		/* max attempts before ban */
 		$new_input['max_attempts'] = isset( $input['max_attempts'] ) ? intval( $input['max_attempts'] ) : 3;
 
@@ -1074,7 +1091,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['unban_after'] = $this->cf7a_input_cron_schedule( $input, 'unban_after', 'cf7a_cron', $schedule );
 
 		/*
-		 report by mail */
+		report by mail */
 		// $new_input['mail_report'] = $this->cf7a_input_cron_schedule( $schedule, 'mail_report', 'cf7a_cron_report' );
 
 		/* bad ip */
@@ -1146,28 +1163,28 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Advanced settings */
 		$new_input['enable_advanced_settings'] = isset( $input['enable_advanced_settings'] ) ? 1 : 0;
-		$score_preset = $this->cf7a_get_scores_presets();
+		$score_preset                          = $this->cf7a_get_scores_presets();
 
-		$preset_changed = ($input['cf7a_score_preset'] !== $this->options['cf7a_score_preset']);
-		$scores_changed = ($input['score'] != $this->options['score']);
+		$preset_changed = ( $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] );
+		$scores_changed = ( $input['score'] != $this->options['score'] );
 
 		/* Scoring: if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
-		if ($preset_changed) {
+		if ( $preset_changed ) {
 			// User selected a different preset - use preset values
-			if (in_array($input['cf7a_score_preset'], ['weak', 'standard', 'secure'])) {
-				$new_input['score'] = $score_preset[$input['cf7a_score_preset']];
+			if ( in_array( $input['cf7a_score_preset'], array( 'weak', 'standard', 'secure' ) ) ) {
+				$new_input['score']             = $score_preset[ $input['cf7a_score_preset'] ];
 				$new_input['cf7a_score_preset'] = $input['cf7a_score_preset'];
 			}
-		} elseif ($scores_changed) {
+		} elseif ( $scores_changed ) {
 			// User manually changed scores (preset didn't change) - use custom values
-			$new_input['score']['_fingerprinting'] = isset($input['score']['_fingerprinting']) ? floatval($input['score']['_fingerprinting']) : 0.25;
-			$new_input['score']['_time']           = isset($input['score']['_time']) ? floatval($input['score']['_time']) : 1;
-			$new_input['score']['_bad_string']     = isset($input['score']['_bad_string']) ? floatval($input['score']['_bad_string']) : 1;
-			$new_input['score']['_dnsbl']          = isset($input['score']['_dnsbl']) ? floatval($input['score']['_dnsbl']) : 0.2;
-			$new_input['score']['_honeypot']       = isset($input['score']['_honeypot']) ? floatval($input['score']['_honeypot']) : 1;
-			$new_input['score']['_detection']      = isset($input['score']['_detection']) ? floatval($input['score']['_detection']) : 5;
-			$new_input['score']['_warn']           = isset($input['score']['_warn']) ? floatval($input['score']['_warn']) : 1;
-			$new_input['cf7a_score_preset'] = 'custom';
+			$new_input['score']['_fingerprinting'] = isset( $input['score']['_fingerprinting'] ) ? floatval( $input['score']['_fingerprinting'] ) : 0.25;
+			$new_input['score']['_time']           = isset( $input['score']['_time'] ) ? floatval( $input['score']['_time'] ) : 1;
+			$new_input['score']['_bad_string']     = isset( $input['score']['_bad_string'] ) ? floatval( $input['score']['_bad_string'] ) : 1;
+			$new_input['score']['_dnsbl']          = isset( $input['score']['_dnsbl'] ) ? floatval( $input['score']['_dnsbl'] ) : 0.2;
+			$new_input['score']['_honeypot']       = isset( $input['score']['_honeypot'] ) ? floatval( $input['score']['_honeypot'] ) : 1;
+			$new_input['score']['_detection']      = isset( $input['score']['_detection'] ) ? floatval( $input['score']['_detection'] ) : 5;
+			$new_input['score']['_warn']           = isset( $input['score']['_warn'] ) ? floatval( $input['score']['_warn'] ) : 1;
+			$new_input['cf7a_score_preset']        = 'custom';
 		}
 
 		/* Customizations */
@@ -1235,13 +1252,22 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_unban_after_callback() {
 		/* the list of available schedules */
-		$schedules   = array_keys( wp_get_schedules() );
-		$schedules[] = 'disabled';
+		$schedules         = wp_get_schedules();
+		$valid_schedules   = array_keys(
+			array_filter(
+				$schedules,
+				function ( $s ) {
+					return ! empty( $s['interval'] ) && $s['interval'] > 0;
+				}
+			)
+		);
+		$valid_schedules[] = 'disabled';
+
 		printf(
 			'<select id="unban_after" name="cf7a_options[unban_after]">%s</select>',
 			wp_kses(
 				$this->cf7a_generate_options(
-					$schedules,
+					$valid_schedules,
 					! empty( $this->options['unban_after'] ) ? $this->options['unban_after'] : ''
 				),
 				array(
@@ -1321,7 +1347,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<input type="text" id="geoip_dbkey" name="cf7a_options[geoip_dbkey]" %s %s/>',
 			empty( $this->options['geoip_dbkey'] ) ? '' : 'value="' . esc_attr( $this->options['geoip_dbkey'] ) . '"',
 			// phpcs:ignore WordPress.Security.EscapeOutput
-			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="' . esc_attr__( 'KEY provided' ) . '"'
+			empty( CF7ANTISPAM_GEOIP_KEY ) ? '' : 'disabled placeholder="' . esc_attr__( 'KEY provided', 'cf7-antispam' ) . '"'
 		);
 	}
 
@@ -1721,7 +1747,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_score_preset_callback() {
 		$options = ! empty( $this->options['enable_advanced_settings'] )
-				   || ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] )
+					|| ( ! empty( $this->options['cf7a_score_preset'] ) && 'custom' === $this->options['cf7a_score_preset'] )
 			? array( 'weak', 'standard', 'secure', 'custom' )
 			: array( 'weak', 'standard', 'secure' );
 		printf(

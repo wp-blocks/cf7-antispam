@@ -10,6 +10,7 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
 use WP_REST_Controller;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -57,13 +58,16 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * Validate and sanitize API parameters.
 	 *
 	 * @since    0.6.5
-	 * @param    mixed $value   The value to validate
+	 * @param    mixed  $value   The value to validate
 	 * @param    string $type   The expected type
 	 * @return   mixed|WP_Error
 	 */
 	private function cf7a_validate_param( $value, $type = 'string' ) {
 
 		switch ( $type ) {
+			case 'nonce':
+				return wp_verify_nonce( $value, 'cf7a-nonce' );
+
 			case 'string':
 				return is_string( $value ) ? sanitize_text_field( $value ) : new WP_Error( 'invalid_param', 'Parameter must be a string' );
 
@@ -91,7 +95,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return new WP_Error(
 				'rest_forbidden',
-				esc_html__( 'You cannot view the plugin status.' ),
+				esc_html__( 'You cannot view the plugin status.', 'cf7-antispam' ),
 				array( 'status' => 401 )
 			);
 		}
@@ -119,6 +123,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 	/**
 	 * Resend a specific email.
+	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
 	 * @return WP_Error|WP_REST_Response A response object or a WP_Error object. The response object contains the message.
@@ -129,25 +134,180 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			return rest_ensure_response( array( 'message' => __( 'Invalid nonce', 'cf7-antispam' ) ) );
 		}
 
-		$mail_id = intval( $request['id']);
+		$mail_id = intval( $request['id'] );
 
 		if ( $mail_id > 1 ) {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 			$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
-			if ( 'empty' === $r ) {
+			if ( ! $r['success'] ) {
 				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s has an empty body', 'success cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'success' => false, 'message' => sprintf( __( 'Error: unable to resend email with id %s.', 'cf7-antispam' ), $mail_id ) . ' ' . $r['message'], 'log' =>  $r['log'] ) );
 			}
 
 			if ( $r ) {
-				/* translators: %s is the mail id. */
-				return rest_ensure_response( array( 'message' => sprintf( __( 'Email id %s sent with success', 'success cf7-antispam' ), $mail_id ) ) );
+				return rest_ensure_response( array( 'success' => true, 'message' => $r['message'] ) );
 			}
 		}
 
-		/* translators: %s is the mail id. */
-		return rest_ensure_response( array( 'message' => sprintf( __( 'Ops! something went wrong... unable to resend email with id %s', 'error cf7-antispam' ), $mail_id ) ) );
+
+		return rest_ensure_response( array(
+			'success' => false,
+			/* translators: %s is the mail id. */
+			'message' => sprintf( __( 'Ops! something went wrong... unable to resend email with id %s', 'cf7-antispam' ), $mail_id )
+			)
+		);
+	}
+
+	/**
+	 * Reset the blacklist.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_reset_blacklist( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		/* uninstall class contains the database utility functions */
+		$r = CF7_AntiSpam_Uninstaller::cf7a_clean_blacklist();
+
+		if ( $r ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					'message' => __( 'Success: ip blacklist cleaned', 'cf7-antispam' )
+				)
+			);
+		} else {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' )
+				)
+			);
+		}
+	}
+
+	/**
+	 * Reset the dictionary.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_reset_dictionary( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		/* uninstall class contains the database utility functions */
+		$r = CF7_AntiSpam_Flamingo::cf7a_reset_dictionary();
+
+		if ( $r ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					'message' => __( 'b8 dictionary reset successful', 'cf7-antispam' )
+				)
+			);
+		} else {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Something goes wrong while deleting b8 dictionary. Please refresh and try again!', 'cf7-antispam' )
+				)
+			);
+		}
+	}
+
+	/**
+	 * Full reset of the plugin.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_full_reset( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		/* uninstall class contains the database utility functions */
+		$r = CF7_AntiSpam_Uninstaller::cf7a_full_reset();
+
+		if ( $r ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					'message' => __( 'CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 manually if needed', 'cf7-antispam' )
+				)
+			);
+		} else {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Ops! something went wrong... Please refresh and try again!', 'cf7-antispam' )
+				)
+			);
+		}
+	}
+
+	/**
+	 * Rebuild the dictionary.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_rebuild_dictionary( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		$r = CF7_AntiSpam_Flamingo::cf7a_rebuild_dictionary();
+
+		if ( $r ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					'message' => __( 'b8 dictionary rebuild successful', 'cf7-antispam' )
+				)
+			);
+		} else {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Something goes wrong while rebuilding b8 dictionary. Please refresh and try again!', 'cf7-antispam' )
+				)
+			);
+		}
 	}
 
 	/**
@@ -178,20 +338,104 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 					'callback'            => array( $this, 'cf7a_resend_message' ),
 					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
 					'args'                => array(
-						'id' => array(
+						'id'    => array(
 							'required'          => true,
-							'type'              => 'string',
-							'validate_callback' => function( $param ) {
-								return $this->cf7a_validate_param( $param );
+							'type'              => 'integer',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'int' );
 							},
 						),
 						'nonce' => array(
 							'required'          => true,
 							'type'              => 'string',
-							'validate_callback' => function( $param ) {
-								return $this->cf7a_validate_param( $param );
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
 							},
-						)
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'reset-blacklist',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_reset_blacklist' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'reset-dictionary',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_reset_dictionary' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'full-reset',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_full_reset' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'rebuild-dictionary',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_rebuild_dictionary' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
 					),
 				),
 			)

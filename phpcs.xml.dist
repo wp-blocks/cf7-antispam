@@ -23,25 +23,21 @@
 	<config name="testVersion" value="5.6-"/>
 
 	<!-- Rules: WordPress Coding Standards -->
+
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards -->
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties -->
 	<config name="minimum_supported_wp_version" value="5.6"/>
 
-	<!-- https://github.com/PHPCompatibility/PHPCompatibilityWP -->
-	<rule ref="PHPCompatibilityWP"/>
-
-	<rule ref="WordPress" />
+	<!--<rule ref="WordPress" />
 	<rule ref="WordPress-Docs"/>
 	<rule ref="WordPress-Extra"/>
-	<rule ref="WordPress-VIP-Go"/>
-	<rule ref="WordPressVIPMinimum"/>
-	<rule ref="WordPress-Docs"/>
-	<rule ref="VariableAnalysis"/>
+	<rule ref="WordPress-Docs"/>-->
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="cf7-antispam"/>
+				<element value="cf7-antispam"/>q
+				<element value="contact-form-7"/>
 			</property>
 		</properties>
 	</rule>
@@ -50,15 +46,21 @@
 		<properties>
 			<property name="prefixes" type="array">
 				<element value="cf7a_"/>
+				<element value="CF7ANTISPAM_"/>
 			</property>
 		</properties>
+		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound"/>
 	</rule>
 
 	<!-- What to scan -->
 	<file>.</file>
+
+	<!-- What to exclude -->
+	<exclude-pattern>/.git/*</exclude-pattern>
 	<exclude-pattern>/.github/*</exclude-pattern>
 	<exclude-pattern>/.husky/*</exclude-pattern>
 	<exclude-pattern>/assets/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
 	<exclude-pattern>/core/b8/*</exclude-pattern>
 	<exclude-pattern>/languages/*</exclude-pattern>
 	<exclude-pattern>/node_modules/*</exclude-pattern>

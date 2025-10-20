@@ -15,30 +15,28 @@ use WP_Query;
  * @author     Codekraft Studio <info@codekraft.it>
  */
 
-/**
- * It creates a class called CF7_AntiSpam_Admin.
- */
 class CF7_AntiSpam_Admin_Charts {
 	/**
 	 * It queries the database for all the emails received in the last week, then it creates two lists:
 	 * one with the number of emails received per day, and one with the number of emails received per type (ham or spam)
+	 *
 	 * @param $max_mail_count int The maximum number of emails to retrieve
 	 * @param $date_after string The date after which the emails will be retrieved
 	 *
 	 * @return WP_Query The query object
 	 */
-	public function cf7a_get_flamingo_stats($max_mail_count, $date_after = '1 week ago') {
+	public function cf7a_get_flamingo_stats( $max_mail_count, $date_after = '1 week ago' ) {
 			$args = array(
-					'post_type'      => 'flamingo_inbound',
-					'post_status'    => array( 'flamingo-spam', 'publish' ),
-					'posts_per_page' => $max_mail_count,
-					'orderby'        => 'date',
-					'order'          => 'DESC',
-					'date_query'     => array(
-							array(
-									'after' => $date_after,
-							),
+				'post_type'      => 'flamingo_inbound',
+				'post_status'    => array( 'flamingo-spam', 'publish' ),
+				'posts_per_page' => $max_mail_count,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'date_query'     => array(
+					array(
+						'after' => $date_after,
 					),
+				),
 			);
 
 			return new WP_Query( $args );
@@ -46,16 +44,17 @@ class CF7_AntiSpam_Admin_Charts {
 
 	/**
 	 * Processes email query results and organizes them by type and date
+	 *
 	 * @param WP_Query $query The query object containing email posts
 	 * @return array Organized mail collection with by_type and by_date arrays
 	 */
-	private function cf7a_process_mail_collection($query) {
+	private function cf7a_process_mail_collection( $query ) {
 			$mail_collection = array(
-					'by_type' => array(
-							'ham'  => 0,
-							'spam' => 0,
-					),
-					'by_date' => array(),
+				'by_type' => array(
+					'ham'  => 0,
+					'spam' => 0,
+				),
+				'by_date' => array(),
 			);
 
 			while ( $query->have_posts() ) {
@@ -63,19 +62,19 @@ class CF7_AntiSpam_Admin_Charts {
 					global $post;
 
 					$is_ham = 'flamingo-spam' !== $post->post_status;
-					$today = esc_html( get_the_date( 'Y-m-d' ) );
+					$today  = esc_html( get_the_date( 'Y-m-d' ) );
 
-					// Initialize date array if not exists
-					if ( ! isset( $mail_collection['by_date'][ $today ] ) ) {
-							$mail_collection['by_date'][ $today ] = array();
-					}
+					/* Initialize the date array if not exists */
+				if ( ! isset( $mail_collection['by_date'][ $today ] ) ) {
+						$mail_collection['by_date'][ $today ] = array();
+				}
 
-					// Count by type
-					$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ]++;
+					/* Count by type */
+					++$mail_collection['by_type'][ $is_ham ? 'ham' : 'spam' ];
 
-					// Store by date
+					/* Store by date */
 					$mail_collection['by_date'][ $today ][] = array(
-							'status' => $is_ham ? 'ham' : 'spam'
+						'status' => $is_ham ? 'ham' : 'spam',
 					);
 			}
 
@@ -85,32 +84,33 @@ class CF7_AntiSpam_Admin_Charts {
 
 	/**
 	 * Renders the email list HTML
+	 *
 	 * @param WP_Query $query The query object containing email posts
 	 */
-	private function cf7a_render_email_list($query) {
+	private function cf7a_render_email_list( $query ) {
 			echo '<div id="antispam-widget-list" class="activity-block">';
 			echo '<h3>' . esc_html__( 'Last Week Emails', 'cf7-antispam' ) . '</h3>';
 			echo '<ul>';
 
 			$query->rewind_posts();
-			while ( $query->have_posts() ) {
-					$query->the_post();
-					global $post;
+		while ( $query->have_posts() ) {
+				$query->the_post();
+				global $post;
 
-					$is_ham = 'flamingo-spam' !== $post->post_status;
+				$is_ham = 'flamingo-spam' !== $post->post_status;
 
-					if ( wp_date( 'Y-m-d' ) > wp_date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
-							printf(
-									'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
-									get_the_date( 'Y-m-d' ),
-									admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ),
-									$post->ID,
-									$is_ham ? '🔵' : '🔴',
-									esc_html( get_post_meta( $post->ID, '_from' )[0] ),
-									esc_html( $post->post_title )
-							);
-					}
+			if ( wp_date( 'Y-m-d' ) > wp_date( 'Y-m-d', strtotime( '-1 week' ) ) ) {
+					printf(
+						'<li class="cf7-a_list-item"><span class="timestamp">%s </span><a href="%s" value="post-id-%s"><span>%s</span> %s</a> - %s</li>',
+						get_the_date( 'Y-m-d' ),
+						esc_url( admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ) ),
+						(int) $post->ID,
+						$is_ham ? '🔵' : '🔴',
+						esc_html( get_post_meta( $post->ID, '_from' )[0] ),
+						esc_html( $post->post_title )
+					);
 			}
+		}
 
 			echo '</ul></div>';
 			wp_reset_postdata();
@@ -118,51 +118,53 @@ class CF7_AntiSpam_Admin_Charts {
 
 	/**
 	 * Converts mail collection to chart data format
+	 *
 	 * @param array $mail_collection The organized mail collection
 	 * @return array Chart data with ham and spam counts by date
 	 */
-	private function cf7a_prepare_chart_data($mail_collection) {
+	private function cf7a_prepare_chart_data( $mail_collection ) {
 			$mail_collection['by_date'] = array_reverse( $mail_collection['by_date'] );
-			$count = array();
+			$count                      = array();
 
-			// Process data by date
-			foreach ( $mail_collection['by_date'] as $date => $items ) {
-					if ( ! isset( $count[ $date ] ) ) {
-							$count[ $date ] = array(
-									'ham'  => 0,
-									'spam' => 0,
-							);
-					}
-
-					// Count items by status for each date
-					foreach ( $items as $item ) {
-							$count[ $date ][ $item['status'] ]++;
-					}
+			/* Process data by date */
+		foreach ( $mail_collection['by_date'] as $date => $items ) {
+			if ( ! isset( $count[ $date ] ) ) {
+					$count[ $date ] = array(
+						'ham'  => 0,
+						'spam' => 0,
+					);
 			}
 
-			// Extract ham and spam arrays for chart
-			$ham = array();
+				/* Count items by status for each date */
+			foreach ( $items as $item ) {
+					++$count[ $date ][ $item['status'] ];
+			}
+		}
+
+			/* Extract ham and spam arrays for chart */
+			$ham  = array();
 			$spam = array();
 
-			foreach ( $count as $date_count ) {
-					$ham[]  = $date_count['ham'];
-					$spam[] = $date_count['spam'];
-			}
+		foreach ( $count as $date_count ) {
+				$ham[]  = $date_count['ham'];
+				$spam[] = $date_count['spam'];
+		}
 
 			return array(
-					'dates' => array_keys( $mail_collection['by_date'] ),
-					'ham' => $ham,
-					'spam' => $spam,
-					'by_type' => $mail_collection['by_type']
+				'dates'   => array_keys( $mail_collection['by_date'] ),
+				'ham'     => $ham,
+				'spam'    => $spam,
+				'by_type' => $mail_collection['by_type'],
 			);
 	}
 
 	/**
 	 * Renders the JavaScript chart data
+	 *
 	 * @param array $chart_data Prepared chart data
 	 */
-	private function cf7a_render_chart_script($chart_data) {
-			?>
+	private function cf7a_render_chart_script( $chart_data ) {
+		?>
 			<script>
 					var spamChartData = {
 							lineData: {
@@ -201,10 +203,13 @@ class CF7_AntiSpam_Admin_Charts {
 	 * Renders the footer links
 	 */
 	private function cf7a_render_footer() {
-			?>
+		?>
 			<p class="community-events-footer">
 					<a href="<?php echo esc_url_raw( admin_url( 'admin.php?page=flamingo' ) ); ?>">
-							<?php esc_html_e( 'Flamingo Inbound Messages', 'flamingo' ); ?>
+							<?php
+							/* phpcs:ignore WordPress.WP.I18n.TextDomainMismatch */
+							esc_html_e( 'Flamingo Inbound Messages', 'flamingo' );
+							?>
 							<span aria-hidden="true" class="dashicons dashicons-external"></span>
 					</a>
 					|
@@ -221,8 +226,8 @@ class CF7_AntiSpam_Admin_Charts {
 	 */
 	private function cf7a_render_empty_state() {
 			printf(
-					'<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>%s</p></div>',
-					esc_html__( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' )
+				'<div class="cf7-a_widget-empty"><span class="dashicons dashicons-welcome-comments"></span><p>%s</p></div>',
+				esc_html__( 'You have not received any e-mails in the last 7 days.', 'cf7-antispam' )
 			);
 	}
 
@@ -234,29 +239,29 @@ class CF7_AntiSpam_Admin_Charts {
 	 */
 	public function cf7a_flamingo_widget() {
 			$max_mail_count = apply_filters( 'cf7a_dashboard_max_mail_count', 25 );
-			$query = $this->cf7a_get_flamingo_stats($max_mail_count);
+			$query          = $this->cf7a_get_flamingo_stats( $max_mail_count );
 
-			if ( ! $query->have_posts() ) {
-					$this->cf7a_render_empty_state();
-					return;
-			}
+		if ( ! $query->have_posts() ) {
+				$this->cf7a_render_empty_state();
+				return;
+		}
 
-			// Process the mail collection
-			$mail_collection = $this->cf7a_process_mail_collection($query);
+			/* Process the mail collection */
+			$mail_collection = $this->cf7a_process_mail_collection( $query );
 
-			// Prepare chart data
-			$chart_data = $this->cf7a_prepare_chart_data($mail_collection);
+			/* Prepare chart data */
+			$chart_data = $this->cf7a_prepare_chart_data( $mail_collection );
 
-			// Render the widget
-			?>
+			/* Render the widget */
+		?>
 			<div id="antispam-widget">
 					<canvas id="line-chart" width="400" height="200"></canvas>
 					<hr>
 					<canvas id="pie-chart" width="50" height="50"></canvas>
 					<?php
-					$this->cf7a_render_email_list($query);
+					$this->cf7a_render_email_list( $query );
 					$this->cf7a_render_footer();
-					$this->cf7a_render_chart_script($chart_data);
+					$this->cf7a_render_chart_script( $chart_data );
 					?>
 			</div>
 			<?php
@@ -270,20 +275,20 @@ class CF7_AntiSpam_Admin_Charts {
 	 */
 	public function cf7a_dash_charts() {
 		$max_mail_count = apply_filters( 'cf7a_admin_dashboard_max_mail_count', 50 );
-		$query = $this->cf7a_get_flamingo_stats($max_mail_count, '1 year ago');
+		$query          = $this->cf7a_get_flamingo_stats( $max_mail_count, '1 year ago' );
 
 		if ( ! $query->have_posts() ) {
 			$this->cf7a_render_empty_state();
 			return;
 		}
 
-		// Process the mail collection
-		$mail_collection = $this->cf7a_process_mail_collection($query);
+		/* Process the mail collection */
+		$mail_collection = $this->cf7a_process_mail_collection( $query );
 
-		// Prepare chart data
-		$chart_data = $this->cf7a_prepare_chart_data($mail_collection);
+		/* Prepare chart data */
+		$chart_data = $this->cf7a_prepare_chart_data( $mail_collection );
 
-		// Render the widget
+		/* Render the widget */
 		?>
 		<div id="antispam-charts">
 			<div class="antispam-charts-container">
@@ -295,7 +300,7 @@ class CF7_AntiSpam_Admin_Charts {
 				</div>
 			</div>
 			<?php
-				$this->cf7a_render_chart_script($chart_data);
+				$this->cf7a_render_chart_script( $chart_data );
 			?>
 		</div>
 		<?php

@@ -3,7 +3,7 @@
 namespace CF7_AntiSpam\Core;
 
 /*
- The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
+The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
 functionality. */
 
 /**
@@ -30,9 +30,18 @@ if ( ! class_exists( 'WPCF7_Service' ) ) {
 
 class CF7_Antispam_Service extends GlobalWPCF7_Service {
 
-
+	/**
+	 * The single instance of the class
+	 *
+	 * @var self
+	 */
 	private static $instance;
 
+	/**
+	 * The options of the plugin
+	 *
+	 * @var array
+	 */
 	public $options;
 
 	public static function get_instance() {
@@ -44,17 +53,17 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	}
 
 	public function __construct() {
-		 $this->options = CF7_AntiSpam::get_options();
+		$this->options = CF7_AntiSpam::get_options();
 
 		if ( isset( $_POST['cf7a_submit'] ) && check_admin_referer( 'cf7a_toggle', 'cf7a_nonce' ) ) {
 			$this->options['cf7a_enable'] = empty( $this->options['cf7a_enable'] ) ? true : ! $this->options['cf7a_enable'];
 			CF7_AntiSpam::update_plugin_options( $this->options );
 			echo '<div class="updated"><p>Settings saved.</p></div>';
 		}
+
 		/**
 		 * Call the options otherwise the plugin will break in integration
 		 */
-
 		$integration = 'cf7-antispam';
 		add_action( 'load-' . $integration, array( $this, 'wpcf7_load_integration_page' ), 10, 0 );
 	}
@@ -66,13 +75,13 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 * @return string "CF7-Antispam" with the translation "Contact Form 7 Antispam".
 	 */
 	public function get_title() {
-		return __( 'Antispam', 'Contact Form 7 Antispam' );
+		return __( 'Antispam', 'cf7-antispam' );
 	}
 
 	/**
 	 * The function checks if a certain option called "enabled" is set to true.
 	 *
-	 * @return bool value of the 'enabled' key in the  array.
+	 * @return bool value of the 'enabled' key in the array.
 	 */
 	public function is_active() {
 		return isset( $this->options['cf7a_enable'] ) ? $this->options['cf7a_enable'] : false;
@@ -91,49 +100,9 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 * The function "icon" echoes an SVG icon wrapped in a div with the class "integration-icon".
 	 */
 	public function icon() {
-		$allowed_html = array(
-			'svg'      => array(
-				'xmlns'       => true,
-				'xmlns:xlink' => true,
-				'xml:space'   => true,
-				'viewbox'     => true,
-			),
-			'defs'     => array(),
-			'circle'   => array(
-				'fill' => true,
-				'id'   => true,
-				'cx'   => true,
-				'cy'   => true,
-				'r'    => true,
-			),
-			'clipPath' => array(
-				'id' => true,
-			),
-			'use'      => array(
-				'xlink:href' => true,
-				'overflow'   => true,
-			),
-			'path'     => array(
-				'stroke-width' => true,
-				'fill'         => true,
-				'd'            => true,
-			),
-			'ellipse'  => array(
-				'cx'           => true,
-				'cy'           => true,
-				'rx'           => true,
-				'ry'           => true,
-				'fill'         => true,
-				'stroke-width' => true,
-			),
-			'g'        => array(
-				'stroke'            => true,
-				'stroke-miterlimit' => true,
-			),
-		);
 		printf(
 			'<img src="%s" class="integration-icon" style="width: 32px;margin: 10px;">',
-			CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg'
+			esc_url( CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg')
 		);
 	}
 
@@ -180,16 +149,19 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 * The function checks if the action is "setup" and the request method is "POST", and if so, it
 	 * performs some actions and redirects the user.
 	 *
-	 * @param "action" parameter is used to determine the specific action that needs to be
-	 * performed. In this code snippet, if the value of the "action" parameter is "setup", it will executehttp://two.wordpress.test/wp-admin/tools.php
+	 * @param string $action this parameter is used to determine the specific action that needs to be
+	 * performed. In this code snippet, if the value of the "action" parameter is "setup", it will execute
+	 * http://two.wordpress.test/wp-admin/tools.php
 	 * the code inside the if statement.
 	 */
 	public function load( $action = '' ) {
 		if ( ! empty( $_SERVER['REQUEST_METHOD'] ) ) {
 			if ( 'setup' == $action && 'POST' == $_SERVER['REQUEST_METHOD'] ) {
-				// check_admin_referer('cf7-antispam-setup');
-
 				if ( ! empty( $_POST['reset'] ) ) {
+					// check the nonce
+					if ( empty($_POST["_wpnonce"]) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['_wpnonce'] ) ), 'cf7a' ) ) {
+						wp_die( 'Security check failed' );
+					}
 					$redirect_to = $this->menu_page_url( 'action=setup' );
 					wp_safe_redirect( $redirect_to );
 					exit();
@@ -205,7 +177,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 * setup integration.
 	 */
 	public function display( $action = '' ) {
-		echo sprintf(
+		printf(
 			'<p>%s<br>%s<br>%s<br>%s%s</p>',
 			esc_html__(
 				'Antispam for Contact Form 7 is a free plugin for Contact Form 7.',
@@ -229,17 +201,18 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			)
 		);
 
-		echo sprintf(
+		printf(
 			'<p><strong>%s</strong></p>',
-			// phpcs:ignore
-			wpcf7_link(
-				esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ),
-				esc_html__( 'CF7-Antispam (v' . CF7ANTISPAM_VERSION . ')', 'contact-form-7' )
+			esc_url(
+				wpcf7_link(
+					esc_html__( 'https://wordpress.org/plugins/cf7-antispam/', 'contact-form-7' ),
+					sprintf( 'CF7-Antispam (v%s)', esc_html( CF7ANTISPAM_VERSION ) )
+				),
 			)
 		);
 
 		if ( $this->is_active() ) {
-			echo sprintf(
+			printf(
 				'<p class="dashicons-before dashicons-yes">%s</p>',
 				esc_html( __( 'CF7-Antispam is active on this site.', 'contact-form-7' ) )
 			);
