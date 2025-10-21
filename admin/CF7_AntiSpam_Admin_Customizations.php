@@ -1541,7 +1541,8 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_honeyform_excluded_pages_callback() {
 		$args  = array(
 			'post_type' => 'page', // change this to the post type you're querying
-			'fields'    => 'ids', // get all posts
+			'fields'    => 'ids',  // get only ids
+			'posts_per_page' => -1 // get all posts
 		);
 		$query = new WP_Query( $args );
 
