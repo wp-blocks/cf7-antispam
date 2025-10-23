@@ -726,7 +726,7 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
-			if ( ! empty( $this->options['check_geoip_enabled'] ) || empty( $this->options['check_geo_location'] ) ) {
+			if ( ! empty( $this->options['check_language'] ) ) {
 				$result = $this->cf7a_get_debug_info_geoip();
 				if ( $result ) {
 					printf(
@@ -885,9 +885,10 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			} else {
 				$res['content'] = sprintf(
-					'<p><b>%s</b> %s</p><p>%s %s</p>',
+					'<p><b>%s</b> %s</p><p>%s %s %s</p>',
 					esc_html__( 'Geo-IP', 'cf7-antispam' ),
-					esc_html__( 'is disabled', 'cf7-antispam' ),
+					esc_html__( 'is disabled.', 'cf7-antispam' ),
+					esc_html__( 'To enable it, please go to the settings page and enable the "Detect location using GeoIP" checkbox.', 'cf7-antispam' ),
 					esc_html__( 'Your IP address', 'cf7-antispam' ),
 					$your_ip
 				);
