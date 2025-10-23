@@ -2,9 +2,9 @@
 Contributors: codekraft, gardenboi
 Tags: antispam, blacklist, honeypot, geoip, security
 Requires at least: 5.4
-Tested up to: 6.8.1
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.6.4
+Stable tag: 0.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ GeoIP - (Optional) If you need to restrict which countries or languages can emai
 ✅ Browser Fingerprinting
 ✅ Language checks (Geo-ip, http headers and browser)
 ✅ Honeypot
-*️⃣ Honeyform*
+️🆕 Honeyform*
 ✅ DNS Blacklists
 ✅ Blacklists (with automatic ban after N failed attempts, user defined ip exclusion list)
 ✅ Hidden fields with encrypted unique hash
@@ -32,7 +32,7 @@ GeoIP - (Optional) If you need to restrict which countries or languages can emai
 ✅ Prohibited words in message/email and user agent
 ✅ B8 statistical "Bayesian" spam filter
 ✅ Identity protection
-🆕 Webmail protection
+✅ Webmail protection
 
 == Extends Flamingo and turns it into a spam manager! ==
 With this plugin, you can now review emails and train B8 to identify spam and legitimate messages. This feature proves useful, especially during the initial stages when some spam emails may slip through.
@@ -161,6 +161,18 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 7.0.0 =
+* Enhancement: Updated Admin User Interface (UI).
+* Enhancement: Added a new debug information section to display the status of GeoIP, REST API, and DNSBL functionality.
+* Enhancement: Blacklist Export Feature: Users can now export the blacklist.
+* Enhancement: A date column has been added to the blacklist database table.
+* Fix: The name attribute for Honeypots now correctly reflects the name chosen by the user (thanks to @@developeratworx for reporting this issue!).
+* Fix: Improved code security by implementing prepared statements for all database queries and adding sanitization and escaping where previously missing.
+* Fix: Refactored and reorganized the src folder structure for better code organization and maintainability.
+* Fix: Implemented REST API endpoints for the admin "Tools" section, allowing operations on that page to be performed without reloading.
+* Fix: General code cleanup was performed throughout the project.
+* Fix: Fixed the resend mail function (A big thank you to @chrober for reporting this issue!).
 
 = 0.6.4 =
 * Migration from JavaScript to TypeScript for better type safety

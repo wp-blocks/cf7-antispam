@@ -2,7 +2,7 @@
 	"name": "cf7-antispam",
 	"author": "Erik Golinelli <erik@codekraft.it>",
 	"license": "GPL-2.0-only",
-	"version": "0.6.5",
+	"version": "0.7.0",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
@@ -51,7 +51,7 @@
 		"@wordpress/env": "^10.26.0",
 		"@wordpress/eslint-plugin": "^22.12.0",
 		"@wordpress/scripts": "^30.19.0",
-		"@wp-blocks/make-pot": "^1.6.2",
+		"@wp-blocks/make-pot": "^1.6.3",
 		"chart.js": "^4.5.0",
 		"husky": "^9.1.7",
 		"prettier": "^3.6.2",
