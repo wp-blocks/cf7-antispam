@@ -15,11 +15,12 @@ window.addEventListener('load', adminSettingsHelper);
  * @param dataset.id
  */
 function actionHandler(e: HTMLElement) {
-	const { action, message, nonce } = e.dataset as {
+	const { action, message, callback, nonce } = e.dataset as {
 		action: string;
 		message: string;
 		nonce: string;
 		id?: string;
+		callback?: string;
 	};
 
 	/**
@@ -32,6 +33,24 @@ function actionHandler(e: HTMLElement) {
 		!confirm(message)
 	) {
 		return;
+	}
+
+	let cb: null | (() => void) = null;
+	if (callback && typeof callback === 'string') {
+		/**
+		 * Callback functions
+		 *
+		 * HIDE
+		 * We are going to create a callback function to hide the row
+		 */
+		if (callback === 'hide') {
+			cb = function () {
+				e.closest('.row')?.classList.add('hidden');
+			};
+		}
+		/**
+		 * If needed we can add more callback function here
+		 */
 	}
 
 	/**
@@ -59,7 +78,12 @@ function actionHandler(e: HTMLElement) {
 				log?: string;
 			};
 			if (success) {
-				alert(message);
+				if (message) {
+					alert(message);
+				}
+				if (cb) {
+					cb();
+				}
 			} else {
 				console.error('Error:', message, log as string);
 			}

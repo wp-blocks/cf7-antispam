@@ -644,7 +644,7 @@ class CF7_AntiSpam_Admin_Display {
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
 				$rows .= sprintf(
-					'<div class="row"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s">%s</span></small></p><span class="data">%s</span></div></div>',
+					'<div class="row"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></p><span class="data">%s</span></div></div>',
 					cf7a_format_status( $row->status - $max_attempts ),
 					esc_html( $row->ip ),
 					esc_html( $row->id ),
@@ -675,6 +675,7 @@ class CF7_AntiSpam_Admin_Display {
 							'data-action' => array(),
 							'data-id' => array(),
 							'data-nonce' => array(),
+							'data-callback' => array(),
 						),
 					)
 				),
