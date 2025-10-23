@@ -241,6 +241,10 @@
 			padding-bottom: 8px;
 			border-bottom: 1px solid color.adjust(colors.$color__white, $lightness: -4%);
 
+			&.hidden {
+				display: none;
+			}
+
 			&:last-child {
 				border: 0;
 			}
