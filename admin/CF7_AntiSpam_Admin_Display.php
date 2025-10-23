@@ -633,25 +633,25 @@ class CF7_AntiSpam_Admin_Display {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$blacklisted = $wpdb->get_results( $wpdb->prepare("SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000", $wpdb->prefix . 'cf7a_blacklist' ) );
+		$nonce = wp_create_nonce( 'cf7a-nonce' );
 
 		if ( $blacklisted ) {
 			$count = count( $blacklisted );
 			$rows  = '';
 
 			foreach ( $blacklisted as $row ) {
-				$unban_url = wp_nonce_url( add_query_arg( 'action', 'unban_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-				$ban_url   = wp_nonce_url( add_query_arg( 'action', 'ban_forever_' . $row->id, menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-
 				$meta         = unserialize( $row->meta );
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
 				$rows .= sprintf(
-					'<div class="row"><div class="status">%s</div><div><p class="ip">%s<small class="actions"><a href="%s">%s</a> <a href="%s">%s</a></small></p><span class="data">%s</span></div></div>',
+					'<div class="row"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s">%s</span></small></p><span class="data">%s</span></div></div>',
 					cf7a_format_status( $row->status - $max_attempts ),
 					esc_html( $row->ip ),
-					esc_url( $unban_url ),
+					esc_html( $row->id ),
+					esc_html( $nonce ),
 					esc_html__( '[unban ip]', 'cf7-antispam' ),
-					esc_url( $ban_url ),
+					esc_html( $row->id ),
+					esc_html( $nonce ),
 					esc_html__( '[ban forever]', 'cf7-antispam' ),
 					cf7a_compress_array( $meta['reason'], true )
 				);
@@ -668,9 +668,13 @@ class CF7_AntiSpam_Admin_Display {
 						'p'     => array( 'class' => array() ),
 						'a'     => array( 'href' => array() ),
 						'b'     => array(),
+						'br'     => array(),
 						'span'  => array(
 							'class' => array(),
 							'style' => array(),
+							'data-action' => array(),
+							'data-id' => array(),
+							'data-nonce' => array(),
 						),
 					)
 				),
