@@ -131,7 +131,12 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	public function cf7a_resend_message( $request ) {
 		/** verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
-			return rest_ensure_response( array( 'message' => __( 'Invalid nonce', 'cf7-antispam' ) ) );
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
 		}
 
 		$mail_id = intval( $request['id'] );
@@ -310,6 +315,136 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 	}
 
+
+	/**
+	 * Unban a single IP by ID.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_unban_ip( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		$unban_id = intval( $request['id'] );
+
+		if ( $unban_id <= 0 ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid ID', 'cf7-antispam' )
+				)
+			);
+		}
+
+		$blacklist = new CF7_Antispam_Blacklist();
+		$r = $blacklist->cf7a_unban_by_id( $unban_id );
+
+		if ( $r ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					/* translators: %s is the ip address. */
+					'message' => sprintf( __( 'Success: ip %s unbanned', 'cf7-antispam' ), $unban_id )
+				)
+			);
+		} else {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					/* translators: %s is the ip address. */
+					'message' => sprintf( __( 'Error: unable to unban %s', 'cf7-antispam' ), $unban_id )
+				)
+			);
+		}
+	}
+
+	/**
+	 * Ban forever a single IP by ID.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_ban_forever( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		$ban_id = intval( $request['id'] );
+
+		if ( $ban_id <= 0 ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid ID', 'cf7-antispam' )
+				)
+			);
+		}
+
+		$blacklist = new CF7_Antispam_Blacklist();
+		$result = $blacklist->cf7a_ban_forever( $ban_id );
+
+		return rest_ensure_response( $result );
+	}
+
+	/**
+	 * Export blacklist as CSV.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_export_blacklist( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		$blacklist = new CF7_Antispam_Blacklist();
+		$export_data = $blacklist->cf7a_export_blacklist();
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'filename' => $export_data['filename'],
+				'csv' => $export_data['csv']
+			)
+		);
+	}
+
+	/**
+	 * Helper method to get blacklist data.
+	 * This should call the actual method that retrieves the blacklist from database.
+	 *
+	 * @since    0.6.5
+	 * @return   array
+	 */
+	private function cf7a_get_blacklist_data() {
+		$blacklist = new CF7_Antispam_Blacklist();
+		return $blacklist->cf7a_get_blacklist_data();
+	}
+
+
 	/**
 	 * Register the routes for the objects of the controller.
 	 *
@@ -434,6 +569,104 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
 								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'unban-ip',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_unban_ip' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'id'    => array(
+							'required'          => true,
+							'type'              => 'integer',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'int' );
+							},
+						),
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'ban-forever',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_ban_forever' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'id'    => array(
+							'required'          => true,
+							'type'              => 'integer',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'int' );
+							},
+						),
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'get-blacklist',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'cf7a_get_blacklist_data' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'export-blacklist',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_export_blacklist' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param );
 							},
 						),
 					),
