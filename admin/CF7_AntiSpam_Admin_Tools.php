@@ -49,6 +49,10 @@ class CF7_AntiSpam_Admin_Tools {
 	 * It handles the actions that are triggered by the user
 	 */
 	public function cf7a_handle_actions() {
+		$req_nonce = isset( $_REQUEST['cf7a-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['cf7a-nonce'] ) ), 'cf7a-nonce' );
+		if ( !$req_nonce ) {
+			return;
+		}
 		$action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
 		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
@@ -61,121 +65,6 @@ class CF7_AntiSpam_Admin_Tools {
 
 			wp_safe_redirect( $url );
 			exit();
-		}
-
-		$req_nonce = isset( $_REQUEST['cf7a-nonce'] ) ? wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['cf7a-nonce'] ) ), 'cf7a-nonce' ) : null;
-
-		if ( $req_nonce ) {
-
-			/* Ban a single ID (related to ip) */
-			if ( 'unban_' === substr( $action, 0, 6 ) ) {
-				$unban_id = intval( substr( $action, 6 ) );
-
-				$filter = new CF7_AntiSpam_Filters();
-
-				$r = $filter->cf7a_unban_by_id( $unban_id );
-
-				if ( $r ) {
-					/* translators: %s is the ip address. */
-					self::cf7a_push_notice( sprintf( __( 'Success: ip %s unbanned', 'cf7-antispam' ), $unban_id ), 'success' );
-				} else {
-					/* translators: %s is the ip address. */
-					self::cf7a_push_notice( sprintf( __( 'Error: unable to unban %s', 'cf7-antispam' ), $unban_id ) );
-				}
-
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			/* Ban forever a single ID */
-			if ( 'ban_forever_' === substr( $action, 0, 12 ) ) {
-				$filter = new CF7_AntiSpam_Filters();
-
-				$plugin_options = CF7_AntiSpam::get_options();
-
-				$ban_id = intval( substr( $action, 12 ) );
-				$ban_ip = $filter->cf7a_blacklist_get_id( $ban_id );
-
-				if ( $ban_ip && ! empty( $plugin_options ) ) {
-					if ( CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array_merge( $plugin_options['bad_ip_list'], array( $ban_ip->ip ) ) ) ) {
-						$filter->cf7a_unban_by_id( $ban_id );
-					}
-
-					self::cf7a_push_notice(
-						sprintf(
-						/* translators: the %1$s is the user id and %2$s is the ip address. */
-							__( 'Ban forever id %1$s (ip %2$s) successful', 'cf7-antispam' ),
-							$ban_id,
-							! empty( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
-						)
-					);
-				} else {
-					self::cf7a_push_notice(
-						sprintf(
-							/* translators: the %1$s is the user id and %2$s is the ip address. */
-							__( 'Error: unable to ban forever id %1$s (ip %2$s)', 'cf7-antispam' ),
-							$ban_id,
-							! empty( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
-						)
-					);
-				}
-
-				wp_safe_redirect( $url );
-				exit();
-			}
-
-			if ( 'export-blacklist' === $action ) {
-
-				$blacklist = $this->cf7a_export_blacklist();
-
-				if ( ! empty( $blacklist ) ) {
-					// Convert to CSV format with all fields
-					$csv = '';
-
-					// Add CSV header
-					$csv .= "ID,IP,Status,Meta,Modified,Created\n";
-
-					foreach ( $blacklist as $row ) {
-						// Escape CSV values
-						$id     = $row->id;
-						$ip     = '"' . str_replace( '"', '""', $row->ip ) . '"';
-						$status = $row->status ?? '';
-
-						// Handle the metadata array - convert to JSON string for CSV
-						$meta = '';
-						if ( is_array( $row->meta ) && ! empty( $row->meta ) ) {
-							$meta = '"' . str_replace( '"', '""', json_encode( $row->meta, JSON_UNESCAPED_UNICODE ) ) . '"';
-						} elseif ( ! empty( $row->meta ) ) {
-							$meta = '"' . str_replace( '"', '""', $row->meta ) . '"';
-						}
-
-						$modified = '"' . str_replace( '"', '""', $row->modified ?? '' ) . '"';
-						$created  = '"' . str_replace( '"', '""', $row->created ?? '' ) . '"';
-
-						// Build CSV row
-						$csv .= $id . ',' . $ip . ',' . $status . ',' . $meta . ',' . $modified . ',' . $created . "\n";
-					}
-				} else {
-					// Handle empty blacklist case
-					$csv  = "ID,IP,Status,Meta,Modified,Created\n";
-					$csv .= "No blacklisted IPs found\n";
-				}
-
-				// Set headers for file download
-				$filename = 'cf7-antispam-blacklist-' . gmdate( 'Y-m-d-H-i-s' ) . '.csv';
-
-				// Set download headers
-				header( 'Content-Type: text/csv; charset=utf-8' );
-				header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
-				header( 'Content-Length: ' . strlen( $csv ) );
-				header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
-				header( 'Pragma: no-cache' );
-				header( 'Expires: 0' );
-
-				// Output the CSV content
-				echo $csv; // phpcs:ignore WordPress.Security.EscapeOutput
-				exit();
-			}
 		}
 	}
 }

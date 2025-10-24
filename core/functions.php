@@ -351,7 +351,7 @@ function cf7a_compress_array( $array, $is_html = false ) {
 	$is_html = intval( $is_html );
 
 	return implode(
-		'; ',
+		'<br /> ',
 		array_map(
 			function ( $v, $k ) use ( $is_html ) {
 				// Handles values by type

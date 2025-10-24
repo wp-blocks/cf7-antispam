@@ -241,6 +241,10 @@
 			padding-bottom: 8px;
 			border-bottom: 1px solid color.adjust(colors.$color__white, $lightness: -4%);
 
+			&.hidden {
+				display: none;
+			}
+
 			&:last-child {
 				border: 0;
 			}
@@ -272,7 +276,8 @@
 				font-weight: 700;
 				margin: 0;
 
-				.actions a {
+				.actions span {
+					cursor: pointer;
 					transition: 0.5s;
 					color: colors.$color__light-grey;
 

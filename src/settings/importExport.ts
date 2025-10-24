@@ -138,11 +138,16 @@ function downloadOptions() {
  * Initialize the import and export options
  */
 window.onload = function () {
-	// Example for download button
+	/**
+	 * The download button action
+	 */
 	document
 		.getElementById('cf7a_download_button')
 		?.addEventListener('click', () => downloadOptions());
 
+	/**
+	 * The import button action
+	 */
 	document
 		.getElementById('import-export-options')
 		?.addEventListener('submit', (e) => importExportOptions(e));

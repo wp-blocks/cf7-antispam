@@ -4,8 +4,54 @@ import { __ } from '@wordpress/i18n';
 window.addEventListener('load', adminSettingsHelper);
 
 /**
- * Resend message function
- * Displays a confirmation alert and sends a POST request to the API to resend a message.
+ * A function that handles all the function that download some files from the server via API
+ * @param e HTMLElement The button element
+ */
+function exportActionHandler(e: HTMLElement) {
+	const { action, nonce } = e.dataset as {
+		action: string;
+		nonce: string;
+	};
+
+	apiFetch({
+		path: '/cf7-antispam/v1/' + action,
+		method: 'POST',
+		data: {
+			nonce,
+		},
+	})
+		.then((res) => {
+			const { success, message, filetype, filename, data } = res as {
+				success: boolean;
+				message: string;
+				filetype: string;
+				filename: string;
+				data: string;
+			};
+			if (success) {
+				if (filetype === 'csv') {
+					const blob = new Blob([data], { type: 'text/csv' });
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.style.display = 'none';
+					a.href = url;
+					a.download = filename;
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+				}
+			} else {
+				console.error('Error: Failed to export file', message);
+			}
+		})
+		.catch((error: any) => {
+			console.error('Error:', error.message);
+			alert('Request failed: ' + error.message);
+		});
+}
+
+/**
+ * A function that handles the actions for the admin tabs
  *
  * @param e               HTMLElement The button element
  * @param dataset         object The dataset of the button element
@@ -15,11 +61,12 @@ window.addEventListener('load', adminSettingsHelper);
  * @param dataset.id
  */
 function actionHandler(e: HTMLElement) {
-	const { action, message, nonce } = e.dataset as {
+	const { action, message, callback, nonce } = e.dataset as {
 		action: string;
 		message: string;
 		nonce: string;
 		id?: string;
+		callback?: string;
 	};
 
 	/**
@@ -32,6 +79,24 @@ function actionHandler(e: HTMLElement) {
 		!confirm(message)
 	) {
 		return;
+	}
+
+	let cb: null | (() => void) = null;
+	if (callback && typeof callback === 'string') {
+		/**
+		 * Callback functions
+		 *
+		 * HIDE
+		 * We are going to create a callback function to hide the row
+		 */
+		if (callback === 'hide') {
+			cb = function () {
+				e.closest('.row')?.classList.add('hidden');
+			};
+		}
+		/**
+		 * If needed we can add more callback function here
+		 */
 	}
 
 	/**
@@ -59,7 +124,12 @@ function actionHandler(e: HTMLElement) {
 				log?: string;
 			};
 			if (success) {
-				alert(message);
+				if (message) {
+					alert(message);
+				}
+				if (cb) {
+					cb();
+				}
 			} else {
 				console.error('Error:', message, log as string);
 			}
@@ -80,10 +150,18 @@ function adminSettingsHelper() {
 		const actions = document.querySelectorAll(
 			'.cf7a_action'
 		) as NodeListOf<HTMLElement>;
+		const exportActions = document.querySelectorAll(
+			'.cf7a_export_action'
+		) as NodeListOf<HTMLElement>;
 
 		actions.forEach((action: HTMLElement) => {
 			action.addEventListener('click', () => {
 				actionHandler(action);
+			});
+		});
+		exportActions.forEach((action: HTMLElement) => {
+			action.addEventListener('click', () => {
+				exportActionHandler(action);
 			});
 		});
 	}
