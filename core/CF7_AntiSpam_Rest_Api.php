@@ -426,8 +426,10 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		return rest_ensure_response(
 			array(
 				'success' => true,
+				'message' => __( 'Blacklist exported successfully', 'cf7-antispam' ),
+				'filetype' => $export_data['filetype'],
 				'filename' => $export_data['filename'],
-				'csv' => $export_data['csv']
+				'data' => $export_data['data']
 			)
 		);
 	}

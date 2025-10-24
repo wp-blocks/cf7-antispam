@@ -38,9 +38,8 @@ class CF7_Antispam_Blacklist {
 			return array();
 		}
 
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT id, ip, status, meta, modified, created
-			FROM %i
-			ORDER BY created DESC", $table_name ) );
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT *
+			FROM %i", $table_name ) );
 
 		return $results ?: array();
 	}
@@ -171,7 +170,8 @@ class CF7_Antispam_Blacklist {
 		$filename = 'cf7-antispam-blacklist-' . gmdate( 'Y-m-d-H-i-s' ) . '.csv';
 
 		return array(
-			'csv'      => $csv,
+			'filetype' => 'csv',
+			'data'      => $csv,
 			'filename' => $filename,
 		);
 	}
