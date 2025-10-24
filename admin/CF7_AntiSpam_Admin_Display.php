@@ -510,21 +510,21 @@ class CF7_AntiSpam_Admin_Display {
 		<?php
 	}
 
+	private function cf7a_export_button() {
+		printf(
+			'<p class="cf7a-export-blacklist-button alignright"><button class="button cf7a_export_action" data-action="export-blacklist" data-nonce="%s">%s</button></p>',
+			wp_create_nonce( 'cf7a-nonce' ),
+			esc_html__( 'Export blacklist', 'cf7-antispam' )
+		);
+	}
+
 	/**
 	 * Render the Blacklist Tab
 	 */
 	private function render_blacklist_tab() {
 		?>
 		<div class="cf7a-card">
-			<?php
-				/* The export button */
-				$export_url = wp_nonce_url( add_query_arg( 'action', 'export-blacklist', menu_page_url( 'cf7-antispam', false ) ), 'cf7a-nonce', 'cf7a-nonce' );
-				printf(
-					'<p class="cf7a-export-blacklist-button alignright"><a href="%s" class="button">%s</a></p>',
-					esc_url( $export_url ),
-					esc_html__( 'Export blacklist', 'cf7-antispam' )
-				);
-			?>
+			<?php $this->cf7a_export_button(); ?>
 			<h3><?php esc_html_e( 'Blacklisted IPs', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'Here you can see all the IPs that have been blacklisted by the plugin.', 'cf7-antispam' ); ?></p>
 			<?php $this->cf7a_get_blacklisted_table(); ?>
@@ -644,16 +644,19 @@ class CF7_AntiSpam_Admin_Display {
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
 				$rows .= sprintf(
-					'<div class="row"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></p><span class="data">%s</span></div></div>',
+					'<div class="row row-%s"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></p><span class="data">%s</span><span class="data date"><b>%s:</b> %s</span></div></div>',
+					esc_attr( intval($row->id) ),
 					cf7a_format_status( $row->status - $max_attempts ),
 					esc_html( $row->ip ),
-					esc_html( $row->id ),
-					esc_html( $nonce ),
+					esc_attr( $row->id ),
+					esc_attr( $nonce ),
 					esc_html__( '[unban ip]', 'cf7-antispam' ),
-					esc_html( $row->id ),
-					esc_html( $nonce ),
+					esc_attr( $row->id ),
+					esc_attr( $nonce ),
 					esc_html__( '[ban forever]', 'cf7-antispam' ),
-					cf7a_compress_array( $meta['reason'], true )
+					cf7a_compress_array( $meta['reason'], true ),
+					esc_html__( 'First seen on', 'cf7-antispam'),
+					$row->created
 				);
 			}
 
