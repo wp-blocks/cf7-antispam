@@ -1087,10 +1087,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* unban after */
 		$new_input['unban_after'] = $this->cf7a_input_cron_schedule( $input, 'unban_after', 'cf7a_cron', $schedule );
 
-		/*
-		report by mail */
-		// $new_input['mail_report'] = $this->cf7a_input_cron_schedule( $schedule, 'mail_report', 'cf7a_cron_report' );
-
 		/* bad ip */
 		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
 		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
