@@ -242,15 +242,21 @@ class CF7_AntiSpam_Filters {
 		/* Below 0 is not anymore a valid status for a blacklist entry, so we can remove it */
 		$lower_bound = 0;
 
+		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
+
 		/* removes a status count at each balcklisted ip */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$updated = $wpdb->query( $wpdb->prepare( "UPDATE %s SET `status` = `status` - %d WHERE 1", $wpdb->prefix . 'cf7a_blacklist', $status_decrement ) );
+		$updated = $wpdb->query( $wpdb->prepare( "UPDATE %i SET `status` = `status` - %d", $blacklist_table, $status_decrement ) );
 		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
 
 		/* when the line has 0 in status, we can remove it from the blacklist */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$updated = $wpdb->query( $wpdb->prepare( "DELETE FROM %s WHERE `status` =  %d", $wpdb->prefix . 'cf7a_blacklist', $lower_bound ) );
-		cf7a_log( "Removed $updated users from blacklist", 1 );
+		$updated_deletion = $wpdb->delete(
+			$blacklist_table,
+			array( 'status' => $lower_bound ),
+			array( '%d' )
+		);
+		cf7a_log( "Removed {$updated_deletion} users from blacklist", 1 );
 
 		return true;
 	}
