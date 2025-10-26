@@ -34,12 +34,13 @@ class CF7_Antispam_Blacklist {
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
 		// Check if table exists
-		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) !== $table_name ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %i', $table_name ) ) !== $table_name ) {
 			return array();
 		}
 
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT *
-			FROM %i", $table_name ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i", $table_name ) );
 
 		return $results ?: array();
 	}
@@ -56,7 +57,8 @@ class CF7_Antispam_Blacklist {
 
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
-		$result = $wpdb->get_row(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT id, ip, status, meta, modified, created
 				FROM %i
@@ -65,8 +67,6 @@ class CF7_Antispam_Blacklist {
 				$id
 			)
 		);
-
-		return $result;
 	}
 
 	/**
@@ -81,6 +81,7 @@ class CF7_Antispam_Blacklist {
 
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->delete(
 			$table_name,
 			array( 'id' => $id ),
@@ -161,7 +162,7 @@ class CF7_Antispam_Blacklist {
 				$modified = isset( $row->modified ) ? '"' . str_replace( '"', '""', $row->modified ) . '"' : '""';
 				$created  = isset( $row->created ) ? '"' . str_replace( '"', '""', $row->created ) . '"' : '""';
 
-				$csv .= $id . ',' . $ip . ',' . $status . ',' . $meta . ',' . $modified . ',' . $created . "\n";
+				$csv .= sprintf( "%s,%s,%s,%s,%s,%s\n", $id, $ip, $status, $meta, $modified, $created );
 			}
 		} else {
 			$csv .= "No blacklisted IPs found\n";
@@ -188,6 +189,7 @@ class CF7_Antispam_Blacklist {
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
 		// Truncate the table
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$result = $wpdb->query( "TRUNCATE TABLE {$table_name}" );
 
 		return $result !== false;
@@ -208,6 +210,7 @@ class CF7_Antispam_Blacklist {
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
 		// Check if IP already exists
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM %i WHERE ip = %s",
@@ -218,6 +221,7 @@ class CF7_Antispam_Blacklist {
 
 		if ( $exists > 0 ) {
 			// Update existing entry
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->update(
 				$table_name,
 				array(
@@ -231,6 +235,7 @@ class CF7_Antispam_Blacklist {
 			);
 		} else {
 			// Insert new entry
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->insert(
 				$table_name,
 				array(
@@ -259,6 +264,7 @@ class CF7_Antispam_Blacklist {
 
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM %i WHERE ip = %s",
@@ -281,8 +287,10 @@ class CF7_Antispam_Blacklist {
 
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$total = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $table_name ) );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$today = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM %i WHERE DATE(created) = %s",
@@ -291,11 +299,12 @@ class CF7_Antispam_Blacklist {
 			)
 		);
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$this_week = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM %i WHERE created >= %s",
 				$table_name,
-				date( 'Y-m-d', strtotime( '-7 days' ) )
+				gmdate( 'Y-m-d', strtotime( '-7 days' ) )
 			)
 		);
 
