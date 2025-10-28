@@ -1,7 +1,7 @@
 === AntiSpam for Contact Form 7 ===
 Contributors: codekraft, gardenboi
 Tags: antispam, blacklist, honeypot, geoip, security
-Requires at least: 5.4
+Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 0.7.0

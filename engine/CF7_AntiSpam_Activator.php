@@ -178,10 +178,10 @@ class CF7_AntiSpam_Activator {
 
 			/* Insert the default values */
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-			$wpdb->query( $wpdb->prepare(  "INSERT INTO %s (`token`, `count_ham`) VALUES ('b8*dbversion', '3');", $wpdb->prefix . 'cf7a_wordlist' ) );
+			$wpdb->query( $wpdb->prepare(  "INSERT INTO %s (`token`, `count_ham`) VALUES ('b8*dbversion', '3');", $table_wordlist ) );
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-			$wpdb->query( $wpdb->prepare( "INSERT INTO %s (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');", $wpdb->prefix . 'cf7a_wordlist' ) );
+			$wpdb->query( $wpdb->prepare( "INSERT INTO %s (`token`, `count_ham`, `count_spam`) VALUES ('b8*texts', '0', '0');", $table_wordlist ) );
 
 			cf7a_log( "{$table_wordlist} table creation succeeded", 2 );
 		}

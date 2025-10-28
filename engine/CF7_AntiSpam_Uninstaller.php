@@ -83,6 +83,13 @@ class CF7_AntiSpam_Uninstaller {
 			wp_clear_scheduled_hook( 'cf7a_cron' );
 		}
 
+		/* clear cache */
+		wp_cache_delete( 'cf7a_total_blocked_count', 'cf7a_blacklist_stats' );
+		wp_cache_delete( 'cf7a_status_breakdown', 'cf7a_blacklist_stats' );
+		wp_cache_delete( 'cf7a_reason_counts', 'cf7a_blacklist_stats' );
+		wp_cache_delete( 'cf7a_top_spam_words', 'cf7a_wordlist_stats' );
+		wp_cache_delete( 'cf7a_top_ham_words', 'cf7a_wordlist_stats' );
+
 		cf7a_log( 'plugin uninstalled' );
 		return true;
 	}

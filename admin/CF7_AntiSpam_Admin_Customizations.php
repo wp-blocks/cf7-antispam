@@ -676,11 +676,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_print_section_auto_blacklist() {
 		printf( '<p>' . esc_html__( 'How many failed attempts before being banned', 'cf7-antispam' ) . '</p>' );
-		if ( wp_next_scheduled( 'cf7a_cron' ) ) {
+		$next = wp_next_scheduled( 'cf7a_cron' );
+		if ( $next ) {
 			printf(
 				'<small class="monospace">%s %s <br/>Server time %s</small>',
 				esc_html__( 'Next scheduled unban event:', 'cf7-antispam' ),
-				esc_html( wp_date( 'Y-m-d H:i:s', wp_next_scheduled( 'cf7a_cron' ) ) ),
+				esc_html( wp_date( 'Y-m-d H:i:s', $next ) ),
 				esc_html( wp_date( 'Y-m-d H:i:s', time() ) )
 			);
 		}
@@ -936,9 +937,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			if ( $input[ $input_name ] === 'disabled' ) {
 
 				/* Get the timestamp for the next event and unschedule it. */
-				while ( $timestamp = wp_next_scheduled( 'cf7a_cron' ) ) {
-					wp_unschedule_event( $timestamp, 'cf7a_cron' );
-				}
+				wp_clear_scheduled_hook( 'cf7a_cron' );
 				return 'disabled';
 			}
 
@@ -948,9 +947,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				$new_value = $input[ $input_name ];
 
 				/* delete all the previous scheduled events */
-				while ( $timestamp = wp_next_scheduled( 'cf7a_cron' ) ) {
-					wp_unschedule_event( $timestamp, 'cf7a_cron' );
-				}
+				wp_clear_scheduled_hook( 'cf7a_cron' );
 
 				/* add the new scheduled event */
 				$interval_seconds = isset( $schedule[ $new_value ]['interval'] ) ? (int) $schedule[ $new_value ]['interval'] : 0;
@@ -1089,10 +1086,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* unban after */
 		$new_input['unban_after'] = $this->cf7a_input_cron_schedule( $input, 'unban_after', 'cf7a_cron', $schedule );
-
-		/*
-		report by mail */
-		// $new_input['mail_report'] = $this->cf7a_input_cron_schedule( $schedule, 'mail_report', 'cf7a_cron_report' );
 
 		/* bad ip */
 		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
