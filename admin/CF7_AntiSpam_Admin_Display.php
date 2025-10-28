@@ -196,17 +196,34 @@ class CF7_AntiSpam_Admin_Display {
 	private function render_stats_overview() {
 		global $wpdb;
 
-		// Get basic stats
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$total_blocked = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $wpdb->prefix . 'cf7a_blacklist' ) );
+		// Set cache expiration times (in seconds)
+		$cache_time_short = 5 * MINUTE_IN_SECONDS;  // 5 minutes for frequently changing data
+		$cache_time_long  = 15 * MINUTE_IN_SECONDS; // 15 minutes for more stable data
 
-		// Get status breakdown with proper grouping
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$status_data = $wpdb->get_results( $wpdb->prepare( "SELECT status, COUNT(*) as count
-						FROM %i
-						GROUP BY status
-						ORDER BY status ASC",
-			$wpdb->prefix . 'cf7a_blacklist' ) );
+		// Get basic stats with caching
+		$cache_key_total = 'cf7a_total_blocked_count';
+		$total_blocked   = wp_cache_get( $cache_key_total, 'cf7a_blacklist_stats' );
+
+		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
+
+		if ( false === $total_blocked ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$total_blocked = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $blacklist_table ) );
+			wp_cache_set( $cache_key_total, $total_blocked, 'cf7a_blacklist_stats', $cache_time_short );
+		}
+
+		// Get status breakdown with caching
+		$cache_key_status = 'cf7a_status_breakdown';
+		$status_data      = wp_cache_get( $cache_key_status, 'cf7a_blacklist_stats' );
+
+		if ( false === $status_data ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$status_data = $wpdb->get_results( $wpdb->prepare( "SELECT status, COUNT(*) as count
+			FROM %i
+			GROUP BY status
+			ORDER BY status ASC", $blacklist_table ) );
+			wp_cache_set( $cache_key_status, $status_data, 'cf7a_blacklist_stats', $cache_time_short );
+		}
 
 		// Group status into ranges
 		$status_ranges = array(
@@ -238,67 +255,76 @@ class CF7_AntiSpam_Admin_Display {
 		}
 
 		// Remove empty ranges for cleaner display
-		$status_ranges = array_filter(
-			$status_ranges,
-			function ( $count ) {
-				return $count > 0;
-			}
-		);
+		$status_ranges = array_filter( $status_ranges, function ( $count ) {
+			return $count > 0;
+		} );
 
-		// Get detailed reason stats from serialized meta
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$meta_data = $wpdb->get_results(
-			$wpdb->prepare("
-					SELECT meta
-					FROM %i
-					WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'
-			", $wpdb->prefix . 'cf7a_blacklist' )
-		);
+		// Get detailed reason stats with caching
+		$cache_key_reasons = 'cf7a_reason_counts';
+		$reason_counts     = wp_cache_get( $cache_key_reasons, 'cf7a_blacklist_stats' );
 
-		$reason_counts = array();
-		foreach ( $meta_data as $row ) {
-			$decoded_meta = unserialize( $row->meta );
+		if ( false === $reason_counts ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$meta_data = $wpdb->get_results( $wpdb->prepare( "SELECT meta
+			FROM %i
+			WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'", $wpdb->prefix . 'cf7a_blacklist' ) );
 
-			if ( is_array( $decoded_meta ) ) {
-				foreach ( $decoded_meta as $entry ) {
-					if ( is_array( $entry ) ) {
-						// Count each reason type within the reason array
-						foreach ( $entry as $reason_key => $reason_value ) {
-							// Convert reason key to readable format
-							$reason_name = $this->format_reason_name( $reason_key );
+			$reason_counts = array();
+			foreach ( $meta_data as $row ) {
+				$decoded_meta = unserialize( $row->meta ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 
-							if ( ! isset( $reason_counts[ $reason_name ] ) ) {
-								$reason_counts[ $reason_name ] = 0;
+				if ( is_array( $decoded_meta ) ) {
+					foreach ( $decoded_meta as $entry ) {
+						if ( is_array( $entry ) ) {
+							// Count each reason type within the reason array.
+							foreach ( $entry as $reason_key => $reason_value ) {
+								// Convert reason key to readable format.
+								$reason_name = $this->format_reason_name( $reason_key );
+
+								if ( ! isset( $reason_counts[ $reason_name ] ) ) {
+									$reason_counts[ $reason_name ] = 0;
+								}
+								++ $reason_counts[ $reason_name ];
 							}
-							++$reason_counts[ $reason_name ];
 						}
 					}
 				}
 			}
+
+			wp_cache_set( $cache_key_reasons, $reason_counts, 'cf7a_blacklist_stats', $cache_time_short );
 		}
 
 		// Sort reasons by count and get top 5
 		arsort( $reason_counts );
 		$top_reasons = array_slice( $reason_counts, 0, 5, true );
 
-		// Get top 10 spam words
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$top_spam_words = $wpdb->get_results( $wpdb->prepare(
-			"SELECT token, count_spam
-				FROM %i
-				WHERE count_spam > 0
-				ORDER BY count_spam DESC
-				LIMIT 10",
-				$wpdb->prefix . 'cf7a_wordlist'
-		) );
+		// Get top 10 spam words with caching
+		$cache_key_spam = 'cf7a_top_spam_words';
+		$top_spam_words = wp_cache_get( $cache_key_spam, 'cf7a_wordlist_stats' );
 
-		// Get top 10 ham words
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$top_ham_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_ham
-				FROM %i
-				WHERE count_ham > 0
-				ORDER BY count_ham DESC
-				LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
+		if ( false === $top_spam_words ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$top_spam_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_spam
+			FROM %i
+			WHERE count_spam > 0 AND token != 'b8*texts'
+			ORDER BY count_spam DESC
+			LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
+			wp_cache_set( $cache_key_spam, $top_spam_words, 'cf7a_wordlist_stats', $cache_time_long );
+		}
+
+		// Get top 10 ham words with caching
+		$cache_key_ham = 'cf7a_top_ham_words';
+		$top_ham_words = wp_cache_get( $cache_key_ham, 'cf7a_wordlist_stats' );
+
+		if ( false === $top_ham_words ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$top_ham_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_ham
+			FROM %i
+			WHERE count_ham > 0 AND token != 'b8*texts'
+			ORDER BY count_ham DESC
+			LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
+			wp_cache_set( $cache_key_ham, $top_ham_words, 'cf7a_wordlist_stats', $cache_time_long );
+		}
 		?>
 		<div class="cf7a-stats-grid">
 
@@ -513,7 +539,7 @@ class CF7_AntiSpam_Admin_Display {
 	private function cf7a_export_button() {
 		printf(
 			'<p class="cf7a-export-blacklist-button alignright"><button class="button cf7a_export_action" data-action="export-blacklist" data-nonce="%s">%s</button></p>',
-			wp_create_nonce( 'cf7a-nonce' ),
+			esc_attr(wp_create_nonce( 'cf7a-nonce' )),
 			esc_html__( 'Export blacklist', 'cf7-antispam' )
 		);
 	}
