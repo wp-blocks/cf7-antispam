@@ -1327,8 +1327,9 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It creates the input field "cf7a_geodb_update" */
 	public function cf7a_geoip_is_enabled_callback() {
-		$last_update = get_option( 'cf7a_geodb_update', 0 );
-		printf( ! empty( $last_update ) ? '✅ ' : '❌ ' );
+		$GeoDB = new CF7_Antispam_Geoip();
+		$is_enabled = $GeoDB->has_database();
+		printf( ! empty( $is_enabled ) ? '✅ ' : '❌ ' );
 	}
 
 	/**

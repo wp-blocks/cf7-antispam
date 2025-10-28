@@ -77,6 +77,15 @@ class CF7_Antispam_Geoip {
 	}
 
 	/**
+	 * It checks if the GeoIP2 reader is initialized
+	 *
+	 * @return bool true if the GeoIP2 reader is initialized
+	 */
+	public function has_database() {
+		return $this->reader !== false;
+	}
+
+	/**
 	 * If the CF7ANTISPAM_GEOIP_KEY constant is set, use that. Otherwise, if the geoip_dbkey option is set, use that.
 	 * Otherwise, return false
 	 *
