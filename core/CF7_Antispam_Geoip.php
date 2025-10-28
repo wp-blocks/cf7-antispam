@@ -358,6 +358,27 @@ class CF7_Antispam_Geoip {
 		return true;
 	}
 
+	public function cf7a_geoip_manual_upload( $file ) {
+		global $wp_filesystem;
+		$destination_file_uri = self::cf7a_get_upload_dir() . DIRECTORY_SEPARATOR . 'GeoLite2-Country.mmdb';
+
+		try {
+			$wp_filesystem->put_contents( $destination_file_uri, file_get_contents( $file ), 600 );
+		} catch ( Exception $e ) {
+			cf7a_log( 'Unable to create the cf7-antispam folder' );
+			cf7a_log( $e );
+
+			return false;
+		}
+	}
+
+	/**
+	 * It downloads the GeoIP database from MaxMind and saves it to the plugin's directory
+	 */
+	public function cf7a_geoip_manual_update() {
+		$this->cf7a_geoip_download_database();
+	}
+
 	/**
 	 * It downloads the GeoIP database from MaxMind and saves it to the plugin's directory
 	 *
