@@ -1053,11 +1053,39 @@ class CF7_AntiSpam_Admin_Customizations {
 		 * Checking if the enable_geoip_download is not set (note the name is $new_input but actually is the copy of the stored options)
 		 * and the user has chosen to enable the geoip, in this case download the database if needed
 		 */
-		if ( empty( $import_data ) && empty( $new_input['enable_geoip_download'] ) && isset( $input['enable_geoip_download'] ) ) {
+		if ( ! empty( $new_input['enable_geoip_download'] ) ) {
 			$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
 		}
 
 		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
+
+		// if the download is disabled, check if the database is uploaded
+		if ( empty( $new_input['enable_geoip_download'] ) ) {
+			$GEOIP = new CF7_Antispam_Geoip();
+
+			// Get the file name
+			if (! empty($_FILES) && !empty($_FILES['geoip_dbfile'])) {
+				// Validate the uploaded file - The second parameter $overrides enables security
+				$upload = wp_handle_upload( $_FILES['geoip_dbfile'], array( 'test_form' => false ) );
+
+				if ( ! empty( $upload['error'] ) ) {
+					// If the file upload failed
+					if ( $upload['error'] !== UPLOAD_ERR_NO_FILE ) {
+						add_settings_error(
+							'geoip_dbfile',
+							'geoip_dbfile_error',
+							/* translators: %s: Error message */
+							sprintf( __( 'Error uploading file: %s', 'cf7-antispam' ), $upload['error'] )
+						);
+					}
+					// Continue
+				} else {
+					// Upload success
+					$temp = $upload["url"];
+					$GEOIP->cf7a_geoip_manual_upload( $temp );
+				}
+			}
+		}
 
 		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
@@ -1323,6 +1351,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<input type="checkbox" id="enable_geoip_download" name="cf7a_options[enable_geoip_download]" %s />',
 			! empty( $this->options['enable_geoip_download'] ) ? 'checked="true"' : ''
 		);
+
+		// the upload button for the database if the download is disabled
+		if ( empty( $this->options['enable_geoip_download'] ) ) {
+			printf(
+				'<input type="file" id="geoip_dbfile" name="geoip_dbfile" accept=".mmdb,.tar.gz,.tgz" />',
+				! empty( $this->options['geoip_dbfile'] ) ? 'checked="true"' : ''
+			);
+		}
 	}
 
 	/** It creates the input field "cf7a_geodb_update" */
