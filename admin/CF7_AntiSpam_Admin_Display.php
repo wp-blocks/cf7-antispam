@@ -525,7 +525,7 @@ class CF7_AntiSpam_Admin_Display {
 		<div class="cf7a-card">
 			<h3><?php esc_html_e( 'Plugin Settings', 'cf7-antispam' ); ?></h3>
 			<?php $this->cf7a_print_section_options_subtitle(); ?>
-			<form method="post" action="options.php" id="cf7a_settings">
+			<form method="post" action="options.php" id="cf7a_settings" enctype="multipart/form-data">
 				<?php
 				settings_fields( 'cf7_antispam_options' );
 				do_settings_sections( 'cf7a-settings' );
