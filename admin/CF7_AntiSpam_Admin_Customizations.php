@@ -898,7 +898,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/**
-	 * If the user has enabled the GeoIP feature schedule the download of the database, and the GeoIP database is not already downloaded, download it
+	 * If the user has enabled the GeoIP feature schedule the download of the database, and the GeoIP database is not yet downloaded, download it
 	 * if the user has disabled the GeoIP feature, unscheduled the download event
 	 *
 	 * @param 1|0 $enabled input The input value.
@@ -1068,7 +1068,14 @@ class CF7_AntiSpam_Admin_Customizations {
 			// Get the file name
 			if (! empty($_FILES) && !empty($_FILES['geoip_dbfile'])) {
 				// Validate the uploaded file - The second parameter $overrides enables security
-				$upload = wp_handle_upload( $_FILES['geoip_dbfile'], array( 'test_form' => false ) );
+				$upload = wp_handle_upload( $_FILES['geoip_dbfile'], array(
+					'test_form' => false,
+					'mimes'     => array(
+						'mmdb'   => 'application/octet-stream',
+						'gz'     => 'application/gzip',
+						'tar.gz' => 'application/x-gzip',
+					),
+				) );
 
 				if ( ! empty( $upload['error'] ) ) {
 					// If the file upload failed
@@ -1084,8 +1091,26 @@ class CF7_AntiSpam_Admin_Customizations {
 				} else {
 					// Upload success
 					$temp = $upload["url"];
-					$GEOIP->cf7a_geoip_manual_upload( $temp );
 					$result = $GEOIP->manual_upload( $temp );
+					if ( $result ) {
+						add_settings_error(
+							'geoip_dbfile',
+							'geoip_dbfile_success',
+							__( 'GeoIP database uploaded successfully.', 'cf7-antispam' ),
+							'success'
+						);
+
+						// Clean up the temporary file from wp-content/uploads
+						if ( file_exists( $upload['file'] ) ) {
+							wp_delete_file( $upload['file'] );
+						}
+					} else {
+						add_settings_error(
+							'geoip_dbfile',
+							'geoip_dbfile_process_error',
+							__( 'Error processing the uploaded file.', 'cf7-antispam' )
+						);
+					}
 				}
 			}
 		}
