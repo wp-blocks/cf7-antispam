@@ -883,7 +883,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			/* get the usar IP and check it against the GeoIP database */
 			$your_ip     = cf7a_get_real_ip();
-			$server_data = $cf7a_geo->cf7a_geoip_check_ip( $your_ip );
+			$server_data = $cf7a_geo->check_ip( $your_ip );
 
 			/* if the server_data is empty, set it to a string */
 			if ( empty( $server_data ) ) {
