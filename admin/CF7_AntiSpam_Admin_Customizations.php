@@ -912,9 +912,11 @@ class CF7_AntiSpam_Admin_Customizations {
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
 			}
-		} elseif ( $geo->cf7a_geoip_has_license() ) {
+		} elseif ( $geo->has_license() ) {
 			/* Otherwise schedule update / download the database if needed */
-			$geo->cf7a_geoip_schedule_update( $geo->cf7a_maybe_download_geoip_db() );
+			if ($geo->maybe_download() !== false) {
+				$geo->schedule_update();
+			};
 		}
 	}
 
@@ -1083,6 +1085,7 @@ class CF7_AntiSpam_Admin_Customizations {
 					// Upload success
 					$temp = $upload["url"];
 					$GEOIP->cf7a_geoip_manual_upload( $temp );
+					$result = $GEOIP->manual_upload( $temp );
 				}
 			}
 		}
@@ -1364,8 +1367,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It creates the input field "cf7a_geodb_update" */
 	public function cf7a_geoip_is_enabled_callback() {
 		$GeoDB = new CF7_Antispam_Geoip();
-		$is_enabled = $GeoDB->has_database();
-		printf( ! empty( $is_enabled ) ? '✅ ' : '❌ ' );
+		printf( $GeoDB->is_ready() ? '✅ ' : '❌ ' );
 	}
 
 	/**

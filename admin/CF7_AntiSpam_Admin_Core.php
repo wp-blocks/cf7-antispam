@@ -67,7 +67,7 @@ class CF7_AntiSpam_Admin_Core {
 		new CF7_AntiSpam_Admin_Customizations();
 
 		$this->geoip = new CF7_Antispam_Geoip();
-		$this->geoip->cf7a_geo_maybe_download();
+		$this->geoip->maybe_download();
 	}
 
 
