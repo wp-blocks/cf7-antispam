@@ -28,7 +28,8 @@
 		"php": ">=7.4",
 		"geoip2/geoip2": "~2.0",
 		"ext-json": "*",
-		"ext-openssl": "*"
+		"ext-openssl": "*",
+		"ext-fileinfo": "*"
 	},
 	"scripts": {
 		"PHPCS": "phpcs --standard=phpcs.xml.dist -s --report=full,summary,source",
