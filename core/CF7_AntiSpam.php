@@ -126,7 +126,7 @@ class CF7_AntiSpam {
 		CF7_AntiSpam_Activator::update_options();
 
 		/* Update the plugin database */
-		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $this->options );
+		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $this->get_options() );
 		$updater->may_do_updates();
 	}
 
