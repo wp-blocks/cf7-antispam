@@ -31,6 +31,15 @@ class CF7_AntiSpam_Admin_Customizations {
 	public $options;
 
 	/**
+	 * The GeoIP object
+	 *
+	 * @since    7.0.0
+	 * @access   private
+	 * @var      CF7_Antispam_Geoip    $geoip    GeoIP object.
+	 */
+	private CF7_Antispam_Geoip $geoip;
+
+	/**
 	 * The plugin main menu
 	 *
 	 * The function `__construct()` is called when the class is instantiated.
@@ -48,6 +57,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
+
+		$this->geoip = new CF7_Antispam_Geoip();
 
 		add_action( 'admin_init', array( $this, 'cf7a_options_init' ) );
 	}
@@ -904,7 +915,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @param 1|0 $enabled input The input value.
 	 */
 	public function cf7a_enable_geo( $enabled ) {
-		$geo = new CF7_Antispam_Geoip();
+
 
 		if ( 0 === $enabled ) {
 			/* delete the geo db next update stored option and the scheduled event */
@@ -912,10 +923,10 @@ class CF7_AntiSpam_Admin_Customizations {
 			if ( $timestamp ) {
 				wp_unschedule_event( $timestamp, 'cf7a_geoip_update_db' );
 			}
-		} elseif ( $geo->has_license() ) {
+		} elseif ( $this->geoip->has_license() ) {
 			/* Otherwise schedule update / download the database if needed */
-			if ($geo->maybe_download() !== false) {
-				$geo->schedule_update();
+			if ($this->geoip->maybe_download() !== false) {
+				$this->geoip->schedule_update();
 			};
 		}
 	}
@@ -1063,7 +1074,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		// if the download is disabled, check if the database is uploaded
 		if ( ! $new_input['enable_geoip_download'] )  {
-			$GEOIP = new CF7_Antispam_Geoip();
 
 			// Get the file name
 			if (! empty($_FILES) && !empty($_FILES['geoip_dbfile'])) {
@@ -1091,7 +1101,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				} else {
 					// Upload success
 					$temp = $upload["file"];
-					$result = $GEOIP->manual_upload( $temp );
+					$result = $this->geoip->manual_upload( $temp );
 					if ( $result ) {
 						add_settings_error(
 							'geoip_dbfile',
@@ -1391,8 +1401,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It creates the input field "cf7a_geodb_update" */
 	public function cf7a_geoip_is_enabled_callback() {
-		$GeoDB = new CF7_Antispam_Geoip();
-		printf( $GeoDB->is_ready() ? '✅ ' : '❌ ' );
+		printf( $this->geoip->is_ready() ? '✅ ' : '❌ ' );
 	}
 
 	/**
@@ -1418,7 +1427,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It creates the input field "cf7a_check_geo_location" */
 	public function cf7a_check_geo_location_callback() {
-		$geo_disabled = empty( get_option( 'cf7a_geodb_update' ) ) ? 'disabled' : '';
+		$geo_disabled = $this->geoip->has_database() ? '' : 'disabled';
 		printf(
 			'<input type="checkbox" id="check_geo_location" name="cf7a_options[check_geo_location]" %s %s />',
 			! empty( $this->options['check_geo_location'] ) ? esc_html( 'checked="true"' ) : '',
