@@ -32,4 +32,3 @@ jobs:
         with:
           reporter: github-pr-review
           workdir: src
-          level: warning
