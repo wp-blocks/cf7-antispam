@@ -28,7 +28,7 @@
 		"lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
 		"packages-update": "wp-scripts packages-update",
 		"wp-env:start": "wp-env start",
-		"wp-env:xdebug": "wp-env start --xdebug --phpmyadminPort 15553",
+		"wp-env:xdebug": "wp-env start --xdebug",
 		"wp-env:stop": "wp-env stop",
 		"wp-env:destroy": "wp-env destroy",
 		"test:e2e": "wp-scripts test-playwright",
@@ -47,16 +47,16 @@
 	},
 	"homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
 	"devDependencies": {
-		"@wordpress/e2e-test-utils-playwright": "^1.26.0",
-		"@wordpress/env": "^10.26.0",
-		"@wordpress/eslint-plugin": "^22.12.0",
-		"@wordpress/scripts": "^30.19.0",
+		"@wordpress/e2e-test-utils-playwright": "^1.34.0",
+		"@wordpress/env": "10.26.0",
+		"@wordpress/eslint-plugin": "^22.20.0",
+		"@wordpress/scripts": "^30.27.0",
 		"@wp-blocks/make-pot": "^1.6.3",
-		"chart.js": "^4.5.0",
+		"chart.js": "^4.5.1",
 		"husky": "^9.1.7",
 		"prettier": "^3.6.2",
-		"@wordpress/api-fetch": "^7.30.0",
-		"typescript": "^5.8.3"
+		"@wordpress/api-fetch": "^7.34.0",
+		"typescript": "^5.9.3"
 	},
 	"engines": {
 		"node": ">=16.0.0",

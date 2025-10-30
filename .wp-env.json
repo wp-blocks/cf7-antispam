@@ -14,5 +14,13 @@
 	"phpVersion": "8.2",
 	"mappings": {
 		"/var/www/html/wp-content/plugins/cf7-antispam": "./"
+	},
+	"env": {
+		"development": {
+			"phpmyadminPort": 19002
+		},
+		"tests": {
+			"phpmyadminPort": 19003
+		}
 	}
 }
