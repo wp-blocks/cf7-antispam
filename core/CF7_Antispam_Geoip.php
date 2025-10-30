@@ -627,10 +627,12 @@ class CF7_Antispam_Geoip {
 	 * @return bool
 	 */
 	private function validate_mmdb_file( $file ) {
-		$header = file_get_contents( $file, false, null, 0, 15 );
-
-		if ( strpos( $header, self::MAXMIND_SIGNATURE ) === false ) {
-			cf7a_log( 'Invalid MaxMind database signature', 2 );
+		// we are going to try the uploaded database in order to know if it is working
+		$new_geo = new Reader( $file );
+		try {
+			$new_geo->country( '8.8.8.8' );
+		} catch ( Exception $e ) {
+			cf7a_log( 'Invalid MaxMind database file format', 1 );
 			return false;
 		}
 
