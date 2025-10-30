@@ -1062,7 +1062,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
 
 		// if the download is disabled, check if the database is uploaded
-		if ( empty( $new_input['enable_geoip_download'] ) ) {
+		if ( ! $new_input['enable_geoip_download'] )  {
 			$GEOIP = new CF7_Antispam_Geoip();
 
 			// Get the file name
@@ -1090,7 +1090,7 @@ class CF7_AntiSpam_Admin_Customizations {
 					// Continue
 				} else {
 					// Upload success
-					$temp = $upload["url"];
+					$temp = $upload["file"];
 					$result = $GEOIP->manual_upload( $temp );
 					if ( $result ) {
 						add_settings_error(
