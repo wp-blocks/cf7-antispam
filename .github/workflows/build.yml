@@ -30,7 +30,6 @@ jobs:
       - run: npm i
       - uses: EPMatt/reviewdog-action-tsc@v1
         with:
-          reporter: github-check
+          reporter: github-pr-review
           workdir: src
           level: warning
-          reporter: github-pr-review
