@@ -98,23 +98,35 @@ class CF7_AntiSpam_Admin_Display {
 
 		<div class="cf7a-tab-content">
 			<div id="dashboard" class="cf7a-tab-panel <?php echo $active_tab === 'dashboard' ? 'active' : ''; ?>">
-				<?php $this->render_dashboard_tab(); ?>
+				<?php if ($active_tab === 'dashboard') {
+					$this->render_dashboard_tab();
+				} ?>
 			</div>
 			<div id="settings" class="cf7a-tab-panel <?php echo $active_tab === 'settings' ? 'active' : ''; ?>">
-				<?php $this->render_settings_tab(); ?>
+				<?php if ($active_tab === 'settings') {
+					$this->render_settings_tab();
+				} ?>
 			</div>
 			<div id="blacklist" class="cf7a-tab-panel <?php echo $active_tab === 'blacklist' ? 'active' : ''; ?>">
-				<?php $this->render_blacklist_tab(); ?>
+				<?php if ($active_tab === 'blacklist') {
+					$this->render_blacklist_tab();
+				} ?>
 			</div>
 			<div id="tools" class="cf7a-tab-panel <?php echo $active_tab === 'tools' ? 'active' : ''; ?>">
-				<?php $this->render_tools_tab(); ?>
+				<?php if ($active_tab === 'tools') {
+					$this->render_tools_tab();
+				} ?>
 			</div>
 			<div id="import-export" class="cf7a-tab-panel <?php echo $active_tab === 'import-export' ? 'active' : ''; ?>">
-				<?php $this->render_import_export_tab(); ?>
+				<?php if ($active_tab === 'import-export') {
+					$this->render_import_export_tab();
+				} ?>
 			</div>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<div id="debug" class="cf7a-tab-panel <?php echo $active_tab === 'debug' ? 'active' : ''; ?>">
-					<?php $this->render_debug_tab(); ?>
+					<?php if ($active_tab === 'debug') {
+						$this->render_debug_tab();
+					} ?>
 				</div>
 			<?php endif; ?>
 		</div>

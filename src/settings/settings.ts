@@ -205,22 +205,22 @@ function adminSettingsHelper() {
 			const AdvSettingsFormEl =
 				AdvSettingsForm[AdvSettingsForm.length - 1];
 
-			if (advancedCheckbox.checked) {
+			if (advancedCheckbox?.checked) {
 				if (AdvSettingsCard) {
 					AdvSettingsCard.classList.remove('hidden');
 				}
 
-				AdvSettingsTitleEl.classList.remove('hidden');
-				AdvSettingsTxtEl.classList.remove('hidden');
-				AdvSettingsFormEl.classList.remove('hidden');
+				AdvSettingsTitleEl?.classList.remove('hidden');
+				AdvSettingsTxtEl?.classList.remove('hidden');
+				AdvSettingsFormEl?.classList.remove('hidden');
 			} else {
 				if (AdvSettingsCard) {
 					AdvSettingsCard.classList.add('hidden');
 				}
 
-				AdvSettingsTitleEl.classList.add('hidden');
-				AdvSettingsTxtEl.classList.add('hidden');
-				AdvSettingsFormEl.classList.add('hidden');
+				AdvSettingsTitleEl?.classList.add('hidden');
+				AdvSettingsTxtEl?.classList.add('hidden');
+				AdvSettingsFormEl?.classList.add('hidden');
 			}
 		};
 
@@ -239,14 +239,19 @@ function adminSettingsHelper() {
 				'.remove-select'
 			) as HTMLSelectElement;
 
-			for (const remove of removeSelect) {
-				for (const add of addSelect) {
-					if (remove.value === add.value) {
-						addSelect.removeChild(add);
+			if (removeSelect) {
+				for (const remove of removeSelect) {
+					if (addSelect) {
+						for (const add of addSelect) {
+							if (remove.value === add.value) {
+								addSelect.removeChild(add);
+							}
+						}
 					}
 				}
 			}
-			addListButton.addEventListener('click', () => {
+
+			addListButton?.addEventListener('click', () => {
 				for (const option of addSelect.options) {
 					if (option.selected) {
 						const name = option.textContent;
@@ -265,7 +270,7 @@ function adminSettingsHelper() {
 				}
 			});
 
-			removeListButton.addEventListener('click', () => {
+			removeListButton?.addEventListener('click', () => {
 				for (const option of removeSelect.options) {
 					if (option.selected) {
 						const name = option.textContent;
