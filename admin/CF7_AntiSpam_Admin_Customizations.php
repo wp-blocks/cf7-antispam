@@ -927,8 +927,6 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * @param 1|0 $enabled input The input value.
 	 */
 	public function cf7a_enable_geo( $enabled ) {
-
-
 		if ( 0 === $enabled ) {
 			/* delete the geo db next update stored option and the scheduled event */
 			$timestamp = wp_next_scheduled( 'cf7a_geoip_update_db' );
@@ -1124,11 +1122,6 @@ class CF7_AntiSpam_Admin_Customizations {
 						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
 							__( 'GeoIP database uploaded successfully.', 'cf7-antispam' )
 						);
-
-						// Clean up the temporary file from wp-content/uploads
-						if ( file_exists( $upload['file'] ) ) {
-							wp_delete_file( $upload['file'] );
-						}
 					} else {
 						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
 							__( 'Error processing the uploaded file.', 'cf7-antispam' )
