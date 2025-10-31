@@ -175,9 +175,20 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		/* Settings upload geoip database */
-		if ( empty( $this->options['enable_geoip_download'] ) ) {
+		if ( empty( $this->geoip->has_license() ) ) {
 			add_settings_field(
-				'enable_geoip_manual_download',
+				'enable_geoip_force_download',
+				__( 'Force database download', 'cf7-antispam' ),
+				array( $this, 'cf7a_force_download_callback' ),
+				'cf7a-settings',
+				'cf7a_check_geoip'
+			);
+		}
+
+		/* Settings upload geoip database */
+		if ( empty( $this->geoip->is_automatic_download_enabled() ) ) {
+			add_settings_field(
+				'enable_geoip_manual_upload',
 				__( 'Database manual upload', 'cf7-antispam' ),
 				array( $this, 'cf7a_enable_geoip_manual_upload_callback' ),
 				'cf7a-settings',
@@ -1397,12 +1408,19 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** Force database download button*/
+	public function cf7a_force_download_callback() {
+		// the upload button for the database if the download is disabled
+		printf( '<input type="button" id="geoip_force_download" class="cf7a_action" data-action="force-geoip-download" data-nonce="%s" value="%s" />',
+			wp_create_nonce( 'cf7a-nonce' ),
+			esc_attr__( 'Force Download', 'cf7-antispam' )
+		);
+	}
+
+	/** Database manual upload */
 	public function cf7a_enable_geoip_manual_upload_callback() {
 		// the upload button for the database if the download is disabled
-		printf(
-			'<input type="file" id="geoip_dbfile" name="geoip_dbfile" accept=".mmdb,.tar.gz,.tgz" />',
-			! empty( $this->options['geoip_dbfile'] ) ? 'checked="true"' : ''
-		);
+		echo '<input type="file" id="geoip_dbfile" name="geoip_dbfile" accept=".mmdb,.tar.gz" />';
 	}
 
 	/** It creates the input field "cf7a_geodb_update" */
