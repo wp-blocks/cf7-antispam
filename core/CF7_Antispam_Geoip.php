@@ -431,13 +431,18 @@ class CF7_Antispam_Geoip {
 		$this->ensure_upload_directory();
 		$destination = $this->get_database_path();
 
-		// Handle tar.gz files
 		if ( $this->is_archive( $file ) ) {
+			// Handle tar.gz files
 			return $this->extract_and_install( $file, $destination );
+		} elseif ( $this->is_mmdb( $file ) ) {
+			// Handle direct .mmdb files
+			return $this->install_mmdb_file( $file, $destination );
 		}
 
-		// Handle direct .mmdb files
-		return $this->install_mmdb_file( $file, $destination );
+		// remove the temp file
+		$this->cleanup_file( $file );
+
+		return false;
 	}
 
 	/**
@@ -464,12 +469,23 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Check if the file is an archive
 	 *
-	 * @param string $file
+	 * @param string $file The file to be checked
 	 *
-	 * @return bool
+	 * @return bool true if the file is an archive, false otherwise
 	 */
 	private function is_archive( $file ) {
-		return substr( $file, -7 ) === '.tar.gz' || substr( $file, -4 ) === '.tgz';
+		return substr( $file, -7 ) === '.tar.gz';
+	}
+
+	/**
+	 * Check if the file is a .mmdb file
+	 *
+	 * @param string $file The file to be checked
+	 *
+	 * @return bool true if the file is a .mmdb file, false otherwise
+	 */
+	private function is_mmdb( $file ) {
+		return substr( $file, -5 ) === '.mmdb';
 	}
 
 	// ==================== File Extraction ====================
