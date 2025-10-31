@@ -1120,8 +1120,10 @@ class CF7_AntiSpam_Admin_Customizations {
 					// If the file upload failed
 					if ( $upload['error'] !== UPLOAD_ERR_NO_FILE ) {
 						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
-							/* translators: %s is the error message */
-							__( sprintf( "Error uploading file: %s", $upload['error'] ), 'cf7-antispam' )
+							sprintf(
+								 /* translators: %s is the error message */
+								 esc_html__("Error uploading file: %s", 'cf7-antispam' ), $upload['error']
+							)
 						);
 					}
 					// Continue
@@ -1131,11 +1133,11 @@ class CF7_AntiSpam_Admin_Customizations {
 					$result = $this->geoip->manual_upload( $temp );
 					if ( $result ) {
 						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
-							__( 'GeoIP database uploaded successfully.', 'cf7-antispam' )
+							esc_html__( 'GeoIP database uploaded successfully.', 'cf7-antispam' )
 						);
 					} else {
 						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
-							__( 'Error processing the uploaded file.', 'cf7-antispam' )
+							esc_html__( 'Error processing the uploaded file.', 'cf7-antispam' )
 						);
 					}
 				}
