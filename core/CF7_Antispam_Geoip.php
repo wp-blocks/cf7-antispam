@@ -133,7 +133,7 @@ class CF7_Antispam_Geoip {
 	 *
 	 * @return bool
 	 */
-	public function manual_update() {
+	public function force_download() {
 		return $this->download_database();
 	}
 
@@ -473,7 +473,7 @@ class CF7_Antispam_Geoip {
 	 * @return bool true if the file is an archive, false otherwise
 	 */
 	private function is_archive( $file ) {
-		return substr( $file, -7 ) === '.tar.gz';
+		return substr( $file, -3 ) === '.gz';
 	}
 
 	/**
@@ -508,14 +508,14 @@ class CF7_Antispam_Geoip {
 				return false;
 			}
 
-			$mmdb_file = $this->extract_mmdb_from_archive( $tar_file );
+			$extracted_file = $this->extract_mmdb_from_archive( $tar_file );
 
-			if ( ! $mmdb_file ) {
+			if ( ! $extracted_file ) {
 				$this->log_extraction_error( 'No .mmdb file found in archive' );
 				return false;
 			}
 
-			return $this->finalize_installation( $mmdb_file, $destination );
+			return $this->finalize_installation( $extracted_file );
 
 		} catch ( Exception $e ) {
 			$this->log_extraction_error( $e->getMessage(), $e );
@@ -568,14 +568,11 @@ class CF7_Antispam_Geoip {
 				// Extract the specific file to the destination directory
 				$phar->extractTo( $upload_dir, $internal_path, true );
 
-				// Get just the filename for the final path
-				$mmdb_filename = $file_info->getFilename();
-
 				// delete the tar file
 				$this->cleanup_file( $tar_file );
 
 				// Return the full final path to the extracted file
-				return $upload_dir . $mmdb_filename;
+				return $internal_path;
 			}
 		}
 
