@@ -590,22 +590,37 @@ class CF7_Antispam_Geoip {
 	 *
 	 * @return bool
 	 */
-	private function finalize_installation( $extracted_file, $destination ) {
-		if ( ! file_exists( $extracted_file ) ) {
+	private function finalize_installation( $extracted_file ) {
+		$mmdb_full_path = $this->get_upload_dir() . "/" . $extracted_file;
+		if ( ! file_exists( $mmdb_full_path ) ) {
 			cf7a_log( 'Extraction failed - file not found: ' . $extracted_file, 2 );
 			return false;
 		}
 
-		if ( ! $this->validate_mmdb_file( $extracted_file ) ) {
-			wp_delete_file( $extracted_file );
+		// the cf7-antispam upload directory
+		$upload_dir = $this->get_upload_dir();
+		// The relative path of the mmdb file
+		$relative_path = str_replace( $upload_dir, '', $extracted_file );
+		// The extraction directory is the directory where the .mmdb file is located
+		$path_parts = explode('/', $relative_path);
+		$extraction_dir = $upload_dir . explode('/', $relative_path)[0];
+
+		// Validate the mmdb file
+		if ( ! $this->validate_mmdb_file( $mmdb_full_path ) ) {
+			cf7a_log( "Extraction failed " . $mmdb_full_path, 2);
+			$this->cleanup_extraction_directory( $extraction_dir );
 			return false;
 		}
 
+		// Move the mmdb file to the destination directory
 		$wp_filesystem = $this->get_filesystem();
-		$result = $wp_filesystem->move( $extracted_file, $destination, true );
+		$result = $wp_filesystem->move( $mmdb_full_path, $this->get_database_path(), true );
 
-		// Cleanup extracted directory
-		$this->cleanup_extraction_directory( $extracted_file );
+		// Check if the mmdb file is located inside a directory
+		if ( $extraction_dir !== $this->get_upload_dir() ) {
+			// cleanup extraction directory
+			$this->cleanup_extraction_directory( $extraction_dir );
+		}
 
 		if ( $result ) {
 			cf7a_log( 'GeoIP database installed successfully', 1 );
