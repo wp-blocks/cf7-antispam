@@ -60,7 +60,6 @@ class CF7_Antispam_Geoip {
 
 	private const DATABASE_TYPE = 'GeoLite2-Country';
 	private const DATABASE_FILE = 'GeoLite2-Country.mmdb';
-	private const MAXMIND_SIGNATURE = "\xab\xcd\xefMaxMind.com";
 	private const UPDATE_INTERVAL = '+1 month';
 
 	public function __construct() {
@@ -324,11 +323,11 @@ class CF7_Antispam_Geoip {
 	 * @return bool
 	 */
 	private function download_database() {
-		cf7a_log( 'GeoIP DB download start', 1 );
-
 		if ( empty( $this->license ) ) {
 			return false;
 		}
+
+		cf7a_log( 'GeoIP DB download start', 1 );
 
 		$upload_dir = $this->ensure_upload_directory();
 		$download_url = $this->get_download_url();

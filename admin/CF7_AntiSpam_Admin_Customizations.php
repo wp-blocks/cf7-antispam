@@ -1110,11 +1110,9 @@ class CF7_AntiSpam_Admin_Customizations {
 				if ( ! empty( $upload['error'] ) ) {
 					// If the file upload failed
 					if ( $upload['error'] !== UPLOAD_ERR_NO_FILE ) {
-						add_settings_error(
-							'geoip_dbfile',
-							'geoip_dbfile_error',
-							/* translators: %s: Error message */
-							sprintf( __( 'Error uploading file: %s', 'cf7-antispam' ), $upload['error'] )
+						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
+							/* translators: %s is the error message */
+							__( sprintf( "Error uploading file: %s", $upload['error'] ), 'cf7-antispam' )
 						);
 					}
 					// Continue
@@ -1123,11 +1121,8 @@ class CF7_AntiSpam_Admin_Customizations {
 					$temp = $upload["file"];
 					$result = $this->geoip->manual_upload( $temp );
 					if ( $result ) {
-						add_settings_error(
-							'geoip_dbfile',
-							'geoip_dbfile_success',
-							__( 'GeoIP database uploaded successfully.', 'cf7-antispam' ),
-							'success'
+						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
+							__( 'GeoIP database uploaded successfully.', 'cf7-antispam' )
 						);
 
 						// Clean up the temporary file from wp-content/uploads
@@ -1135,9 +1130,7 @@ class CF7_AntiSpam_Admin_Customizations {
 							wp_delete_file( $upload['file'] );
 						}
 					} else {
-						add_settings_error(
-							'geoip_dbfile',
-							'geoip_dbfile_process_error',
+						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
 							__( 'Error processing the uploaded file.', 'cf7-antispam' )
 						);
 					}
@@ -1421,7 +1414,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It creates the input field "cf7a_geodb_update" */
 	public function cf7a_geoip_is_enabled_callback() {
-		printf( $this->geoip->is_ready() ? '✅ ' : '❌ ' );
+		printf( $this->geoip->has_database() ? '✅ ' : '❌ ' );
 	}
 
 	/**
