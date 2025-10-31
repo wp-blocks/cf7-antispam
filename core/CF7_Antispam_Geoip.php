@@ -688,14 +688,9 @@ class CF7_Antispam_Geoip {
 	 *
 	 * @return void
 	 */
-	private function cleanup_extraction_directory( $extracted_file ) {
+	private function cleanup_extraction_directory( $extracted_dir ) {
 		$wp_filesystem = $this->get_filesystem();
-		$upload_dir = $this->get_upload_dir();
-		$extracted_dir = dirname( $extracted_file );
-
-		if ( $extracted_dir !== $upload_dir && is_dir( $extracted_dir ) ) {
-			$wp_filesystem->rmdir( $extracted_dir, true );
-		}
+		$wp_filesystem->rmdir( $extracted_dir, true );
 	}
 
 	// ==================== Utilities ====================
