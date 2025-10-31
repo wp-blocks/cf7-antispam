@@ -175,7 +175,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 
 		/* Settings upload geoip database */
-		if ( empty( $this->geoip->has_license() ) ) {
+		if ( ! empty( $this->geoip->has_license() ) ) {
 			add_settings_field(
 				'enable_geoip_force_download',
 				__( 'Force database download', 'cf7-antispam' ),
