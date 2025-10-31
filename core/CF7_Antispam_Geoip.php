@@ -561,9 +561,22 @@ class CF7_Antispam_Geoip {
 		// Find the .mmdb file
 		foreach ( $iterator as $file_info ) {
 			if ( $file_info->isFile() && pathinfo( $file_info->getFilename(), PATHINFO_EXTENSION ) === 'mmdb' ) {
-				$mmdb_path = $file_info->getPathname();
-				$phar->extractTo( $upload_dir, $mmdb_path, true );
-				return $upload_dir . $mmdb_path;
+				// Get the internal path relative to the archive root
+				$internal_path = $phar->getPath() ?
+					str_replace( 'phar://' . $tar_file . '/', '', $file_info->getPathname() ) :
+					$file_info->getFilename();
+
+				// Extract the specific file to the destination directory
+				$phar->extractTo( $upload_dir, $internal_path, true );
+
+				// Get just the filename for the final path
+				$mmdb_filename = $file_info->getFilename();
+
+				// delete the tar file
+				$this->cleanup_file( $tar_file );
+
+				// Return the full final path to the extracted file
+				return $upload_dir . $mmdb_filename;
 			}
 		}
 
