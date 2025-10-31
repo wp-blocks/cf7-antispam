@@ -1089,13 +1089,21 @@ class CF7_AntiSpam_Admin_Customizations {
 
 			// Get the file name
 			if (! empty($_FILES) && !empty($_FILES['geoip_dbfile'])) {
+				// Fix for the file type check
+				add_filter( 'wp_check_filetype_and_ext', function ( $types, $file, $filename) {
+					if( 'tar.gz' === substr( $filename, -6 ) ) {
+						$types['ext'] = 'tar.gz';
+						$types['type'] = 'application/gzip';
+					}
+					return $types;
+				}, 10, 3 );
+
 				// Validate the uploaded file - The second parameter $overrides enables security
 				$upload = wp_handle_upload( $_FILES['geoip_dbfile'], array(
 					'test_form' => false,
 					'mimes'     => array(
 						'mmdb'   => 'application/octet-stream',
-						'gz'     => 'application/gzip',
-						'tar.gz' => 'application/x-gzip',
+						'tar.gz' => 'application/gzip',
 					),
 				) );
 
