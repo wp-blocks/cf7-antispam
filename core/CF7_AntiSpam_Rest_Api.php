@@ -456,6 +456,27 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
+			'force-geoip-download',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'cf7a_get_status' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'status',
 			array(
 				array(
