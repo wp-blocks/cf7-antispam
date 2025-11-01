@@ -1422,7 +1422,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** Database manual upload */
 	public function cf7a_enable_geoip_manual_upload_callback() {
 		// the upload button for the database if the download is disabled
-		echo '<input type="file" id="geoip_dbfile" name="geoip_dbfile" accept=".mmdb,.tar.gz" />';
+		printf(
+			'<label for="geoip_dbfile" class="button button-secondary">%s<input type="file" id="geoip_dbfile" name="geoip_dbfile" accept=".mmdb,.tar.gz" /></label><span id="file_name_display" class="file-name-display">%s</span>',
+			esc_html__( 'Choose DB File...', 'cf7-antispam' ),
+			esc_html__( 'No file selected', 'cf7-antispam' )
+		);
+		echo '<p class="geoip_dbfile text-xs"> Accepted formats: .mmdb or .tar.gz </p>';
 	}
 
 	/** It creates the input field "cf7a_geodb_update" */
