@@ -46,7 +46,7 @@
 	.antispam-charts-container {
 		display: grid;
 		grid-template-columns: 1fr;
-		grid-gap: 10%;
+		gap: 10%;
 	}
 
 	/* Desktop layout */
@@ -54,7 +54,7 @@
 
 		.antispam-charts-container {
 			grid-template-columns: 2fr 1fr;
-			align-items: start;
+			align-self: start
 		}
 	}
 }

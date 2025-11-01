@@ -88,7 +88,7 @@ class CF7_AntiSpam {
 		/* the update / install stuff */
 		if ( empty( $this->options['cf7a_version'] ) || $this->version !== $this->options['cf7a_version'] ) {
 
-			/* the php files */
+			/* Update the plugin database and options */
 			$this->update();
 
 			if ( get_transient( 'cf7a_activation' ) ) {
@@ -121,7 +121,13 @@ class CF7_AntiSpam {
 	 */
 	protected function update() {
 		do_action( 'cf7a_update' );
+
+		/* Update the plugin options */
 		CF7_AntiSpam_Activator::update_options();
+
+		/* Update the plugin database */
+		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $this->get_options() );
+		$updater->may_do_updates();
 	}
 
 	/**
@@ -164,6 +170,7 @@ class CF7_AntiSpam {
 		/* the unspam routine */
 		add_action( 'cf7a_cron', array( $plugin_antispam, 'cf7a_cron_unban' ) );
 
+		/* flamingo */
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 
@@ -174,13 +181,15 @@ class CF7_AntiSpam {
 			add_action( 'wpcf7_after_flamingo', array( $cf7a_flamingo, 'cf7a_flamingo_remove_honeypot' ), 12 );
 		}
 
+		/* geoip */
 		if ( ! empty( $this->options['enable_geoip_download'] ) ) {
 			$geo = new CF7_Antispam_Geoip();
 
 			add_action( 'cf7a_geoip_update_db', array( $geo, 'cf7a_geoip_download_database' ) );
 		}
 
-		if ( defined( 'CF7_SMTP_NAME' ) ) {
+		/* smtp */
+		if ( defined( 'cf7_smtp' ) ) {
 			add_filter( 'cf7_smtp_report_mailbody', array( $this, 'spam_mail_report' ), 10, 2 );
 		}
 	}
@@ -373,18 +382,20 @@ class CF7_AntiSpam {
 	public function spam_mail_report( $mail_body, $last_report_timestamp ) {
 		global $wpdb;
 
+		$post_table = $wpdb->prefix . 'posts';
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$all  = $wpdb->get_var( $wpdb->prepare(
-			"SELECT COUNT(*) AS cnt FROM %s WHERE post_status = 'flamingo-spam';"
-			, $wpdb->prefix . 'posts' ) );
+			"SELECT COUNT(*) AS cnt FROM %i WHERE post_status = 'flamingo-spam';"
+			, $post_table ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$last = $wpdb->get_var( $wpdb->prepare(
 				"SELECT COUNT(*) AS cnt
-		 	 FROM %s
+		 	 FROM %i
 		 	 WHERE post_date_gmt >= FROM_UNIXTIME( %d )
 			 AND post_status = 'flamingo-spam';",
-				$wpdb->prefix . 'posts',
+			$post_table,
 				$last_report_timestamp
 			) );
 

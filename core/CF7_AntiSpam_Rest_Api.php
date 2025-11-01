@@ -103,6 +103,38 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		return true;
 	}
 
+	public function cf7a_download_geoip_db( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		$geoip = new CF7_AntiSpam_Geoip();
+		$res = $geoip->force_download();
+
+		if ( ! $res ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Error: unable to download GeoIP database', 'cf7-antispam' )
+				)
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => true,
+				'message' => __( 'GeoIP database downloaded successfully', 'cf7-antispam' )
+			)
+		);
+
+	}
+
 	/**
 	 * Get plugin status information.
 	 *
@@ -453,6 +485,27 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @since    0.6.5
 	 */
 	public function cf7a_register_routes() {
+
+		register_rest_route(
+			$this->namespace,
+			'force-geoip-download',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_download_geoip_db' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
 
 		register_rest_route(
 			$this->namespace,

@@ -789,7 +789,7 @@ class CF7_AntiSpam_Filters {
 				if ( ! empty( $geoip ) ) {
 					try {
 						/* check if the ip is available into geo-ip database, then create an array with county and continent */
-						$geoip_data      = $geoip->cf7a_geoip_check_ip( $remote_ip );
+						$geoip_data      = $geoip->check_ip( $remote_ip );
 						$geoip_continent = isset( $geoip_data['continent'] ) ? ( $geoip_data['continent'] ) : false;
 						$geoip_country   = isset( $geoip_data['country'] ) ? ( $geoip_data['country'] ) : false;
 						$geo_data        = array_filter( array( $geoip_continent, $geoip_country ) );

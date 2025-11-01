@@ -28,6 +28,72 @@
 			width: 100%;
 			min-height: 100px;
 		}
+
+		.text-xs {
+			color: #6b7280;
+			font-size: 0.75rem;
+			line-height: 1rem;
+			margin-top: 0.5rem;
+		}
+
+		#geoip_dbfile {
+			width: 0.1px;
+			height: 0.1px;
+			opacity: 0;
+			overflow: hidden;
+			position: absolute;
+			z-index: -1;
+		}
+
+		/* 2. Style the Label (.wp-file-upload-button) which acts as the visible button. */
+		.wp-file-upload-button {
+			display: inline-block;
+			text-decoration: none;
+			font-size: 13px;
+			line-height: 2.15384615;
+			min-height: 30px;
+			margin: 0;
+			padding: 0 10px;
+			cursor: pointer;
+			border-width: 1px;
+			border-style: solid;
+			-webkit-appearance: none;
+			border-radius: 3px;
+			white-space: nowrap;
+			box-sizing: border-box;
+			user-select: none;
+			color: #2271b1;
+			border-color: #2271b1;
+			background: #f6f7f7;
+			vertical-align: top;
+			transition: all 0.1s ease-in-out;
+
+			/* Handle Hover and Focus States for the Label */
+			&:hover,
+			&:focus {
+				color: #135e96;
+				border-color: #135e96;
+				background: #fff;
+				outline: none;
+				box-shadow: 0 0 0 1px #2271b1, 0 0 2px rgba(34, 113, 177, 0.8);
+			}
+
+			/* Handle Active (Pressed) State for the Label */
+			&:active {
+				background: #eee;
+				box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+				transform: translateY(1px);
+			}
+		}
+
+		/* Style for the file name display area */
+		.file-name-display {
+			font-size: 13px;
+			color: #444;
+			padding-left: 8px;
+			display: inline-block;
+			line-height: 30px;
+		}
 	}
 
 	/* DASHBOARD TAB */

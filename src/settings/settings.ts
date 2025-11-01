@@ -1,6 +1,9 @@
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 
+type ApiResponse = { message: string; success: boolean; log?: string };
+type CallbackFunction = null | ((res: ApiResponse) => void);
+
 window.addEventListener('load', adminSettingsHelper);
 
 /**
@@ -81,7 +84,10 @@ function actionHandler(e: HTMLElement) {
 		return;
 	}
 
-	let cb: null | (() => void) = null;
+	/**
+	 * Callback function
+	 */
+	let cb: CallbackFunction = null;
 	if (callback && typeof callback === 'string') {
 		/**
 		 * Callback functions
@@ -94,6 +100,20 @@ function actionHandler(e: HTMLElement) {
 				e.closest('.row')?.classList.add('hidden');
 			};
 		}
+
+		/**
+		 * Update GeoIP status
+		 */
+		if (callback === 'update-geoip-status') {
+			cb = function (res) {
+				const geoipStatus = document.querySelector(
+					'.cf7a_geoip_is_enabled'
+				) as HTMLElement;
+				// update the status
+				geoipStatus.innerHTML = res.success ? '✅' : '❌';
+			};
+		}
+
 		/**
 		 * If needed we can add more callback function here
 		 */
@@ -118,17 +138,13 @@ function actionHandler(e: HTMLElement) {
 		data,
 	})
 		.then((res) => {
-			const { message, success, log } = res as {
-				message: string;
-				success: boolean;
-				log?: string;
-			};
+			const { message, success, log } = res as ApiResponse;
 			if (success) {
 				if (message) {
 					alert(message);
 				}
 				if (cb) {
-					cb();
+					cb(res as ApiResponse);
 				}
 			} else {
 				console.error('Error:', message, log as string);
@@ -205,22 +221,22 @@ function adminSettingsHelper() {
 			const AdvSettingsFormEl =
 				AdvSettingsForm[AdvSettingsForm.length - 1];
 
-			if (advancedCheckbox.checked) {
+			if (advancedCheckbox?.checked) {
 				if (AdvSettingsCard) {
 					AdvSettingsCard.classList.remove('hidden');
 				}
 
-				AdvSettingsTitleEl.classList.remove('hidden');
-				AdvSettingsTxtEl.classList.remove('hidden');
-				AdvSettingsFormEl.classList.remove('hidden');
+				AdvSettingsTitleEl?.classList.remove('hidden');
+				AdvSettingsTxtEl?.classList.remove('hidden');
+				AdvSettingsFormEl?.classList.remove('hidden');
 			} else {
 				if (AdvSettingsCard) {
 					AdvSettingsCard.classList.add('hidden');
 				}
 
-				AdvSettingsTitleEl.classList.add('hidden');
-				AdvSettingsTxtEl.classList.add('hidden');
-				AdvSettingsFormEl.classList.add('hidden');
+				AdvSettingsTitleEl?.classList.add('hidden');
+				AdvSettingsTxtEl?.classList.add('hidden');
+				AdvSettingsFormEl?.classList.add('hidden');
 			}
 		};
 
@@ -239,14 +255,19 @@ function adminSettingsHelper() {
 				'.remove-select'
 			) as HTMLSelectElement;
 
-			for (const remove of removeSelect) {
-				for (const add of addSelect) {
-					if (remove.value === add.value) {
-						addSelect.removeChild(add);
+			if (removeSelect) {
+				for (const remove of removeSelect) {
+					if (addSelect) {
+						for (const add of addSelect) {
+							if (remove.value === add.value) {
+								addSelect.removeChild(add);
+							}
+						}
 					}
 				}
 			}
-			addListButton.addEventListener('click', () => {
+
+			addListButton?.addEventListener('click', () => {
 				for (const option of addSelect.options) {
 					if (option.selected) {
 						const name = option.textContent;
@@ -265,7 +286,7 @@ function adminSettingsHelper() {
 				}
 			});
 
-			removeListButton.addEventListener('click', () => {
+			removeListButton?.addEventListener('click', () => {
 				for (const option of removeSelect.options) {
 					if (option.selected) {
 						const name = option.textContent;

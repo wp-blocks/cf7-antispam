@@ -91,6 +91,7 @@ class CF7_AntiSpam_Uninstaller {
 		wp_cache_delete( 'cf7a_top_ham_words', 'cf7a_wordlist_stats' );
 
 		cf7a_log( 'plugin uninstalled' );
+
 		return true;
 	}
 

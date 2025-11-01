@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 'lts/*'
       - run: npm i
-      - uses: EPMatt/reviewdog-action-tsc@v1
+      - uses: EPMatt/reviewdog-action-tsc@v1.9.0
         with:
-          reporter: github-check
-          eslint_flags: -c .eslintrc.js --ext .ts src/
+          reporter: github-pr-review
+          workdir: src

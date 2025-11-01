@@ -98,23 +98,35 @@ class CF7_AntiSpam_Admin_Display {
 
 		<div class="cf7a-tab-content">
 			<div id="dashboard" class="cf7a-tab-panel <?php echo $active_tab === 'dashboard' ? 'active' : ''; ?>">
-				<?php $this->render_dashboard_tab(); ?>
+				<?php if ($active_tab === 'dashboard') {
+					$this->render_dashboard_tab();
+				} ?>
 			</div>
 			<div id="settings" class="cf7a-tab-panel <?php echo $active_tab === 'settings' ? 'active' : ''; ?>">
-				<?php $this->render_settings_tab(); ?>
+				<?php if ($active_tab === 'settings') {
+					$this->render_settings_tab();
+				} ?>
 			</div>
 			<div id="blacklist" class="cf7a-tab-panel <?php echo $active_tab === 'blacklist' ? 'active' : ''; ?>">
-				<?php $this->render_blacklist_tab(); ?>
+				<?php if ($active_tab === 'blacklist') {
+					$this->render_blacklist_tab();
+				} ?>
 			</div>
 			<div id="tools" class="cf7a-tab-panel <?php echo $active_tab === 'tools' ? 'active' : ''; ?>">
-				<?php $this->render_tools_tab(); ?>
+				<?php if ($active_tab === 'tools') {
+					$this->render_tools_tab();
+				} ?>
 			</div>
 			<div id="import-export" class="cf7a-tab-panel <?php echo $active_tab === 'import-export' ? 'active' : ''; ?>">
-				<?php $this->render_import_export_tab(); ?>
+				<?php if ($active_tab === 'import-export') {
+					$this->render_import_export_tab();
+				} ?>
 			</div>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<div id="debug" class="cf7a-tab-panel <?php echo $active_tab === 'debug' ? 'active' : ''; ?>">
-					<?php $this->render_debug_tab(); ?>
+					<?php if ($active_tab === 'debug') {
+						$this->render_debug_tab();
+					} ?>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -525,7 +537,7 @@ class CF7_AntiSpam_Admin_Display {
 		<div class="cf7a-card">
 			<h3><?php esc_html_e( 'Plugin Settings', 'cf7-antispam' ); ?></h3>
 			<?php $this->cf7a_print_section_options_subtitle(); ?>
-			<form method="post" action="options.php" id="cf7a_settings">
+			<form method="post" action="options.php" id="cf7a_settings" enctype="multipart/form-data">
 				<?php
 				settings_fields( 'cf7_antispam_options' );
 				do_settings_sections( 'cf7a-settings' );
@@ -608,7 +620,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			<h4><?php esc_html_e( 'Full Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Completely reset the plugin to its initial state.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action" data-action="full-reset" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-message="<?php esc_html_e( 'Are you sure? This will reset the plugin to its initial state.', 'cf7-antispam' ); ?>" data-><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
+			<button class="cf7a_action-button cf7a_action" data-action="full-reset" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-message="<?php esc_html_e( 'Are you sure? This will reset the plugin to its initial state.', 'cf7-antispam' ); ?>" ><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
 		</div>
 		<?php
 	}
@@ -883,7 +895,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			/* get the usar IP and check it against the GeoIP database */
 			$your_ip     = cf7a_get_real_ip();
-			$server_data = $cf7a_geo->cf7a_geoip_check_ip( $your_ip );
+			$server_data = $cf7a_geo->check_ip( $your_ip );
 
 			/* if the server_data is empty, set it to a string */
 			if ( empty( $server_data ) ) {
