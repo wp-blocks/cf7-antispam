@@ -66,27 +66,24 @@
 			border-color: #2271b1;
 			background: #f6f7f7;
 			vertical-align: top;
-
 			transition: all 0.1s ease-in-out;
-		}
 
-		/* Handle Hover and Focus States for the Label */
-		.wp-file-upload-button:hover,
-		.wp-file-upload-button:focus {
-			color: #135e96; /* Slightly darker blue */
-			border-color: #135e96;
-			background: #fff;
-			outline: none;
+			/* Handle Hover and Focus States for the Label */
+			&:hover,
+			&:focus {
+				color: #135e96;
+				border-color: #135e96;
+				background: #fff;
+				outline: none;
+				box-shadow: 0 0 0 1px #2271b1, 0 0 2px rgba(34, 113, 177, 0.8);
+			}
 
-			/* Mimics WP focus ring */
-			box-shadow: 0 0 0 1px #2271b1, 0 0 2px rgba(34, 113, 177, 0.8);
-		}
-
-		/* Handle Active (Pressed) State for the Label */
-		.wp-file-upload-button:active {
-			background: #eee;
-			box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-			transform: translateY(1px);
+			/* Handle Active (Pressed) State for the Label */
+			&:active {
+				background: #eee;
+				box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+				transform: translateY(1px);
+			}
 		}
 
 		/* Style for the file name display area */
@@ -94,10 +91,8 @@
 			font-size: 13px;
 			color: #444;
 			padding-left: 8px;
-
-			/* Center vertically with the button */
-			display: flex;
-			align-items: center;
+			display: inline-block;
+			line-height: 30px;
 		}
 	}
 
