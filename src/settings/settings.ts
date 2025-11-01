@@ -1,6 +1,10 @@
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 
+type CallbackFunction =
+	| null
+	| ((res: { message: string; success: boolean; log?: string }) => void);
+
 window.addEventListener('load', adminSettingsHelper);
 
 /**
@@ -81,7 +85,10 @@ function actionHandler(e: HTMLElement) {
 		return;
 	}
 
-	let cb: null | (() => void) = null;
+	/**
+	 * Callback function
+	 */
+	let cb: CallbackFunction = null;
 	if (callback && typeof callback === 'string') {
 		/**
 		 * Callback functions
@@ -94,6 +101,20 @@ function actionHandler(e: HTMLElement) {
 				e.closest('.row')?.classList.add('hidden');
 			};
 		}
+
+		/**
+		 * Update GeoIP status
+		 */
+		if (callback === 'update-geoip-status') {
+			cb = function (res) {
+				const geoipStatus = document.querySelector(
+					'.cf7a_geoip_is_enabled'
+				) as HTMLElement;
+				// update the status
+				geoipStatus.innerHTML = res.success ? '✅' : '❌';
+			};
+		}
+
 		/**
 		 * If needed we can add more callback function here
 		 */
@@ -128,7 +149,7 @@ function actionHandler(e: HTMLElement) {
 					alert(message);
 				}
 				if (cb) {
-					cb();
+					cb(res);
 				}
 			} else {
 				console.error('Error:', message, log as string);
