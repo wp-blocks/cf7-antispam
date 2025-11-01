@@ -1,9 +1,8 @@
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 
-type CallbackFunction =
-	| null
-	| ((res: { message: string; success: boolean; log?: string }) => void);
+type ApiResponse = { message: string; success: boolean; log?: string };
+type CallbackFunction = null | ((res: ApiResponse) => void);
 
 window.addEventListener('load', adminSettingsHelper);
 
@@ -139,17 +138,13 @@ function actionHandler(e: HTMLElement) {
 		data,
 	})
 		.then((res) => {
-			const { message, success, log } = res as {
-				message: string;
-				success: boolean;
-				log?: string;
-			};
+			const { message, success, log } = res as ApiResponse;
 			if (success) {
 				if (message) {
 					alert(message);
 				}
 				if (cb) {
-					cb(res);
+					cb(res as ApiResponse);
 				}
 			} else {
 				console.error('Error:', message, log as string);
