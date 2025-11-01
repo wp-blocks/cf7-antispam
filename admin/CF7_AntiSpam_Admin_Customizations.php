@@ -1413,7 +1413,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** Force database download button*/
 	public function cf7a_force_download_callback() {
 		// the upload button for the database if the download is disabled
-		printf( '<input type="button" id="geoip_force_download" class="cf7a_action" data-action="force-geoip-download" data-nonce="%s" value="%s" />',
+		printf( '<input type="button" id="geoip_force_download" class="button cf7a_action" data-action="force-geoip-download" data-nonce="%s" value="%s" />',
 			wp_create_nonce( 'cf7a-nonce' ),
 			esc_attr__( 'Force Download', 'cf7-antispam' )
 		);
