@@ -10,6 +10,8 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
 use WP_REST_Controller;
 use WP_REST_Server;
@@ -194,6 +196,39 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			'message' => sprintf( __( 'Ops! something went wrong... unable to resend email with id %s', 'cf7-antispam' ), $mail_id )
 			)
 		);
+	}
+
+	/**
+	 * Force update the dictionary.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_Error|WP_REST_Response A response object or a WP_Error object. The response object contains the message.
+	 */
+	public function cf7a_force_update( $request ) {
+		/** verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' )
+				)
+			);
+		}
+
+		/* Update the plugin database */
+		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $this->options );
+		$res = $updater->may_do_updates();
+
+		/* Update the plugin options */
+		CF7_AntiSpam_Activator::update_options();
+
+		// if update failed
+		if ( ! $res ) {
+			return rest_ensure_response( array( 'success' => false, 'message' => __( 'Nothing to update', 'cf7-antispam' ) ) );
+		}
+
+		return rest_ensure_response( array( 'success' => true, 'message' => __( 'Contact Form 7 Antispam Options and Database updated successfully!', 'cf7-antispam' ) ) );
 	}
 
 	/**
@@ -535,6 +570,27 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 								return $this->cf7a_validate_param( $param, 'int' );
 							},
 						),
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'force-update',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_force_update' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
 						'nonce' => array(
 							'required'          => true,
 							'type'              => 'string',
