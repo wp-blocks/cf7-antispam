@@ -26,6 +26,11 @@ class CF7_AntiSpam_Updater {
 	public function may_do_updates() {
 		$updated = false;
 
+		/* Check if there are no options already stored, exit immediately in this case */
+		if ( empty( $this->current_options ) ) {
+			return false;
+		}
+
 		/* Check if we need to update from older versions */
 		if ( version_compare( $this->hc_version, $this->current_options['cf7a_version'], '>' ) ) {
 
