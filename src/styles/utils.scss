@@ -41,7 +41,7 @@
 	}
 
 	.cf7a_action-button {
-		background: colors.$color__danger;
+		background: colors.$color__info;
 		color: colors.$color__white;
 		border: none;
 		padding: 10px 20px;
@@ -51,7 +51,15 @@
 		margin-bottom: 10px;
 
 		&:hover {
-			background: colors.$color__danger-hover;
+			background: colors.$color__info-hover;
+		}
+
+		&.cf7a-action-danger {
+			background: colors.$color__danger;
+
+			&:hover {
+				background: colors.$color__danger-hover;
+			}
 		}
 	}
 
