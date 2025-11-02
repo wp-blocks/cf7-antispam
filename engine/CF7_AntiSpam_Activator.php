@@ -273,7 +273,7 @@ class CF7_AntiSpam_Activator {
 		/* If the options do not exist then create them*/
 		self::update_options();
 
-		/* Checks and handles updates on version change */
+		/* Checks and handles updates on version change, shou */
 		$options = get_option( 'cf7a_options' );
 		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $options );
 		$updater->may_do_updates();
