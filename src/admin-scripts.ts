@@ -9,3 +9,9 @@ import './settings/settings';
 
 /** The import/export scripts */
 import './settings/importExport';
+
+/** The rest api scripts */
+import './settings/restApi';
+
+/** The export blacklist scripts */
+import './settings/exportBlacklist';
