@@ -602,25 +602,30 @@ class CF7_AntiSpam_Admin_Display {
 	private function render_advanced_tools() {
 		$nonce = wp_create_nonce( 'cf7a-nonce' );
 		?>
+
+		<h4><?php esc_html_e( 'Update Database', 'cf7-antispam' ); ?></h4>
+		<p><?php esc_html_e( 'If something has gone wrong during updates, you can perform a forced database and options update.', 'cf7-antispam' ); ?></p>
+		<button class="cf7a_action-button cf7a_action cf7a-action-info" data-action="force-update" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Update Database', 'cf7-antispam' ); ?></button>
+
 		<div class="cf7a-danger-zone">
 			<h3><?php esc_html_e( 'Danger Zone', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'These actions are irreversible. Please make sure you know what you are doing.', 'cf7-antispam' ); ?></p>
 
 			<h4><?php esc_html_e( 'Blacklist Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Remove all blacklisted IPs from the database.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action" data-action="reset-blacklist" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Remove all blacklisted IP', 'cf7-antispam' ); ?></button>
+			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="reset-blacklist" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Remove all blacklisted IP', 'cf7-antispam' ); ?></button>
 
 			<h4><?php esc_html_e( 'Dictionary Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Reset the entire b8 dictionary used for spam detection.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action" data-action="reset-dictionary" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Reset b8 dictionary', 'cf7-antispam' ); ?></button>
+			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="reset-dictionary" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Reset b8 dictionary', 'cf7-antispam' ); ?></button>
 
 			<h4><?php esc_html_e( 'Rebuild Dictionary', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Reanalyze all Flamingo inbound emails to rebuild the dictionary.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action" data-action="rebuild-dictionary" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Rebuild b8 dictionary', 'cf7-antispam' ); ?></button>
+			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="rebuild-dictionary" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Rebuild b8 dictionary', 'cf7-antispam' ); ?></button>
 
 			<h4><?php esc_html_e( 'Full Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Completely reset the plugin to its initial state.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action" data-action="full-reset" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-message="<?php esc_html_e( 'Are you sure? This will reset the plugin to its initial state.', 'cf7-antispam' ); ?>" ><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
+			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="full-reset" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-message="<?php esc_html_e( 'Are you sure? This will reset the plugin to its initial state.', 'cf7-antispam' ); ?>" ><?php esc_html_e( 'FULL RESET', 'cf7-antispam' ); ?></button>
 		</div>
 		<?php
 	}
