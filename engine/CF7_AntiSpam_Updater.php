@@ -111,7 +111,7 @@ class CF7_AntiSpam_Updater {
 		// Check if the 'modified' column exists, if not add it
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$has_blacklist_modified_col = $wpdb->get_var( $wpdb->prepare(
-			"SHOW COLUMNS FROM %s LIKE %s",
+			"SHOW COLUMNS FROM %i LIKE %s",
 			$blacklist_table,
 			'modified'
 		) );
@@ -133,7 +133,7 @@ class CF7_AntiSpam_Updater {
 		// Check if the 'created' column exists, if not add it
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$has_blacklist_created_col =  $wpdb->get_var( $wpdb->prepare(
-			"SHOW COLUMNS FROM %s LIKE %s",
+			"SHOW COLUMNS FROM %i LIKE %s",
 			$blacklist_table,
 			'created'
 		) );
