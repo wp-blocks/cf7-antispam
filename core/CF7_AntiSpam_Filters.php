@@ -91,7 +91,7 @@ class CF7_AntiSpam_Filters {
 		if ( $ip ) {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$r = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %s WHERE ip = %s", $wpdb->prefix . 'cf7a_blacklist', $ip ) );
+			$r = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %i WHERE ip = %s", $wpdb->prefix . 'cf7a_blacklist', $ip ) );
 			if ( $r ) {
 				return $r;
 			}
@@ -111,7 +111,7 @@ class CF7_AntiSpam_Filters {
 		if ( is_int( $id ) ) {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %s WHERE id = %s", $wpdb->prefix . 'cf7a_blacklist', $id ) );
+			return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %i WHERE id = %s", $wpdb->prefix . 'cf7a_blacklist', $id ) );
 		}
 	}
 
