@@ -27,7 +27,7 @@ class CF7_AntiSpam_Frontend {
 	 * @access   private
 	 * @var      string $plugin_name The ID of this plugin.
 	 */
-	private $plugin_name;
+	private string $plugin_name;
 
 	/**
 	 * The version of this plugin.
@@ -36,7 +36,7 @@ class CF7_AntiSpam_Frontend {
 	 * @access   private
 	 * @var      string $version The current version of this plugin.
 	 */
-	private $version;
+	private string $version;
 
 	/**
 	 * The options of this plugin.
@@ -45,7 +45,7 @@ class CF7_AntiSpam_Frontend {
 	 * @access   public
 	 * @var      array    $options    options of this plugin.
 	 */
-	private $options;
+	private array $options;
 
 	/**
 	 * It adds a filter to the wpcf7_form_hidden_fields hook, which is called by the Contact Form 7 plugin
@@ -388,8 +388,8 @@ class CF7_AntiSpam_Frontend {
 			array(
 				$prefix . 'version'  => '1.0',
 				$prefix . 'address'  => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
-				$prefix . 'referer'  => cf7a_crypt( $referrer ? $referrer : 'no referer', $this->options['cf7a_cipher'] ),
-				$prefix . 'protocol' => cf7a_crypt( $protocol ? $protocol : 'protocol missing', $this->options['cf7a_cipher'] ),
+				$prefix . 'referer'  => cf7a_crypt( $referrer ? $referrer : '', $this->options['cf7a_cipher'] ),
+				$prefix . 'protocol' => cf7a_crypt( $protocol ? $protocol : '', $this->options['cf7a_cipher'] ),
 			)
 		);
 	}
