@@ -259,7 +259,8 @@ class CF7_AntiSpam {
 		if ( ! is_admin() ) {
 			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
-			$this->loader->add_action( 'wp', $plugin_frontend, 'setup' );
+			$plugin_frontend->setup();
+			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'load_scripts' );
 		}
 	}
 
