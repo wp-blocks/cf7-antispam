@@ -27,7 +27,7 @@ class CF7_AntiSpam_Frontend {
 	 * @access   private
 	 * @var      string $plugin_name The ID of this plugin.
 	 */
-	private $plugin_name;
+	private string $plugin_name;
 
 	/**
 	 * The version of this plugin.
@@ -36,7 +36,7 @@ class CF7_AntiSpam_Frontend {
 	 * @access   private
 	 * @var      string $version The current version of this plugin.
 	 */
-	private $version;
+	private string $version;
 
 	/**
 	 * The options of this plugin.
@@ -45,7 +45,7 @@ class CF7_AntiSpam_Frontend {
 	 * @access   public
 	 * @var      array    $options    options of this plugin.
 	 */
-	private $options;
+	private array $options;
 
 	/**
 	 * It adds a filter to the wpcf7_form_hidden_fields hook, which is called by the Contact Form 7 plugin
@@ -61,17 +61,25 @@ class CF7_AntiSpam_Frontend {
 		$this->options = CF7_AntiSpam::get_options();
 	}
 
-	public function setup() {
+	private function cf7_shortcode_exists() {
+		global $post;
+		return is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'contact-form-7' );
+	}
+
+	public function load_scripts() {
 		if ( ! $this->cf7_shortcode_exists() ) {
 			return;
 		}
 
+		/* adds the javascript script to frontend */
+		add_action( 'wp_footer', array( $this, 'enqueue_scripts' ) );
+	}
+
+	public function setup() {
 		/* It adds hidden fields to the form */
 		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields' ), 1 );
 		add_filter( 'wpcf7_config_validator_available_error_codes', array( $this, 'cf7a_remove_cf7_error_message' ), 10, 2 );
 
-		/* adds the javascript script to frontend */
-		add_action( 'wp_footer', array( $this, 'enqueue_scripts' ) );
 
 		/* It adds a hidden field to the form with a unique value that is encrypted with a cipher */
 		if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
@@ -119,11 +127,6 @@ class CF7_AntiSpam_Frontend {
 		) {
 			add_action( 'wp_footer', array( $this, 'cf7a_add_honeypot_css' ), 11 );
 		}
-	}
-
-	private function cf7_shortcode_exists() {
-		global $post;
-		return is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'contact-form-7' );
 	}
 
 	/**
@@ -385,8 +388,8 @@ class CF7_AntiSpam_Frontend {
 			array(
 				$prefix . 'version'  => '1.0',
 				$prefix . 'address'  => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
-				$prefix . 'referer'  => cf7a_crypt( $referrer ? $referrer : 'no referer', $this->options['cf7a_cipher'] ),
-				$prefix . 'protocol' => cf7a_crypt( $protocol ? $protocol : 'protocol missing', $this->options['cf7a_cipher'] ),
+				$prefix . 'referer'  => cf7a_crypt( $referrer ? $referrer : '', $this->options['cf7a_cipher'] ),
+				$prefix . 'protocol' => cf7a_crypt( $protocol ? $protocol : '', $this->options['cf7a_cipher'] ),
 			)
 		);
 	}

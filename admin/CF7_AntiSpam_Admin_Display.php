@@ -820,19 +820,51 @@ class CF7_AntiSpam_Admin_Display {
 		);
 	}
 
+	private function get_plugin_version( $plugin_file ) {
+		if ( file_exists( $plugin_file ) ) {
+			$plugin_data = get_plugin_data( $plugin_file );
+			if ( ! empty( $plugin_data['Version'] ) ) {
+				return $plugin_data['Version'];
+			}
+		}
+		return 'Not installed';
+	}
+
 	/**
 	 * It returns a string containing a formatted HTML table with the plugin's options
 	 *
 	 * @return void the HTML for the debug info options.
 	 */
 	private function cf7a_get_debug_info_options() {
+		global $wpdb;
+		$cf7_plugin_file = WP_PLUGIN_DIR . '/contact-form-7/wp-contact-form-7.php';
+		$flamingo_plugin_file = WP_PLUGIN_DIR . '/flamingo/flamingo.php';
+		$debug_data = array(
+			'cf7a_version' => CF7ANTISPAM_VERSION,
+			'cf7a_options' => $this->options,
+			'wp_version' => get_bloginfo( 'version' ),
+			'contact_form_7_version' => $this->get_plugin_version($cf7_plugin_file),
+			'flamingo_version' => $this->get_plugin_version($flamingo_plugin_file),
+			'php_version' => PHP_VERSION,
+			'mysql_version' => $wpdb->db_version(),
+			'plugins' => array_map(function($plugin) {
+				return $plugin['Name'] . ' (' . $plugin['Version'] . ')';
+			}, get_plugins()),
+			'wp_debug' => WP_DEBUG ? 'Enabled' : 'Disabled',
+			'wp_debug_log' => WP_DEBUG_LOG ? 'Enabled' : 'Disabled',
+			'wp_debug_display' => WP_DEBUG_DISPLAY ? 'Enabled' : 'Disabled',
+			'wp_memory_limit' => WP_MEMORY_LIMIT,
+			'php_memory_limit' => ini_get( 'memory_limit' ),
+			'upload_max_size' => ini_get( 'upload_max_size' ),
+			'post_max_size' => ini_get( 'post_max_size' ),
+		);
 		printf( '<h2 class="title">%s</h2>', esc_html__( 'Options debug', 'cf7-antispam' ) );
 		printf(
 			'<p>%s</p><pre class="codeblock"><code>%s</code></pre>',
 			esc_html__( 'The plugin options are:', 'cf7-antispam' ),
 			esc_html(
 				htmlentities(
-					print_r( $this->options, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					print_r( $debug_data, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				)
 			)
 		);

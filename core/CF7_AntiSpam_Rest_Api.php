@@ -13,6 +13,7 @@ namespace CF7_AntiSpam\Core;
 
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Updater;
 use WP_REST_Controller;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -217,7 +218,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		/* Update the plugin database */
-		$updater = new \CF7_AntiSpam\Engine\CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $this->options );
+		$updater = new CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $this->options );
 		$res = $updater->may_do_updates();
 
 		/* Update the plugin options */
