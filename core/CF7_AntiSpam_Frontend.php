@@ -61,18 +61,29 @@ class CF7_AntiSpam_Frontend {
 		$this->options = CF7_AntiSpam::get_options();
 	}
 
+	/**
+	 * Checks if the contact form 7 shortcode exists in the current post
+	 *
+	 * @return bool
+	 */
 	private function cf7_shortcode_exists() {
 		global $post;
 		return is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'contact-form-7' );
+		// Register the contact form antispam scripts
 	}
 
-	public function load_scripts() {
-		if ( ! $this->cf7_shortcode_exists() ) {
-			return;
-		}
 
-		/* adds the javascript script to frontend */
-		add_action( 'wp_footer', array( $this, 'enqueue_scripts' ) );
+	/**
+	 * Handles loading scripts
+	 *
+	 * @return void
+	 */
+	public function load_scripts() {
+		// Register the contact form antispam scripts
+		add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
+
+		// enqueue CF7 antispam scripts only if contact form 7 wpcf7_enqueue_scripts is called
+		add_action( 'wpcf7_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
 	public function setup() {
@@ -356,6 +367,11 @@ class CF7_AntiSpam_Frontend {
 	 * It adds hidden fields to the form
 	 *
 	 * @param array $fields the array of hidden fields that will be added to the form.
+	 * @return array the array of hidden fields that will be added to the form.
+	 *               the returned fields are: version, address, referer, protocol
+	 *               the optional fields are: language, timestamp, hash
+	 *               the optional fields are added based on the options set in the plugin
+	 *               the fields are encrypted with the cipher set in the plugin
 	 */
 	public function cf7a_add_hidden_fields( $fields ) {
 
@@ -517,8 +533,7 @@ class CF7_AntiSpam_Frontend {
 	 *
 	 * @since    0.1.0
 	 */
-	public function enqueue_scripts() {
-
+	public function register_scripts() {
 		/**
 		 *
 		 * An instance of this class should be passed to the run() function
@@ -532,7 +547,6 @@ class CF7_AntiSpam_Frontend {
 
 		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/build/script.asset.php';
 		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/script.js', $asset['dependencies'], $asset['version'], true );
-		wp_enqueue_script( $this->plugin_name );
 
 		wp_localize_script(
 			$this->plugin_name,
@@ -543,6 +557,15 @@ class CF7_AntiSpam_Frontend {
 				'version'       => cf7a_crypt( CF7ANTISPAM_VERSION, $this->options['cf7a_cipher'] ),
 			)
 		);
+	}
+
+	/**
+	 * Register the JavaScript for the admin area.
+	 *
+	 * @since    0.1.0
+	 */
+	public function enqueue_scripts() {
+		wp_enqueue_script( $this->plugin_name );
 	}
 
 	/**
