@@ -23,6 +23,98 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
+	 * It takes an IP address as a parameter, validates it, and then returns the row from the database that matches that IP
+	 * address
+	 *
+	 * @param string $ip - The IP address to check.
+	 *
+	 * @return array|object|null - the row from the database that matches the IP address.
+	 */
+	public static function cf7a_blacklist_get_ip( $ip ) {
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+		if ( $ip ) {
+			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$r = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %i WHERE ip = %s", $wpdb->prefix . 'cf7a_blacklist', $ip ) );
+			if ( $r ) {
+				return $r;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * It adds an IP address to the blacklist.
+	 *
+	 * @param string $ip The IP address to ban.
+	 * @param array $reason The reason why the IP is being banned.
+	 * @param int $spam_score This is the number of points that will be added to the IP's spam score.
+	 *
+	 * @return bool true if the given id was banned
+	 */
+	public static function cf7a_ban_by_ip( string $ip, array $reason = array(), $spam_score = 1 ): bool {
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+
+		if ( $ip ) {
+			global $wpdb;
+
+			$ip_row = CF7_Antispam_Blacklist::cf7a_blacklist_get_ip( $ip );
+
+			if ( $ip_row ) {
+				// if the ip is in the blacklist, update the status
+				$status = isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1;
+
+			} else {
+				// if the ip is not in the blacklist, add it and initialize the status
+				$status = floatval( $spam_score );
+			}
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$r = $wpdb->replace( $wpdb->prefix . 'cf7a_blacklist', array(
+					'ip'     => $ip,
+					'status' => $status,
+					'meta'   => serialize( array(
+							'reason' => $reason,
+							'meta'   => null,
+						) ),
+				), array( '%s', '%d', '%s' ) );
+
+			if ( $r > - 1 ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * It deletes the IP address from the database
+	 *
+	 * @param string $ip The IP address to unban.
+	 *
+	 * @return int|false The number of rows deleted.
+	 */
+	public static function cf7a_unban_by_ip( $ip ) {
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+
+		if ( $ip ) {
+			global $wpdb;
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$r = $wpdb->delete( $wpdb->prefix . 'cf7a_blacklist', array(
+					'ip' => $ip,
+				), array(
+					'%s',
+				) );
+
+			return ! is_wp_error( $r ) ? $r : $wpdb->last_error;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get all blacklist data from database.
 	 *
 	 * @since    0.7.0
@@ -52,7 +144,7 @@ class CF7_Antispam_Blacklist {
 	 * @param    int $id The blacklist entry ID.
 	 * @return   object|null The blacklist entry or null if not found
 	 */
-	public function cf7a_blacklist_get_id( $id ) {
+	public function cf7a_blacklist_get_id( int $id ) {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
@@ -107,7 +199,6 @@ class CF7_Antispam_Blacklist {
 
 			// Add the IP to the permanent banlist
 			if ( CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array_merge( $current_bad_ips, array( $ban_ip->ip ) ) ) ) {
-				// Remove from temporary blacklist
 				$this->cf7a_unban_by_id( $id );
 			}
 
@@ -313,5 +404,45 @@ class CF7_Antispam_Blacklist {
 			'today'      => intval( $today ),
 			'this_week'  => intval( $this_week ),
 		);
+	}
+
+	/**
+	 * It updates the status of all the users in the blacklist table by subtracting 1 from the status column.
+	 *
+	 * Then it deletes all the users whose status is 0.
+	 * The status column is the number of days the user is banned for.
+	 * So if the user is banned for 3 days, the status column will be 3. After the first day, the status column will be 2. After the second day, the status column will be 1. After the third day, the status column will be 0.
+	 * When the status column is 0, the user is unbanned.
+	 *
+	 * The function returns true if the user is unbanned.
+	 *
+	 * @return true.
+	 */
+	public function cf7a_cron_unban() {
+		global $wpdb;
+
+		/* We remove 1 from the status column */
+		$status_decrement = 1;
+
+		/* Below 0 is not anymore a valid status for a blacklist entry, so we can remove it */
+		$lower_bound = 0;
+
+		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
+
+		/* removes a status count at each balcklisted ip */
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$updated = $wpdb->query( $wpdb->prepare( "UPDATE %i SET `status` = `status` - %d", $blacklist_table, $status_decrement ) );
+		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
+
+		/* when the line has 0 in status, we can remove it from the blacklist */
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$updated_deletion = $wpdb->delete(
+			$blacklist_table,
+			array( 'status' => $lower_bound ),
+			array( '%d' )
+		);
+		cf7a_log( "Removed {$updated_deletion} users from blacklist", 1 );
+
+		return true;
 	}
 }
