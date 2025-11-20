@@ -109,21 +109,19 @@ class CF7_AntiSpam_Flamingo {
 					} else {
 						$rating = ! empty( $flamingo_post->meta['_cf7a_b8_classification'] ) ? $flamingo_post->meta['_cf7a_b8_classification'] : $b8->cf7a_b8_classify( $message );
 
-						$filters = new CF7_AntiSpam_Filters();
-
 						if ( ! $flamingo_post->spam && 'spam' === $action ) {
 							$b8->cf7a_b8_unlearn_ham( $message );
 							$b8->cf7a_b8_learn_spam( $message );
 
 							if ( $options['autostore_bad_ip'] ) {
-								$filters->cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], 'flamingo ban' );
+								CF7_Antispam_Blacklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], 'flamingo ban' );
 							}
 						} elseif ( $flamingo_post->spam && 'ham' === $action ) {
 							$b8->cf7a_b8_unlearn_spam( $message );
 							$b8->cf7a_b8_learn_ham( $message );
 
 							if ( $options['autostore_bad_ip'] ) {
-								$filters->cf7a_unban_by_ip( $flamingo_post->meta['remote_ip'] );
+								CF7_Antispam_Blacklist::cf7a_unban_by_ip( $flamingo_post->meta['remote_ip'] );
 							}
 						}
 

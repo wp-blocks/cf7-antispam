@@ -354,7 +354,7 @@ class CF7_AntiSpam_Filters {
 		 * Checking if the IP address was already blacklisted - no mercy 😎
 		 */
 		if ( $remote_ip && $options['max_attempts'] ) {
-			$ip_data        = self::cf7a_blacklist_get_ip( $remote_ip );
+			$ip_data        = CF7_Antispam_Blacklist::cf7a_blacklist_get_ip( $remote_ip );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
 			$max_attempts   = intval( $options['max_attempts'] );
 
@@ -858,7 +858,8 @@ class CF7_AntiSpam_Filters {
 
 		/* If the auto-store ip is enabled (and NOT in extended debug mode) */
 		if ( $options['autostore_bad_ip'] ) {
-			if ( self::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
+			$blacklist = new CF7_Antispam_Blacklist();
+			if ( CF7_Antispam_Blacklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
 				/* Log the antispam result in extended debug mode */
 				cf7a_log( "Ban for $remote_ip - results - " . $reasons_for_ban, 2 );
 			} else {
