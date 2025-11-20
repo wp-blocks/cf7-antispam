@@ -606,6 +606,23 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_customizations'
 		);
 
+		/* Section Personalization */
+		add_settings_section(
+			'cf7a_optimizations',
+			__( 'Optimizations', 'cf7-antispam' ),
+			array( $this, 'cf7a_optimizations' ),
+			'cf7a-settings'
+		);
+
+		/* Settings score fingerprinting */
+		add_settings_field(
+			'cf7a_optimizations_scripts',
+			__( 'Optimize scripts loading', 'cf7-antispam' ),
+			array( $this, 'cf7a_optimizations_scripts_callback' ),
+			'cf7a-settings',
+			'cf7a_optimizations'
+		);
+
 		/* Section advanced settings */
 		add_settings_section(
 			'cf7a_advanced',
@@ -1265,6 +1282,9 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['cf7a_score_preset']        = 'custom';
 		}
 
+		/* Optimizations */
+		$new_input['optimize_scripts_loading'] = isset( $input['optimize_scripts_loading'] ) ? 1 : 0;
+
 		/* Customizations */
 		$new_input['cf7a_disable_reload'] = isset( $input['cf7a_disable_reload'] ) ? 1 : 0;
 
@@ -1778,6 +1798,18 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
+	/** It prints the optimizations info */
+	public function cf7a_optimizations() {
+		printf( '<p>%s</p>', esc_html__( 'You can optimize the loading performance of the antispam scripts. Since optimization is a risky business, we do not recommend enabling this option without trying it first.', 'cf7-antispam' ) );
+	}
+
+	/** It creates a checkbox with the id of "optimize_scripts_loading" */
+	public function cf7a_optimizations_scripts_callback() {
+		printf(
+			'<input type="checkbox" id="optimize_scripts_loading" name="cf7a_options[optimize_scripts_loading]" %s />',
+			! empty( $this->options['optimize_scripts_loading'] ) ? 'checked="true"' : ''
+		);
+	}
 
 	/** It creates a checkbox with the id of "cf7a_score_fingerprinting_callback" */
 	public function cf7a_score_fingerprinting_callback() {

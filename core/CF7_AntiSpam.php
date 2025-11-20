@@ -260,7 +260,7 @@ class CF7_AntiSpam {
 			$plugin_frontend = new CF7_AntiSpam_Frontend( $this->get_plugin_name(), $this->get_version() );
 
 			$plugin_frontend->setup();
-			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_frontend, 'load_scripts' );
+			$plugin_frontend->load_scripts();
 		}
 	}
 
