@@ -82,8 +82,11 @@ class CF7_AntiSpam_Frontend {
 		// Register the contact form antispam scripts
 		add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
 
+		// Select the hook to use based on the User's choice
+		$hook = !empty($this->options['optimize_scripts_loading']) ? 'wpcf7_enqueue_scripts' : 'wp_enqueue_scripts';
+
 		// enqueue CF7 antispam scripts only if contact form 7 wpcf7_enqueue_scripts is called
-		add_action( 'wpcf7_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( $hook, array( $this, 'enqueue_scripts' ));
 	}
 
 	public function setup() {
