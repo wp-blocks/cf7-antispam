@@ -168,7 +168,8 @@ class CF7_AntiSpam {
 		$this->loader->add_filter( 'wpcf7_spam', $plugin_antispam, 'cf7a_spam_filter', 8 );
 
 		/* the unspam routine */
-		add_action( 'cf7a_cron', array( $plugin_antispam, 'cf7a_cron_unban' ) );
+		$blacklist = new CF7_Antispam_Blacklist();
+		add_action( 'cf7a_cron', array( $blacklist, 'cf7a_cron_unban' ) );
 
 		/* flamingo */
 		if ( defined( 'FLAMINGO_VERSION' ) ) {
