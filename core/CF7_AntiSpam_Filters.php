@@ -247,7 +247,6 @@ class CF7_AntiSpam_Filters {
 
 		/* Get plugin options */
 		$options = get_option( 'cf7a_options', array() );
-		$prefix  = sanitize_html_class( $options['cf7a_customizations_prefix'] );
 
 		/* Get basic submission details */
 		$mail_tags = $contact_form->scan_form_tags();
@@ -265,6 +264,7 @@ class CF7_AntiSpam_Filters {
 		$message = apply_filters( 'cf7a_message_before_processing', $message, $posted_data );
 
 		/* Prepare IP and basic user data */
+		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'address' ] ) ), $options['cf7a_cipher'] ) : false;
 		$remote_ip      = $real_remote_ip ? filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) : false;
 		$cf7_remote_ip  = filter_var( $submission->get_meta( 'remote_ip' ), FILTER_VALIDATE_IP );
@@ -277,7 +277,6 @@ class CF7_AntiSpam_Filters {
 			'submission'    => $submission,
 			'options'       => $options,
 			'posted_data'   => $posted_data,
-			'prefix'        => $prefix,
 			'remote_ip'     => $remote_ip,
 			'cf7_remote_ip' => $cf7_remote_ip,
 			'emails'        => $emails,
@@ -337,7 +336,7 @@ class CF7_AntiSpam_Filters {
 			}
 		}
 
-		/* Store the ban reason into mail post metadata */
+		/* Store the ban reason into mail post-metadata */
 		$submission->add_spam_log(
 			array(
 				'agent'  => 'CF7-AntiSpam',
@@ -356,7 +355,7 @@ class CF7_AntiSpam_Filters {
 	 * Checks for IP whitelist.
 	 */
 	public function filter_ip_whitelist( $data ) {
-		$ip_whitelist = isset( $data['options']['ip_whitelist'] ) ? $data['options']['ip_whitelist'] : array();
+		$ip_whitelist = $data['options']['ip_whitelist'] ?? array();
 
 		if ( ! empty( $ip_whitelist ) && $data['remote_ip'] ) {
 			foreach ( $ip_whitelist as $good_ip ) {
@@ -467,11 +466,10 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_referrer_protocol( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		// Optimization: Check if spam is already detected (Original Logic)
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
-		$prefix  = $data['prefix'];
+		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_warn = floatval( $options['score']['_warn'] );
 
 		$cf7a_referer  = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'referer' ] ) ), $options['cf7a_cipher'] ) : false;
@@ -500,10 +498,10 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_plugin_version( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
-		$prefix = $data['prefix'];
+		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
 
 		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'version' ] ) ), $options['cf7a_cipher'] ) : false;
@@ -533,12 +531,12 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_bot_fingerprint( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_bot_fingerprint'] ) !== 1 ) return $data;
 
-		$prefix = $data['prefix'];
+		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
 
 		$bot_fingerprint = array(
@@ -588,12 +586,12 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_bot_fingerprint_extras( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_bot_fingerprint_extras'] ) !== 1 ) return $data;
 
-		$prefix = $data['prefix'];
+		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
 
 		$extras = array(
@@ -627,12 +625,12 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_language( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_language'] ) !== 1 ) return $data;
 
-		$prefix = $data['prefix'];
+		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_detection = floatval( $options['score']['_detection'] );
 
 		$languages = array();
@@ -679,7 +677,7 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_geoip( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_geo_location'] ) !== 1 ) return $data;
@@ -717,12 +715,13 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_time_submission( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_time'] ) !== 1 ) return $data;
 
-		$prefix = $data['prefix'];
+		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
+
 		$score_time = floatval( $options['score']['_time'] );
 		$score_detection = floatval( $options['score']['_detection'] );
 
@@ -733,7 +732,7 @@ class CF7_AntiSpam_Filters {
 
 		if ( ! $timestamp ) {
 			$data['spam_score'] += $score_detection;
-			$data['reasons']['timestamp'] = 'undefined';
+			$data['reasons']['timestamp'] = 'missing field';
 			cf7a_log( "The {$data['remote_ip']} ip _timestamp field is missing", 1 );
 		} else {
 			$time_elapsed = $time_now - $timestamp;
@@ -758,7 +757,7 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_bad_email_strings( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_bad_email_strings'] ) !== 1 || empty( $data['emails'] ) ) return $data;
@@ -788,7 +787,7 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_user_agent( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_bad_user_agent'] ) !== 1 ) return $data;
@@ -822,13 +821,13 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_bad_words( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_bad_words'] ) !== 1 || '' === $data['message'] ) return $data;
 
 		$score_bad_string = floatval( $options['score']['_bad_string'] );
-		$bad_words = isset( $options['bad_words_list'] ) ? $options['bad_words_list'] : array();
+		$bad_words = $options['bad_words_list'] ?? array();
 		$message_compressed = $this->cf7a_simplify_text( $data['message'] );
 
 		foreach ( $bad_words as $bad_word ) {
@@ -850,7 +849,7 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_dnsbl( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( intval( $options['check_dnsbl'] ) !== 1 || ! $data['remote_ip'] ) return $data;
@@ -883,7 +882,7 @@ class CF7_AntiSpam_Filters {
 	 */
 	public function filter_honeypot( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
-		if ( $data['spam_score'] >= 1 || $data['is_spam'] ) return $data;
+		if ( $data['is_spam'] ) return $data;
 
 		$options = $data['options'];
 		if ( ! $options['check_honeypot'] ) return $data;
@@ -937,7 +936,7 @@ class CF7_AntiSpam_Filters {
 			$cf7a_b8 = new CF7_AntiSpam_B8();
 			$rating  = round( $cf7a_b8->cf7a_b8_classify( $text ), 2 );
 
-			// If rating is high, add to spam score
+			// If the rating is high, add to spam score
 			if ( $rating >= $b8_threshold ) {
 				$data['reasons']['b8'] = $rating;
 				$data['spam_score'] += $score_detection;
