@@ -2,6 +2,7 @@
 
 namespace CF7_AntiSpam\Core;
 
+use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 use WP_Query;
 use WPCF7_ContactForm;
 use WPCF7_Submission;
@@ -208,7 +209,7 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @return array { success: boolean, message: string }
 	 */
-	public function cf7a_resend_mail( $mail_id ) {
+	public function cf7a_resend_mail( int $mail_id ): array {
 		$flamingo_data = new Flamingo_Inbound_Message( $mail_id );
 		$message = self::cf7a_get_mail_field( $flamingo_data, 'message' );
 
@@ -264,29 +265,9 @@ class CF7_AntiSpam_Flamingo {
 			}
 		}
 
-		/**
-		 * Filter cf7-antispam before resend an email who was spammed
-		 *
-		 * @param string $body the mail message content
-		 * @param string $sender the mail message sender
-		 * @param string $subject the mail message subject
-		 * @param string $recipient the mail recipient
-		 *
-		 * @returns string the mail body content
-		 */
-		$body = apply_filters( 'cf7a_before_resend_email', $body, $sender, $subject, $recipient );
+		$tools = new CF7_AntiSpam_Admin_Tools();
+		$result = $tools->send_email_to_admin( $subject, $recipient, $body, $sender );
 
-		// Set up headers correctly
-		$site_name  = get_bloginfo( 'name' );
-		$from_email = get_option( 'admin_email' );
-
-		$headers  = "From: {$site_name} <{$from_email}>\n";
-		$headers .= "Content-Type: text/html\n";
-		$headers .= "X-WPCF7-Content-Type: text/html\n";
-		$headers .= "Reply-To: {$sender}\n";
-
-		/* send the email */
-		$result = wp_mail( $recipient, $subject, $body, $headers );
 		if ( $result ) {
 			return array( 'success'=> true, 'message' => __( 'Email sent with success', 'cf7-antispam' ) );
 		}
@@ -295,7 +276,7 @@ class CF7_AntiSpam_Flamingo {
 	}
 
 	/**
-	 * Parse CF7 mail tags in recipient field
+	 * Parse CF7 mail tags in the recipient field
 	 *
 	 * @param string                   $recipient The recipient string that may contain CF7 tags
 	 * @param Flamingo_Inbound_Message $flamingo_data The flamingo message data

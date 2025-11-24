@@ -213,6 +213,22 @@ class CF7_AntiSpam_Activator {
 	}
 
 	/**
+	 * Store the update data
+	 *
+	 * @param array $options - the options array.
+	 */
+	private static function store_update_data( $options ) {
+		/* update the plugin update time field */
+		$options['last_update_data'] = array(
+			'time' => time(),
+			'old_version' => $options['cf7a_version'] ?? 'unknown',
+			'new_version' => CF7ANTISPAM_VERSION,
+			'errors' => array(),
+		);
+		return $options;
+	}
+
+	/**
 	 *  Create or Update the CF7 Antispam options
 	 *
 	 * @param bool $reset_options - whatever to force the reset.
@@ -235,10 +251,14 @@ class CF7_AntiSpam_Activator {
 			add_option( 'cf7a_options', $new_options );
 
 		} else {
-
-			/* update the plugin options but add the new options automatically */
+			/* if the plugin is already installed, update the plugin options automatically */
 			if ( isset( $options['cf7a_version'] ) ) {
-				unset( $options['cf7a_version'] );
+
+				/* update the plugin last update time field if the current version is set (so we are updating the plugin and not installing it) */
+				$options = self::store_update_data( $options );
+
+				/* remove the version field */
+				$options['cf7a_version'] = CF7ANTISPAM_VERSION;
 			}
 
 			/* merge previous options with the updated copy keeping the already selected option as default */
