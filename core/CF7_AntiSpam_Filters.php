@@ -11,6 +11,7 @@
 
 namespace CF7_AntiSpam\Core;
 
+use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 use Exception;
 use WPCF7_Submission;
 
@@ -515,23 +516,75 @@ class CF7_AntiSpam_Filters {
 
 		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'version' ] ) ), $options['cf7a_cipher'] ) : false;
 
+		// CASE A: Version field is completely missing or empty -> SPAM
 		if ( ! $cf7a_version ) {
 			$data['spam_score'] += $score_fingerprinting;
 			$data['reasons']['data_mismatch'] = sprintf( "Version mismatch (empty) != '%s'", CF7ANTISPAM_VERSION );
 			cf7a_log( sprintf( "The 'version' field submitted by %s is empty", $data['remote_ip'] ), 1 );
-		} else if ( $cf7a_version !== CF7ANTISPAM_VERSION ) {
-			// check the last update of the plugin
-			$last_update = $options['last_update'];
-			if ( $last_update < time() - WEEK_IN_SECONDS ) {
-				$data['spam_score'] += $score_fingerprinting;
-				$data['reasons']['data_mismatch'] = "Version mismatch '$cf7a_version' != '" . CF7ANTISPAM_VERSION . "'";
-				cf7a_log( "The 'version' field submitted by {$data['remote_ip']} is empty", 1 );
-			}
-			// Failsafe for cache issues: do not mark as spam, but logic dictates we might unset spam flag
-			// if it was set purely by accident here (though logic above prevents entry).
-			// Original code: $spam = false;
-			// Since we are in a filter, we simply do nothing or reset specific flags if required.
+
+			return $data;
 		}
+
+		// CASE B: Version matches current version -> OK
+		if ( $cf7a_version === CF7ANTISPAM_VERSION ) {
+			return $data;
+		}
+
+		// CASE C: Version Mismatch logic (Cache vs Spam)
+		// Retrieve update data stored during the last plugin update
+		$last_update_data = $options['last_update_data'] ?? null;
+
+		// Check if we have update data and if the submitted version matches the PREVIOUS version
+		$is_old_version_match = ( $last_update_data && isset( $last_update_data['old_version'] ) && $cf7a_version === $last_update_data['old_version'] );
+
+		// Check if the update happened less than a week ago
+		$period_of_grace = apply_filters('cf7a_period_of_grace', WEEK_IN_SECONDS);
+		$is_within_grace_period = ( $last_update_data && isset( $last_update_data['time'] ) && ( time() - $last_update_data['time'] ) < $period_of_grace );
+
+		if ( $is_old_version_match && $is_within_grace_period ) {
+
+			// --- CACHE ISSUE DETECTED (FALLBACK) ---
+			// Do NOT mark as spam. This is likely a cached user.
+
+			cf7a_log( "Cache mismatch detected for IP {$data['remote_ip']}. Submitted: $cf7a_version. Expected: " . CF7ANTISPAM_VERSION, 1 );
+
+			// Record the error
+			if ( ! isset( $options['last_update_data']['errors'] ) ) {
+				$options['last_update_data']['errors'] = array();
+			}
+
+			// Add error details
+			$options['last_update_data']['errors'][] = array(
+				'ip'   => $data['remote_ip'],
+				'time' => time(),
+			);
+
+			$error_count = count( $options['last_update_data']['errors'] );
+
+			// Check trigger for email notification (Exactly on the 5th error)
+			$cf7a_period_of_grace_max_attempts = intval(apply_filters( 'cf7a_period_of_grace_max_attempts', 5));
+			if ( $cf7a_period_of_grace_max_attempts === $error_count || $error_count * 3 === $cf7a_period_of_grace_max_attempts ) {
+				$this->send_cache_warning_email( $options['last_update_data'] );
+				cf7a_log( "Cache warning email sent to admin.", 1 );
+			}
+
+			// SAVE OPTIONS: We must save the error count to the database
+			// Update the local $options variable first so subsequent filters use it if needed (though unlikely)
+			$data['options'] = $options;
+
+			// Persist to DB
+			update_option( 'cf7a_options', $options );
+
+		} else {
+
+			// --- REAL SPAM / INVALID VERSION ---
+			// Either the grace period expired, or the version is completely random
+
+			$data['spam_score'] += $score_fingerprinting;
+			$data['reasons']['data_mismatch'] = "Version mismatch '$cf7a_version' != '" . CF7ANTISPAM_VERSION . "'";
+			cf7a_log( "The 'version' field submitted by {$data['remote_ip']} is mismatching (expired grace period or invalid)", 1 );
+		}
+
 		return $data;
 	}
 
