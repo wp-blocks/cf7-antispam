@@ -5,8 +5,9 @@
  * Author: Codekraft
  * Text Domain: cf7-antispam
  * Domain Path: /languages
- * Version: 0.7.1
+ * Version: 0.7.2
  * License: GPLv2 or later
+ * Requires Plugins: contact-form-7
  *
  * @package cf7-antispam
  */
@@ -19,7 +20,7 @@ if ( ! defined( 'WPINC' ) ) {
 /* CONSTANTS */
 define( 'CF7ANTISPAM_NAME', 'cf7-antispam' );
 
-define( 'CF7ANTISPAM_VERSION', '0.7.1' );
+define( 'CF7ANTISPAM_VERSION', '0.7.2' );
 
 define( 'CF7ANTISPAM_PLUGIN', __FILE__ );
 
