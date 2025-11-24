@@ -248,6 +248,15 @@ class CF7_AntiSpam_Filters {
 		/* Get plugin options */
 		$options = get_option( 'cf7a_options', array() );
 
+		/* Check the period of grace and, if it is expired, reset the error count */
+		if ( isset( $options['last_update_data']['errors'] ) ) {
+			if ( time() - $options['last_update_data']['errors']['timestamp'] > $options['cf7a_period_of_grace'] ) {
+				$options['last_update_data']['errors'] = array();
+			}
+			// then save the updated options to the database
+			update_option( 'cf7a_options', $options );
+		}
+
 		/* Get basic submission details */
 		$mail_tags = $contact_form->scan_form_tags();
 		$email_tag = sanitize_title( cf7a_get_mail_meta( $contact_form->pref( 'flamingo_email' ) ) );
@@ -958,5 +967,24 @@ class CF7_AntiSpam_Filters {
 			}
 		}
 		return $data;
+	}
+
+	/**
+	 * Sends an email to the admin, warning them to clear the cache.
+	 * @param array $update_data the array of data to be sent to the admin
+	 * @return void
+	 */
+	private function send_cache_warning_email( $update_data ): void {
+		$tools = new CF7_AntiSpam_Admin_Tools();
+		$recipient = get_option( 'admin_email' );
+		$body = sprintf(
+			"Hello Admin,\n\nWe detected 5 users trying to submit forms with the old version (%s) instead of the new one (%s).\n\nThis usually means your website cache (or CDN) hasn't been cleared after the last update.\n\nPlease purge your site cache immediately to prevent legitimate users from being flagged as spam.\n\nTime of update: %s",
+			$update_data['old_version'],
+			$update_data['new_version'],
+			gmdate( 'Y-m-d H:i:s', $update_data['time'] )
+		);
+		$subject = 'CF7 AntiSpam - Cache Warning Alert';
+
+		$tools->send_email_to_admin( $subject, $recipient, $body, $recipient );
 	}
 }
