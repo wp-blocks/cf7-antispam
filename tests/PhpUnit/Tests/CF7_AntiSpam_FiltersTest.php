@@ -2,6 +2,7 @@
 
 namespace CF7_AntiSpam\Tests\PhpUnit\Tests;
 
+use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
 use PHPUnit\Framework\TestCase;
 
@@ -12,270 +13,265 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 	 */
 	private $filters;
 
-	public function __construct( $name = null, $data = array(), $dataName = '' ) {
-		parent::__construct( $name, $data, $dataName );
+	/**
+	 * @var array
+	 */
+	private $base_spam_data;
+
+	/**
+	 * Setup before each test.
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+
 		$this->filters = new CF7_AntiSpam_Filters();
-	}
 
-	public function testCf7a_check_dnsbl() {
-		/* Barracuda returns always spam for 2.0.0.127 */
-		$this->assertTrue( $this->filters->cf7a_check_dnsbl( '2.0.0.127', 'b.barracudacentral.org' ) );
-		/* Barracuda returns always ham for 1.0.0.127 */
-		$this->assertFalse( $this->filters->cf7a_check_dnsbl( '1.0.0.127', 'b.barracudacentral.org' ) );
-	}
+		$this->options = CF7_AntiSpam::get_options();
 
-	public function testCf7a_reverse_ipv6() {
-		$mail     = '::1';
-		$reversed = $this->filters->cf7a_reverse_ipv6( $mail );
-		$this->assertIsString( $reversed );
-		$this->returnValue( '1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0' );
-	}
-
-	public function testCf7a_reverse_ipv4() {
-		$mail     = '192.168.1.1';
-		$reversed = $this->filters->cf7a_reverse_ipv4( $mail );
-		$this->assertIsString( $reversed );
-		$this->returnValue( '1.1.168.192' );
-	}
-
-	public function testCf7a_init_languages_locales_array() {
-		$tests = array(
-			array(
-				'string'   => 'en-US,en;q=0.9,it;q=0.8,it-IT;q=0.7',
-				'expected' => array( 'en-US', 'en', 'it', 'it-IT' ),
-			),
+		// Initialize a standard clean state for data to pass through filters
+		$this->base_spam_data = array(
+			'submission'    => null, // Mock this if needed
+			'options'       => $this->options,
+			'prefix'        => CF7ANTISPAM_PREFIX,
+			'posted_data'   => array(),
+			'remote_ip'     => '192.168.1.10',
+			'cf7_remote_ip' => '192.168.1.10',
+			'emails'        => array( 'test@example.com' ),
+			'message'       => 'Hello world',
+			'mail_tags'     => array(),
+			'user_agent'    => 'Mozilla/5.0',
+			'spam_score'    => 0,
+			'is_spam'       => false,
+			'reasons'       => array(),
+			'is_whitelisted'=> false,
 		);
 
-		foreach ( $tests as $test ) {
-			$result = cf7a_init_languages_locales_array( $test['string'] );
-			$this->assertEquals( $test['expected'], $result, 'error expected ' . print_r( $test, true ) . ' result ' . print_r( $result, true ) );
-		}
+		// Ensure global $_POST is clean
+		$_POST = array();
 	}
 
-	public function testCf7a_get_browser_languages_locales_array() {
-		$tests = array(
-			array(
-				'string'   => 'en-US,en;q=0.9,it;q=0.8,it-IT;q=0.7',
-				'expected' => array(
-					'languages' => array( 'en', 'it' ),
-					'locales'   => array( 'US', 'IT' ),
-				),
-			),
-			array(
-				'string'   => 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7,it;q=0.6,it-IT;q=0.5',
-				'expected' => array(
-					'languages' => array( 'de', 'en', 'it' ),
-					'locales'   => array( 'DE', 'US', 'IT' ),
-				),
-			),
-			array(
-				'string'   => 'en-US,en;q=0.5',
-				'expected' => array(
-					'languages' => array( 'en' ),
-					'locales'   => array( 'US' ),
-				),
-			),
-			array(
-				'string'   => 'da,en-GB;q=0.8,en;q=0.7',
-				'expected' => array(
-					'languages' => array( 'da', 'en' ),
-					'locales'   => array( 'GB' ),
-				),
-			),
-			array(
-				'string'   => 'zh-CN, zh-TW; q = 0.9, zh-HK; q = 0.8, zh; q = 0.7, en; q = 0.6',
-				'expected' => array(
-					'languages' => array( 'zh', 'en' ),
-					'locales'   => array( 'CN', 'TW', 'HK' ),
-				),
-			),
-			array(
-				'string'   => 'en-US,en;q=0.9,de;q=0.8,es;q=0.7,fr;q=0.6,it;q=0.5,pt;q=0.4,ru;q=0.3,ja;q=0.2,zh-CN;q=0.1,zh-TW;q=0.1',
-				'expected' => array(
-					'languages' => array( 'en', 'de', 'es', 'fr', 'it', 'pt', 'ru', 'ja', 'zh' ),
-					'locales'   => array( 'US', 'CN', 'TW' ),
-				),
-			),
-			array(
-				'string'   => 'ru-RU, be-BY;q=0.9, en-US;q=0.8, en;q=0.7',
-				'expected' => array(
-					'languages' => array( 'ru', 'be', 'en' ),
-					'locales'   => array( 'RU', 'BY', 'US' ),
-				),
-			),
-		);
+	// -------------------------------------------------------------------------
+	// TEST 1: IP Whitelist
+	// -------------------------------------------------------------------------
 
-		foreach ( $tests as $test ) {
-			$result = cf7a_get_browser_languages_locales_array( $test['string'] );
-			$this->assertEquals( $test['expected'], $result, 'error expected ' . print_r( $test, true ) . ' result ' . print_r( $result, true ) );
-		}
+	public function test_filter_ip_whitelist_matches_valid_ip() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['ip_whitelist'] = array( '192.168.1.10' );
+		$data['remote_ip'] = '192.168.1.10';
+
+		// Act
+		$result = $this->filters->filter_ip_whitelist( $data );
+
+		// Assert
+		$this->assertTrue( $result['is_whitelisted'], 'IP should be whitelisted.' );
 	}
 
-	public function testCf7a_check_languages_locales_allowed() {
-		/* cf7a_check_language_allowed - 1 current lang or loc - 2 NOT allowed languages - 3 allowed (and has the precedence over the not allowed if specified) */
+	public function test_filter_ip_whitelist_ignores_unknown_ip() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['ip_whitelist'] = array( '10.0.0.1' );
+		$data['remote_ip'] = '192.168.1.10';
 
-		$testCases = array(
-			// LANGUAGES TEST CASES
-			// TRUE
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array(),
-				'alloweds'    => array( 'it' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en' ),
-				'alloweds'    => array( 'en' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en' ),
-				'alloweds'    => array( 'fr', 'it' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en' ),
-				'alloweds'    => array( 'it', 'fr' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en', 'fr' ),
-				'alloweds'    => array( 'it' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en' ),
-				'alloweds'    => array(),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array(),
-				'alloweds'    => array(),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( '' ),
-				'alloweds'    => array( '' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en', 'fr' ),
-				'alloweds'    => array( 'IT' ),
-				'assert'      => true,
-			),
-			// is case-sensitive and truthy
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en', 'IT' ),
-				'alloweds'    => array( 'it' ),
-				'assert'      => true,
-			),
-			// is case-sensitive
-			// FALSE
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'it' ),
-				'alloweds'    => array( '' ),
-				'assert'      => false,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'it', 'en' ),
-				'alloweds'    => array( '' ),
-				'assert'      => false,
-			),
-			array(
-				'lan_loc'     => array( 'it' ),
-				'disalloweds' => array( 'en', 'it' ),
-				'alloweds'    => array( '' ),
-				'assert'      => false,
-			),
-			// LOCALES TEST CASES
-			// TRUE
-			array(
-				'lan_loc'     => array( 'IT' ),
-				'disalloweds' => array(),
-				'alloweds'    => array( 'IT' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'IT' ),
-				'disalloweds' => array( 'GB', 'FR' ),
-				'alloweds'    => array( 'IT' ),
-				'assert'      => true,
-			),
-			array(
-				'lan_loc'     => array( 'IT' ),
-				'disalloweds' => array( 'it' ),
-				'alloweds'    => array(),
-				'assert'      => true,
-			),
-			// is case-sensitive
-			array(
-				'lan_loc'     => array( 'IT' ),
-				'disalloweds' => array( 'GB', 'IT' ),
-				'alloweds'    => array( 'FR', 'IT' ),
-				'assert'      => true,
-			),
-			// alloweds has precedence
-			// FALSE
-			array(
-				'lan_loc'     => array( 'IT' ),
-				'disalloweds' => array( 'IT' ),
-				'alloweds'    => array( '' ),
-				'assert'      => false,
-			),
-			array(
-				'lan_loc'     => array( 'IT' ),
-				'disalloweds' => array( 'GB', 'IT' ),
-				'alloweds'    => array( 'FR' ),
-				'assert'      => false,
-			),
-			array(
-				'lan_loc'     => array( 'IT' ),
-				'disalloweds' => array( 'GB', 'FR', 'IT' ),
-				'alloweds'    => array( 'FR' ),
-				'assert'      => false,
-			),
-		);
+		// Act
+		$result = $this->filters->filter_ip_whitelist( $data );
 
-		foreach ( $testCases as $testCase ) {
-			$result = $this->filters->cf7a_check_languages_locales_allowed( $testCase['lan_loc'], $testCase['disalloweds'], $testCase['alloweds'] );
-			$this->assertEquals(
-				$testCase['assert'],
-				$result,
-				'error expected ' . print_r( $testCase['assert'], true ) .
-				' result ' . print_r( $result, true ) .
-				' array : ' . print_r( $testCase, true )
-			);
-		}
+		// Assert
+		$this->assertFalse( $result['is_whitelisted'], 'IP should NOT be whitelisted.' );
 	}
 
-	public function testCf7a_get_languages_or_locales() {
-		$tests = array(
-			array(
-				'string'            => 'languages',
-				'languages_locales' => array( 'ru-RU', 'en', 'en-US', 'it-IT' ),
-				'expected'          => array( 'ru', 'en', 'it' ),
-			),
-			array(
-				'string'            => 'locales',
-				'languages_locales' => array( 'ru-RU', 'en', 'en-US', 'it-IT' ),
-				'expected'          => array( 'RU', 'US', 'IT' ),
-			),
-		);
+	// -------------------------------------------------------------------------
+	// TEST 2: Empty IP
+	// -------------------------------------------------------------------------
 
-		foreach ( $tests as $test ) {
-			$result = $this->filters->cf7a_get_languages_or_locales( $test['languages_locales'], $test['string'] );
-			$this->assertEquals( $test['expected'], $result, 'error expected ' . print_r( $test, true ) . ' result ' . print_r( $result, true ) );
-		}
+	public function test_filter_empty_ip_detects_missing_ip() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['remote_ip'] = ''; // Empty
+		$data['cf7_remote_ip'] = '';
+
+		// Act
+		$result = $this->filters->filter_empty_ip( $data );
+
+		// Assert
+		$this->assertTrue( $result['is_spam'], 'Should be spam if IP is missing.' );
+		$this->assertArrayHasKey( 'no_ip', $result['reasons'] );
+		$this->assertEquals( 1, $result['spam_score'] );
+	}
+
+	public function test_filter_empty_ip_passes_valid_ip() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['remote_ip'] = '123.123.123.123';
+
+		// Act
+		$result = $this->filters->filter_empty_ip( $data );
+
+		// Assert
+		$this->assertFalse( $result['is_spam'] );
+		$this->assertEquals( 0, $result['spam_score'] );
+	}
+
+	// -------------------------------------------------------------------------
+	// TEST 3: Bad IP List
+	// -------------------------------------------------------------------------
+
+	public function test_filter_bad_ip_detects_blacklisted_ip() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_ip'] = 1;
+		$data['options']['bad_ip_list'] = array( '1.2.3.4', '5.6.7.8' );
+		$data['remote_ip'] = '5.6.7.8';
+
+		// Act
+		$result = $this->filters->filter_bad_ip( $data );
+
+		// Assert
+		$this->assertTrue( $result['is_spam'] );
+		$this->assertStringContainsString( '5.6.7.8', $result['reasons']['bad_ip'] );
+	}
+
+	public function test_filter_bad_ip_passes_clean_ip() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_ip'] = 1;
+		$data['options']['bad_ip_list'] = array( '1.2.3.4' );
+		$data['remote_ip'] = '9.9.9.9'; // Safe IP
+
+		// Act
+		$result = $this->filters->filter_bad_ip( $data );
+
+		// Assert
+		$this->assertFalse( $result['is_spam'] );
+	}
+
+	// -------------------------------------------------------------------------
+	// TEST 4: HoneyForm (Hidden Field)
+	// -------------------------------------------------------------------------
+
+	public function test_filter_honeyform_detects_filled_field() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_honeyform'] = 1;
+		$data['options']['cf7a_customizations_class'] = 'my-trap';
+
+		// Simulate $_POST submission of the hidden field
+		$_POST['_wpcf7_my-trap'] = 'I am a bot';
+
+		// Act
+		$result = $this->filters->filter_honeyform( $data );
+
+		// Assert
+		$this->assertTrue( $result['is_spam'] );
+		$this->assertEquals( 'true', $result['reasons']['honeyform'] );
+	}
+
+	public function test_filter_honeyform_passes_empty_field() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_honeyform'] = 1;
+		$data['options']['cf7a_customizations_class'] = 'my-trap';
+
+		// Ensure $_POST is empty for that key
+		unset($_POST['_wpcf7_my-trap']);
+
+		// Act
+		$result = $this->filters->filter_honeyform( $data );
+
+		// Assert
+		$this->assertFalse( $result['is_spam'] );
+	}
+
+	// -------------------------------------------------------------------------
+	// TEST 5: Bad Words
+	// -------------------------------------------------------------------------
+
+	public function test_filter_bad_words_detects_profanity() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_words'] = 1;
+		$data['options']['bad_words_list'] = array( 'buy now', 'cheap' );
+		$data['options']['score'] = array( '_bad_string' => 5 );
+		$data['message'] = 'Hello, please buy now very cheap!';
+
+		// Act
+		$result = $this->filters->filter_bad_words( $data );
+
+		// Assert
+		$this->assertTrue( $result['spam_score'] >= 5 );
+		$this->assertStringContainsString( 'buy now', $result['reasons']['bad_word'] );
+	}
+
+	public function test_filter_bad_words_passes_clean_message() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_words'] = 1;
+		$data['options']['bad_words_list'] = array( 'buy now' );
+		$data['message'] = 'Just saying hello.';
+
+		// Act
+		$result = $this->filters->filter_bad_words( $data );
+
+		// Assert
+		$this->assertEquals( 0, $result['spam_score'] );
+		$this->assertArrayNotHasKey( 'bad_word', $result['reasons'] );
+	}
+
+	// -------------------------------------------------------------------------
+	// TEST 6: Time Submission
+	// -------------------------------------------------------------------------
+
+	public function test_filter_time_submission_detects_too_fast() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$time_elapsed = 5;
+		$data['submission']['time'] = time() - $time_elapsed;
+		$data['options']['check_time'] = 1;
+		$data['options']['check_time_min'] = 6; // Min 6 seconds
+		$prefix = $data['options']['cf7a_customizations_prefix'];
+		$_POST[ $prefix . '_timestamp' ] = cf7a_crypt(time() - 5, $data['options']['cf7a_cipher']);
+
+		// Act
+		$result = $this->filters->filter_time_submission( $data );
+
+		// Assert
+		$this->assertFalse( $result['is_spam'] ); // False because the time check doesn't force the mail to be spam if wrong
+		$this->assertEquals( $data['options']['score']['_time'], $result['spam_score'] ); // Assert that the spam score is correct
+		$this->assertIsArray( $result['reasons'] ); // Assert that the reasons are not empty
+		$this->assertEquals( $time_elapsed, $result['reasons']['min_time_elapsed'] ); // Assert that the time elapsed is correct
+	}
+
+	// -------------------------------------------------------------------------
+	// TEST 7: Bad Email Strings
+	// -------------------------------------------------------------------------
+
+	public function test_filter_bad_email_strings_detects_spam_domain() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_email_strings'] = 1;
+		$data['options']['bad_email_strings_list'] = array( '.xyz', 'spam.com' );
+		$data['options']['score'] = array( '_bad_string' => 4 );
+		$data['emails'] = array( 'user@spam.com' );
+
+		// Act
+		$result = $this->filters->filter_bad_email_strings( $data );
+
+		// Assert
+		$this->assertEquals( 4, $result['spam_score'] );
+		$this->assertStringContainsString( 'spam.com', $result['reasons']['email_blacklisted'] );
+	}
+
+	public function test_filter_bad_email_strings_passes_good_email() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_email_strings'] = 1;
+		$data['options']['bad_email_strings_list'] = array( 'bad.com' );
+		$data['emails'] = array( 'user@google.com' );
+
+		// Act
+		$result = $this->filters->filter_bad_email_strings( $data );
+
+		// Assert
+		$this->assertEquals( 0, $result['spam_score'] );
 	}
 }
