@@ -1446,7 +1446,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			esc_html__( 'Choose DB File...', 'cf7-antispam' ),
 			esc_html__( 'No file selected', 'cf7-antispam' )
 		);
-		printf( '<p class="geoip_dbfile text-xs">%s</p>', esc_html__( 'Accepted formats: .mmdb or .tar.gz' ) );
+		printf( '<p class="geoip_dbfile text-xs">%s</p>', esc_html__( 'Accepted formats: .mmdb or .tar.gz', 'cf7-antispam' ) );
 	}
 
 	/** It creates the input field "cf7a_geodb_update" */
