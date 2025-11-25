@@ -572,15 +572,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Enable customizations */
 		add_settings_field(
-			'cf7a_disable_reload',
-			__( 'Disable cf7 form reload if the page is cached', 'cf7-antispam' ),
-			array( $this, 'cf7a_disable_reload_callback' ),
-			'cf7a-settings',
-			'cf7a_customizations'
-		);
-
-		/* Enable customizations */
-		add_settings_field(
 			'cf7a_customizations_class',
 			__( 'Your unique css class', 'cf7-antispam' ),
 			array( $this, 'cf7a_customizations_class_callback' ),
@@ -606,7 +597,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_customizations'
 		);
 
-		/* Section Personalization */
+		/* Section Optimizations */
 		add_settings_section(
 			'cf7a_optimizations',
 			__( 'Optimizations', 'cf7-antispam' ),
@@ -614,11 +605,20 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a-settings'
 		);
 
-		/* Settings score fingerprinting */
+		/* Settings Script optimizations */
 		add_settings_field(
 			'cf7a_optimizations_scripts',
 			__( 'Optimize scripts loading', 'cf7-antispam' ),
 			array( $this, 'cf7a_optimizations_scripts_callback' ),
+			'cf7a-settings',
+			'cf7a_optimizations'
+		);
+
+		/* Disable cf7 form reload if the page is cached */
+		add_settings_field(
+			'cf7a_disable_reload',
+			__( 'Disable cf7 form reload if the page is cached', 'cf7-antispam' ),
+			array( $this, 'cf7a_disable_reload_callback' ),
 			'cf7a-settings',
 			'cf7a_optimizations'
 		);
@@ -1284,10 +1284,9 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Optimizations */
 		$new_input['optimize_scripts_loading'] = isset( $input['optimize_scripts_loading'] ) ? 1 : 0;
-
-		/* Customizations */
 		$new_input['cf7a_disable_reload'] = isset( $input['cf7a_disable_reload'] ) ? 1 : 0;
 
+		/* Customizations */
 		$input['cf7a_customizations_class']     = sanitize_html_class( $input['cf7a_customizations_class'] );
 		$new_input['cf7a_customizations_class'] = ! empty( $input['cf7a_customizations_class'] ) ? sanitize_html_class( $input['cf7a_customizations_class'] ) : CF7ANTISPAM_HONEYPOT_CLASS;
 
@@ -1434,7 +1433,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_force_download_callback() {
 		// the upload button for the database if the download is disabled
 		printf( '<input type="button" id="geoip_force_download" class="button cf7a_action" data-action="force-geoip-download" data-callback="update-geoip-status" data-nonce="%s" value="%s" />',
-			wp_create_nonce( 'cf7a-nonce' ),
+			esc_attr(wp_create_nonce( 'cf7a-nonce' )),
 			esc_attr__( 'Force Download', 'cf7-antispam' )
 		);
 	}
@@ -1447,7 +1446,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			esc_html__( 'Choose DB File...', 'cf7-antispam' ),
 			esc_html__( 'No file selected', 'cf7-antispam' )
 		);
-		echo '<p class="geoip_dbfile text-xs"> Accepted formats: .mmdb or .tar.gz </p>';
+		printf( '<p class="geoip_dbfile text-xs">%s</p>', esc_html__( 'Accepted formats: .mmdb or .tar.gz', 'cf7-antispam' ) );
 	}
 
 	/** It creates the input field "cf7a_geodb_update" */
@@ -1752,14 +1751,6 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-
-	/** It creates a checkbox with the id of "cf7a_disable_reload_callback" */
-	public function cf7a_disable_reload_callback() {
-		printf(
-			'<input type="checkbox" id="cf7a_disable_reload" name="cf7a_options[cf7a_disable_reload]" %s />',
-			! empty( $this->options['cf7a_disable_reload'] ) ? 'checked="true"' : ''
-		);
-	}
 	/** It creates a checkbox with the id of "cf7a_customizations_class_callback" */
 	public function cf7a_customizations_class_callback() {
 		printf(
@@ -1810,6 +1801,15 @@ class CF7_AntiSpam_Admin_Customizations {
 			! empty( $this->options['optimize_scripts_loading'] ) ? 'checked="true"' : ''
 		);
 	}
+
+	/** It creates a checkbox with the id of "cf7a_disable_reload_callback" */
+	public function cf7a_disable_reload_callback() {
+		printf(
+			'<input type="checkbox" id="cf7a_disable_reload" name="cf7a_options[cf7a_disable_reload]" %s />',
+			! empty( $this->options['cf7a_disable_reload'] ) ? 'checked="true"' : ''
+		);
+	}
+
 
 	/** It creates a checkbox with the id of "cf7a_score_fingerprinting_callback" */
 	public function cf7a_score_fingerprinting_callback() {

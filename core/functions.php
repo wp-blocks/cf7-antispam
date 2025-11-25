@@ -250,12 +250,16 @@ function cf7a_crypt( $value, $cipher = 'aes-256-cbc' ) {
  *
  * @return string The decrypted value.
  */
-function cf7a_decrypt( $value, $cipher = 'aes-256-cbc' ) {
-	if ( ! extension_loaded( 'openssl' ) ) {
+function cf7a_decrypt( string $value, string $cipher = 'aes-256-cbc' ): string {
+	try {
+		if ( ! extension_loaded( 'openssl' ) ) {
+			return $value;
+		}
+
+		return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+	} catch ( Exception $e ) {
 		return $value;
 	}
-
-	return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
 }
 
 /**
@@ -359,16 +363,16 @@ function cf7a_compress_array( $array, $is_html = false ) {
 					if ( empty( $v ) ) {
 						$v = '[]';
 					} else {
-						// Converte array in formato leggibile
+						// Convert array to readable format
 						$v = '[' . implode(
-							', ',
-							array_map(
-								function ( $item ) {
-									return is_array( $item ) ? json_encode( $item ) : (string) $item;
-								},
-								$v
-							)
-						) . ']';
+								', ',
+								array_map(
+									function ( $item ) {
+										return is_array( $item ) ? json_encode( $item ) : (string) $item;
+									},
+									$v
+								)
+							) . ']';
 					}
 				} elseif ( is_object( $v ) ) {
 					$v = json_encode( $v );

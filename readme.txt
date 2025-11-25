@@ -4,7 +4,7 @@ Tags: antispam, blacklist, honeypot, geoip, security
 Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.7.1
+Stable tag: 0.7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -171,6 +171,13 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.7.2 =
+* Update fallback (thanks for the idea to @lemurnick)
+* Fix for missing enqueue in some cases (thanks to @ohhcee, @o2xav, @WORX Developer for the feedbacks)
+* Blacklist filters cleanup
+* Registers the spam checks individually
+* Updated encrypt/decrypt function
 
 = 0.7.1 =
 * Fix: Fixes a wrong escape placeholder in the prepare SQL query that was preventing to check if an IP was blacklisted. (thanks to @jackrus60 for the report)
