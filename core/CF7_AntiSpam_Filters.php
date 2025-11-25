@@ -250,8 +250,9 @@ class CF7_AntiSpam_Filters {
 		$options = get_option( 'cf7a_options', array() );
 
 		/* Check the period of grace and, if it is expired, reset the error count */
-		if ( isset( $options['last_update_data']['errors'] ) ) {
-			if ( time() - $options['last_update_data']['errors']['timestamp'] > $options['cf7a_period_of_grace'] ) {
+		if ( !empty( $options['last_update_data']['errors'] ) ) {
+			$period_of_grace = apply_filters('cf7a_period_of_grace', WEEK_IN_SECONDS);
+			if ( time() - $options['last_update_data']['time'] > $period_of_grace ) {
 				$options['last_update_data']['errors'] = array();
 			}
 			// then save the updated options to the database
