@@ -274,4 +274,99 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		// Assert
 		$this->assertEquals( 0, $result['spam_score'] );
 	}
+
+	// -------------------------------------------------------------------------
+	// TEST: User Agent Filter
+	// -------------------------------------------------------------------------
+
+	public function test_filter_user_agent_detects_empty_ua() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_user_agent'] = 1;
+		$data['options']['score']['_detection'] = 2;
+		$data['user_agent'] = ''; // Empty UA
+
+		// Act
+		$result = $this->filters->filter_user_agent( $data );
+
+		// Assert
+		$this->assertEquals( 2, $result['spam_score'] );
+		$this->assertEquals( 'empty', $result['reasons']['user_agent'] );
+	}
+
+	public function test_filter_user_agent_detects_blacklisted_bot() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_user_agent'] = 1;
+		$data['options']['bad_user_agent_list'] = array( 'BadBot', 'CrawlerX' );
+		$data['options']['score']['_bad_string'] = 3;
+		$data['user_agent'] = 'Mozilla/5.0 (compatible; BadBot/1.0)'; // Contains "BadBot"
+
+		// Act
+		$result = $this->filters->filter_user_agent( $data );
+
+		// Assert
+		$this->assertEquals( 3, $result['spam_score'] );
+		$this->assertStringContainsString( 'BadBot', $result['reasons']['user_agent'] );
+	}
+
+	public function test_filter_user_agent_passes_valid_ua() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_bad_user_agent'] = 1;
+		$data['options']['bad_user_agent_list'] = array( 'BadBot' );
+		$data['user_agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
+
+		// Act
+		$result = $this->filters->filter_user_agent( $data );
+
+		// Assert
+		$this->assertEquals( 0, $result['spam_score'] );
+		$this->assertArrayNotHasKey( 'user_agent', $result['reasons'] );
+	}
+
+	// -------------------------------------------------------------------------
+	// TEST: Honeypot Filter
+	// -------------------------------------------------------------------------
+
+	public function test_filter_honeypot_detects_filled_field() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_honeypot'] = 1;
+		$data['options']['honeypot_input_names'] = array( 'hp_email', 'hp_phone' );
+		$data['options']['score']['_honeypot'] = 10;
+
+		// We must simulate form tags so the filter knows it's a valid form to check
+		$data['mail_tags'] = array(
+			array( 'type' => 'text', 'name' => 'your-name' )
+		);
+
+		// Crucial: Assume cf7a_get_honeypot_input_names returns the input array keys
+		// We simulate the global $_POST having a value for the honeypot
+		$_POST['hp_email'] = 'bot@spam.com';
+
+		// Act
+		$result = $this->filters->filter_honeypot( $data );
+
+		// Assert
+		$this->assertEquals( 10, $result['spam_score'] );
+		$this->assertStringContainsString( 'hp_email', $result['reasons']['honeypot'] );
+	}
+
+	public function test_filter_honeypot_skips_if_post_empty() {
+		// Arrange
+		$data = $this->base_spam_data;
+		$data['options']['check_honeypot'] = 1;
+		$data['options']['honeypot_input_names'] = array( 'hp_email' );
+		$data['mail_tags'] = array( array( 'type' => 'text', 'name' => 'your-name' ) );
+
+		// Ensure POST is empty for the honeypot key
+		unset( $_POST['hp_email'] );
+
+		// Act
+		$result = $this->filters->filter_honeypot( $data );
+
+		// Assert
+		$this->assertEquals( 0, $result['spam_score'] );
+	}
 }
