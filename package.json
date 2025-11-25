@@ -15,6 +15,7 @@
 		"languages/cf7-antispam.pot",
 		"languages/readme.txt",
 		"cf7-antispam.php",
+		"composer.json",
 		"LICENSE",
 		"readme.txt"
 	],
@@ -35,7 +36,9 @@
 		"test:e2e:watch": "npm run test:playwright --watch",
 		"postinstall": "husky install",
 		"makepot": "npx make-pot",
-		"PHPCS": "wp-env run composer \"composer PHPCS\"",
+		"PHPCS": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam PHPCS",
+		"composer:install": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam install",
+		"composer:build": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam build",
 		"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
 	},
 	"repository": {
