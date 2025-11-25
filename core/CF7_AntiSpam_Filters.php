@@ -276,7 +276,7 @@ class CF7_AntiSpam_Filters {
 
 		/* Prepare IP and basic user data */
 		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
-		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'address' ] ) ), $options['cf7a_cipher'] ) : false;
+		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'address' ], $options['cf7a_cipher'] ) ) ) : false;
 		$remote_ip      = $real_remote_ip ? filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) : false;
 		$cf7_remote_ip  = filter_var( $submission->get_meta( 'remote_ip' ), FILTER_VALIDATE_IP );
 		$user_agent     = sanitize_text_field( $submission->get_meta( 'user_agent' ) );
