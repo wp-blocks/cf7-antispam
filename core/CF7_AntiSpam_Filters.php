@@ -276,6 +276,8 @@ class CF7_AntiSpam_Filters {
 
 		/* Prepare IP and basic user data */
 		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
+		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'address' ], $options['cf7a_cipher'] ) ) ) : false;
 		$remote_ip      = $real_remote_ip ? filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) : false;
 		$cf7_remote_ip  = filter_var( $submission->get_meta( 'remote_ip' ), FILTER_VALIDATE_IP );
@@ -484,6 +486,8 @@ class CF7_AntiSpam_Filters {
 		$score_warn = floatval( $options['score']['_warn'] );
 
 		if ( intval( $options['check_refer'] ) === 1 ) {
+			// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$cf7a_referer  = isset( $_POST[ $prefix . 'referer' ] ) ?  sanitize_text_field( wp_unslash( cf7a_decrypt($_POST[ $prefix . 'referer' ], $options['cf7a_cipher'] ) ) ) : false;
 			if ( ! $cf7a_referer ) {
 				$data['spam_score'] += $score_warn;
@@ -492,6 +496,8 @@ class CF7_AntiSpam_Filters {
 			}
 		}
 
+		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$cf7a_protocol = isset( $_POST[ $prefix . 'protocol' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'protocol' ], $options['cf7a_cipher'] ) ) ) : false;
 		if ( $cf7a_protocol ) {
 			if ( in_array( $cf7a_protocol, array( 'HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2' ) ) ) {
@@ -514,6 +520,8 @@ class CF7_AntiSpam_Filters {
 		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
 
+		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'version' ], $options['cf7a_cipher'] ) ) ) : false;
 
 		// CASE A: Version field is completely missing or empty -> SPAM
@@ -697,6 +705,9 @@ class CF7_AntiSpam_Filters {
 
 		$languages = array();
 		$languages['browser_language'] = ! empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'browser_language' ] ) ) : null;
+
+		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$languages['accept_language']  = isset( $_POST[ $prefix . '_language' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . '_language' ], $options['cf7a_cipher'] ) ) ) : null;
 
 		if ( empty( $languages['browser_language'] ) ) {
@@ -787,6 +798,8 @@ class CF7_AntiSpam_Filters {
 		$score_time = floatval( $options['score']['_time'] );
 		$score_detection = floatval( $options['score']['_detection'] );
 
+		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$timestamp = isset( $_POST[ $prefix . '_timestamp' ] ) ? intval( cf7a_decrypt( $_POST[ $prefix . '_timestamp' ], $options['cf7a_cipher'] ) ) : 0;
 		$time_now         = time();
 		$time_elapsed_min = intval( $options['check_time_min'] );
