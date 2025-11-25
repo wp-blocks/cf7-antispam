@@ -483,10 +483,8 @@ class CF7_AntiSpam_Filters {
 		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_warn = floatval( $options['score']['_warn'] );
 
-		$cf7a_referer  = isset( $_POST[ $prefix . 'referer' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'referer' ] ) ), $options['cf7a_cipher'] ) : false;
-		$cf7a_protocol = isset( $_POST[ $prefix . 'protocol' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'protocol' ] ) ), $options['cf7a_cipher'] ) : false;
-
 		if ( intval( $options['check_refer'] ) === 1 ) {
+			$cf7a_referer  = isset( $_POST[ $prefix . 'referer' ] ) ?  sanitize_text_field( wp_unslash( cf7a_decrypt($_POST[ $prefix . 'referer' ], $options['cf7a_cipher'] ) ) ) : false;
 			if ( ! $cf7a_referer ) {
 				$data['spam_score'] += $score_warn;
 				$data['reasons']['no_referrer'] = 'client has referrer address';
@@ -494,6 +492,7 @@ class CF7_AntiSpam_Filters {
 			}
 		}
 
+		$cf7a_protocol = isset( $_POST[ $prefix . 'protocol' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'protocol' ], $options['cf7a_cipher'] ) ) ) : false;
 		if ( $cf7a_protocol ) {
 			if ( in_array( $cf7a_protocol, array( 'HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2' ) ) ) {
 				$data['spam_score'] += $score_warn;
@@ -515,7 +514,7 @@ class CF7_AntiSpam_Filters {
 		$prefix  = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
 
-		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . 'version' ] ) ), $options['cf7a_cipher'] ) : false;
+		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'version' ], $options['cf7a_cipher'] ) ) ) : false;
 
 		// CASE A: Version field is completely missing or empty -> SPAM
 		if ( ! $cf7a_version ) {
@@ -698,7 +697,7 @@ class CF7_AntiSpam_Filters {
 
 		$languages = array();
 		$languages['browser_language'] = ! empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'browser_language' ] ) ) : null;
-		$languages['accept_language']  = isset( $_POST[ $prefix . '_language' ] ) ? cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . '_language' ] ) ), $options['cf7a_cipher'] ) : null;
+		$languages['accept_language']  = isset( $_POST[ $prefix . '_language' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . '_language' ], $options['cf7a_cipher'] ) ) ) : null;
 
 		if ( empty( $languages['browser_language'] ) ) {
 			$data['spam_score'] += $score_detection;
@@ -788,7 +787,7 @@ class CF7_AntiSpam_Filters {
 		$score_time = floatval( $options['score']['_time'] );
 		$score_detection = floatval( $options['score']['_detection'] );
 
-		$timestamp = isset( $_POST[ $prefix . '_timestamp' ] ) ? intval( cf7a_decrypt( sanitize_text_field( wp_unslash( $_POST[ $prefix . '_timestamp' ] ) ), $options['cf7a_cipher'] ) ) : 0;
+		$timestamp = isset( $_POST[ $prefix . '_timestamp' ] ) ? intval( cf7a_decrypt( $_POST[ $prefix . '_timestamp' ], $options['cf7a_cipher'] ) ) : 0;
 		$time_now         = time();
 		$time_elapsed_min = intval( $options['check_time_min'] );
 		$time_elapsed_max = intval( $options['check_time_max'] );
