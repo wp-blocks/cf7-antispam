@@ -630,7 +630,7 @@ class CF7_AntiSpam_Filters {
 		if ( ! $bot_fingerprint['user_agent'] ) $fails[] = 'user_agent';
 		if ( ! $bot_fingerprint['app_version'] ) $fails[] = 'app_version';
 		if ( ! $bot_fingerprint['webdriver'] ) $fails[] = 'webdriver';
-		if ( ! $bot_fingerprint['session_storage'] ) $fails[] = 'session_storage';
+		if ( $bot_fingerprint['session_storage'] === null ) $fails[] = 'session_storage';
 		if ( 5 !== strlen( $bot_fingerprint['bot_fingerprint'] ) ) $fails[] = 'bot_fingerprint';
 
 		if ( isset( $_POST[ $prefix . 'isIos' ] ) || isset( $_POST[ $prefix . 'isFFox' ] ) || isset( $_POST[ $prefix . 'isIE' ] ) ) {
@@ -740,7 +740,7 @@ class CF7_AntiSpam_Filters {
 
 			if ( false === $language_disallowed ) {
 				$data['spam_score'] += $score_detection;
-				$data['reasons']['browser_language'] = implode( ', ', $client_languages );
+				$data['reasons']['disallowed_language'] = implode( ', ', $client_languages );
 			}
 		}
 		return $data;

@@ -15,3 +15,10 @@ import './settings/restApi';
 
 /** The export blacklist scripts */
 import './settings/exportBlacklist';
+
+/** The language selector scripts */
+import { initLanguageSelector } from './settings/languageSelector';
+
+document.addEventListener('DOMContentLoaded', () => {
+	initLanguageSelector();
+});
