@@ -383,16 +383,16 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Section User Agent */
 		add_settings_section(
 			'cf7a_user_agent',
-			__( 'User Agent blacklist', 'cf7-antispam' ),
-			array( $this, 'cf7a_print_user_agent' ),
+			__('User Agent blocklist', 'cf7-antispam'),
+			array($this, 'cf7a_print_user_agent'),
 			'cf7a-settings'
 		);
 
 		/* Enable User Agent Blacklist */
 		add_settings_field(
 			'check_bad_user_agent',
-			__( 'Enable User Agent blacklist', 'cf7-antispam' ),
-			array( $this, 'cf7a_check_user_agent_callback' ),
+			__('Enable User Agent blocklist', 'cf7-antispam'),
+			array($this, 'cf7a_check_user_agent_callback'),
 			'cf7a-settings',
 			'cf7a_user_agent'
 		);
@@ -795,8 +795,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/** It prints the bad_ip info text */
-	public function cf7a_print_section_bad_ip() {
-		printf( '<p>%s</p>', esc_html__( 'After an ip check via the http headers, it is checked that the ip is not blacklisted in the following list, one "bad" ip each line', 'cf7-antispam' ) );
+	public function cf7a_print_section_bad_ip()
+	{
+		printf('<p>%s</p>', esc_html__('After an ip check via the http headers, it is checked that the ip is not blocklisted in the following list, one "bad" ip each line', 'cf7-antispam'));
 	}
 
 	/** It prints the bad_words info text */
