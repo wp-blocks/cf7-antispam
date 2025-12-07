@@ -942,14 +942,14 @@ class CF7_AntiSpam_Filters {
 
 		foreach ( $options['dnsbl_list'] as $dnsbl ) {
 			if ( $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) {
-				$data['reasons']['dsnbl'][] = $dnsbl;
+				$data['reasons']['dnsbl'][] = $dnsbl;
 				$data['spam_score'] += $score_dnsbl;
 			}
 		}
 
-		if ( isset( $data['reasons']['dsnbl'] ) && is_array( $data['reasons']['dsnbl'] ) ) {
-			$data['reasons']['dsnbl'] = implode( ', ', $data['reasons']['dsnbl'] );
-			cf7a_log( "{$data['remote_ip']} is listed in DNSBL ({$data['reasons']['dsnbl']})", 1 );
+		if ( isset( $data['reasons']['dnsbl'] ) && is_array( $data['reasons']['dnsbl'] ) ) {
+			$data['reasons']['dnsbl'] = implode( ', ', $data['reasons']['dnsbl'] );
+			cf7a_log( "{$data['remote_ip']} is listed in DNSBL ({$data['reasons']['dnsbl']})", 1 );
 		}
 		return $data;
 	}
