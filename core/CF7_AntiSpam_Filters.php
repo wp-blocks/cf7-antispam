@@ -414,7 +414,8 @@ class CF7_AntiSpam_Filters {
 		if ( intval( $options['check_bad_ip'] ) === 1 && $data['remote_ip'] ) {
 			foreach ( $bad_ip_list as $bad_ip ) {
 				$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
-				if ( false !== stripos( (string) $data['remote_ip'], (string) $bad_ip ) ) {
+				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
+				if ( $bad_ip && $data['remote_ip'] === $bad_ip ) {
 					$data['spam_score']++;
 					$data['is_spam'] = true;
 					$data['reasons']['bad_ip'][] = $bad_ip;
