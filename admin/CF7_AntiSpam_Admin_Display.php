@@ -37,6 +37,18 @@ class CF7_AntiSpam_Admin_Display {
 		$this->options = CF7_AntiSpam::get_options();
 	}
 
+	private static function is_flamingo_active() {
+		return is_plugin_active( 'flamingo/flamingo.php' );
+	}
+
+	private static function cf7a_welcome_message() {
+		self::is_flamingo_active()
+			/* translators: %s is the shortcode */
+			? printf(esc_html__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ), '<code>flamingo_message: "[your-message]"</code>' )
+			: esc_html_e( 'Please install and activate the Flamingo plugin to enable advanced B8 Bayesian filtering.', 'cf7-antispam' );
+	}
+
+
 	/**
 	 * It adds actions to the `cf7a_dashboard` hook
 	 */
@@ -141,11 +153,92 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
+	 * Check if there's enough data to display the dashboard
+	 *
+	 * @return bool True if there's enough data
+	 */
+	private function has_enough_data(): bool {
+		global $wpdb;
+		// Check blocklist entries
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$blacklist_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $wpdb->prefix . 'cf7a_blacklist' ) );
+		$has_blacklist   = intval( $blacklist_count ) > 0;
+
+		// Check wordlist entries (beyond just the b8*texts token)
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wordlist_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE token != 'b8*texts' AND token != 'b8*dbversion'", $wpdb->prefix . 'cf7a_wordlist' ) );
+		$has_wordlist   = intval( $wordlist_count ) > 0;
+
+		return $has_blacklist || $has_wordlist;
+	}
+
+	/**
+	 * Render the empty state dashboard when no data is available
+	 */
+	private function render_empty_state_dashboard() {
+		$settings_url = wp_nonce_url( $this->get_tab_url( 'settings' ), 'cf7a_admin_tab_switch' );
+		?>
+		<div class="cf7a-empty-state">
+			<div class="cf7a-empty-state-content">
+				<div class="cf7a-empty-state-icon">
+					<span class="icon">☔</span>
+				</div>
+
+				<h2 class="cf7a-empty-state-title">
+					<?php esc_html_e( 'Welcome to CF7 AntiSpam!', 'cf7-antispam' ); ?>
+				</h2>
+
+				<p class="cf7a-empty-state-description">
+					<?php esc_html_e( "Your protection is active, but we haven't collected any data yet. Once your forms start receiving submissions, you'll see detailed statistics here.", 'cf7-antispam' ); ?>
+				</p>
+
+				<div class="cf7a-empty-state-features">
+					<div class="cf7a-empty-state-feature">
+						<span class="dashicons dashicons-chart-bar"></span>
+						<span><?php esc_html_e( 'Email Statistics', 'cf7-antispam' ); ?></span>
+					</div>
+					<div class="cf7a-empty-state-feature">
+						<span class="dashicons dashicons-block-default"></span>
+						<span><?php esc_html_e( 'IPs Blocklist', 'cf7-antispam' ); ?></span>
+					</div>
+					<div class="cf7a-empty-state-feature">
+						<span class="dashicons dashicons-filter"></span>
+						<span><?php esc_html_e( 'Customizable Filter', 'cf7-antispam' ); ?></span>
+					</div>
+				</div>
+
+				<div class="cf7a-empty-state-actions">
+					<a href="<?php echo esc_url( $settings_url ); ?>" class="button button-primary button-hero">
+						<span class="dashicons dashicons-admin-settings"></span>
+						<?php esc_html_e( 'Configure Settings', 'cf7-antispam' ); ?>
+					</a>
+					<a href="https://github.com/erikyo/contact-form-7-antispam#readme" target="_blank" class="button button-secondary button-hero">
+						<span class="dashicons dashicons-book"></span>
+						<?php esc_html_e( 'Read Documentation', 'cf7-antispam' ); ?>
+					</a>
+				</div>
+
+				<p class="cf7a-empty-state-tip">
+					<span class="dashicons dashicons-lightbulb"></span>
+					<span class="cf7a-empty-state-tip-text"><?php echo self::cf7a_get_a_random_tip(); ?></span>
+				</p>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Render Dashboard Tab
 	 */
 	private function render_dashboard_tab() {
-
+		// Render the one-time alert banner
 		$this->render_one_time_alert_banner();
+
+		// Check if there's enough data to show the full dashboard
+		if ( ! $this->has_enough_data() ) {
+			$this->render_empty_state_dashboard();
+			return;
+		}
 
 		$this->render_antispam_charts();
 
@@ -159,16 +252,7 @@ class CF7_AntiSpam_Admin_Display {
 			<a class="welcome-panel-close" href="<?php echo wp_nonce_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><span class="screen-reader-text"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></span></a>
 			<span class="dashicons dashicons-megaphone" aria-hidden="true"></span>
 			<p>
-				<?php
-				printf(
-					"%s <b>%s</b> %s <a href='https://contactform7.com/additional-settings/' target='_blank'>%s</a> %s",
-					esc_html__( 'Please replace ', 'cf7-antispam' ),
-					'[your-message]',
-					esc_html__( 'with the message field used in your form because that is the field scanned with b8. You need add this string to each form', 'cf7-antispam' ),
-					esc_attr__( 'additional settings section', 'cf7-antispam' ),
-					esc_html__( 'to enable the most advanced protection we can offer! Thank you!', 'cf7-antispam' )
-				);
-				?>
+				<?php self::cf7a_welcome_message(); ?>
 			</p>
 		</div>
 		<?php
