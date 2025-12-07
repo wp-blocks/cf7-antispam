@@ -218,9 +218,9 @@ class CF7_AntiSpam_Flamingo {
 		}
 
 		/* the mail data */
-		$sender  = $flamingo_data->from;
-		$subject = $flamingo_data->subject;
-		$body    = $message;
+		$sender = sanitize_email($flamingo_data->from);
+		$subject = sanitize_text_field($flamingo_data->subject);
+		$body = $message;
 
 		// get the form id from the meta
 		$form_id = $flamingo_data->meta['form_id'];
@@ -247,9 +247,12 @@ class CF7_AntiSpam_Flamingo {
 						// Handle form field references like [your-email]
 						$recipient = $this->cf7a_parse_mail_tags( $recipient, $flamingo_data );
 
+						// SECURITY FIX: Sanitize recipient email
+						$recipient = sanitize_email($recipient);
+
 						// If still not a valid email, fallback to admin
-						if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) ) {
-							$recipient = get_option( 'admin_email' );
+						if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+							$recipient = sanitize_email(get_option('admin_email'));
 						}
 					}
 				}
@@ -257,11 +260,11 @@ class CF7_AntiSpam_Flamingo {
 		}
 
 		// Fallback to stored recipient or admin email
-		if ( empty( $recipient ) || ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) ) {
-			if ( ! empty( $flamingo_data->meta['recipient'] ) ) {
-				$recipient = $flamingo_data->meta['recipient'];
+		if (empty($recipient) || !filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+			if (!empty($flamingo_data->meta['recipient'])) {
+				$recipient = sanitize_email($flamingo_data->meta['recipient']);
 			} else {
-				$recipient = get_option( 'admin_email' );
+				$recipient = sanitize_email(get_option('admin_email'));
 			}
 		}
 
@@ -291,8 +294,8 @@ class CF7_AntiSpam_Flamingo {
 				$field_value = $flamingo_data->fields[ $field_name ];
 
 				// If it's an email field, return the email
-				if ( filter_var( $field_value, FILTER_VALIDATE_EMAIL ) ) {
-					return $field_value;
+				if (filter_var($field_value, FILTER_VALIDATE_EMAIL)) {
+					return sanitize_email($field_value);
 				}
 			}
 		}
