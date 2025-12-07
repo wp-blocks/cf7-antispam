@@ -47,13 +47,17 @@ class CF7_AntiSpam_Admin_Tools {
 	 * It handles the actions that are triggered by the user
 	 */
 	public function cf7a_handle_actions() {
-		$req_nonce = isset( $_REQUEST['cf7a-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['cf7a-nonce'] ) ), 'cf7a-nonce' );
+		$action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
+		if ( ! $action ) {
+			return;
+		}
+
+		$req_nonce = isset( $_GET[ '_wpnonce' ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ '_wpnonce' ] ) ), $action );
 		if ( !$req_nonce ) {
 			return;
 		}
-		$action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
-		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 
+		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
 		if ( 'dismiss-banner' === $action ) {
 			if ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ) {
 				update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true );
