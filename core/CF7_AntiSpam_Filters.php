@@ -1010,8 +1010,12 @@ class CF7_AntiSpam_Filters {
 			$b8_threshold = $b8_threshold > 0 && $b8_threshold < 1 ? $b8_threshold : 1;
 			$score_detection = floatval( $options['score']['_detection'] );
 
+			// Store the spam score before B8
+			$was_spam_before_b8 = $data['spam_score'] >= 1;
+
 			$cf7a_b8 = new CF7_AntiSpam_B8();
 			$rating  = round( $cf7a_b8->cf7a_b8_classify( $text ), 2 );
+
 
 			// If the rating is high, add to spam score
 			if ( $rating >= $b8_threshold ) {
@@ -1023,14 +1027,13 @@ class CF7_AntiSpam_Filters {
 
 			// LEARNING LOGIC:
 			// Use the accumulated spam_score from previous filters to decide how to teach B8.
-
-			if ( $data['spam_score'] >= 1 || $data['is_spam'] ) {
-				// If previous filters OR B8 itself marked it as spam -> Learn Spam
-				cf7a_log( "{$data['remote_ip']} detected as spam (score {$data['spam_score']}), learning as SPAM.", 1 );
+			if ( $was_spam_before_b8 ) {
+				// Only learn spam if OTHER filters flagged it (not B8 itself)
+				cf7a_log( "{$data['remote_ip']} detected as spam by filters (score {$data['spam_score']}), learning as SPAM.", 1 );
 				$cf7a_b8->cf7a_b8_learn_spam( $text );
-			} elseif ( $rating < $b8_threshold * 0.5 ) {
-				// If no spam detected and B8 thinks it's safe -> Learn Ham
-				cf7a_log( "B8 detected spamminess of $rating (below threshold), learning as HAM.", 1 );
+			} elseif ( $rating < $b8_threshold * 0.5 && $data['spam_score'] == 0 ) {
+				// Only learn as ham if COMPLETELY clean (no warnings at all)
+				cf7a_log( "B8 detected spamminess of $rating (below threshold) and no filter warnings, learning as HAM.", 1 );
 				$cf7a_b8->cf7a_b8_learn_ham( $text );
 			}
 		}
