@@ -12,7 +12,7 @@ namespace CF7_AntiSpam\Core;
  */
 
 /**
- * It's a class that handles blacklist management
+ * It's a class that handles blocklist management
  */
 class CF7_Antispam_Blacklist {
 
@@ -62,11 +62,11 @@ class CF7_Antispam_Blacklist {
 			$ip_row = CF7_Antispam_Blacklist::cf7a_blacklist_get_ip( $ip );
 
 			if ( $ip_row ) {
-				// if the ip is in the blacklist, update the status
+				// if the ip is in the blocklist, update the status
 				$status = isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1;
 
 			} else {
-				// if the ip is not in the blacklist, add it and initialize the status
+				// if the ip is not in the blocklist, add it and initialize the status
 				$status = floatval( $spam_score );
 			}
 
@@ -115,10 +115,10 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Get all blacklist data from database.
+	 * Get all blocklist data from database.
 	 *
 	 * @since    0.7.0
-	 * @return   array Array of blacklist entries
+	 * @return   array Array of blocklist entries
 	 */
 	public function cf7a_get_blacklist_data() {
 		global $wpdb;
@@ -138,11 +138,11 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Get a single blacklist entry by ID.
+	 * Get a single blocklist entry by ID.
 	 *
 	 * @since    0.7.0
-	 * @param    int $id The blacklist entry ID.
-	 * @return   object|null The blacklist entry or null if not found
+	 * @param    int $id The blocklist entry ID.
+	 * @return   object|null The blocklist entry or null if not found
 	 */
 	public function cf7a_blacklist_get_id( int $id ) {
 		global $wpdb;
@@ -165,7 +165,7 @@ class CF7_Antispam_Blacklist {
 	 * Unban an IP by ID.
 	 *
 	 * @since    0.7.0
-	 * @param    int $id The blacklist entry ID to unban.
+	 * @param    int $id The blocklist entry ID to unban.
 	 * @return   bool True on success, false on failure
 	 */
 	public function cf7a_unban_by_id( $id ) {
@@ -187,7 +187,7 @@ class CF7_Antispam_Blacklist {
 	 * Ban an IP forever by adding it to the permanent ban list.
 	 *
 	 * @since    0.7.0
-	 * @param    int $id The blacklist entry ID.
+	 * @param    int $id The blocklist entry ID.
 	 * @return   array Array with 'success' and 'message' keys
 	 */
 	public function cf7a_ban_forever( $id ) {

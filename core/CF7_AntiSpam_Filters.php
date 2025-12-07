@@ -431,7 +431,7 @@ class CF7_AntiSpam_Filters {
 	}
 
 	/**
-	 * Checks if IP is already in the database blacklist history.
+	 * Checks if IP is already in the database blocklist history.
 	 */
 	public function filter_ip_blacklist_history( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
