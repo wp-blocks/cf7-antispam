@@ -446,11 +446,11 @@ class CF7_AntiSpam_Filters {
 			if ( $ip_data_status >= $max_attempts ) {
 				$data['spam_score']++;
 				$data['is_spam'] = true;
-				$data['reasons']['blacklisted score'] = $ip_data_status + $data['spam_score'];
+				$data['reasons']['blacklisted score'] = $ip_data_status;
 
-				cf7a_log( "The {$data['remote_ip']} is already blacklisted, status $ip_data_status", 1 );
+				cf7a_log( "The {$data['remote_ip']} has reached max attempts threshold (status: $ip_data_status, max: $max_attempts)", 1 );
 			} elseif ( defined('CF7ANTISPAM_DEBUG') && CF7ANTISPAM_DEBUG && $ip_data_status > 0 ) {
-				cf7a_log( sprintf( "The {$data['remote_ip']} is already blacklisted (score $ip_data_status) but still has %d attempts left", $max_attempts - $ip_data_status ), 1 );
+				cf7a_log( sprintf( "The {$data['remote_ip']} has prior history (score $ip_data_status) but still has %d attempts left before reaching max (%d)", $max_attempts - $ip_data_status, $max_attempts ), 1 );
 			}
 		}
 		return $data;
