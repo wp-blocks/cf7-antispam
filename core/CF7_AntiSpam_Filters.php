@@ -373,7 +373,8 @@ class CF7_AntiSpam_Filters {
 		if ( ! empty( $ip_whitelist ) && $data['remote_ip'] ) {
 			foreach ( $ip_whitelist as $good_ip ) {
 				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
-				if ( false !== stripos( (string) $data['remote_ip'], (string) $good_ip ) ) {
+				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
+				if ( $good_ip && $data['remote_ip'] === $good_ip ) {
 					$data['is_whitelisted'] = true;
 					return $data;
 				}
