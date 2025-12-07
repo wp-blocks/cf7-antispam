@@ -341,7 +341,6 @@ class CF7_AntiSpam_Filters {
 
 		/* If the auto-store ip is enabled */
 		if ( isset($options['autostore_bad_ip']) && $options['autostore_bad_ip'] ) {
-			$blacklist = new CF7_Antispam_Blacklist();
 			if ( CF7_Antispam_Blacklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
 				cf7a_log( "Ban for $remote_ip - results - " . $reasons_for_ban, 2 );
 			} else {
@@ -776,7 +775,8 @@ class CF7_AntiSpam_Filters {
 						cf7a_log( "The {$data['remote_ip']} is not allowed by geoip" . $data['reasons']['geo_ip'], 1 );
 					}
 				} else {
-					$data['reasons']['no_geo_ip'] = 'unknown ip';
+					// Don't add to reasons if GeoIP lookup returned no data - just log it
+					cf7a_log( "GeoIP lookup returned no data for {$data['remote_ip']}", 1 );
 				}
 			} catch ( Exception $e ) {
 				cf7a_log( "unable to check geoip for {$data['remote_ip']} - " . $e->getMessage(), 1 );
