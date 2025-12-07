@@ -155,26 +155,9 @@ class CF7_AntiSpam_Admin_Display {
 	private function render_one_time_alert_banner() {
 		$dismissible_banner_class = get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ? 'hidden' : '';
 		?>
-		<div id="welcome-panel" class="cf7a-card dismissible <?php echo sanitize_html_class( $dismissible_banner_class ); ?>">
-			<a class="welcome-panel-close" href="<?php echo esc_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></a>
-
-			<?php if ( ! is_plugin_active( 'flamingo/flamingo.php' ) ) : ?>
-				<h3><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo esc_html( __( 'Before you cry over spilt mail&#8230;', 'contact-form-7' ) ); ?></h3>
-				<p><?php echo esc_html( __( 'Contact Form 7 doesn&#8217;t store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration.', 'contact-form-7' ) ); ?></p>
-				<p>
-					<?php
-					printf(
-						/* translators: %s: link labeled 'Flamingo' */
-						esc_html__( 'Install a message storage plugin before this happens to you. %s saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7.', 'contact-form-7' ),
-						'<a href="https://contactform7.com/save-submitted-messages-with-flamingo/" target="_blank">' . esc_html__( 'Flamingo', 'contact-form-7' ) . '</a>'
-					);
-					?>
-				</p>
-				<hr />
-			<?php endif; ?>
-
-			<h3 class="blink"><span class="dashicons dashicons-megaphone" aria-hidden="true"></span> <?php echo esc_html( __( "PLEASE don't forget to add ", 'cf7-antispam' ) ); ?></h3>
-			<b><code class="blink"><?php echo esc_html( __( 'flamingo_message: "[your-message]" ', 'cf7-antispam' ) ); ?></code></b>
+		<div id="welcome-notice" class="cf7a-card cf7-notice dismissible<?php echo sanitize_html_class( $dismissible_banner_class ); ?>">
+			<a class="welcome-panel-close" href="<?php echo wp_nonce_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ) ); ?>"><span class="screen-reader-text"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></span></a>
+			<span class="dashicons dashicons-megaphone" aria-hidden="true"></span>
 			<p>
 				<?php
 				printf(
