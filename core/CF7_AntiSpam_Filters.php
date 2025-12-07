@@ -341,7 +341,6 @@ class CF7_AntiSpam_Filters {
 
 		/* If the auto-store ip is enabled */
 		if ( isset($options['autostore_bad_ip']) && $options['autostore_bad_ip'] ) {
-			$blacklist = new CF7_Antispam_Blacklist();
 			if ( CF7_Antispam_Blacklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
 				cf7a_log( "Ban for $remote_ip - results - " . $reasons_for_ban, 2 );
 			} else {
@@ -373,7 +372,8 @@ class CF7_AntiSpam_Filters {
 		if ( ! empty( $ip_whitelist ) && $data['remote_ip'] ) {
 			foreach ( $ip_whitelist as $good_ip ) {
 				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
-				if ( false !== stripos( (string) $data['remote_ip'], (string) $good_ip ) ) {
+				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
+				if ( $good_ip && $data['remote_ip'] === $good_ip ) {
 					$data['is_whitelisted'] = true;
 					return $data;
 				}
@@ -413,7 +413,8 @@ class CF7_AntiSpam_Filters {
 		if ( intval( $options['check_bad_ip'] ) === 1 && $data['remote_ip'] ) {
 			foreach ( $bad_ip_list as $bad_ip ) {
 				$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
-				if ( false !== stripos( (string) $data['remote_ip'], (string) $bad_ip ) ) {
+				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
+				if ( $bad_ip && $data['remote_ip'] === $bad_ip ) {
 					$data['spam_score']++;
 					$data['is_spam'] = true;
 					$data['reasons']['bad_ip'][] = $bad_ip;
@@ -444,11 +445,11 @@ class CF7_AntiSpam_Filters {
 			if ( $ip_data_status >= $max_attempts ) {
 				$data['spam_score']++;
 				$data['is_spam'] = true;
-				$data['reasons']['blacklisted score'] = $ip_data_status + $data['spam_score'];
+				$data['reasons']['blacklisted score'] = $ip_data_status;
 
-				cf7a_log( "The {$data['remote_ip']} is already blacklisted, status $ip_data_status", 1 );
+				cf7a_log( "The {$data['remote_ip']} has reached max attempts threshold (status: $ip_data_status, max: $max_attempts)", 1 );
 			} elseif ( defined('CF7ANTISPAM_DEBUG') && CF7ANTISPAM_DEBUG && $ip_data_status > 0 ) {
-				cf7a_log( sprintf( "The {$data['remote_ip']} is already blacklisted (score $ip_data_status) but still has %d attempts left", $max_attempts - $ip_data_status ), 1 );
+				cf7a_log( sprintf( "The {$data['remote_ip']} has prior history (score $ip_data_status) but still has %d attempts left before reaching max (%d)", $max_attempts - $ip_data_status, $max_attempts ), 1 );
 			}
 		}
 		return $data;
@@ -774,7 +775,8 @@ class CF7_AntiSpam_Filters {
 						cf7a_log( "The {$data['remote_ip']} is not allowed by geoip" . $data['reasons']['geo_ip'], 1 );
 					}
 				} else {
-					$data['reasons']['no_geo_ip'] = 'unknown ip';
+					// Don't add to reasons if GeoIP lookup returned no data - just log it
+					cf7a_log( "GeoIP lookup returned no data for {$data['remote_ip']}", 1 );
 				}
 			} catch ( Exception $e ) {
 				cf7a_log( "unable to check geoip for {$data['remote_ip']} - " . $e->getMessage(), 1 );
@@ -940,14 +942,14 @@ class CF7_AntiSpam_Filters {
 
 		foreach ( $options['dnsbl_list'] as $dnsbl ) {
 			if ( $this->cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) {
-				$data['reasons']['dsnbl'][] = $dnsbl;
+				$data['reasons']['dnsbl'][] = $dnsbl;
 				$data['spam_score'] += $score_dnsbl;
 			}
 		}
 
-		if ( isset( $data['reasons']['dsnbl'] ) && is_array( $data['reasons']['dsnbl'] ) ) {
-			$data['reasons']['dsnbl'] = implode( ', ', $data['reasons']['dsnbl'] );
-			cf7a_log( "{$data['remote_ip']} is listed in DNSBL ({$data['reasons']['dsnbl']})", 1 );
+		if ( isset( $data['reasons']['dnsbl'] ) && is_array( $data['reasons']['dnsbl'] ) ) {
+			$data['reasons']['dnsbl'] = implode( ', ', $data['reasons']['dnsbl'] );
+			cf7a_log( "{$data['remote_ip']} is listed in DNSBL ({$data['reasons']['dnsbl']})", 1 );
 		}
 		return $data;
 	}
@@ -1008,8 +1010,12 @@ class CF7_AntiSpam_Filters {
 			$b8_threshold = $b8_threshold > 0 && $b8_threshold < 1 ? $b8_threshold : 1;
 			$score_detection = floatval( $options['score']['_detection'] );
 
+			// Store the spam score before B8
+			$was_spam_before_b8 = $data['spam_score'] >= 1;
+
 			$cf7a_b8 = new CF7_AntiSpam_B8();
 			$rating  = round( $cf7a_b8->cf7a_b8_classify( $text ), 2 );
+
 
 			// If the rating is high, add to spam score
 			if ( $rating >= $b8_threshold ) {
@@ -1021,14 +1027,13 @@ class CF7_AntiSpam_Filters {
 
 			// LEARNING LOGIC:
 			// Use the accumulated spam_score from previous filters to decide how to teach B8.
-
-			if ( $data['spam_score'] >= 1 || $data['is_spam'] ) {
-				// If previous filters OR B8 itself marked it as spam -> Learn Spam
-				cf7a_log( "{$data['remote_ip']} detected as spam (score {$data['spam_score']}), learning as SPAM.", 1 );
+			if ( $was_spam_before_b8 ) {
+				// Only learn spam if OTHER filters flagged it (not B8 itself)
+				cf7a_log( "{$data['remote_ip']} detected as spam by filters (score {$data['spam_score']}), learning as SPAM.", 1 );
 				$cf7a_b8->cf7a_b8_learn_spam( $text );
-			} elseif ( $rating < $b8_threshold * 0.5 ) {
-				// If no spam detected and B8 thinks it's safe -> Learn Ham
-				cf7a_log( "B8 detected spamminess of $rating (below threshold), learning as HAM.", 1 );
+			} elseif ( $rating < $b8_threshold * 0.5 && $data['spam_score'] == 0 ) {
+				// Only learn as ham if COMPLETELY clean (no warnings at all)
+				cf7a_log( "B8 detected spamminess of $rating (below threshold) and no filter warnings, learning as HAM.", 1 );
 				$cf7a_b8->cf7a_b8_learn_ham( $text );
 			}
 		}
