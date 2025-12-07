@@ -16,39 +16,41 @@
  *
  * @return mixed|string - The real ip address.
  */
-function cf7a_get_real_ip() {
+function cf7a_get_real_ip()
+{
 	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___HTTP_X_FORWARDED_FOR__
-	$http_x_forwarded_for = ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) : false;
-	if ( ! empty( $http_x_forwarded_for ) ) {
-		return filter_var( trim( current( explode( ',', $http_x_forwarded_for ) ) ), FILTER_VALIDATE_IP );
+	$http_x_forwarded_for = !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR'])) : false;
+	if (!empty($http_x_forwarded_for)) {
+		return filter_var(trim(current(explode(',', $http_x_forwarded_for))), FILTER_VALIDATE_IP);
 	}
 
-	$http_x_real_ip = ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ), FILTER_VALIDATE_IP ) : false;
-	if ( ! empty( $http_x_real_ip ) ) {
+	$http_x_real_ip = !empty($_SERVER['HTTP_X_REAL_IP']) ? filter_var(wp_unslash($_SERVER['HTTP_X_REAL_IP']), FILTER_VALIDATE_IP) : false;
+	if (!empty($http_x_real_ip)) {
 		return $http_x_real_ip;
 	}
 
 	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__
-	$remote_addr = ! empty( $_SERVER['REMOTE_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) : false;
-	if ( ! empty( $remote_addr ) ) {
+	$remote_addr = !empty($_SERVER['REMOTE_ADDR']) ? filter_var(wp_unslash($_SERVER['REMOTE_ADDR']), FILTER_VALIDATE_IP) : false;
+	if (!empty($remote_addr)) {
 		return $remote_addr;
 	}
 
-	$http_client_ip = ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ), FILTER_VALIDATE_IP ) : false;
-	if ( ! empty( $http_client_ip ) ) {
+	$http_client_ip = !empty($_SERVER['HTTP_CLIENT_IP']) ? filter_var(wp_unslash($_SERVER['HTTP_CLIENT_IP']), FILTER_VALIDATE_IP) : false;
+	if (!empty($http_client_ip)) {
 		return $http_client_ip;
 	}
 
-	$http_cf_connecting_ip = ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ), FILTER_VALIDATE_IP ) : false;
-	if ( ! empty( $http_cf_connecting_ip ) ) {
+	$http_cf_connecting_ip = !empty($_SERVER['HTTP_CF_CONNECTING_IP']) ? filter_var(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP']), FILTER_VALIDATE_IP) : false;
+	if (!empty($http_cf_connecting_ip)) {
 		return $http_cf_connecting_ip;
 	}
 }
 
-function cf7a_strip_weight( $str ) {
-	$str = trim( $str );
-	if ( strpos( $str, ';' ) !== false ) {
-		$str = substr( $str, 0, strpos( $str, ';' ) );
+function cf7a_strip_weight($str)
+{
+	$str = trim($str);
+	if (strpos($str, ';') !== false) {
+		$str = substr($str, 0, strpos($str, ';'));
 	}
 	return $str;
 }
@@ -59,11 +61,12 @@ function cf7a_strip_weight( $str ) {
  * @param string $accept_language The accept language header.
  * @return string[] The array of language-locale codes.
  */
-function cf7a_init_languages_locales_array( $accept_language ) {
+function cf7a_init_languages_locales_array($accept_language)
+{
 	return array_reduce(
-		explode( ',', $accept_language ),
-		function ( $res, $el ) {
-			$res[] = cf7a_strip_weight( $el );
+		explode(',', $accept_language),
+		function ($res, $el) {
+			$res[] = cf7a_strip_weight($el);
 			return $res;
 		},
 		array()
@@ -78,21 +81,22 @@ function cf7a_init_languages_locales_array( $accept_language ) {
  *
  * @return array assoc array of languages and locales
  */
-function cf7a_get_browser_languages_locales_array( $languages_locales ) {
+function cf7a_get_browser_languages_locales_array($languages_locales)
+{
 	$result = array_reduce(
-		explode( ',', $languages_locales ),
-		function ( $res, $el ) {
-			$el = cf7a_strip_weight( $el );
-			if ( strlen( $el ) >= 5 ) {
+		explode(',', $languages_locales),
+		function ($res, $el) {
+			$el = cf7a_strip_weight($el);
+			if (strlen($el) >= 5) {
 				/* split into key: language , value: locale */
-				$l                  = explode( '-', $el );
+				$l = explode('-', $el);
 				$res['languages'][] = $l[0];
-				$res['locales'][]   = $l[1];
-			} elseif ( strlen( $el ) === 2 && ctype_alpha( $el ) ) {
+				$res['locales'][] = $l[1];
+			} elseif (strlen($el) === 2 && ctype_alpha($el)) {
 				/* otherwise keep key:language, value: '' (any locale) */
-				if ( ctype_lower( $el ) ) {
+				if (ctype_lower($el)) {
 					$res['languages'][] = $el;
-				} elseif ( ctype_upper( $el ) ) {
+				} elseif (ctype_upper($el)) {
 					$res['locales'][] = $el;
 				}
 			}
@@ -101,9 +105,9 @@ function cf7a_get_browser_languages_locales_array( $languages_locales ) {
 		array()
 	);
 
-	if ( ! empty( $result ) ) {
-		$result['languages'] = array_values( array_unique( $result['languages'] ) );
-		$result['locales']   = array_values( array_unique( $result['locales'] ) );
+	if (!empty($result)) {
+		$result['languages'] = array_values(array_unique($result['languages']));
+		$result['locales'] = array_values(array_unique($result['locales']));
 	}
 
 	return $result;
@@ -122,18 +126,19 @@ function cf7a_get_browser_languages_locales_array( $languages_locales ) {
  *
  * @return array An array of languages.
  */
-function cf7a_get_accept_language_array( $languages ) {
+function cf7a_get_accept_language_array($languages)
+{
 	return array_values(
 		array_reduce(
-			explode( ',', str_replace( ' ', '', $languages ) ),
-			function ( $res, $el ) {
-				if ( strlen( $el ) === 5 ) {
-					$l                          = explode( '-', $el );
-					$res[ strtolower( $l[0] ) ] = $l[0];
+			explode(',', str_replace(' ', '', $languages)),
+			function ($res, $el) {
+				if (strlen($el) === 5) {
+					$l = explode('-', $el);
+					$res[strtolower($l[0])] = $l[0];
 				} else {
-					$l = cf7a_strip_weight( $el );
-					if ( ctype_alpha( $l[0] ) && ctype_lower( $l[0] ) ) {
-						$res[ strtolower( $l[0] ) ] = $l[0];
+					$l = cf7a_strip_weight($el);
+					if (ctype_alpha($l[0]) && ctype_lower($l[0])) {
+						$res[strtolower($l[0])] = $l[0];
 					}
 				}
 
@@ -150,18 +155,19 @@ function cf7a_get_accept_language_array( $languages ) {
  * @param string $locales A comma-separated list of locales.
  * @return array An array of accepted locales.
  */
-function cf7a_get_accept_locales_array( $locales ) {
+function cf7a_get_accept_locales_array($locales)
+{
 	return array_values(
 		array_reduce(
-			explode( ',', str_replace( ' ', '', $locales ) ),
-			function ( $res, $el ) {
-				if ( strlen( $el ) === 5 ) {
-					$l                          = explode( '-', $el );
-					$res[ strtolower( $l[1] ) ] = $l[1];
+			explode(',', str_replace(' ', '', $locales)),
+			function ($res, $el) {
+				if (strlen($el) === 5) {
+					$l = explode('-', $el);
+					$res[strtolower($l[1])] = $l[1];
 				} else {
-					$l = cf7a_strip_weight( $el );
-					if ( ctype_alpha( $l[0] ) && ctype_upper( $l[0] ) ) {
-						$res[ strtolower( $l[0] ) ] = $l[0];
+					$l = cf7a_strip_weight($el);
+					if (ctype_alpha($l[0]) && ctype_upper($l[0])) {
+						$res[strtolower($l[0])] = $l[0];
 					}
 				}
 
@@ -177,23 +183,24 @@ function cf7a_get_accept_locales_array( $locales ) {
  *
  * @param array $schedules This is the name of the hook that we're adding a schedule to.
  */
-function cf7a_add_cron_steps( $schedules ) {
+function cf7a_add_cron_steps($schedules)
+{
 	return array_merge(
 		$schedules,
 		array(
-			'5min'  => array(
+			'5min' => array(
 				'interval' => 300,
-				'display'  => __( 'Every 5 Minutes', 'cf7-antispam' ),
+				'display' => __('Every 5 Minutes', 'cf7-antispam'),
 			),
 			'60sec' => array(
 				'interval' => 60,
-				'display'  => __( 'Every 60 seconds', 'cf7-antispam' ),
+				'display' => __('Every 60 seconds', 'cf7-antispam'),
 			),
 		)
 	);
 }
 
-add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
+add_filter('cron_schedules', 'cf7a_add_cron_steps');
 
 /**
  * It adds a bunch of common honeypot input names to the list of honeypot input names
@@ -202,7 +209,8 @@ add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
  *
  * @return array An array of possible input names.
  */
-function cf7a_get_honeypot_input_names( $custom_names = array() ) {
+function cf7a_get_honeypot_input_names($custom_names = array())
+{
 	$defaults = array(
 		'name',
 		'email',
@@ -234,12 +242,13 @@ function cf7a_get_honeypot_input_names( $custom_names = array() ) {
  *
  * @return string The encrypted value.
  */
-function cf7a_crypt( $value, $cipher = 'aes-256-cbc' ) {
-	if ( ! extension_loaded( 'openssl' ) ) {
+function cf7a_crypt($value, $cipher = 'aes-256-cbc')
+{
+	if (!extension_loaded('openssl')) {
 		return $value;
 	}
 
-	return openssl_encrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+	return openssl_encrypt($value, $cipher, wp_salt('nonce'), $options = 0, substr(wp_salt('nonce'), 0, 16));
 }
 
 /**
@@ -250,14 +259,15 @@ function cf7a_crypt( $value, $cipher = 'aes-256-cbc' ) {
  *
  * @return string The decrypted value.
  */
-function cf7a_decrypt( string $value, string $cipher = 'aes-256-cbc' ): string {
+function cf7a_decrypt(string $value, string $cipher = 'aes-256-cbc'): string
+{
 	try {
-		if ( ! extension_loaded( 'openssl' ) ) {
+		if (!extension_loaded('openssl')) {
 			return $value;
 		}
 
-		return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
-	} catch ( Exception $e ) {
+		return openssl_decrypt($value, $cipher, wp_salt('nonce'), $options = 0, substr(wp_salt('nonce'), 0, 16));
+	} catch (Exception $e) {
 		return $value;
 	}
 }
@@ -267,8 +277,9 @@ function cf7a_decrypt( string $value, string $cipher = 'aes-256-cbc' ): string {
  *
  * @return float The current time in microseconds.
  */
-function cf7a_microtime_float() {
-	$time = explode( ' ', microtime() );
+function cf7a_microtime_float()
+{
+	$time = explode(' ', microtime());
 
 	return (float) $time[0] + (float) $time[1];
 }
@@ -282,8 +293,9 @@ function cf7a_microtime_float() {
  *
  * @return string A hexadecimal color code.
  */
-function cf7a_rgb2hex( $r, $g, $b ) {
-	return sprintf( '#%02x%02x%02x', (int) $r, (int) $g, (int) $b );
+function cf7a_rgb2hex($r, $g, $b)
+{
+	return sprintf('#%02x%02x%02x', (int) $r, (int) $g, (int) $b);
 }
 
 
@@ -294,17 +306,18 @@ function cf7a_rgb2hex( $r, $g, $b ) {
  *
  * @return string - html formatted rating
  */
-function cf7a_format_rating( $rating ) {
-	if ( ! is_numeric( $rating ) ) {
-		return sprintf( '<span class="flamingo-rating-label cf7a-tag-none" style="background-color: #999"><b>%s</b></span>', __( 'none', 'cf7-antispam' ) );
+function cf7a_format_rating($rating)
+{
+	if (!is_numeric($rating)) {
+		return sprintf('<span class="flamingo-rating-label cf7a-tag-none" style="background-color: #999"><b>%s</b></span>', __('none', 'cf7-antispam'));
 	}
 
-	$red   = floor( 200 * $rating );
-	$green = floor( 200 * ( 1 - $rating ) );
+	$red = floor(200 * $rating);
+	$green = floor(200 * (1 - $rating));
 
-	$color = cf7a_rgb2hex( $red, $green, 0 );
+	$color = cf7a_rgb2hex($red, $green, 0);
 
-	return sprintf( '<span class="flamingo-rating-label" style="background-color: %s"><b>%s%% </b></span>', $color, round( $rating * 100 ) );
+	return sprintf('<span class="flamingo-rating-label" style="background-color: %s"><b>%s%% </b></span>', $color, round($rating * 100));
 }
 
 /**
@@ -314,29 +327,30 @@ function cf7a_format_rating( $rating ) {
  *
  * @return string an icon with a red color, that becomes greener when the rank is high
  */
-function cf7a_format_status( $rank ) {
-	$rank = intval( $rank );
-	switch ( true ) {
+function cf7a_format_status($rank)
+{
+	$rank = intval($rank);
+	switch (true) {
 		case $rank < 0:
 			/* translators: warn because not yet banned but already listed */
-			$rank_clean = esc_html__( '⚠️', 'cf7-antispam' );
+			$rank_clean = esc_html__('⚠️', 'cf7-antispam');
 			break;
 		case $rank > 100:
 			/* translators: champion of spammer (>100 mail) */
-			$rank_clean = esc_html__( '🏆', 'cf7-antispam' );
+			$rank_clean = esc_html__('🏆', 'cf7-antispam');
 			break;
 		default:
 			$rank_clean = $rank;
 	}
 
-	if ( $rank > 0 ) {
-		$green = intval( max( 200 - ( $rank * 2 ), 0 ) );
-		$color = cf7a_rgb2hex( 250, $green, 0 );
+	if ($rank > 0) {
+		$green = intval(max(200 - ($rank * 2), 0));
+		$color = cf7a_rgb2hex(250, $green, 0);
 	} else {
 		$color = '#aaa';
 	}
 
-	return sprintf( '<span class="ico" style="background-color: %s">%s</span>', $color, $rank_clean );
+	return sprintf('<span class="ico" style="background-color: %s">%s</span>', $color, $rank_clean);
 }
 
 /**
@@ -348,49 +362,50 @@ function cf7a_format_status( $rank ) {
  *
  * @return false|string Compress arrays into "key:value; " pair
  */
-function cf7a_compress_array( $array, $is_html = false ) {
-	if ( ! is_array( $array ) ) {
+function cf7a_compress_array($array, $is_html = false)
+{
+	if (!is_array($array)) {
 		return false;
 	}
-	$is_html = intval( $is_html );
+	$is_html = intval($is_html);
 
 	return implode(
 		'<br /> ',
 		array_map(
-			function ( $v, $k ) use ( $is_html ) {
+			function ($v, $k) use ($is_html) {
 				// Handles values by type
-				if ( is_array( $v ) ) {
-					if ( empty( $v ) ) {
+				if (is_array($v)) {
+					if (empty($v)) {
 						$v = '[]';
 					} else {
 						// Convert array to readable format
 						$v = '[' . implode(
-								', ',
-								array_map(
-									function ( $item ) {
-										return is_array( $item ) ? json_encode( $item ) : (string) $item;
-									},
-									$v
-								)
-							) . ']';
+							', ',
+							array_map(
+								function ($item) {
+							return is_array($item) ? json_encode($item) : (string) $item;
+						},
+								$v
+							)
+						) . ']';
 					}
-				} elseif ( is_object( $v ) ) {
-					$v = json_encode( $v );
-				} elseif ( is_bool( $v ) ) {
+				} elseif (is_object($v)) {
+					$v = json_encode($v);
+				} elseif (is_bool($v)) {
 					$v = $v ? 'true' : 'false';
-				} elseif ( is_null( $v ) ) {
+				} elseif (is_null($v)) {
 					$v = 'null';
 				}
 
 				// Handles HTML output
-				if ( $is_html ) {
-					return sprintf( '<b>%s</b>: %s', esc_html( $k ), esc_html( $v ) );
+				if ($is_html) {
+					return sprintf('<b>%s</b>: %s', esc_html($k), esc_html($v));
 				} else {
-					return sprintf( '%s: %s', $k, $v );
+					return sprintf('%s: %s', $k, $v);
 				}
 			},
 			$array,
-			array_keys( $array )
+			array_keys($array)
 		)
 	);
 }
@@ -404,15 +419,29 @@ function cf7a_compress_array( $array, $is_html = false ) {
  *
  * @return void
  */
-function cf7a_log( $log_data, $log_level = 0 ) {
-	if ( ! empty( $log_data ) ) {
-		if ( 0 === $log_level || 1 >= $log_level && CF7ANTISPAM_DEBUG || 2 >= $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
+function cf7a_log($log_data, $log_level = 0)
+{
+	if (!empty($log_data)) {
+		if (0 === $log_level || 1 >= $log_level && CF7ANTISPAM_DEBUG || 2 >= $log_level && CF7ANTISPAM_DEBUG_EXTENDED) {
+			// Mask sensitive data in production logs
+			// In extended debug mode, log everything; otherwise mask certain patterns
+			if (is_string($log_data) && !CF7ANTISPAM_DEBUG_EXTENDED) {
+				// Hash IP addresses in production mode (pattern: xxx.xxx.xxx.xxx or IPv6)
+				$log_data = preg_replace_callback(
+					'/\b(?:\d{1,3}\.){3}\d{1,3}\b/',
+					function ($matches) {
+						return 'IP:' . substr(md5($matches[0]), 0, 8);
+					},
+					$log_data
+				);
+			}
+
 			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log(
-				is_string( $log_data )
-					? CF7ANTISPAM_LOG_PREFIX . $log_data
-					// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
-					: CF7ANTISPAM_LOG_PREFIX . print_r( $log_data, true )
+				is_string($log_data)
+				? CF7ANTISPAM_LOG_PREFIX . $log_data
+				// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
+				: CF7ANTISPAM_LOG_PREFIX . print_r($log_data, true)
 			);
 		}
 	}
@@ -426,8 +455,9 @@ function cf7a_log( $log_data, $log_level = 0 ) {
  *
  * @return string the clean tag string
  */
-function cf7a_get_mail_meta( $tag ) {
-	return is_string( $tag ) ? substr( $tag, 2, - 2 ) : '';
+function cf7a_get_mail_meta($tag)
+{
+	return is_string($tag) ? substr($tag, 2, -2) : '';
 }
 
 
@@ -441,19 +471,20 @@ function cf7a_get_mail_meta( $tag ) {
  *
  * @return string|false the field requested
  */
-function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_pattern = '] [' ) {
-	if ( strpos( $message_tag, $explode_pattern ) !== false ) {
+function cf7a_maybe_split_mail_meta($posted_data, $message_tag, $explode_pattern = '] [')
+{
+	if (strpos($message_tag, $explode_pattern) !== false) {
 		$message = '';
-		foreach ( explode( $explode_pattern, $message_tag ) as $message_tag_chunk ) {
-			$tag_chunk = sanitize_title( $message_tag_chunk );
-			if ( ! empty( $posted_data[ $tag_chunk ] ) ) {
-				$message .= sanitize_title( $tag_chunk ) . ': ' . sanitize_textarea_field( $posted_data[ $tag_chunk ] ) . "\r\n";
+		foreach (explode($explode_pattern, $message_tag) as $message_tag_chunk) {
+			$tag_chunk = sanitize_title($message_tag_chunk);
+			if (!empty($posted_data[$tag_chunk])) {
+				$message .= sanitize_title($tag_chunk) . ': ' . sanitize_textarea_field($posted_data[$tag_chunk]) . "\r\n";
 			}
 		}
 
 		return $message;
 	} else {
-		return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : false;
+		return isset($posted_data[$message_tag]) ? sanitize_textarea_field($posted_data[$message_tag]) : false;
 	}
 }
 
@@ -464,12 +495,13 @@ function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_patter
  *
  * @return array $num_array The unsigned integer array.
  */
-function cf7a_str_array_to_uint_array( $str_array ) {
+function cf7a_str_array_to_uint_array($str_array)
+{
 	return array_unique(
 		array_filter(
 			$str_array,
-			function ( $value ) {
-				return is_int( $value ) || is_numeric( $value ) && $value > 0 && intval( $value ) == $value;
+			function ($value) {
+				return is_int($value) || is_numeric($value) && $value > 0 && intval($value) == $value;
 			}
 		)
 	);
