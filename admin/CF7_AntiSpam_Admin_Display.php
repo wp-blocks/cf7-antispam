@@ -88,8 +88,8 @@ class CF7_AntiSpam_Admin_Display {
 				 class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Settings', 'cf7-antispam' ); ?>
 			</a>
-			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'blacklist' ), $nonce_action ) ); ?>"
-				 class="cf7a-nav-tab tab-blacklist <?php echo $active_tab === 'blacklist' ? 'nav-tab-active' : ''; ?>">
+			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'blocklist' ), $nonce_action ) ); ?>"
+				 class="cf7a-nav-tab tab-blocklist <?php echo $active_tab === 'blocklist' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blacklist', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'tools' ), $nonce_action ) ); ?>"
@@ -119,8 +119,8 @@ class CF7_AntiSpam_Admin_Display {
 					$this->render_settings_tab();
 				} ?>
 			</div>
-			<div id="blacklist" class="cf7a-tab-panel <?php echo $active_tab === 'blacklist' ? 'active' : ''; ?>">
-				<?php if ($active_tab === 'blacklist') {
+			<div id="blocklist" class="cf7a-tab-panel <?php echo $active_tab === 'blocklist' ? 'active' : ''; ?>">
+				<?php if ($active_tab === 'blocklist') {
 					$this->render_blacklist_tab();
 				} ?>
 			</div>
