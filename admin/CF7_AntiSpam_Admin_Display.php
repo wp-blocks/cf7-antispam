@@ -385,7 +385,7 @@ class CF7_AntiSpam_Admin_Display {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$top_spam_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_spam
 			FROM %i
-			WHERE count_spam > 0 AND token != 'b8*texts'
+			WHERE count_spam > 0 AND token != 'b8*texts' AND token != 'b8*dbversion'
 			ORDER BY count_spam DESC
 			LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
 			wp_cache_set( $cache_key_spam, $top_spam_words, 'cf7a_wordlist_stats', $cache_time_long );
@@ -399,7 +399,7 @@ class CF7_AntiSpam_Admin_Display {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$top_ham_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_ham
 			FROM %i
-			WHERE count_ham > 0 AND token != 'b8*texts'
+			WHERE count_ham > 0 AND token != 'b8*texts' AND token != 'b8*dbversion'
 			ORDER BY count_ham DESC
 			LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
 			wp_cache_set( $cache_key_ham, $top_ham_words, 'cf7a_wordlist_stats', $cache_time_long );
