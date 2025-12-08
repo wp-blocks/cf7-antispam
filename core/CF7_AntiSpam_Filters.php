@@ -264,10 +264,14 @@ class CF7_AntiSpam_Filters {
 		$email_tag = sanitize_title( cf7a_get_mail_meta( $contact_form->pref( 'flamingo_email' ) ) );
 		$emails    = isset( $posted_data[ $email_tag ] ) ? array( $posted_data[ $email_tag ] ) : $this->scan_email_tags( $mail_tags );
 
-		/* Getting the message field(s) */
-		$message_tag  = sanitize_text_field( $contact_form->pref( 'flamingo_message' ) );
-		$message_meta = cf7a_get_mail_meta( $message_tag );
-		$message      = cf7a_maybe_split_mail_meta( $posted_data, $message_meta );
+		/**
+		 * Get the message from the contact form
+		 */
+		$message = $this->get_email_message(
+			sanitize_text_field( $contact_form->pref( 'flamingo_message' ) ),
+			$posted_data,
+			$mail_tags
+		);
 
 		/**
 		 * Let developers hack the message
@@ -1057,5 +1061,103 @@ class CF7_AntiSpam_Filters {
 		$subject = 'CF7 AntiSpam - Cache Warning Alert';
 
 		$tools->send_email_to_admin( $subject, $recipient, $body, $recipient );
+	}
+
+	/**
+	 * Search for the message field in the mail tags.
+	 * @param array $mail_tags the array of mail tags
+	 * @return string the name of the message field or false if not found
+	 */
+	private function search_for_message_field( array $mail_tags ) {
+		foreach ($mail_tags as $tag) {
+			// if we are lucky and the message tag wasn't changed by the user
+			if ($tag->name == 'message' || $tag->name == 'your-message' ) {
+				return $tag->name;
+			}
+		}
+		// if we are unlucky and the message tag was changed by the user
+		return false;
+	}
+
+	/**
+	 * Creates a message from the posted data.
+	 *
+	 * @param array|null $posted_data the array of posted data
+	 *
+	 * @return string the message created from the posted data
+	 */
+	private function create_message_from_posted_data( ?array $posted_data ): string {
+		if (empty($posted_data)) {
+			return '';
+		}
+		/**
+		 * Filters the minimum field length for the auto message.
+		 * @param int $minimum_field_length the minimum field length
+		 * @return int the minimum field length
+		 */
+		$minimum_field_length = apply_filters('cf7a_auto_message_minimum_field_length', 20);
+		$message = '';
+
+		/**
+		 * Loops through the posted data and creates a message from it removing:
+		 * - the fields that are too short
+		 * - the fields that match an email address.
+		 * - the fields that match a phone number.
+		 *
+		 * @param array $posted_data the array of posted data
+		 * @return string the message created from the posted data
+		 */
+		foreach ($posted_data as $key => $value) {
+			// is email?
+			if (is_email($value)) {
+				continue;
+			}
+			// is phone?
+			if ($this->is_phone($value)) {
+				continue;
+			}
+			// is too short?
+			if (strlen($value) >= $minimum_field_length) {
+				$message .= $value . "\n";
+			}
+		}
+		return $message;
+	}
+
+	/**
+	 * Checks if the value is a phone number.
+	 *
+	 * @param string $value the value to check
+	 *
+	 * @return bool true if the value is a phone number, false otherwise
+	 */
+	private function is_phone( string $value ): bool {
+		return preg_match('/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/', $value);
+	}
+
+	/**
+	 * Gets the message from the contact form.
+	 *
+	 * @param string $contact_form the contact form object
+	 * @param array $posted_data the array of posted data
+	 * @param array $mail_tags the array of mail tags
+	 *
+	 * @return string the message
+	 */
+	private function get_email_message( $message_tag, array $posted_data, array $mail_tags ): string {
+		/* Getting the message field(s) */
+		if ( ! empty( $message_tag ) ) {
+			$message_meta = cf7a_get_mail_meta( $message_tag );
+			return cf7a_maybe_split_mail_meta( $posted_data, $message_meta );
+		}
+
+		// fallback and search for the message field
+		$found_tag = $this->search_for_message_field( $mail_tags );
+		if ( $found_tag ) {
+			return cf7a_maybe_split_mail_meta( $posted_data, $found_tag );
+		}
+
+		// in this case we will create a message from the posted data removing the "short" fields (because may contain sensitive data e.g. emails, phone numbers, etc.)
+		return $this->create_message_from_posted_data( $posted_data );
 	}
 }
