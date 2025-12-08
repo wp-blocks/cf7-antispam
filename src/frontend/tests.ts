@@ -26,6 +26,10 @@ export function setupMouseActivityTest(
 		if (mouseActivityValue > 3) {
 			document.body.removeEventListener('mouseup', activity);
 			document.body.removeEventListener('touchend', activity);
+			document.body.removeEventListener('keydown', activity);
+			document.body.removeEventListener('scroll', activity);
+			document.body.removeEventListener('mousemove', activity);
+
 			hiddenInputsContainer.append(
 				createCF7Afield('mouseclick_activity', 'passed')
 			);
@@ -34,6 +38,9 @@ export function setupMouseActivityTest(
 
 	document.body.addEventListener('mouseup', activity);
 	document.body.addEventListener('touchend', activity);
+	document.body.addEventListener('keydown', activity);
+	document.body.addEventListener('scroll', activity);
+	document.body.addEventListener('mousemove', activity);
 }
 
 /**
@@ -48,14 +55,23 @@ export function setupMouseMovementTest(
 	let oldy = 0;
 	let mouseMoveValue = 0;
 
-	const mouseMove = function (e: MouseEvent) {
-		if (e.pageY > oldy) {
+	const mouseMove = function (e: MouseEvent | TouchEvent) {
+		let pageY = 0;
+
+		if (e instanceof MouseEvent) {
+			pageY = e.pageY;
+		} else if (e instanceof TouchEvent) {
+			pageY = e.touches[0].pageY;
+		}
+
+		if (pageY > oldy) {
 			mouseMoveValue += 1;
 		}
-		oldy = e.pageY;
+		oldy = pageY;
 
 		if (mouseMoveValue > 3) {
 			document.removeEventListener('mousemove', mouseMove);
+			document.removeEventListener('touchmove', mouseMove);
 			hiddenInputsContainer.append(
 				createCF7Afield('mousemove_activity', 'passed')
 			);
@@ -63,6 +79,7 @@ export function setupMouseMovementTest(
 	};
 
 	document.addEventListener('mousemove', mouseMove);
+	document.addEventListener('touchmove', mouseMove);
 
 	// Set mousemove_activity true as fallback in mobile devices
 	if (tests.isIos || tests.isAndroid) {
@@ -387,7 +404,16 @@ export function setupBotFingerprintTest(
 		 * Append the fields on submitting
 		 * Not supported in safari <11.3
 		 */
-		if (!appendOnSubmit || tests.isIos || tests.isIE || !window.FormData) {
+		const isFormDataSupported =
+			'onformdata' in window ||
+			'onformdata' in document.createElement('form');
+
+		if (
+			!appendOnSubmit ||
+			!isFormDataSupported ||
+			tests.isIE ||
+			!window.FormData
+		) {
 			// Add them directly to hidden input container
 			for (const key in tests) {
 				hiddenInputsContainer.appendChild(
@@ -468,7 +494,7 @@ export function browserFingerprint(): Tests {
 		timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
 		// @ts-ignore reason: is deprecated, but we are looking for a fallback response
 		platform: window.navigator.platform || null,
-		screens: [window.screen.width, window.screen.height] || null,
+		screens: [window.screen.width, window.screen.height],
 		memory:
 			'deviceMemory' in window.navigator
 				? (window.navigator.deviceMemory as number)
