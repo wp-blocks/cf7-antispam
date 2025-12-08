@@ -242,7 +242,7 @@
 			border-bottom: 1px solid color.adjust(colors.$color__white, $lightness: -4%);
 
 			&.hidden {
-				display: none;
+				display: none !important;
 			}
 
 			&:last-child {
