@@ -3,7 +3,7 @@
 namespace CF7_AntiSpam\Core;
 
 /**
- * Blacklist management functions
+ * Blocklist management functions
  *
  * @since      0.7.0
  * @package    CF7_AntiSpam
@@ -12,7 +12,7 @@ namespace CF7_AntiSpam\Core;
  */
 
 /**
- * It's a class that handles blacklist management
+ * It's a class that handles blocklist management
  */
 class CF7_Antispam_Blacklist {
 
@@ -45,7 +45,7 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * It adds an IP address to the blacklist.
+	 * It adds an IP address to the blocklist.
 	 *
 	 * @param string $ip The IP address to ban.
 	 * @param array $reason The reason why the IP is being banned.
@@ -62,11 +62,11 @@ class CF7_Antispam_Blacklist {
 			$ip_row = CF7_Antispam_Blacklist::cf7a_blacklist_get_ip( $ip );
 
 			if ( $ip_row ) {
-				// if the ip is in the blacklist, update the status
+				// if the ip is in the blocklist, update the status
 				$status = isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1;
 
 			} else {
-				// if the ip is not in the blacklist, add it and initialize the status
+				// if the ip is not in the blocklist, add it and initialize the status
 				$status = floatval( $spam_score );
 			}
 
@@ -115,10 +115,10 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Get all blacklist data from database.
+	 * Get all blocklist data from database.
 	 *
 	 * @since    0.7.0
-	 * @return   array Array of blacklist entries
+	 * @return   array Array of blocklist entries
 	 */
 	public function cf7a_get_blacklist_data() {
 		global $wpdb;
@@ -138,11 +138,11 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Get a single blacklist entry by ID.
+	 * Get a single blocklist entry by ID.
 	 *
 	 * @since    0.7.0
-	 * @param    int $id The blacklist entry ID.
-	 * @return   object|null The blacklist entry or null if not found
+	 * @param    int $id The blocklist entry ID.
+	 * @return   object|null The blocklist entry or null if not found
 	 */
 	public function cf7a_blacklist_get_id( int $id ) {
 		global $wpdb;
@@ -165,7 +165,7 @@ class CF7_Antispam_Blacklist {
 	 * Unban an IP by ID.
 	 *
 	 * @since    0.7.0
-	 * @param    int $id The blacklist entry ID to unban.
+	 * @param    int $id The blocklist entry ID to unban.
 	 * @return   bool True on success, false on failure
 	 */
 	public function cf7a_unban_by_id( $id ) {
@@ -187,7 +187,7 @@ class CF7_Antispam_Blacklist {
 	 * Ban an IP forever by adding it to the permanent ban list.
 	 *
 	 * @since    0.7.0
-	 * @param    int $id The blacklist entry ID.
+	 * @param    int $id The blocklist entry ID.
 	 * @return   array Array with 'success' and 'message' keys
 	 */
 	public function cf7a_ban_forever( $id ) {
@@ -225,7 +225,7 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Export blacklist data as CSV.
+	 * Export blocklist data as CSV.
 	 *
 	 * @since    0.7.0
 	 * @return   array Array with 'csv' content and 'filename'
@@ -256,10 +256,10 @@ class CF7_Antispam_Blacklist {
 				$csv .= sprintf( "%s,%s,%s,%s,%s,%s\n", $id, $ip, $status, $meta, $modified, $created );
 			}
 		} else {
-			$csv .= "No blacklisted IPs found\n";
+			$csv .= "No blocklisted IPs found\n";
 		}
 
-		$filename = 'cf7-antispam-blacklist-' . gmdate( 'Y-m-d-H-i-s' ) . '.csv';
+		$filename = 'cf7-antispam-blocklist-' . gmdate( 'Y-m-d-H-i-s' ) . '.csv';
 
 		return array(
 			'filetype' => 'csv',
@@ -269,7 +269,7 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Clean/reset the entire blacklist.
+	 * Clean/reset the entire blocklist.
 	 *
 	 * @since    0.7.0
 	 * @return   bool True on success, false on failure
@@ -287,10 +287,10 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Add an IP to the blacklist.
+	 * Add an IP to the blocklist.
 	 *
 	 * @since    0.7.0
-	 * @param    string $ip The IP address to blacklist.
+	 * @param    string $ip The IP address to blocklist.
 	 * @param    string $status The status of the ban.
 	 * @param    mixed  $meta Additional metadata.
 	 * @return   bool True on success, false on failure
@@ -344,11 +344,11 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Check if an IP is in the blacklist.
+	 * Check if an IP is in the blocklist.
 	 *
 	 * @since    0.7.0
 	 * @param    string $ip The IP address to check.
-	 * @return   bool True if blacklisted, false otherwise
+	 * @return   bool True if blocklisted, false otherwise
 	 */
 	public function cf7a_is_blacklisted( $ip ) {
 		global $wpdb;
@@ -368,7 +368,7 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * Get blacklist statistics.
+	 * Get blocklist statistics.
 	 *
 	 * @since    0.7.0
 	 * @return   array Array with statistics
@@ -407,7 +407,7 @@ class CF7_Antispam_Blacklist {
 	}
 
 	/**
-	 * It updates the status of all the users in the blacklist table by subtracting 1 from the status column.
+	 * It updates the status of all the users in the blocklist table by subtracting 1 from the status column.
 	 *
 	 * Then it deletes all the users whose status is 0.
 	 * The status column is the number of days the user is banned for.
@@ -424,7 +424,7 @@ class CF7_Antispam_Blacklist {
 		/* We remove 1 from the status column */
 		$status_decrement = 1;
 
-		/* Below 0 is not anymore a valid status for a blacklist entry, so we can remove it */
+		/* Below 0 is not anymore a valid status for a blocklist entry, so we can remove it */
 		$lower_bound = 0;
 
 		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
@@ -432,16 +432,16 @@ class CF7_Antispam_Blacklist {
 		/* removes a status count at each balcklisted ip */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated = $wpdb->query( $wpdb->prepare( "UPDATE %i SET `status` = `status` - %d", $blacklist_table, $status_decrement ) );
-		cf7a_log( "Status updated for blacklisted (score -1) - $updated users", 1 );
+		cf7a_log( "Status updated for blocklisted (score -1) - $updated users", 1 );
 
-		/* when the line has 0 in status, we can remove it from the blacklist */
+		/* when the line has 0 in status, we can remove it from the blocklist */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated_deletion = $wpdb->delete(
 			$blacklist_table,
 			array( 'status' => $lower_bound ),
 			array( '%d' )
 		);
-		cf7a_log( "Removed {$updated_deletion} users from blacklist", 1 );
+		cf7a_log( "Removed {$updated_deletion} users from blocklist", 1 );
 
 		return true;
 	}

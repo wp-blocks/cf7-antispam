@@ -190,7 +190,7 @@ class CF7_AntiSpam_Activator
 			cf7a_log("{$table_wordlist} table creation succeeded", 2);
 		}
 
-		/* Create the blacklist database */
+		/* Create the blocklist database */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$has_blacklist_table = $wpdb->get_var($wpdb->prepare("SHOW TABLES like %s", $table_blacklist));
 		if ($has_blacklist_table !== $table_blacklist) {

@@ -1,6 +1,6 @@
 === AntiSpam for Contact Form 7 ===
 Contributors: codekraft, gardenboi
-Tags: antispam, blacklist, honeypot, geoip, security
+Tags: antispam, honeypot, geoip, security
 Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -25,8 +25,8 @@ GeoIP - (Optional) If you need to restrict which countries or languages can emai
 ✅ Language checks (Geo-ip, http headers and browser)
 ✅ Honeypot
 ️🆕 Honeyform*
-✅ DNS Blacklists
-✅ Blacklists (with automatic ban after N failed attempts, user defined ip exclusion list)
+✅ Domain Name System Blackhole List (aka DNSBL)
+✅ blocklists (with automatic ban after N failed attempts, user defined ip exclusion list)
 ✅ Hidden fields with encrypted unique hash
 ✅ Time elapsed (with min/max values)
 ✅ Prohibited words in message/email and user agent
@@ -40,7 +40,7 @@ Already using Flamingo? Even better! Just remember to add 'flamingo_message: "[y
 Upon activating CF7A, all previously collected emails will be parsed, and B8 will learn and develop its vocabulary. This pre-trained algorithm gives you a head start. How cool is that?
 Additional Notes:
 - A new column has been added to the right side of the Flamingo inbound page, displaying the level of spaminess for each email.
-- If you unban an email on the Flamingo "inbound" page, the corresponding IP will be removed from the blacklist. However, marking an email as spam will not blacklist the IP again.
+- If you unban an email on the Flamingo "inbound" page, the corresponding IP will be removed from the blocklist. However, marking an email as spam will not blocklist the IP again.
 - Before activating this plugin, please make sure to mark all spam emails as spam in the Flamingo inbound section. This auto-training process will help the B8 algorithm.
 - If you receive a spam message, please avoid deleting it from the "ham" section. Instead, place it in the spam section to teach B8 how to differentiate between spam and legitimate messages.
 
@@ -121,7 +121,7 @@ The system used to evaluate the e-mail is a non-proportional scoring system and 
 
 =What do you mean by Standard Spam Filters=
 
-Some standard test are Elapsed time, Auto-Blacklisting, Prohibited IP/strings and, in addition, we got some advanced test like HoneyPots, HoneyForms and the browser FingerPrinting.
+Some standard test are Elapsed time, Auto-Blocklisting, Prohibited IP/strings and, in addition, we got some advanced test like HoneyPots, HoneyForms and the browser FingerPrinting.
 
 =*HoneyForm, or you mean Honeypot?=
 
@@ -167,7 +167,7 @@ Enables **debug mode** (wp-debug has to be enabled) - verbose mode, prints email
 
 `define( 'CF7ANTISPAM_DEBUG_EXTENDED', true);`
 
-Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable autoban, enable advanced logging, when you uninstall the plugin, the word database, blacklist and options are not deleted.
+Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable autoban, enable advanced logging, when you uninstall the plugin, the word database, blocklist and options are not deleted.
 
 
 == Changelog ==
@@ -175,18 +175,18 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 = 0.7.2 =
 * Update fallback (thanks for the idea to @lemurnick)
 * Fix for missing enqueue in some cases (thanks to @ohhcee, @o2xav, @WORX Developer for the feedbacks)
-* Blacklist filters cleanup
+* Blocklist filters cleanup
 * Registers the spam checks individually
 * Updated encrypt/decrypt function
 
 = 0.7.1 =
-* Fix: Fixes a wrong escape placeholder in the prepare SQL query that was preventing to check if an IP was blacklisted. (thanks to @jackrus60 for the report)
+* Fix: Fixes a wrong escape placeholder in the prepare SQL query that was preventing to check if an IP was blocklisted. (thanks to @jackrus60 for the report)
 
 = 0.7.0 =
 * Enhancement: Updated Admin User Interface (UI).
 * Enhancement: Added a new debug information section to display the status of GeoIP, REST API, and DNSBL functionality.
-* Enhancement: Blacklist Export Feature: Users can now export the blacklist.
-* Enhancement: A date column has been added to the blacklist database table.
+* Enhancement: Blacklist Export Feature: Users can now export the blocklist.
+* Enhancement: A date column has been added to the blocklist database table.
 * Fix: The name attribute for Honeypots now correctly reflects the name chosen by the user (thanks to @@developeratworx for reporting this issue!).
 * Fix: Improved code security by implementing prepared statements for all database queries and adding sanitization and escaping where previously missing.
 * Fix: Refactored and reorganized the src folder structure for better code organization and maintainability.
@@ -265,7 +265,7 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 = 0.4.2 =
 * Dashboard widget updated (adds a new filter 'cf7a_dashboard_max_mail_count' to limit the maximum value of displayed mail, default 25)
-* UI enhancements - labels in the flamingo inbound page and the blacklist table
+* UI enhancements - labels in the flamingo inbound page and the blocklist table
 * Displays a random security tip at the top of cf7-antispam settings
 * Standalone geoip check (previously it was mandatory to enable the language checks in order to enable geo-ip)
 * Under certain conditions an automatic ban is carried out and the e-mail is not processed to avoid unnecessary consumption of resources

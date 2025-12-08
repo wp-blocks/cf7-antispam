@@ -86,8 +86,8 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Settings autostore_bad_ip */
 		add_settings_field(
 			'autostore_bad_ip',
-			__( 'Automatic spammer IP Blacklist', 'cf7-antispam' ),
-			array( $this, 'cf7a_autostore_bad_ip_callback' ),
+			__('Automatic spammer IP Blocklist', 'cf7-antispam'),
+			array($this, 'cf7a_autostore_bad_ip_callback'),
 			'cf7a-settings',
 			'cf7a_auto_blacklist'
 		);
@@ -383,21 +383,21 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Section User Agent */
 		add_settings_section(
 			'cf7a_user_agent',
-			__( 'User Agent blacklist', 'cf7-antispam' ),
-			array( $this, 'cf7a_print_user_agent' ),
+			__('User Agent blocklist', 'cf7-antispam'),
+			array($this, 'cf7a_print_user_agent'),
 			'cf7a-settings'
 		);
 
-		/* Enable User Agent Blacklist */
+		/* Enable User Agent Blocklist */
 		add_settings_field(
 			'check_bad_user_agent',
-			__( 'Enable User Agent blacklist', 'cf7-antispam' ),
-			array( $this, 'cf7a_check_user_agent_callback' ),
+			__('Enable User Agent blocklist', 'cf7-antispam'),
+			array($this, 'cf7a_check_user_agent_callback'),
 			'cf7a-settings',
 			'cf7a_user_agent'
 		);
 
-		/* User Agent Blacklist list */
+		/* User Agent Blocklist list */
 		add_settings_field(
 			'bad_user_agent_list',
 			__( 'Disallowed user agents', 'cf7-antispam' ),
@@ -409,12 +409,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Section DNSBL */
 		add_settings_section(
 			'cf7a_dnsbl',
-			__( 'DNS Blacklists', 'cf7-antispam' ),
-			array( $this, 'cf7a_print_dnsbl' ),
+			__('DNS Blocklists', 'cf7-antispam'),
+			array($this, 'cf7a_print_dnsbl'),
 			'cf7a-settings'
 		);
 
-		/* Enable DNS Blacklist list */
+		/* Enable DNS Blocklist list */
 		add_settings_field(
 			'check_dnsbl',
 			__( 'Check IP on DNS blocklist', 'cf7-antispam' ),
@@ -423,7 +423,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_dnsbl'
 		);
 
-		/* DNS Blacklist server list */
+		/* DNS Blocklist server list */
 		add_settings_field(
 			'dnsbl_list',
 			__( 'DNS blocklist servers', 'cf7-antispam' ),
@@ -795,8 +795,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/** It prints the bad_ip info text */
-	public function cf7a_print_section_bad_ip() {
-		printf( '<p>%s</p>', esc_html__( 'After an ip check via the http headers, it is checked that the ip is not blacklisted in the following list, one "bad" ip each line', 'cf7-antispam' ) );
+	public function cf7a_print_section_bad_ip()
+	{
+		printf('<p>%s</p>', esc_html__('After an ip check via the http headers, it is checked that the ip is not blocklisted in the following list, one "bad" ip each line', 'cf7-antispam'));
 	}
 
 	/** It prints the bad_words info text */
@@ -815,8 +816,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/** It prints the dnsbl info text */
-	public function cf7a_print_dnsbl() {
-		printf( '<p>%s</p>', esc_html__( 'Check sender ip on DNS Blacklists, DNSBL are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers, BUT they could also be users behind a proxy and that is why the method is no longer 100 per cent reliable. Add a DSNBL server url each line ', 'cf7-antispam' ) );
+	public function cf7a_print_dnsbl()
+	{
+		printf('<p>%s</p>', esc_html__('Check sender ip on DNS Blocklists, DNSBL are real-time lists of proven/recognised spam addresses. These may include lists of addresses of zombie computers or other machines used to send spam, Internet Service Providers (ISPs) that voluntarily host spammers, BUT they could also be users behind a proxy and that is why the method is no longer 100 per cent reliable. Add a DSNBL server url each line ', 'cf7-antispam'));
 		/** Translators: %s%s%s - a spam score of xyz will be added  */
 		printf( '<p><span class="cf7a-option-notice">%s%s%s</span></p>', esc_html__( '⚠️ Use FEW servers, those you tested reliable, and consider that for each server reporting the ip a spam score of ', 'cf7-antispam' ), floatval( $this->options['score']['_dnsbl'] ), esc_html__( ' will be added to the spam rating, 1 equal spam.', 'cf7-antispam' ) );
 		printf(

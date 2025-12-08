@@ -36,7 +36,7 @@ msgid "Ban automatically spammers"
 msgstr "自动禁止垃圾邮件发送者"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr "自动垃圾邮件发送者IP黑名单"
 
 #: admin/admin-customizations.php:78
@@ -156,11 +156,11 @@ msgid "Email prohibited words"
 msgstr "电子邮件禁止使用的词语"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "用户代理黑名单"
 
 #: admin/admin-customizations.php:343
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr "启用用户代理黑名单"
 
 #: admin/admin-customizations.php:352
@@ -637,11 +637,11 @@ msgid ""
 msgstr "本节包含的功能完全改变了cf7-antispam数据库中的存储内容，请谨慎使用!"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "重置黑名单"
 
 #: admin/admin-display.php:190
-msgid "If you need to remove or reset the whole blacklist data on your server."
+msgid "If you need to remove or reset the whole blocklist data on your server."
 msgstr "如果你需要删除或重置你服务器上的整个黑名单数据。"
 
 #: admin/admin-display.php:196
@@ -794,11 +794,11 @@ msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr "错误：无法永远禁止ID%1$s（IP%2$s）。"
 
 #: admin/admin-tools.php:109
-msgid "Success: ip blacklist cleaned"
+msgid "Success: ip blocklist cleaned"
 msgstr "成功：清除了IP黑名单"
 
 #: admin/admin-tools.php:111
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
 msgstr "错误：无法清理黑名单。请刷新并重试!"
 
 #: admin/admin-tools.php:124
@@ -1012,7 +1012,7 @@ msgstr "编码技术"
 #~ msgid "CF7 AntiSpam email "
 #~ msgstr "CF7反垃圾电子邮件"
 
-#~ msgid "IP Blacklist"
+#~ msgid "IP Blocklist"
 #~ msgstr "IP黑名单"
 
 #~ msgid "The Server GeoIP information"

@@ -431,7 +431,7 @@ class CF7_AntiSpam_Filters {
 	}
 
 	/**
-	 * Checks if IP is already in the database blacklist history.
+	 * Checks if IP is already in the database blocklist history.
 	 */
 	public function filter_ip_blacklist_history( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;
@@ -445,7 +445,7 @@ class CF7_AntiSpam_Filters {
 			if ( $ip_data_status >= $max_attempts ) {
 				$data['spam_score']++;
 				$data['is_spam'] = true;
-				$data['reasons']['blacklisted score'] = $ip_data_status;
+				$data['reasons']['blocklisted'] = $ip_data_status;
 
 				cf7a_log( "The {$data['remote_ip']} has reached max attempts threshold (status: $ip_data_status, max: $max_attempts)", 1 );
 			} elseif ( defined('CF7ANTISPAM_DEBUG') && CF7ANTISPAM_DEBUG && $ip_data_status > 0 ) {
@@ -922,7 +922,7 @@ class CF7_AntiSpam_Filters {
 	}
 
 	/**
-	 * Checks DNS Blacklist.
+	 * Checks DNS Blocklist.
 	 */
 	public function filter_dnsbl( $data ) {
 		if ( $data['is_whitelisted'] ) return $data;

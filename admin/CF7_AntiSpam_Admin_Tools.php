@@ -30,7 +30,7 @@ class CF7_AntiSpam_Admin_Tools {
 	}
 
 	/**
-	 * It exports the blacklist
+	 * It exports the blocklist
 	 */
 	public static function cf7a_export_blacklist() {
 		global $wpdb;

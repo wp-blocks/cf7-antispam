@@ -36,7 +36,7 @@ msgid "Ban automatically spammers"
 msgstr "Prohibir automáticamente a los spammers"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr "Lista negra automática de IPs de spamers"
 
 #: admin/admin-customizations.php:78
@@ -156,7 +156,7 @@ msgid "Email prohibited words"
 msgstr "Palabras prohibidas en el correo electrónico"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "Lista negra de agentes de usuario"
 
 #: admin/admin-customizations.php:343
@@ -683,7 +683,7 @@ msgstr ""
 "almacena en la base de datos de cf7-antispam, ¡úselas con precaución!"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "Reinicio de la lista negra"
 
 #: admin/admin-display.php:190
@@ -1088,7 +1088,7 @@ msgstr "Codekraft"
 #~ msgid "CF7 AntiSpam email "
 #~ msgstr "Correo electrónico CF7 AntiSpam "
 
-#~ msgid "IP Blacklist"
+#~ msgid "IP Blocklist"
 #~ msgstr "Lista negra de IP"
 
 #~ msgid "The Server GeoIP information"

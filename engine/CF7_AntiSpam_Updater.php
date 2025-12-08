@@ -85,7 +85,7 @@ class CF7_AntiSpam_Updater {
 	}
 	/**
 	 * Update the database schema to 0.7.0
-	 * Add 'modified' and 'created' columns to blacklist table
+	 * Add 'modified' and 'created' columns to blocklist table
 	 *
 	 * @return boolean
 	 */
@@ -102,7 +102,7 @@ class CF7_AntiSpam_Updater {
 			$wpdb->esc_like( $blacklist_table )
 		) );
 		if ( $has_blacklist_table !== $blacklist_table ) {
-			cf7a_log( 'CF7-antispam update to 0.7.0: blacklist table does not exist, skipping schema update', 2 );
+			cf7a_log( 'CF7-antispam update to 0.7.0: blocklist table does not exist, skipping schema update', 2 );
 			return false;
 		}
 
@@ -123,10 +123,10 @@ class CF7_AntiSpam_Updater {
 			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {
-				cf7a_log( 'CF7-antispam updated to 0.7.0: added modified column to blacklist table', 2 );
+				cf7a_log( 'CF7-antispam updated to 0.7.0: added modified column to blocklist table', 2 );
 				$updated = true;
 			} else {
-				cf7a_log( 'CF7-antispam update to 0.7.0: failed to add modified column to blacklist table', 1 );
+				cf7a_log( 'CF7-antispam update to 0.7.0: failed to add modified column to blocklist table', 1 );
 			}
 		}
 
@@ -144,10 +144,10 @@ class CF7_AntiSpam_Updater {
 			$result = $wpdb->query( $sql );
 
 			if ( $result !== false ) {
-				cf7a_log( 'CF7-antispam updated to 0.7.0: added created column to blacklist table', 2 );
+				cf7a_log( 'CF7-antispam updated to 0.7.0: added created column to blocklist table', 2 );
 				$updated = true;
 			} else {
-				cf7a_log( 'CF7-antispam update to 0.7.0: failed to add created column to blacklist table', 1 );
+				cf7a_log( 'CF7-antispam update to 0.7.0: failed to add created column to blocklist table', 1 );
 			}
 
 			// if flamingo is enabled, try to get the created date from the flamingo post meta

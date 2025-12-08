@@ -154,11 +154,11 @@ msgid "Contact Form 7 Antispam Options and Database updated successfully!"
 msgstr ""
 
 #: core/CF7_AntiSpam_Rest_Api.php:260
-msgid "Success: ip blacklist cleaned"
+msgid "Success: ip blocklist cleaned"
 msgstr ""
 
 #: core/CF7_AntiSpam_Rest_Api.php:267
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
 msgstr ""
 
 #: core/CF7_AntiSpam_Rest_Api.php:298
@@ -207,7 +207,7 @@ msgid "Error: unable to unban %s"
 msgstr ""
 
 #: core/CF7_AntiSpam_Rest_Api.php:497
-msgid "Blacklist exported successfully"
+msgid "Blocklist exported successfully"
 msgstr ""
 
 #: core/CF7_Antispam_Geoip.php:407
@@ -308,7 +308,7 @@ msgid "Settings"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Display.php:81
-msgid "Blacklist"
+msgid "Blocklist"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Display.php:85
@@ -473,7 +473,7 @@ msgid "Plugin Settings"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Display.php:555
-msgid "Export blacklist"
+msgid "Export blocklist"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Display.php:566
@@ -520,7 +520,7 @@ msgid ""
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Display.php:614
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Display.php:615
@@ -705,7 +705,7 @@ msgid "Ban automatically spammers"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:89
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:98
@@ -837,11 +837,11 @@ msgid "Email prohibited words"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:386
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:394
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:403
