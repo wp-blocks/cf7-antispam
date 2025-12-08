@@ -233,7 +233,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	}
 
 	/**
-	 * Reset the blacklist.
+	 * Reset the blocklist.
 	 *
 	 * @since    0.6.5
 	 * @param    WP_REST_Request $request Full data about the request.
@@ -257,14 +257,14 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			return rest_ensure_response(
 				array(
 					'success' => true,
-					'message' => __( 'Success: ip blacklist cleaned', 'cf7-antispam' )
+					'message' => __( 'Success: ip blocklist cleaned', 'cf7-antispam' )
 				)
 			);
 		} else {
 			return rest_ensure_response(
 				array(
 					'success' => false,
-					'message' => __( 'Error: unable to clean blacklist. Please refresh and try again!', 'cf7-antispam' )
+					'message' => __( 'Error: unable to clean blocklist. Please refresh and try again!', 'cf7-antispam' )
 				)
 			);
 		}
@@ -471,7 +471,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	}
 
 	/**
-	 * Export blacklist as CSV.
+	 * Export blocklist as CSV.
 	 *
 	 * @since    0.6.5
 	 * @param    WP_REST_Request $request Full data about the request.
@@ -494,7 +494,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		return rest_ensure_response(
 			array(
 				'success' => true,
-				'message' => __( 'Blacklist exported successfully', 'cf7-antispam' ),
+				'message' => __( 'Blocklist exported successfully', 'cf7-antispam' ),
 				'filetype' => $export_data['filetype'],
 				'filename' => $export_data['filename'],
 				'data' => $export_data['data']
@@ -503,8 +503,8 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	}
 
 	/**
-	 * Helper method to get blacklist data.
-	 * This should call the actual method that retrieves the blacklist from database.
+	 * Helper method to get blocklist data.
+	 * This should call the actual method that retrieves the blocklist from database.
 	 *
 	 * @since    0.6.5
 	 * @return   array
@@ -606,7 +606,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'reset-blacklist',
+			'reset-blocklist',
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -746,7 +746,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'get-blacklist',
+			'get-blocklist',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
@@ -767,7 +767,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'export-blacklist',
+			'export-blocklist',
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
