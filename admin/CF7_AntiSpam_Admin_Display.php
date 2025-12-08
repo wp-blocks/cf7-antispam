@@ -90,7 +90,7 @@ class CF7_AntiSpam_Admin_Display {
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'blocklist' ), $nonce_action ) ); ?>"
 				 class="cf7a-nav-tab tab-blocklist <?php echo $active_tab === 'blocklist' ? 'nav-tab-active' : ''; ?>">
-				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blacklist', 'cf7-antispam' ); ?>
+				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blocklist', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'tools' ), $nonce_action ) ); ?>"
 				 class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
@@ -617,14 +617,14 @@ class CF7_AntiSpam_Admin_Display {
 
 	private function cf7a_export_button() {
 		printf(
-			'<p class="cf7a-export-blacklist-button alignright"><button class="button cf7a_export_action" data-action="export-blacklist" data-nonce="%s">%s</button></p>',
+			'<p class="cf7a-export-blocklist-button alignright"><button class="button cf7a_export_action" data-action="export-blocklist" data-nonce="%s">%s</button></p>',
 			esc_attr(wp_create_nonce( 'cf7a-nonce' )),
-			esc_html__( 'Export blacklist', 'cf7-antispam' )
+			esc_html__( 'Export blocklist', 'cf7-antispam' )
 		);
 	}
 
 	/**
-	 * Render the Blacklist Tab
+	 * Render the Blocklist Tab
 	 */
 	private function render_blacklist_tab() {
 		?>
@@ -638,7 +638,7 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * Render the Blacklist Tab
+	 * Render the Blocklist Tab
 	 */
 	private function render_import_export_tab() {
 		?>
@@ -678,9 +678,9 @@ class CF7_AntiSpam_Admin_Display {
 			<h3><?php esc_html_e( 'Danger Zone', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'These actions are irreversible. Please make sure you know what you are doing.', 'cf7-antispam' ); ?></p>
 
-			<h4><?php esc_html_e( 'Blacklist Reset', 'cf7-antispam' ); ?></h4>
+			<h4><?php esc_html_e( 'Blocklist Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Remove all blacklisted IPs from the database.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="reset-blacklist" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Remove all blacklisted IP', 'cf7-antispam' ); ?></button>
+			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="reset-blocklist" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Remove all blacklisted IP', 'cf7-antispam' ); ?></button>
 
 			<h4><?php esc_html_e( 'Dictionary Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Reset the entire b8 dictionary used for spam detection.', 'cf7-antispam' ); ?></p>
@@ -772,7 +772,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			/* The table */
 			printf(
-				'<div class="widefat blacklist-table">%s</div><p><small>%s</small></p>',
+				'<div class="widefat blocklist-table">%s</div><p><small>%s</small></p>',
 				wp_kses(
 					$rows,
 					array(
