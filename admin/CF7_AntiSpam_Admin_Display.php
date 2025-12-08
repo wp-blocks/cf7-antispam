@@ -871,8 +871,80 @@ class CF7_AntiSpam_Admin_Display {
 
 			$this->cf7a_get_debug_info_rest_api();
 
+			$this->cf7a_get_debug_info_forms();
+
 			$this->cf7a_get_debug_info_options();
 		}
+	}
+
+	/**
+	 * It returns a string containing a formatted HTML table with the Contact Form 7 forms information
+	 *
+	 * @return void
+	 */
+	private function cf7a_get_debug_info_forms() {
+		if ( ! class_exists( 'WPCF7_ContactForm' ) ) {
+			return;
+		}
+
+		$forms = \WPCF7_ContactForm::find( array(
+			'posts_per_page' => -1,
+		) );
+
+		if ( empty( $forms ) ) {
+			printf(
+				'<h3 class="title"><span class="dashicons dashicons-feedback"></span> %s</h3><p>%s</p>',
+				esc_html__( 'Contact Forms', 'cf7-antispam' ),
+				esc_html__( 'No Contact Form 7 forms found.', 'cf7-antispam' )
+			);
+			return;
+		}
+
+		$rows = '';
+		foreach ( $forms as $form ) {
+			$flamingo_message_val = $form->pref( 'flamingo_message' );
+			$has_correct_field    = !empty($flamingo_message_val);
+
+			$status_icon = $has_correct_field
+				? '<span class="dashicons dashicons-yes" style="color: #46b450;"></span>'
+				: '<span class="dashicons dashicons-warning" style="color: #ffb900;"></span>';
+
+			$rows .= sprintf(
+				'<tr>
+					<td>%d</td>
+					<td><a href="%s" target="_blank">%s</a></td>
+					<td><code>%s</code></td>
+					<td>%s</td>
+				</tr>',
+				$form->id(),
+				admin_url( 'admin.php?page=wpcf7&post=' . $form->id() . '&action=edit' ),
+				esc_html( $form->title() ),
+				esc_html( $flamingo_message_val ?: '-' ),
+				$status_icon
+			);
+		}
+
+		printf(
+			'<h3 class="title"><span class="dashicons dashicons-feedback"></span> %s</h3>
+			<table class="widefat striped" style="margin-top: 10px;">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>%s</th>
+						<th>%s</th>
+						<th>%s</th>
+					</tr>
+				</thead>
+				<tbody>
+					%s
+				</tbody>
+			</table>',
+			esc_html__( 'Contact Forms Configuration', 'cf7-antispam' ),
+			esc_html__( 'Form Name & Link', 'cf7-antispam' ),
+			esc_html__( 'Flamingo Message Value', 'cf7-antispam' ),
+			esc_html__( 'Valid', 'cf7-antispam' ),
+			$rows // phpcs:ignore WordPress.Security.EscapeOutput
+		);
 	}
 
 	/**
