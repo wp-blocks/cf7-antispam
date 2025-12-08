@@ -51,7 +51,7 @@ function exportActionHandler(e: HTMLElement) {
  * This is the code that finds the buttons with the class cf7a_export_action and
  * adds the event listener to them.
  *
- * At the moment is used only for blacklist export function
+ * At the moment is used only for blocklist export function
  */
 if (document.body.classList.contains('cf7-antispam-admin')) {
 	const exportActions = document.querySelectorAll(

@@ -13,12 +13,8 @@ import './settings/importExport';
 /** The rest api scripts */
 import './settings/restApi';
 
-/** The export blacklist scripts */
-import './settings/exportBlacklist';
+/** The export blocklist scripts */
+import './settings/exportBlocklist';
 
 /** The language selector scripts */
-import { initLanguageSelector } from './settings/languageSelector';
-
-document.addEventListener('DOMContentLoaded', () => {
-	initLanguageSelector();
-});
+import './settings/languageSelector';
