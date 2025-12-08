@@ -36,8 +36,8 @@ msgid "Ban automatically spammers"
 msgstr "Automatisches Verbot von Spam-Versendern"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
-msgstr "Automatische Spammer-IP-Blacklist"
+msgid "Automatic spammer IP Blocklist"
+msgstr "Automatische Spammer-IP-Blocklist"
 
 #: admin/admin-customizations.php:78
 msgid "Mail blocked before Ban"
@@ -129,7 +129,7 @@ msgstr "IP-Adresse"
 
 #: admin/admin-customizations.php:274
 msgid "Bad IP Address List"
-msgstr "IP-Adressen Blacklist"
+msgstr "IP-Adressen Blocklist"
 
 #: admin/admin-customizations.php:283
 msgid "Bad words"
@@ -156,11 +156,11 @@ msgid "Email prohibited words"
 msgstr "Verbotene Wörter in der E-Mailadresse"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "Schwarze Liste für Benutzer-Agenten"
 
 #: admin/admin-customizations.php:343
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr "Schwarze Liste für Benutzer-Agenten aktivieren"
 
 #: admin/admin-customizations.php:352
@@ -691,13 +691,13 @@ msgstr ""
 "gespeicherten Daten vollständig verändern. Verwenden Sie diese mit Vorsicht!"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "Schwarze Liste zurücksetzen"
 
 #: admin/admin-display.php:190
-msgid "If you need to remove or reset the whole blacklist data on your server."
+msgid "If you need to remove or reset the whole blocklist data on your server."
 msgstr ""
-"Wenn Sie die gesamten Blacklist-Daten auf Ihrem Server entfernen oder "
+"Wenn Sie die gesamten Blocklist-Daten auf Ihrem Server entfernen oder "
 "zurücksetzen müssen."
 
 #: admin/admin-display.php:196
@@ -857,11 +857,11 @@ msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr "Fehler: kann nicht für immer verbieten id %1$s (ip %2$s)"
 
 #: admin/admin-tools.php:109
-msgid "Success: ip blacklist cleaned"
-msgstr "Erfolg: ip blacklist bereinigt"
+msgid "Success: ip blocklist cleaned"
+msgstr "Erfolg: ip blocklist bereinigt"
 
 #: admin/admin-tools.php:111
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
 msgstr ""
 "Fehler: Schwarze Liste kann nicht bereinigt werden. Bitte aktualisieren und "
 "erneut versuchen!"

@@ -36,7 +36,7 @@ msgid "Ban automatically spammers"
 msgstr "Interdire automatiquement les spammeurs"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr "Liste noire automatique des adresses IP des spammeurs"
 
 #: admin/admin-customizations.php:78
@@ -156,11 +156,11 @@ msgid "Email prohibited words"
 msgstr "Mots interdits dans les e-mails"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "Liste noire des agents utilisateurs"
 
 #: admin/admin-customizations.php:343
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr "Activer la liste noire des agents utilisateurs"
 
 #: admin/admin-customizations.php:352
@@ -686,11 +686,11 @@ msgstr ""
 "est stocké dans la base de données cf7-antispam, utilisez-les avec prudence !"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "Réinitialisation de la liste noire"
 
 #: admin/admin-display.php:190
-msgid "If you need to remove or reset the whole blacklist data on your server."
+msgid "If you need to remove or reset the whole blocklist data on your server."
 msgstr ""
 "Si vous devez supprimer ou réinitialiser l'ensemble des données de la liste "
 "noire sur votre serveur."
@@ -855,11 +855,11 @@ msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr "Erreur : Impossible de bannir pour toujours id %1$s (ip %2$s)"
 
 #: admin/admin-tools.php:109
-msgid "Success: ip blacklist cleaned"
-msgstr "Succès : ip blacklist nettoyée"
+msgid "Success: ip blocklist cleaned"
+msgstr "Succès : ip blocklist nettoyée"
 
 #: admin/admin-tools.php:111
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
 msgstr ""
 "Erreur : impossible de nettoyer la liste noire. Veuillez rafraîchir et "
 "réessayer !"
@@ -1090,7 +1090,7 @@ msgstr "Made with &hearts; by codekraft-studio"
 #~ msgid "CF7 AntiSpam email "
 #~ msgstr "CF7 AntiSpam email"
 
-#~ msgid "IP Blacklist"
+#~ msgid "IP Blocklist"
 #~ msgstr "Mettre l’IP sur la liste noir"
 
 #~ msgid "The Server GeoIP information"

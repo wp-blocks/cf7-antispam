@@ -36,7 +36,7 @@ msgid "Ban automatically spammers"
 msgstr "स्वचालित रूप से स्पैमर पर प्रतिबंध लगाएं"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr "स्वचालित स्पैमर आईपी ब्लैकलिस्ट"
 
 #: admin/admin-customizations.php:78
@@ -156,11 +156,11 @@ msgid "Email prohibited words"
 msgstr "ईमेल निषिद्ध शब्द"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "उपयोगकर्ता एजेंट ब्लैकलिस्ट"
 
 #: admin/admin-customizations.php:343
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr "उपयोगकर्ता एजेंट ब्लैकलिस्ट सक्षम करें"
 
 #: admin/admin-customizations.php:352
@@ -622,11 +622,11 @@ msgstr ""
 "उपयोग करें!"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "ब्लैकलिस्ट रीसेट करें"
 
 #: admin/admin-display.php:190
-msgid "If you need to remove or reset the whole blacklist data on your server."
+msgid "If you need to remove or reset the whole blocklist data on your server."
 msgstr "यदि आपको अपने सर्वर पर संपूर्ण ब्लैकलिस्ट डेटा को निकालने या रीसेट करने की आवश्यकता है।"
 
 #: admin/admin-display.php:196
@@ -774,11 +774,11 @@ msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr "त्रुटि: हमेशा के लिए प्रतिबंधित करने में असमर्थ आईडी %1$s (आईपी %2$s)"
 
 #: admin/admin-tools.php:109
-msgid "Success: ip blacklist cleaned"
+msgid "Success: ip blocklist cleaned"
 msgstr "सफलता: आईपी ब्लैकलिस्ट साफ"
 
 #: admin/admin-tools.php:111
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
 msgstr "त्रुटि: ब्लैकलिस्ट को साफ़ करने में असमर्थ। कृपया ताज़ा करें और पुन: प्रयास करें!"
 
 #: admin/admin-tools.php:124
@@ -981,7 +981,7 @@ msgstr "कोडक्राफ्ट"
 #~ msgid "CF7 AntiSpam email "
 #~ msgstr "सीएफ 7 एंटीस्पैम ईमेल "
 
-#~ msgid "IP Blacklist"
+#~ msgid "IP Blocklist"
 #~ msgstr "आईपी ब्लैकलिस्ट"
 
 #~ msgid "The Server GeoIP information"

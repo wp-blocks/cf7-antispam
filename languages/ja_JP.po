@@ -36,7 +36,7 @@ msgid "Ban automatically spammers"
 msgstr "自動的にスパマーを禁止する"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr "自動スパムメールIPブラックリスト"
 
 #: admin/admin-customizations.php:78
@@ -156,11 +156,11 @@ msgid "Email prohibited words"
 msgstr "メール禁止用語"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "ユーザーエージェントブラックリスト"
 
 #: admin/admin-customizations.php:343
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr "ユーザーエージェントブラックリストを有効にする"
 
 #: admin/admin-customizations.php:352
@@ -664,11 +664,11 @@ msgstr ""
 "能を含んでいます!"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "ブラックリスト・リセット"
 
 #: admin/admin-display.php:190
-msgid "If you need to remove or reset the whole blacklist data on your server."
+msgid "If you need to remove or reset the whole blocklist data on your server."
 msgstr ""
 "サーバーのブラックリストデータ全体を削除またはリセットする必要がある場合。"
 
@@ -824,11 +824,11 @@ msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr "エラー：unable to ban forever id %1$s (ip %2$s)"
 
 #: admin/admin-tools.php:109
-msgid "Success: ip blacklist cleaned"
+msgid "Success: ip blocklist cleaned"
 msgstr "成功：ipブラックリストの削除"
 
 #: admin/admin-tools.php:111
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
 msgstr ""
 "エラー: ブラックリストを削除できません。更新してもう一度お試しください!"
 

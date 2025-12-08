@@ -36,7 +36,7 @@ msgid "Ban automatically spammers"
 msgstr "Proibir automaticamente os spammers"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr "Lista negra automática de IP para spammer"
 
 #: admin/admin-customizations.php:78
@@ -156,11 +156,11 @@ msgid "Email prohibited words"
 msgstr "Palavras proibidas por e-mail"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "Lista negra de agentes de usuários"
 
 #: admin/admin-customizations.php:343
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr "Habilitar a lista negra de agentes de usuário"
 
 #: admin/admin-customizations.php:352
@@ -680,11 +680,11 @@ msgstr ""
 "armazenado no banco de dados cf7-antispam, use-os com cautela!"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "Redefinição da lista negra"
 
 #: admin/admin-display.php:190
-msgid "If you need to remove or reset the whole blacklist data on your server."
+msgid "If you need to remove or reset the whole blocklist data on your server."
 msgstr ""
 "Se você precisar remover ou redefinir todos os dados da lista negra em seu "
 "servidor."
@@ -846,11 +846,11 @@ msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr "Erro: incapaz de proibir para sempre id %1$s (ip %2$s)"
 
 #: admin/admin-tools.php:109
-msgid "Success: ip blacklist cleaned"
+msgid "Success: ip blocklist cleaned"
 msgstr "Sucesso: lista negra de ip limpa"
 
 #: admin/admin-tools.php:111
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
 msgstr ""
 "Erro: impossibilidade de limpar a lista negra. Por favor, atualize e tente "
 "novamente!"

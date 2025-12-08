@@ -36,7 +36,7 @@ msgid "Ban automatically spammers"
 msgstr "Ban automatico per gli spammer"
 
 #: admin/admin-customizations.php:69
-msgid "Automatic spammer IP Blacklist"
+msgid "Automatic spammer IP Blocklist"
 msgstr "Lista nera automatica degli IP degli spammer"
 
 #: admin/admin-customizations.php:78
@@ -156,11 +156,11 @@ msgid "Email prohibited words"
 msgstr "Parole vietate per le e-mail"
 
 #: admin/admin-customizations.php:335
-msgid "User Agent blacklist"
+msgid "User Agent blocklist"
 msgstr "Lista nera degli agenti utente"
 
 #: admin/admin-customizations.php:343
-msgid "Enable User Agent blacklist"
+msgid "Enable User Agent blocklist"
 msgstr "Abilita la lista nera degli agenti utente"
 
 #: admin/admin-customizations.php:352
@@ -504,7 +504,7 @@ msgid ""
 "proxy and that is why the method is no longer 100 per cent reliable. Add a "
 "DSNBL server url each line "
 msgstr ""
-"Controllare l'ip del mittente sulle DNS Blacklist, le DNSBL sono elenchi in "
+"Controllare l'ip del mittente sulle DNS Blocklist, le DNSBL sono elenchi in "
 "tempo reale di indirizzi di spam comprovati/riconosciuti. Possono includere "
 "elenchi di indirizzi di computer zombie o altre macchine utilizzate per "
 "inviare spam, provider di servizi Internet (ISP) che ospitano "
@@ -682,13 +682,13 @@ msgstr ""
 "memorizzato nel database di cf7-antispam; usatele con cautela!"
 
 #: admin/admin-display.php:189
-msgid "Blacklist Reset"
+msgid "Blocklist Reset"
 msgstr "Reset della lista nera"
 
 #: admin/admin-display.php:190
-msgid "If you need to remove or reset the whole blacklist data on your server."
+msgid "If you need to remove or reset the whole blocklist data on your server."
 msgstr ""
-"Se è necessario rimuovere o reimpostare tutti i dati della blacklist sul "
+"Se è necessario rimuovere o reimpostare tutti i dati della blocklist sul "
 "server."
 
 #: admin/admin-display.php:196
@@ -849,12 +849,12 @@ msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr "Errore: impossibile vietare per sempre id %1$s (ip %2$s)"
 
 #: admin/admin-tools.php:109
-msgid "Success: ip blacklist cleaned"
+msgid "Success: ip blocklist cleaned"
 msgstr "Successo: lista nera ip pulita"
 
 #: admin/admin-tools.php:111
-msgid "Error: unable to clean blacklist. Please refresh and try again!"
-msgstr "Errore: impossibile pulire la blacklist. Aggiornare e riprovare!"
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
+msgstr "Errore: impossibile pulire la blocklist. Aggiornare e riprovare!"
 
 #: admin/admin-tools.php:124
 msgid "b8 dictionary reset successful"
