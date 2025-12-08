@@ -185,7 +185,7 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 = 0.7.0 =
 * Enhancement: Updated Admin User Interface (UI).
 * Enhancement: Added a new debug information section to display the status of GeoIP, REST API, and DNSBL functionality.
-* Enhancement: Blacklist Export Feature: Users can now export the blocklist.
+* Enhancement: Blocklist Export Feature: Users can now export the blocklist.
 * Enhancement: A date column has been added to the blocklist database table.
 * Fix: The name attribute for Honeypots now correctly reflects the name chosen by the user (thanks to @@developeratworx for reporting this issue!).
 * Fix: Improved code security by implementing prepared statements for all database queries and adding sanitization and escaping where previously missing.
