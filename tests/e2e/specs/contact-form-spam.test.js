@@ -10,6 +10,12 @@ test.describe('Contact Form 7 AntiSpam E2E', () => {
 
 	// Clean the log file before tests start to ensure a clean state
 	test.beforeAll(async ({ requestUtils }) => {
+		// Ensure debug.log is not a directory (common CI issue with volume mounts)
+		if (fs.existsSync(debugLog) && fs.lstatSync(debugLog).isDirectory()) {
+			console.log('debug.log is a directory, removing it...');
+			fs.rmSync(debugLog, { recursive: true, force: true });
+		}
+
 		// Clear debug.log inside the container
 		fs.writeFileSync(debugLog, '');
 		console.log('debug.log cleared via CLI');
@@ -107,9 +113,9 @@ test.describe('Contact Form 7 AntiSpam E2E', () => {
 			.locator('textarea[name="your-message"]')
 			.fill(
 				'Ciaone come va? viagra\n' +
-					'Earn extra cash\n' +
-					'MEET SINGLES\n' +
-					'1234567890'
+				'Earn extra cash\n' +
+				'MEET SINGLES\n' +
+				'1234567890'
 			);
 
 		// --- 5. Submit the form ---
