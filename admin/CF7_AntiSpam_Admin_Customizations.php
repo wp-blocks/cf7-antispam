@@ -1457,7 +1457,7 @@ class CF7_AntiSpam_Admin_Customizations
 	{
 		printf(
 			'<input type="number" id="check_time_max" name="cf7a_options[check_time_max]" value="%s" step="1" />',
-			! empty( $this->options['check_time_max'] ) ? esc_attr( $this->options['check_time_max'] ) : intval( YEAR_IN_SECONDS )
+			isset($this->options['check_time_max']) ? esc_attr($this->options['check_time_max']) : intval(YEAR_IN_SECONDS)
 		);
 	}
 
