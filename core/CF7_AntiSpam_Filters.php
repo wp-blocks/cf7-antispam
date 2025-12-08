@@ -307,6 +307,10 @@ class CF7_AntiSpam_Filters {
 			'is_whitelisted'=> false, // Flag to stop processing
 		);
 
+		if (CF7ANTISPAM_DEBUG_EXTENDED) {
+			cf7a_log( "New submission from " . $remote_ip . " will be processed", 1 );
+		}
+
 		/**
 		 * RUN THE FILTER CHAIN
 		 * This triggers all the checks registered in __construct
@@ -1007,6 +1011,12 @@ class CF7_AntiSpam_Filters {
 		$options = $data['options'];
 		$text = stripslashes( $data['message'] );
 		\assert( \is_string( $text ) );
+
+		// log the result of the pre-checks
+		if ($data['is_spam']) {
+			cf7a_log( "Submission failed for {$data['remote_ip']} spam detected with score {$data['spam_score']} - message: {$data['message']}", 1 );
+			cf7a_log( "log enabled " . CF7ANTISPAM_DEBUG_EXTENDED . "standard log enabled " . CF7ANTISPAM_DEBUG, 1 );
+		}
 
 		// Ensure B8 is enabled and there is a message to check
 		if ( $options['enable_b8'] && $data['message'] ) {
