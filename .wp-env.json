@@ -8,20 +8,31 @@
 	],
 	"config": {
 		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": "/var/www/html/wp-content/plugins/cf7-antispam/debug.log",
 		"WP_DEBUG_DISPLAY": true,
-		"SCRIPT_DEBUG": true,
+		"CF7ANTISPAM_DEBUG": true,
+		"CF7ANTISPAM_DEBUG_EXTENDED": true,
 		"FS_METHOD": "direct"
 	},
-	"phpVersion": "8.2",
-	"mappings": {
-		"/var/www/html/wp-content/plugins/cf7-antispam": "./"
-	},
+	"phpVersion": "8.4",
 	"env": {
 		"development": {
 			"phpmyadminPort": 19002
 		},
 		"tests": {
-			"phpmyadminPort": 19003
+			"phpmyadminPort": 19003,
+			"config": {
+				"WP_DEBUG": true,
+				"WP_DEBUG_LOG": "/var/www/html/wp-content/plugins/cf7-antispam/debug.log",
+				"WP_DEBUG_DISPLAY": true,
+				"CF7ANTISPAM_DEBUG": true,
+				"CF7ANTISPAM_DEBUG_EXTENDED": true,
+				"FS_METHOD": "direct"
+			},
+			"mappings": {
+				"/var/www/html/wp-content/debug.log": "./debug.log",
+				"/var/www/html/wp-content/plugins/cf7-antispam/": "."
+			}
 		}
 	}
 }
