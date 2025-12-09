@@ -553,23 +553,16 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	public function cf7a_get_a_random_tip() {
 		$tips = array(
-			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
-			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
-			sprintf(
-			/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
-				'%s <a href="%s" target="_blank">%s</a>',
-				__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
-				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
-				__( 'Give a try', 'cf7-antispam' )
-			),
-			sprintf(
-			/* translators: %s is the link to Flamingo documentation. */
-				"%s <a href='%s' target='_blank'>%s</a>. %s",
-				__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
-				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
-				__( 'fields with multiple tags', 'cf7-antispam' ),
-				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
-			),
+			__( 'Did you know? You can customize the spam score threshold for individual filters in the Settings tab to fine-tune protection.', 'cf7-antispam' ),
+			__( 'Tip: Enable the Flamingo plugin to unlock advanced B8 Bayesian filtering, which learns from your ham and spam messages.', 'cf7-antispam' ),
+			__( 'Secure your forms by blocking specific languages. Go to Settings > Language to disallow messages in languages irrelevant to your business.', 'cf7-antispam' ),
+			__( 'Use GeoIP filtering to block submissions from specific countries or continents often associated with spam.', 'cf7-antispam' ),
+			__( 'The Honeypot feature adds a hidden field that only bots fill out. Ensure it\'s enabled in the Settings for effortless protection.', 'cf7-antispam' ),
+			__( 'Too fast? The "Time Submission" check flags forms submitted inhumanly quickly. You can adjust the minimum time required.', 'cf7-antispam' ),
+			__( 'Check the Blocklist tab to see blocked IPs. You can manually ban or unban IPs and view the reasons for their blocking.', 'cf7-antispam' ),
+			__( 'Have a trusted static IP? Add it to the IP Whitelist in Settings to ensure your own tests or admin submissions are never blocked.', 'cf7-antispam' ),
+			__( 'The "Max Attempts" setting automatically blocks IPs that repeatedly trigger spam filters. Adjust this limit to be stricter or more lenient.', 'cf7-antispam' ),
+			__( 'Browser fingerprinting helps identify bots even if they change IPs. Ensure "Check Bot Fingerprint" is active for robust detection.', 'cf7-antispam' ),
 		);
 
 		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
