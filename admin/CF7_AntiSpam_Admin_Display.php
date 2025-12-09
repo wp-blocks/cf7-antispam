@@ -173,7 +173,7 @@ class CF7_AntiSpam_Admin_Display {
 		global $wpdb;
 		// Check blocklist entries
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklist_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $wpdb->prefix . 'cf7a_blacklist' ) );
+		$blacklist_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $wpdb->prefix . 'cf7a_blacklist' ) );
 		$has_blacklist   = intval( $blacklist_count ) > 0;
 
 		// Check wordlist entries (beyond just the b8*texts token)
@@ -299,7 +299,7 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( false === $total_blocked ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$total_blocked = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $blacklist_table ) );
+			$total_blocked = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $blacklist_table ) );
 			wp_cache_set( $cache_key_total, $total_blocked, 'cf7a_blacklist_stats', $cache_time_short );
 		}
 
@@ -771,8 +771,8 @@ class CF7_AntiSpam_Admin_Display {
 	public static function cf7a_get_blacklisted_table() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklisted = $wpdb->get_results( $wpdb->prepare("SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000", $wpdb->prefix . 'cf7a_blacklist' ) );
-		$nonce = wp_create_nonce( 'cf7a-nonce' );
+		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blacklist' ) );
+		$nonce       = wp_create_nonce( 'cf7a-nonce' );
 
 		if ( $blacklisted ) {
 			$count = count( $blacklisted );
