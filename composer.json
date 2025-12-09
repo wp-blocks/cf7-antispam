@@ -1,7 +1,7 @@
 {
 	"name": "codekraft/contactform7-antispam",
 	"description": "AntiSpam for Contact Form 7",
-	"version": "0.7.2",
+	"version": "0.7.3",
 	"license": "GPL-3.0-or-later",
 	"type": "wordpress-plugin",
 	"authors": [

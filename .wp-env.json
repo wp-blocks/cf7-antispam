@@ -30,7 +30,6 @@
 				"FS_METHOD": "direct"
 			},
 			"mappings": {
-				"/var/www/html/wp-content/debug.log": "./debug.log",
 				"/var/www/html/wp-content/plugins/cf7-antispam/": "."
 			}
 		}

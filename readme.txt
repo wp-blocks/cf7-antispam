@@ -2,9 +2,9 @@
 Contributors: codekraft, gardenboi
 Tags: antispam, honeypot, geoip, security
 Requires at least: 6.2
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.7.2
+Stable tag: 0.7.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -171,6 +171,15 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.7.3 =
+* Fix: Dismissing the "Flamingo Message" notice now works correctly (thanks to @WORX Developer for reporting it)
+* Enhancement: Improved spam filter performance with additional fallbacks for edge cases
+* Security: Email strings are now properly sanitized before being sent
+* Enhancement: New dashboard empty-state view
+* Enhancement: Added JS selector for allowed/disallowed countries and languages
+* Typo: Replaced "blacklis" with "blocklist"
+* Enhancement: New summary table added at the top of the settings page to display form configuration status
 
 = 0.7.2 =
 * Update fallback (thanks for the idea to @lemurnick)
