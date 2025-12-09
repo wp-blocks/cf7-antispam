@@ -1494,11 +1494,19 @@ class CF7_AntiSpam_Admin_Customizations
 	}
 
 	/** It creates the input field "cf7a_geodb_update" */
-	public function cf7a_geoip_is_enabled_callback()
-	{
+	public function cf7a_geoip_is_enabled_callback() {
+		$message      = '❌ ';
+		$has_database = $this->geoip->has_database();
+
+		if ( $has_database ) {
+			// get the current database version
+			$current_version = $this->geoip->get_database_version();
+			$message         = '✅ ' . $current_version;
+		}
+
 		printf(
 			"<span class='cf7a_geoip_is_enabled'>%s</span>",
-			$this->geoip->has_database() ? '✅ ' : '❌ '
+			$message
 		);
 	}
 

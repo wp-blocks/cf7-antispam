@@ -6,20 +6,18 @@ const fs = require('fs');
 test.describe('Contact Form 7 AntiSpam E2E', () => {
 	const debugLog = 'debug.log';
 
+	const cf7Plugin = 'contact-form-7'; // For activation/deactivation
 	const pluginActivationSlug = 'antispam-for-contact-form-7'; // For activation/deactivation
 
 	// Clean the log file before tests start to ensure a clean state
 	test.beforeAll(async ({ requestUtils }) => {
-		// Ensure debug.log is not a directory (common CI issue with volume mounts)
-		if (fs.existsSync(debugLog) && fs.lstatSync(debugLog).isDirectory()) {
-			console.log('debug.log is a directory, removing it...');
-			fs.rmSync(debugLog, { recursive: true, force: true });
-		}
+		// Activate plugins
+		await requestUtils.activatePlugin(cf7Plugin);
+		await requestUtils.activatePlugin(pluginActivationSlug);
 
 		// Clear debug.log inside the container
 		fs.writeFileSync(debugLog, '');
 		console.log('debug.log cleared via CLI');
-		await requestUtils.activatePlugin(pluginActivationSlug);
 	});
 
 	test('Should detect spam on contact form submission', async ({
@@ -147,6 +145,8 @@ test.describe('Contact Form 7 AntiSpam E2E', () => {
 
 		// Assert specific details in the log
 		// Expect 'viagra' as it is the bad word found
+		expect(logContent.toLowerCase()).toContain('new submission from 172.');
 		expect(logContent.toLowerCase()).toContain('viagra');
+		expect(logContent.toLowerCase()).toContain('cf7a: ban');
 	});
 });

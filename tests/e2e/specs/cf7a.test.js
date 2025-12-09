@@ -4,12 +4,14 @@
 const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
 
 test.describe('CF7 AntiSpam Plugin', () => {
+	const cf7Plugin = 'contact-form-7'; // For activation/deactivation
 	const pluginActivationSlug = 'antispam-for-contact-form-7'; // For activation/deactivation
 	const pluginSlug = 'cf7-antispam'; // For HTML elements and admin pages
 	const pluginName = 'AntiSpam for Contact Form 7';
 
 	test.beforeAll(async ({ requestUtils }) => {
-		// Ensure clean state - deactivate plugin if active
+		// Activate CF7 plugin
+		await requestUtils.activatePlugin(cf7Plugin);
 		try {
 			await requestUtils.deactivatePlugin(pluginActivationSlug);
 		} catch (error) {
@@ -175,36 +177,6 @@ test.describe('CF7 AntiSpam Plugin', () => {
 		}
 	});
 
-	/*test('plugin functionality works when active', async ({
-                                                          admin,
-                                                          page,
-                                                          requestUtils,
-                                                        }) => {
-    // Activate plugin
-    await requestUtils.activatePlugin(pluginActivationSlug);
-
-    // Visit plugin admin page
-    await admin.visitAdminPage(`admin.php?page=${pluginSlug}`);
-
-    // TODO: Add tests for specific plugin functionality
-
-    // Check for settings sections
-    const settingsForm = page.locator('form');
-    if ((await settingsForm.count()) > 0) {
-      await expect(settingsForm).toBeVisible();
-    }
-
-    // Check for specific plugin elements
-    const pluginElements = page.locator(
-      '.cf7-antispam, [class*="cf7"], [id*="cf7"]'
-    );
-    if ((await pluginElements.count()) > 0) {
-      await expect(pluginElements.first()).toBeVisible();
-    }
-
-    // TODO: Add more tests for specific plugin functionality here
-  });
-*/
 	// Test plugin with Contact Form 7 integration (if applicable)
 	test('plugin integrates with Contact Form 7', async ({
 		admin,
