@@ -71,6 +71,8 @@ class CF7_AntiSpam_Activator {
 			'geoip_dbkey'                      => false,
 			'check_language'                   => false,
 			'check_geo_location'               => false,
+			'enable_countermeasures'           => false,
+			'countermeasure_mode'              => 'loop',
 			'honeyform_position'               => 'the_content',
 			'enable_b8'                        => true,
 			'b8_threshold'                     => 0.95,
