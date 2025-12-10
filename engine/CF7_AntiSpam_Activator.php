@@ -117,9 +117,10 @@ class CF7_AntiSpam_Activator {
 				'PHP',
 			),
 			'dnsbl_list'             => array(
-				/* ipv4 dnsbl */
-				'dnsbl-2.uceprotect.net',
-				'dnsbl-3.uceprotect.net',
+				/*
+				ipv4 dnsbl */
+				// 'dnsbl-2.uceprotect.net',
+				// 'dnsbl-3.uceprotect.net',
 				'zen.spamhaus.org',
 				'b.barracudacentral.org',
 				/* ipv6 dnsbl but due to the unlimited number of ipv6 dnsl will have a lower impact */
