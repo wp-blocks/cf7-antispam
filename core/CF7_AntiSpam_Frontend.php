@@ -80,20 +80,19 @@ class CF7_AntiSpam_Frontend {
 	 */
 	public function load_scripts() {
 		// Register the contact form antispam scripts
-		add_action('wp_enqueue_scripts', array($this, 'register_scripts'));
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
 
 		// Select the hook to use based on the User's choice
-		$hook = !empty($this->options['optimize_scripts_loading']) ? 'wpcf7_enqueue_scripts' : 'wp_enqueue_scripts';
+		$hook = ! empty( $this->options['optimize_scripts_loading'] ) ? 'wpcf7_enqueue_scripts' : 'wp_enqueue_scripts';
 
 		// enqueue CF7 antispam scripts only if contact form 7 wpcf7_enqueue_scripts is called
-		add_action( $hook, array( $this, 'enqueue_scripts' ));
+		add_action( $hook, array( $this, 'enqueue_scripts' ) );
 	}
 
 	public function setup() {
 		/* It adds hidden fields to the form */
 		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields' ), 1 );
 		add_filter( 'wpcf7_config_validator_available_error_codes', array( $this, 'cf7a_remove_cf7_error_message' ), 10, 2 );
-
 
 		/* It adds a hidden field to the form with a unique value that is encrypted with a cipher */
 		if ( isset( $this->options['check_bot_fingerprint'] ) && intval( $this->options['check_bot_fingerprint'] ) === 1 ) {
@@ -583,7 +582,7 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_check_resend( $cf7, &$abort, $submission ) {
 
 		// Get the hash from the form data if it exists
-		$raw_hash = ! empty( $_POST['_cf7a_hash'] ) ? sanitize_text_field( wp_unslash($_POST['_cf7a_hash'] ) ) : false; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw_hash = ! empty( $_POST['_cf7a_hash'] ) ? sanitize_text_field( wp_unslash( $_POST['_cf7a_hash'] ) ) : false; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( ! $raw_hash ) {
 			return;
 		}

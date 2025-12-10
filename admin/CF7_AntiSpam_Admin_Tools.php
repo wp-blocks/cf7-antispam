@@ -18,8 +18,8 @@ class CF7_AntiSpam_Admin_Tools {
 	/**
 	 * It sets a transient with the name of `cf7a_notice` and the value of the notice
 	 *
-	 * @param string $message The message you want to display.
-	 * @param string $type error, warning, success, info.
+	 * @param string  $message The message you want to display.
+	 * @param string  $type error, warning, success, info.
 	 * @param boolean $dismissible when the notice needs the close button.
 	 */
 	public static function cf7a_push_notice( string $message = 'generic', string $type = 'error', bool $dismissible = true ) {
@@ -35,7 +35,7 @@ class CF7_AntiSpam_Admin_Tools {
 	public static function cf7a_export_blacklist() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklisted = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i ORDER BY `status` DESC", $wpdb->prefix . 'cf7a_blacklist' ) );
+		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC', $wpdb->prefix . 'cf7a_blacklist' ) );
 		foreach ( $blacklisted as $row ) {
 			$meta      = unserialize( $row->meta );
 			$row->meta = $meta;
@@ -52,12 +52,12 @@ class CF7_AntiSpam_Admin_Tools {
 			return;
 		}
 
-		$req_nonce = isset( $_GET[ '_wpnonce' ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ '_wpnonce' ] ) ), $action );
-		if ( !$req_nonce ) {
+		$req_nonce = isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), $action );
+		if ( ! $req_nonce ) {
 			return;
 		}
 
-		$url    = esc_url( menu_page_url( 'cf7-antispam', false ) );
+		$url = esc_url( menu_page_url( 'cf7-antispam', false ) );
 		if ( 'dismiss-banner' === $action ) {
 			if ( get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ) {
 				update_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true );

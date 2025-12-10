@@ -35,7 +35,7 @@ class CF7_Antispam_Blacklist {
 		if ( $ip ) {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$r = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %i WHERE ip = %s", $wpdb->prefix . 'cf7a_blacklist', $ip ) );
+			$r = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE ip = %s', $wpdb->prefix . 'cf7a_blacklist', $ip ) );
 			if ( $r ) {
 				return $r;
 			}
@@ -48,8 +48,8 @@ class CF7_Antispam_Blacklist {
 	 * It adds an IP address to the blocklist.
 	 *
 	 * @param string $ip The IP address to ban.
-	 * @param array $reason The reason why the IP is being banned.
-	 * @param int $spam_score This is the number of points that will be added to the IP's spam score.
+	 * @param array  $reason The reason why the IP is being banned.
+	 * @param int    $spam_score This is the number of points that will be added to the IP's spam score.
 	 *
 	 * @return bool true if the given id was banned
 	 */
@@ -59,7 +59,7 @@ class CF7_Antispam_Blacklist {
 		if ( $ip ) {
 			global $wpdb;
 
-			$ip_row = CF7_Antispam_Blacklist::cf7a_blacklist_get_ip( $ip );
+			$ip_row = self::cf7a_blacklist_get_ip( $ip );
 
 			if ( $ip_row ) {
 				// if the ip is in the blocklist, update the status
@@ -71,14 +71,20 @@ class CF7_Antispam_Blacklist {
 			}
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$r = $wpdb->replace( $wpdb->prefix . 'cf7a_blacklist', array(
+			$r = $wpdb->replace(
+				$wpdb->prefix . 'cf7a_blacklist',
+				array(
 					'ip'     => $ip,
 					'status' => $status,
-					'meta'   => serialize( array(
+					'meta'   => serialize(
+						array(
 							'reason' => $reason,
 							'meta'   => null,
-						) ),
-				), array( '%s', '%d', '%s' ) );
+						)
+					),
+				),
+				array( '%s', '%d', '%s' )
+			);
 
 			if ( $r > - 1 ) {
 				return true;
@@ -102,11 +108,15 @@ class CF7_Antispam_Blacklist {
 			global $wpdb;
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$r = $wpdb->delete( $wpdb->prefix . 'cf7a_blacklist', array(
+			$r = $wpdb->delete(
+				$wpdb->prefix . 'cf7a_blacklist',
+				array(
 					'ip' => $ip,
-				), array(
+				),
+				array(
 					'%s',
-				) );
+				)
+			);
 
 			return ! is_wp_error( $r ) ? $r : $wpdb->last_error;
 		}
@@ -132,7 +142,7 @@ class CF7_Antispam_Blacklist {
 		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i", $table_name ) );
+		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i', $table_name ) );
 
 		return $results ?: array();
 	}
@@ -152,9 +162,9 @@ class CF7_Antispam_Blacklist {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT id, ip, status, meta, modified, created
+				'SELECT id, ip, status, meta, modified, created
 				FROM %i
-				WHERE id = %d",
+				WHERE id = %d',
 				$table_name,
 				$id
 			)
@@ -191,7 +201,7 @@ class CF7_Antispam_Blacklist {
 	 * @return   array Array with 'success' and 'message' keys
 	 */
 	public function cf7a_ban_forever( $id ) {
-		$ban_ip = $this->cf7a_blacklist_get_id( $id );
+		$ban_ip         = $this->cf7a_blacklist_get_id( $id );
 		$plugin_options = CF7_AntiSpam::get_options();
 
 		if ( $ban_ip && ! empty( $plugin_options ) ) {
@@ -263,7 +273,7 @@ class CF7_Antispam_Blacklist {
 
 		return array(
 			'filetype' => 'csv',
-			'data'      => $csv,
+			'data'     => $csv,
 			'filename' => $filename,
 		);
 	}
@@ -304,7 +314,7 @@ class CF7_Antispam_Blacklist {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM %i WHERE ip = %s",
+				'SELECT COUNT(*) FROM %i WHERE ip = %s',
 				$table_name,
 				$ip
 			)
@@ -358,7 +368,7 @@ class CF7_Antispam_Blacklist {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM %i WHERE ip = %s",
+				'SELECT COUNT(*) FROM %i WHERE ip = %s',
 				$table_name,
 				$ip
 			)
@@ -379,12 +389,12 @@ class CF7_Antispam_Blacklist {
 		$table_name = $wpdb->prefix . 'cf7a_blacklist';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$total = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $table_name ) );
+		$total = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table_name ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$today = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM %i WHERE DATE(created) = %s",
+				'SELECT COUNT(*) FROM %i WHERE DATE(created) = %s',
 				$table_name,
 				current_time( 'Y-m-d' )
 			)
@@ -393,16 +403,16 @@ class CF7_Antispam_Blacklist {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$this_week = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM %i WHERE created >= %s",
+				'SELECT COUNT(*) FROM %i WHERE created >= %s',
 				$table_name,
 				gmdate( 'Y-m-d', strtotime( '-7 days' ) )
 			)
 		);
 
 		return array(
-			'total'      => intval( $total ),
-			'today'      => intval( $today ),
-			'this_week'  => intval( $this_week ),
+			'total'     => intval( $total ),
+			'today'     => intval( $today ),
+			'this_week' => intval( $this_week ),
 		);
 	}
 
@@ -429,12 +439,14 @@ class CF7_Antispam_Blacklist {
 
 		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
 
-		/* removes a status count at each balcklisted ip */
+		/*
+		removes a status count at each balcklisted ip */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$updated = $wpdb->query( $wpdb->prepare( "UPDATE %i SET `status` = `status` - %d", $blacklist_table, $status_decrement ) );
+		$updated = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET `status` = `status` - %d', $blacklist_table, $status_decrement ) );
 		cf7a_log( "Status updated for blocklisted (score -1) - $updated users", 1 );
 
-		/* when the line has 0 in status, we can remove it from the blocklist */
+		/*
+		when the line has 0 in status, we can remove it from the blocklist */
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated_deletion = $wpdb->delete(
 			$blacklist_table,

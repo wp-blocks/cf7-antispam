@@ -59,11 +59,13 @@ class CF7_AntiSpam_Uninstaller {
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->query( $wpdb->prepare(
-			"DELETE FROM %i WHERE `meta_key` = %s",
-			$wpdb->prefix . 'postmeta',
-			'_cf7a_b8_classification'
-		) );
+		return $wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE `meta_key` = %s',
+				$wpdb->prefix . 'postmeta',
+				'_cf7a_b8_classification'
+			)
+		);
 	}
 
 	/**

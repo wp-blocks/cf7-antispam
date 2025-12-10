@@ -387,19 +387,24 @@ class CF7_AntiSpam {
 		$post_table = $wpdb->prefix . 'posts';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$all  = $wpdb->get_var( $wpdb->prepare(
-			"SELECT COUNT(*) AS cnt FROM %i WHERE post_status = 'flamingo-spam';"
-			, $post_table ) );
+		$all = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) AS cnt FROM %i WHERE post_status = 'flamingo-spam';",
+				$post_table
+			)
+		);
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$last = $wpdb->get_var( $wpdb->prepare(
+		$last = $wpdb->get_var(
+			$wpdb->prepare(
 				"SELECT COUNT(*) AS cnt
 		 	 FROM %i
 		 	 WHERE post_date_gmt >= FROM_UNIXTIME( %d )
 			 AND post_status = 'flamingo-spam';",
-			$post_table,
+				$post_table,
 				$last_report_timestamp
-			) );
+			)
+		);
 
 		$mail_body .= '<p>' . sprintf(
 				/* translators: %1$s overall spam attempts, %2$s since last report */
