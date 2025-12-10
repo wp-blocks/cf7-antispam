@@ -44,7 +44,7 @@ class CF7_AntiSpam_Admin_Display {
 	private static function cf7a_welcome_message() {
 		self::is_flamingo_active()
 			/* translators: %s is the shortcode */
-			? printf(esc_html__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ), '<code>flamingo_message: "[your-message]"</code>' )
+			? printf( esc_html__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ), '<code>flamingo_message: "[your-message]"</code>' )
 			: esc_html_e( 'Please install and activate the Flamingo plugin to enable advanced B8 Bayesian filtering.', 'cf7-antispam' );
 	}
 
@@ -74,35 +74,35 @@ class CF7_AntiSpam_Admin_Display {
 		$nonce_action = 'cf7a_admin_tab_switch';
 
 		if ( isset( $_GET['tab'] ) ) {
-			if ( isset( $_GET[ '_wpnonce' ] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET[ '_wpnonce' ] ) ), $nonce_action ) ) {
+			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), $nonce_action ) ) {
 				$active_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 			}
 		}
 		?>
 		<div class="cf7a-nav-tab-wrapper">
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'dashboard' ), $nonce_action ) ); ?>"
-				 class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'settings' ), $nonce_action ) ); ?>"
-				 class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Settings', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'blocklist' ), $nonce_action ) ); ?>"
-				 class="cf7a-nav-tab tab-blocklist <?php echo $active_tab === 'blocklist' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-blocklist <?php echo $active_tab === 'blocklist' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blocklist', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'tools' ), $nonce_action ) ); ?>"
-				 class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'import-export' ), $nonce_action ) ); ?>"
-				 class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'import-export' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'import-export' ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import/Export', 'cf7-antispam' ); ?>
 			</a>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'debug' ), $nonce_action ) ); ?>"
-					 class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
+					class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
 					<span class="dashicons dashicons-code-standards"></span> <?php esc_html_e( 'Debug', 'cf7-antispam' ); ?>
 				</a>
 			<?php endif; ?>
@@ -110,35 +110,47 @@ class CF7_AntiSpam_Admin_Display {
 
 		<div class="cf7a-tab-content">
 			<div id="dashboard" class="cf7a-tab-panel <?php echo $active_tab === 'dashboard' ? 'active' : ''; ?>">
-				<?php if ($active_tab === 'dashboard') {
+				<?php
+				if ( $active_tab === 'dashboard' ) {
 					$this->render_dashboard_tab();
-				} ?>
+				}
+				?>
 			</div>
 			<div id="settings" class="cf7a-tab-panel <?php echo $active_tab === 'settings' ? 'active' : ''; ?>">
-				<?php if ($active_tab === 'settings') {
+				<?php
+				if ( $active_tab === 'settings' ) {
 					$this->render_settings_tab();
-				} ?>
+				}
+				?>
 			</div>
 			<div id="blocklist" class="cf7a-tab-panel <?php echo $active_tab === 'blocklist' ? 'active' : ''; ?>">
-				<?php if ($active_tab === 'blocklist') {
+				<?php
+				if ( $active_tab === 'blocklist' ) {
 					$this->render_blacklist_tab();
-				} ?>
+				}
+				?>
 			</div>
 			<div id="tools" class="cf7a-tab-panel <?php echo $active_tab === 'tools' ? 'active' : ''; ?>">
-				<?php if ($active_tab === 'tools') {
+				<?php
+				if ( $active_tab === 'tools' ) {
 					$this->render_tools_tab();
-				} ?>
+				}
+				?>
 			</div>
 			<div id="import-export" class="cf7a-tab-panel <?php echo $active_tab === 'import-export' ? 'active' : ''; ?>">
-				<?php if ($active_tab === 'import-export') {
+				<?php
+				if ( $active_tab === 'import-export' ) {
 					$this->render_import_export_tab();
-				} ?>
+				}
+				?>
 			</div>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<div id="debug" class="cf7a-tab-panel <?php echo $active_tab === 'debug' ? 'active' : ''; ?>">
-					<?php if ($active_tab === 'debug') {
+					<?php
+					if ( $active_tab === 'debug' ) {
 						$this->render_debug_tab();
-					} ?>
+					}
+					?>
 				</div>
 			<?php endif; ?>
 		</div>
@@ -161,7 +173,7 @@ class CF7_AntiSpam_Admin_Display {
 		global $wpdb;
 		// Check blocklist entries
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklist_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $wpdb->prefix . 'cf7a_blacklist' ) );
+		$blacklist_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $wpdb->prefix . 'cf7a_blacklist' ) );
 		$has_blacklist   = intval( $blacklist_count ) > 0;
 
 		// Check wordlist entries (beyond just the b8*texts token)
@@ -287,7 +299,7 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( false === $total_blocked ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$total_blocked = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i", $blacklist_table ) );
+			$total_blocked = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $blacklist_table ) );
 			wp_cache_set( $cache_key_total, $total_blocked, 'cf7a_blacklist_stats', $cache_time_short );
 		}
 
@@ -297,10 +309,15 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( false === $status_data ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$status_data = $wpdb->get_results( $wpdb->prepare( "SELECT status, COUNT(*) as count
+			$status_data = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT status, COUNT(*) as count
 			FROM %i
 			GROUP BY status
-			ORDER BY status ASC", $blacklist_table ) );
+			ORDER BY status ASC',
+					$blacklist_table
+				)
+			);
 			wp_cache_set( $cache_key_status, $status_data, 'cf7a_blacklist_stats', $cache_time_short );
 		}
 
@@ -334,9 +351,12 @@ class CF7_AntiSpam_Admin_Display {
 		}
 
 		// Remove empty ranges for cleaner display
-		$status_ranges = array_filter( $status_ranges, function ( $count ) {
-			return $count > 0;
-		} );
+		$status_ranges = array_filter(
+			$status_ranges,
+			function ( $count ) {
+				return $count > 0;
+			}
+		);
 
 		// Get detailed reason stats with caching
 		$cache_key_reasons = 'cf7a_reason_counts';
@@ -344,9 +364,14 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( false === $reason_counts ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$meta_data = $wpdb->get_results( $wpdb->prepare( "SELECT meta
+			$meta_data = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT meta
 			FROM %i
-			WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'", $wpdb->prefix . 'cf7a_blacklist' ) );
+			WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'",
+					$wpdb->prefix . 'cf7a_blacklist'
+				)
+			);
 
 			$reason_counts = array();
 			foreach ( $meta_data as $row ) {
@@ -363,7 +388,7 @@ class CF7_AntiSpam_Admin_Display {
 								if ( ! isset( $reason_counts[ $reason_name ] ) ) {
 									$reason_counts[ $reason_name ] = 0;
 								}
-								++ $reason_counts[ $reason_name ];
+								++$reason_counts[ $reason_name ];
 							}
 						}
 					}
@@ -383,11 +408,16 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( false === $top_spam_words ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$top_spam_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_spam
+			$top_spam_words = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT token, count_spam
 			FROM %i
 			WHERE count_spam > 0 AND token != 'b8*texts' AND token != 'b8*dbversion'
 			ORDER BY count_spam DESC
-			LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
+			LIMIT 10",
+					$wpdb->prefix . 'cf7a_wordlist'
+				)
+			);
 			wp_cache_set( $cache_key_spam, $top_spam_words, 'cf7a_wordlist_stats', $cache_time_long );
 		}
 
@@ -397,11 +427,16 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( false === $top_ham_words ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$top_ham_words = $wpdb->get_results( $wpdb->prepare( "SELECT token, count_ham
+			$top_ham_words = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT token, count_ham
 			FROM %i
 			WHERE count_ham > 0 AND token != 'b8*texts' AND token != 'b8*dbversion'
 			ORDER BY count_ham DESC
-			LIMIT 10", $wpdb->prefix . 'cf7a_wordlist' ) );
+			LIMIT 10",
+					$wpdb->prefix . 'cf7a_wordlist'
+				)
+			);
 			wp_cache_set( $cache_key_ham, $top_ham_words, 'cf7a_wordlist_stats', $cache_time_long );
 		}
 		?>
@@ -553,23 +588,16 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	public function cf7a_get_a_random_tip() {
 		$tips = array(
-			__( 'Do you know,that you can save settings simply using the shortcut [Ctrl + S].', 'cf7-antispam' ),
-			__( 'In the CF7-Antispam settings page you can enter values in textarea using the comma-separated format and, on saving, the strings will be split up into one per line format.', 'cf7-antispam' ),
-			sprintf(
-			/* translators: %s is the (hypothetical) link to the contact page (www.my-website.xyz/contacts). */
-				'%s <a href="%s" target="_blank">%s</a>',
-				__( 'It is always a good practice to NOT name "contact" the slug of the page with the form. This makes it very easy for a bot to find it, doesn\'t it?', 'cf7-antispam' ),
-				trailingslashit( get_bloginfo( 'url' ) ) . __( 'contacts', 'cf7-antispam' ),
-				__( 'Give a try', 'cf7-antispam' )
-			),
-			sprintf(
-			/* translators: %s is the link to Flamingo documentation. */
-				"%s <a href='%s' target='_blank'>%s</a>. %s",
-				__( 'As Flamingo also CF7-Antispam can handle', 'cf7-antispam' ),
-				esc_url_raw( 'https://contactform7.com/save-submitted-messages-with-flamingo/' ),
-				__( 'fields with multiple tags', 'cf7-antispam' ),
-				__( 'In this way, you can scan as a message multiple fields at once (subject line or second text field...)', 'cf7-antispam' )
-			),
+			__( 'Did you know? You can customize the spam score threshold for individual filters in the Settings tab to fine-tune protection.', 'cf7-antispam' ),
+			__( 'Tip: Enable the Flamingo plugin to unlock advanced B8 Bayesian filtering, which learns from your ham and spam messages.', 'cf7-antispam' ),
+			__( 'Secure your forms by blocking specific languages. Go to Settings > Language to disallow messages in languages irrelevant to your business.', 'cf7-antispam' ),
+			__( 'Use GeoIP filtering to block submissions from specific countries or continents often associated with spam.', 'cf7-antispam' ),
+			__( 'The Honeypot feature adds a hidden field that only bots fill out. Ensure it\'s enabled in the Settings for effortless protection.', 'cf7-antispam' ),
+			__( 'Too fast? The "Time Submission" check flags forms submitted inhumanly quickly. You can adjust the minimum time required.', 'cf7-antispam' ),
+			__( 'Check the Blocklist tab to see blocked IPs. You can manually ban or unban IPs and view the reasons for their blocking.', 'cf7-antispam' ),
+			__( 'Have a trusted static IP? Add it to the IP Whitelist in Settings to ensure your own tests or admin submissions are never blocked.', 'cf7-antispam' ),
+			__( 'The "Max Attempts" setting automatically blocks IPs that repeatedly trigger spam filters. Adjust this limit to be stricter or more lenient.', 'cf7-antispam' ),
+			__( 'Browser fingerprinting helps identify bots even if they change IPs. Ensure "Check Bot Fingerprint" is active for robust detection.', 'cf7-antispam' ),
 		);
 
 		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
@@ -604,6 +632,7 @@ class CF7_AntiSpam_Admin_Display {
 		<div class="cf7a-card">
 			<h3><?php esc_html_e( 'Plugin Settings', 'cf7-antispam' ); ?></h3>
 			<?php $this->cf7a_print_section_options_subtitle(); ?>
+			<?php $this->cf7a_get_debug_info_forms(); ?>
 			<form method="post" action="options.php" id="cf7a_settings" enctype="multipart/form-data">
 				<?php
 				settings_fields( 'cf7_antispam_options' );
@@ -618,7 +647,7 @@ class CF7_AntiSpam_Admin_Display {
 	private function cf7a_export_button() {
 		printf(
 			'<p class="cf7a-export-blocklist-button alignright"><button class="button cf7a_export_action" data-action="export-blocklist" data-nonce="%s">%s</button></p>',
-			esc_attr(wp_create_nonce( 'cf7a-nonce' )),
+			esc_attr( wp_create_nonce( 'cf7a-nonce' ) ),
 			esc_html__( 'Export blocklist', 'cf7-antispam' )
 		);
 	}
@@ -713,7 +742,7 @@ class CF7_AntiSpam_Admin_Display {
 			<input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( add_query_arg( 'settings-updated', 'true', admin_url( 'admin.php?page=cf7-antispam' ) ) ); ?>">
 
 			<label for="cf7a_options_area"><?php esc_html_e( 'Copy or paste here the settings to import it or export it', 'cf7-antispam' ); ?></label>
-			<textarea id="cf7a_options_area" rows="20" style="width: 100%;" data-nonce="<?php echo esc_attr(wp_create_nonce( 'cf7a-nonce' )); ?>"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
+			<textarea id="cf7a_options_area" rows="20" style="width: 100%;" data-nonce="<?php echo esc_attr( wp_create_nonce( 'cf7a-nonce' ) ); ?>"><?php echo wp_json_encode( $this->options, JSON_PRETTY_PRINT ); ?></textarea>
 
 			<div class="cf7a_buttons cf7a_buttons_export_import" style="margin-top: 10px;">
 				<button type="button" id="cf7a_download_button" class="button button-primary">Download</button>
@@ -742,8 +771,8 @@ class CF7_AntiSpam_Admin_Display {
 	public static function cf7a_get_blacklisted_table() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklisted = $wpdb->get_results( $wpdb->prepare("SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000", $wpdb->prefix . 'cf7a_blacklist' ) );
-		$nonce = wp_create_nonce( 'cf7a-nonce' );
+		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blacklist' ) );
+		$nonce       = wp_create_nonce( 'cf7a-nonce' );
 
 		if ( $blacklisted ) {
 			$count = count( $blacklisted );
@@ -755,7 +784,7 @@ class CF7_AntiSpam_Admin_Display {
 
 				$rows .= sprintf(
 					'<div class="row row-%s"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></p><span class="data">%s</span><span class="data date"><b>%s:</b> %s</span></div></div>',
-					esc_attr( intval($row->id) ),
+					esc_attr( intval( $row->id ) ),
 					cf7a_format_status( $row->status - $max_attempts ),
 					esc_html( $row->ip ),
 					esc_attr( $row->id ),
@@ -765,7 +794,7 @@ class CF7_AntiSpam_Admin_Display {
 					esc_attr( $nonce ),
 					esc_html__( '[ban forever]', 'cf7-antispam' ),
 					cf7a_compress_array( $meta['reason'], true ),
-					esc_html__( 'First seen on', 'cf7-antispam'),
+					esc_html__( 'First seen on', 'cf7-antispam' ),
 					$row->created
 				);
 			}
@@ -781,13 +810,13 @@ class CF7_AntiSpam_Admin_Display {
 						'p'     => array( 'class' => array() ),
 						'a'     => array( 'href' => array() ),
 						'b'     => array(),
-						'br'     => array(),
+						'br'    => array(),
 						'span'  => array(
-							'class' => array(),
-							'style' => array(),
-							'data-action' => array(),
-							'data-id' => array(),
-							'data-nonce' => array(),
+							'class'         => array(),
+							'style'         => array(),
+							'data-action'   => array(),
+							'data-id'       => array(),
+							'data-nonce'    => array(),
 							'data-callback' => array(),
 						),
 					)
@@ -871,8 +900,6 @@ class CF7_AntiSpam_Admin_Display {
 
 			$this->cf7a_get_debug_info_rest_api();
 
-			$this->cf7a_get_debug_info_forms();
-
 			$this->cf7a_get_debug_info_options();
 		}
 	}
@@ -887,23 +914,40 @@ class CF7_AntiSpam_Admin_Display {
 			return;
 		}
 
-		$forms = \WPCF7_ContactForm::find( array(
-			'posts_per_page' => -1,
-		) );
+		$forms = \WPCF7_ContactForm::find(
+			array(
+				'posts_per_page' => -1,
+			)
+		);
 
 		if ( empty( $forms ) ) {
 			printf(
-				'<h3 class="title"><span class="dashicons dashicons-feedback"></span> %s</h3><p>%s</p>',
+				'<h3>%s</h3><p>%s</p>',
 				esc_html__( 'Contact Forms', 'cf7-antispam' ),
-				esc_html__( 'No Contact Form 7 forms found.', 'cf7-antispam' )
+				esc_html__( 'No Contact Form 7 forms found. Please create a form before using this plugin.', 'cf7-antispam' )
 			);
+			return;
+		}
+
+		// loop through forms and check if flamingo_message is set
+		$form_has_missing_tag = false;
+		foreach ( $forms as $form ) {
+			$flamingo_message_val = $form->pref( 'flamingo_message' );
+			if ( empty( $flamingo_message_val ) ) {
+				$form_has_missing_tag = true;
+				break;
+			}
+		}
+
+		// if is set for all forms there is no reason to show the table
+		if ( ! $form_has_missing_tag ) {
 			return;
 		}
 
 		$rows = '';
 		foreach ( $forms as $form ) {
 			$flamingo_message_val = $form->pref( 'flamingo_message' );
-			$has_correct_field    = !empty($flamingo_message_val);
+			$has_correct_field    = ! empty( $flamingo_message_val );
 
 			$status_icon = $has_correct_field
 				? '<span class="dashicons dashicons-yes" style="color: #46b450;"></span>'
@@ -925,21 +969,28 @@ class CF7_AntiSpam_Admin_Display {
 		}
 
 		printf(
-			'<h3 class="title"><span class="dashicons dashicons-feedback"></span> %s</h3>
-			<table class="widefat striped" style="margin-top: 10px;">
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>%s</th>
-						<th>%s</th>
-						<th>%s</th>
-					</tr>
-				</thead>
-				<tbody>
-					%s
-				</tbody>
-			</table>',
+			'<h3>%s</h3>
+	<p>%s<code>%s</code>%s</p>
+	<p>%s</p>
+	<table class="widefat striped" style="margin-top: 10px; max-width: 760px;">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>%s</th>
+				<th>%s</th>
+				<th>%s</th>
+			</tr>
+		</thead>
+		<tbody>
+			%s
+		</tbody>
+	</table>
+	<hr style="margin: 2rem 0 0;" />',
 			esc_html__( 'Contact Forms Configuration', 'cf7-antispam' ),
+			esc_html__( 'Please ensure that the Flamingo message tag is correctly configured. This tag tells the plugin which textarea field contains the message content. Add the following in the Additional Settings tab:', 'cf7-antispam' ),
+			esc_html( 'flamingo_message: "[your-message-field]"' ),
+			esc_html__( ' (replace [your-message-field] with the actual name of your textarea field).', 'cf7-antispam' ),
+			esc_html__( 'If the field is not defined, the plugin will try to detect it automatically. It will first look for a textarea named similar to "message". If nothing is found, it will merge all input fields together (excluding phone and email fields, and fields shorter than 20 characters). This fallback is not always accurate, so manual configuration is recommended.', 'cf7-antispam' ),
 			esc_html__( 'Form Name & Link', 'cf7-antispam' ),
 			esc_html__( 'Flamingo Message Value', 'cf7-antispam' ),
 			esc_html__( 'Valid', 'cf7-antispam' ),
@@ -976,26 +1027,29 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private function cf7a_get_debug_info_options() {
 		global $wpdb;
-		$cf7_plugin_file = WP_PLUGIN_DIR . '/contact-form-7/wp-contact-form-7.php';
+		$cf7_plugin_file      = WP_PLUGIN_DIR . '/contact-form-7/wp-contact-form-7.php';
 		$flamingo_plugin_file = WP_PLUGIN_DIR . '/flamingo/flamingo.php';
-		$debug_data = array(
-			'cf7a_version' => CF7ANTISPAM_VERSION,
-			'cf7a_options' => $this->options,
-			'wp_version' => get_bloginfo( 'version' ),
-			'contact_form_7_version' => $this->get_plugin_version($cf7_plugin_file),
-			'flamingo_version' => $this->get_plugin_version($flamingo_plugin_file),
-			'php_version' => PHP_VERSION,
-			'mysql_version' => $wpdb->db_version(),
-			'plugins' => array_map(function($plugin) {
-				return $plugin['Name'] . ' (' . $plugin['Version'] . ')';
-			}, get_plugins()),
-			'wp_debug' => WP_DEBUG ? 'Enabled' : 'Disabled',
-			'wp_debug_log' => WP_DEBUG_LOG ? 'Enabled' : 'Disabled',
-			'wp_debug_display' => WP_DEBUG_DISPLAY ? 'Enabled' : 'Disabled',
-			'wp_memory_limit' => WP_MEMORY_LIMIT,
-			'php_memory_limit' => ini_get( 'memory_limit' ),
-			'upload_max_size' => ini_get( 'upload_max_size' ),
-			'post_max_size' => ini_get( 'post_max_size' ),
+		$debug_data           = array(
+			'cf7a_version'           => CF7ANTISPAM_VERSION,
+			'cf7a_options'           => $this->options,
+			'wp_version'             => get_bloginfo( 'version' ),
+			'contact_form_7_version' => $this->get_plugin_version( $cf7_plugin_file ),
+			'flamingo_version'       => $this->get_plugin_version( $flamingo_plugin_file ),
+			'php_version'            => PHP_VERSION,
+			'mysql_version'          => $wpdb->db_version(),
+			'plugins'                => array_map(
+				function ( $plugin ) {
+					return $plugin['Name'] . ' (' . $plugin['Version'] . ')';
+				},
+				get_plugins()
+			),
+			'wp_debug'               => WP_DEBUG ? 'Enabled' : 'Disabled',
+			'wp_debug_log'           => WP_DEBUG_LOG ? 'Enabled' : 'Disabled',
+			'wp_debug_display'       => WP_DEBUG_DISPLAY ? 'Enabled' : 'Disabled',
+			'wp_memory_limit'        => WP_MEMORY_LIMIT,
+			'php_memory_limit'       => ini_get( 'memory_limit' ),
+			'upload_max_size'        => ini_get( 'upload_max_size' ),
+			'post_max_size'          => ini_get( 'post_max_size' ),
 		);
 		printf( '<h2 class="title">%s</h2>', esc_html__( 'Options debug', 'cf7-antispam' ) );
 		printf(

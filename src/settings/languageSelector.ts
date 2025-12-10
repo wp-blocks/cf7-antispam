@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	/**
 	 * We only want to initialize the language selector if we are on the admin page
 	 */
-	if (document.querySelector('#cf7-antispam-admin') !== null) {
+	if (document.querySelector('.cf7-antispam-admin') !== null) {
 		initLanguageSelector();
 	}
 });

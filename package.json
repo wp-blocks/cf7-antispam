@@ -2,7 +2,7 @@
 	"name": "cf7-antispam",
 	"author": "Erik Golinelli <erik@codekraft.it>",
 	"license": "GPL-2.0-only",
-	"version": "0.7.2",
+	"version": "0.7.3",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
@@ -38,7 +38,7 @@
 		"postinstall": "husky install",
 		"makepot": "npx make-pot",
 		"PHPCS": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam PHPCS",
-		"composer:install": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam install",
+		"composer:install": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam setup",
 		"composer:build": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam build",
 		"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
 	},

@@ -102,7 +102,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	public function icon() {
 		printf(
 			'<img src="%s" class="integration-icon" style="width: 32px;margin: 10px;">',
-			esc_url( CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg')
+			esc_url( CF7ANTISPAM_PLUGIN_URL . '/assets/icon.svg' )
 		);
 	}
 
@@ -159,7 +159,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 			if ( 'setup' == $action && 'POST' == $_SERVER['REQUEST_METHOD'] ) {
 				if ( ! empty( $_POST['reset'] ) ) {
 					// check the nonce
-					if ( empty($_POST["_wpnonce"]) || ! wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['_wpnonce'] ) ), 'cf7a' ) ) {
+					if ( empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'cf7a' ) ) {
 						wp_die( 'Security check failed' );
 					}
 					$redirect_to = $this->menu_page_url( 'action=setup' );
