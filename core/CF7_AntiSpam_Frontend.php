@@ -114,6 +114,15 @@ class CF7_AntiSpam_Frontend {
 			add_filter( 'wpcf7_form_elements', array( $this, 'cf7a_honeypot_add' ) );
 		}
 
+		/* Intercept confirmed spam submissions to trigger countermeasures */
+		if ( isset( $this->options['enable_countermeasures'] ) && intval( $this->options['enable_countermeasures'] ) === 1 ) {
+			// Hook early in the submission process
+			add_action( 'wpcf7_submit', array( $this, 'cf7a_trigger_trap_if_bot' ), 10, 2 );
+
+			// Listen for the trap request on init
+			add_action( 'init', array( $this, 'cf7a_trap_listener' ) );
+		}
+
 		/* It gets the form, formats it, and then echoes it out */
 		if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
 			add_filter( 'the_content', array( $this, 'cf7a_honeyform' ), 99 );
@@ -620,5 +629,129 @@ class CF7_AntiSpam_Frontend {
 
 		// abort the form
 		$abort = true;
+	}
+
+	/**
+	 * Checks if the submitter is a bot and redirects to the trap immediately.
+	 *
+	 * @param WPCF7_ContactForm $contact_form The current contact form.
+	 * @param array             $result       The result of the submission (status, message, etc).
+	 */
+	public function cf7a_trigger_trap_if_bot( $contact_form, $result ) {
+		$submission = WPCF7_Submission::get_instance();
+
+		if ( ! $submission ) {
+			return;
+		}
+
+		// 1. Run our detection logic (is it spam?)
+		$is_bot = 'spam' === $result['status'];
+
+		// 2. If it is a bot, initiate the Trap Protocol
+		if ( $is_bot ) {
+
+			// Log the catch
+			$ip = cf7a_get_real_ip();
+			error_log( '[CF7 AntiSpam] Behavioral Trap Triggered for IP: ' . $ip );
+
+			// 3. The Redirection Strategy
+			$mode = $this->options['countermeasure_mode'] ?? 'loop';
+
+			$trap_url = add_query_arg(
+				array(
+					'cf7a_trap' => 'active',
+					'mode'      => $mode,
+					'token'     => md5( time() ),
+				),
+				home_url( '/' )
+			);
+
+			// Clean output buffer to ensure no previous HTML interferes
+			while ( ob_get_level() ) {
+				ob_end_clean();
+			}
+
+			// Send them away
+			wp_redirect( $trap_url, 301 );
+			exit; // Hard exit to kill CF7 processing instantly
+		}
+	}
+
+	/**
+	 * The Trap Listener.
+	 * Handles the request if a bot is redirected here.
+	 * This runs on 'init', so it's lightweight and doesn't load the whole theme.
+	 */
+	public function cf7a_trap_listener() {
+		if ( ! isset( $_GET['cf7a_trap'] ) || 'active' !== $_GET['cf7a_trap'] ) {
+			return;
+		}
+
+		$mode = isset( $_GET['mode'] ) ? sanitize_text_field( $_GET['mode'] ) : 'loop';
+
+		// 1. Redirect Loop Strategy (The "Carousel")
+		// Low server resource usage, high annoyance for bot
+		if ( 'loop' === $mode ) {
+			$next_url = add_query_arg(
+				array(
+					'cf7a_trap' => 'active',
+					'mode'      => 'loop',
+					'req'       => md5( time() . wp_rand() ),
+				),
+				home_url( '/' )
+			);
+
+			header( 'HTTP/1.1 301 Moved Permanently' );
+			header( 'Location: ' . $next_url );
+			header( 'X-Bot-Defense: You are stuck in a loop.' );
+			exit;
+		}
+
+		// 2. Tarpit / Fake Infinite Form Strategy
+		// Keeps the connection open sending garbage data slowly
+		if ( 'tarpit' === $mode ) {
+			// Disable output buffering to send data immediately
+			if ( function_exists( 'apache_setenv' ) ) {
+				@apache_setenv( 'no-gzip', 1 );
+			}
+			@ini_set( 'zlib.output_compression', 0 );
+			while ( ob_get_level() ) {
+				ob_end_clean();
+			}
+
+			header( 'Content-Type: text/html; charset=utf-8' );
+			header( 'Cache-Control: no-cache' );
+
+			echo '<!DOCTYPE html><html><head><title>Processing...</title></head><body>';
+			echo '<h1>Please wait, validating your submission...</h1>';
+			echo "<form method='POST' action='?'>";
+
+			// Loop "almost" infinitely (capped to prevent server worker exhaustion)
+			// 2000 iterations * 0.1s sleep = ~3 minutes of wasted bot time
+			for ( $i = 0; $i < 2000; $i++ ) {
+
+				// If the client disconnected, stop the script to save server RAM
+				if ( connection_aborted() ) {
+					exit;
+				}
+
+				// Output a fake input field
+				$name = 'field_' . md5( $i );
+				$val  = base64_encode( random_bytes( 10 ) );
+				echo "<input type='hidden' name='$name' value='$val' />\n";
+
+				// Add some random garbage comment to confuse parsers
+				echo "\n";
+
+				// Flush buffer to force sending data to the client
+				flush();
+
+				// Tarpit: Sleep for 100ms to keep connection open but slow
+				usleep( 100000 );
+			}
+
+			echo '</form></body></html>';
+			exit;
+		}
 	}
 }
