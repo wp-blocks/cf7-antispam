@@ -383,7 +383,7 @@ class CF7_AntiSpam_Frontend {
 		/* add the language if required */
 		if ( intval( $this->options['check_language'] ) === 1 ) {
 			$accept                          = empty( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? false : sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) );
-			$fields[ $prefix . '_language' ] = isset( $accept ) ?
+			$fields[ $prefix . '_language' ] = $accept ?
 				cf7a_crypt( $accept, $this->options['cf7a_cipher'] ) :
 				cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
 		}
