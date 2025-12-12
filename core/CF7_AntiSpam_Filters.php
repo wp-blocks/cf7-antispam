@@ -679,7 +679,9 @@ class CF7_AntiSpam_Filters {
 			$fails[] = 'bot_fingerprint';
 		}
 
-		if ( isset( $_POST[ $prefix . 'isIos' ] ) || isset( $_POST[ $prefix . 'isFFox' ] ) || isset( $_POST[ $prefix . 'isIE' ] ) ) {
+		// Safari on all platforms doesn't support navigator.deviceMemory, neither does Firefox or IE.
+		$memory_unsupported_browser = isset( $_POST[ $prefix . 'isIos' ] ) || isset( $_POST[ $prefix . 'isFFox' ] ) || isset( $_POST[ $prefix . 'isIE' ] ) || isset( $_POST[ $prefix . 'isSafari' ] );
+		if ( $memory_unsupported_browser ) {
 			if ( $bot_fingerprint['memory'] ) {
 				$fails[] = 'memory_supported';
 			}

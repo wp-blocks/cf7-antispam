@@ -118,23 +118,33 @@ export function setupWebGLTest(hiddenInputsContainer: HTMLElement): void {
 			// @ts-ignore
 			gl.getExtension('WEBGL_debug_renderer_info');
 
+		// Safari and other privacy-focused browsers block WEBGL_debug_renderer_info.
+		// When debugInfo is null, we can't get vendor/renderer info, but this is
+		// a sign of a privacy-conscious browser (legitimate user), not a bot.
+		// Bots typically have detectable WebGL signatures like "Brian Paul" or "Mesa OffScreen".
+
 		try {
 			// WebGL Vendor Test
 			const vendor = debugInfo?.UNMASKED_VENDOR_WEBGL
 				? gl.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL)
 				: null;
 			webGLVendorElement.innerHTML = vendor || 'Unknown';
+
+			// Fail only for known bot/emulator vendors, pass otherwise (including null)
 			if (vendor === 'Brian Paul' || vendor === 'Google Inc.') {
 				hiddenInputsContainer.append(
 					createCF7Afield('webgl', 'failed')
 				);
 			} else {
+				// Pass for real hardware vendors OR when extension is blocked (privacy browsers)
 				hiddenInputsContainer.append(
 					createCF7Afield('webgl', 'passed')
 				);
 			}
 		} catch (e) {
 			webGLVendorElement.innerHTML = 'Error: ' + e;
+			// On error, pass the test - errors often indicate privacy protections
+			hiddenInputsContainer.append(createCF7Afield('webgl', 'passed'));
 		}
 
 		try {
@@ -143,6 +153,8 @@ export function setupWebGLTest(hiddenInputsContainer: HTMLElement): void {
 				? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
 				: null;
 			webGLRendererElement.innerHTML = renderer || 'Unknown';
+
+			// Fail only for known bot/emulator renderers
 			if (
 				renderer === 'Mesa OffScreen' ||
 				(renderer && renderer.indexOf('Swift') !== -1)
@@ -151,14 +163,20 @@ export function setupWebGLTest(hiddenInputsContainer: HTMLElement): void {
 					createCF7Afield('webgl_render', 'failed')
 				);
 			} else {
+				// Pass for real hardware renderers OR when extension is blocked (privacy browsers)
 				hiddenInputsContainer.append(
 					createCF7Afield('webgl_render', 'passed')
 				);
 			}
 		} catch (e) {
 			webGLRendererElement.innerHTML = 'Error: ' + e;
+			// On error, pass the test - errors often indicate privacy protections
+			hiddenInputsContainer.append(
+				createCF7Afield('webgl_render', 'passed')
+			);
 		}
 	} else {
+		// No WebGL support at all is suspicious - this could be a headless browser or bot
 		hiddenInputsContainer.append(createCF7Afield('webgl', 'failed'));
 		hiddenInputsContainer.append(createCF7Afield('webgl_render', 'failed'));
 	}
@@ -282,7 +300,7 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 				if (
 					void 0 === canvas2d ||
 					'function' !==
-						typeof canvasElement?.getContext('2d')?.fillText
+					typeof canvasElement?.getContext('2d')?.fillText
 				) {
 					isOkCanvas = false;
 				} else {
