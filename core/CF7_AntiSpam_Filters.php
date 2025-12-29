@@ -457,7 +457,9 @@ class CF7_AntiSpam_Filters {
 			$max_attempts   = intval( $options['max_attempts'] );
 
 			if ( $ip_data_status >= $max_attempts ) {
-				++$data['spam_score'];
+				if ( intval( $options['infinite_blacklisting'] ) === 1 ) {
+					++ $data['spam_score'];
+				}
 				$data['is_spam']                = true;
 				$data['reasons']['blocklisted'] = $ip_data_status;
 
