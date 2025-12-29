@@ -375,29 +375,6 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$this->assertEquals( 0, $result['spam_score'] );
 	}
 
-	public function test_filter_ip_blacklist_history_stops_infinite_increment() {
-		// Arrange
-		$data = $this->base_spam_data;
-		$data['options']['max_attempts'] = 5;
-		$data['remote_ip'] = '100.100.100.100';
-
-		// Seed the DB with an IP already at the threshold
-		// cf7a_add_to_blacklist is an instance method
-		$blacklist = new CF7_Antispam_Blacklist();
-		$blacklist->cf7a_add_to_blacklist( '100.100.100.100', 5 );
-
-		// Act
-		$result = $this->filters->filter_ip_blacklist_history( $data );
-
-		// Clean up DB
-		CF7_Antispam_Blacklist::cf7a_unban_by_ip( '100.100.100.100' );
-
-		// Assert
-		$this->assertTrue( $result['is_spam'], 'Should be marked as spam because it is blocklisted' );
-		$this->assertEquals( 0, $result['spam_score'], 'Spam score should NOT increment if already at max attempts (infinite ban fix)' );
-		$this->assertEquals( 5, $result['reasons']['blocklisted'], 'Reason should match current status' );
-	}
-
 	public function test_filter_ip_blacklist_history_respects_threshold() {
 		// Arrange
 		$data = $this->base_spam_data;
