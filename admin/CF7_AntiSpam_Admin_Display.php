@@ -873,13 +873,18 @@ class CF7_AntiSpam_Admin_Display {
 				);
 			}
 
+			$this->cf7a_get_debug_ip_analysis();
+
+			$this->cf7a_get_debug_info_rest_api();
+
 			if ( ! empty( $this->options['check_language'] ) ) {
 				$result = $this->cf7a_get_debug_info_geoip();
 				if ( $result ) {
 					printf(
 						'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3>%s',
 						esc_html( $result['title'] ),
-						$result['content'] // phpcs:ignore WordPress.Security.EscapeOutput
+						// phpcs:ignore WordPress.Security.EscapeOutput
+						$result['content']
 					);
 				}
 			} else {
@@ -897,8 +902,6 @@ class CF7_AntiSpam_Admin_Display {
 					esc_html__( 'is disabled', 'cf7-antispam' )
 				);
 			}
-
-			$this->cf7a_get_debug_info_rest_api();
 
 			$this->cf7a_get_debug_info_options();
 		}
@@ -1060,6 +1063,55 @@ class CF7_AntiSpam_Admin_Display {
 					print_r( $debug_data, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				)
 			)
+		);
+	}
+
+	/**
+	 * It returns a string containing a formatted HTML table with the IP analysis
+	 *
+	 * @return void the HTML for the IP analysis.
+	 */
+	private function cf7a_get_debug_ip_analysis() {
+		printf( '<h2 class="title">%s</h2>', esc_html__( 'IP Analysis', 'cf7-antispam' ) );
+
+		$php_ip       = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'unavailable';
+		$real_ip      = cf7a_get_real_ip();
+		$cf_ip        = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : 'unavailable';
+		$forwarded_ip = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 'unavailable';
+
+		printf(
+			'<table class="widefat striped" style="max-width: 600px;">
+				<thead>
+					<tr>
+						<th>%s</th>
+						<th>%s</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><strong>cf7a_get_real_ip</strong></td>
+						<td>%s</td>
+					</tr>
+					<tr>
+						<td><strong>1) HTTP_CF_CONNECTING_IP</strong></td>
+						<td>%s</td>
+					</tr>
+					<tr>
+						<td><strong>2) HTTP_X_FORWARDED_FOR</strong></td>
+						<td>%s</td>
+					</tr>
+					<tr>
+						<td><strong>3) $_SERVER["REMOTE_ADDR"]</strong></td>
+						<td>%s</td>
+					</tr>
+				</tbody>
+			</table>',
+			esc_html__( 'Variable', 'cf7-antispam' ),
+			esc_html__( 'Value', 'cf7-antispam' ),
+			esc_html( $real_ip ),
+			esc_html( $cf_ip ),
+			esc_html( $forwarded_ip ),
+			esc_html( $php_ip )
 		);
 	}
 
