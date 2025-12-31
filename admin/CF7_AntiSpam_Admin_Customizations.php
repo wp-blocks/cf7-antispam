@@ -53,7 +53,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function __construct() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			return esc_html__( 'Administrators only', 'cf7-antispam' );
+			exit();
 		}
 
 		/* the plugin options */
@@ -881,14 +881,14 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * It takes an array of strings, removes any empty strings, and returns the array
 	 *
-	 * @param array $array The array to be cleaned.
+	 * @param array $arr The array to be cleaned.
 	 *
 	 * @return array an array of values that are not empty.
 	 */
-	private function cf7a_remove_empty_from_array( $array ) {
-		if ( ! empty( $array ) && is_array( $array ) ) {
+	private function cf7a_remove_empty_from_array( array $arr ) {
+		if ( ! empty( $arr ) && is_array( $arr ) ) {
 			$clean_item_collection = array();
-			foreach ( $array as $value ) {
+			foreach ( $arr as $value ) {
 				$value = trim( $value );
 				if ( $value ) {
 					$clean_item_collection[] = $value;
@@ -896,7 +896,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			}
 			return $clean_item_collection;
 		}
-		return $array;
+		return $arr;
 	}
 
 	/**
@@ -973,20 +973,20 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * Handles WP-cron task registrations
 	 *
-	 * @param array  $input      - The post-input values.
+	 * @param array  $input       - The post-input values.
 	 * @param string $input_name - The value of the input field.
 	 * @param string $cron_task  - The slug of the Post value.
-	 * @param array  $schedule   - The schedule list obtained with wp_get_schedules().
+	 * @param array  $schedule    - The schedule list obtained with wp_get_schedules().
 	 *
 	 * @return array|false the new value that the user has selected
 	 */
-	private function cf7a_input_cron_schedule( $input, $input_name, $cron_task, $schedule ) {
+	private function cf7a_input_cron_schedule( array $input, string $input_name, string $cron_task, array $schedule ) {
 		$new_value = $this->options[ $input_name ];
 
 		// if the value has changed
 		if ( $this->options[ $input_name ] !== $input[ $input_name ] ) {
 			// if the user has disabled the cron task
-			if ( $input[ $input_name ] === 'disabled' ) {
+			if ( 'disabled' === $input[ $input_name ] ) {
 
 				/* Get the timestamp for the next event and unschedule it. */
 				wp_clear_scheduled_hook( 'cf7a_cron' );
@@ -1012,13 +1012,18 @@ class CF7_AntiSpam_Admin_Customizations {
 					cf7a_log( 'Unable to schedule event for ' . $cron_task );
 				}
 			}
-		}
+		}//end if
 
 		// return the new value
 		return $new_value;
 	}
 
-
+	/**
+	 * Sanitize a value
+	 *
+	 * @param mixed $value the value to sanitize
+	 * @return bool|float|string the sanitized value
+	 */
 	private function cf7a_clean_agnostic( $value ) {
 		if ( is_bool( $value ) ) {
 			$input = boolval( $value );
@@ -1033,10 +1038,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * Clean and sanitize a value recursively.
 	 *
-	 * @param string $key The key of the value to be cleaned.
-	 * @param mixed  $value The value to be cleaned.
-	 *
-	 * @return array|bool|int|string
+	 * @param array $json_data the data t
 	 */
 	private function cf7a_clean_recursive( $json_data ) {
 		$input = array();
@@ -1060,7 +1062,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* get the import options */
 		$new_input = $this->options;
 
-		if ( isset( $_POST['to-import'] ) and isset( $_POST['cf7a-nonce'] ) and wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cf7a-nonce'] ) ), 'cf7a-nonce' ) ) {
+		if ( isset( $_POST['to-import'] ) && isset( $_POST['cf7a-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['cf7a-nonce'] ) ), 'cf7a-nonce' ) ) {
 
 			$to_import = sanitize_text_field( wp_unslash( $_POST['to-import'] ) );
 			$json_data = json_decode( $to_import );
@@ -1084,7 +1086,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				cf7a_log( 'CF7 AntiSpam: The import data is invalid' );
 				return $this->options;
 			}
-		}
+		}//end if
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
@@ -1144,7 +1146,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 				if ( ! empty( $upload['error'] ) ) {
 					// If the file upload failed
-					if ( $upload['error'] !== UPLOAD_ERR_NO_FILE ) {
+					if ( UPLOAD_ERR_NO_FILE !== $upload['error'] ) {
 						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
 							sprintf(
 								/* translators: %s is the error message */
@@ -1167,9 +1169,9 @@ class CF7_AntiSpam_Admin_Customizations {
 							esc_html__( 'Error processing the uploaded file.', 'cf7-antispam' )
 						);
 					}
-				}
-			}
-		}
+				}//end if
+			}//end if
+		}//end if
 
 		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
@@ -1271,12 +1273,12 @@ class CF7_AntiSpam_Admin_Customizations {
 		$score_preset                          = $this->cf7a_get_scores_presets();
 
 		$preset_changed = ( $input['cf7a_score_preset'] !== $this->options['cf7a_score_preset'] );
-		$scores_changed = ( $input['score'] != $this->options['score'] );
+		$scores_changed = ( $input['score'] !== $this->options['score'] );
 
 		/* Scoring: if the preset name is equal to $selected and (the old score is the same of the new one OR the preset score $selected is changed) */
 		if ( $preset_changed ) {
 			// User selected a different preset - use preset values
-			if ( in_array( $input['cf7a_score_preset'], array( 'weak', 'standard', 'secure' ) ) ) {
+			if ( in_array( $input['cf7a_score_preset'], array( 'weak', 'standard', 'secure' ), true ) ) {
 				$new_input['score']             = $score_preset[ $input['cf7a_score_preset'] ];
 				$new_input['cf7a_score_preset'] = $input['cf7a_score_preset'];
 			}
@@ -1473,7 +1475,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		printf(
 			"<span class='cf7a_geoip_is_enabled'>%s</span>",
-			$message
+			esc_html( $message )
 		);
 	}
 
@@ -1678,10 +1680,13 @@ class CF7_AntiSpam_Admin_Customizations {
 	 * The selected pages are saved as options in the WordPress database.
 	 */
 	public function cf7a_honeyform_excluded_pages_callback() {
-		$args  = array(
-			'post_type'      => 'page', // change this to the post type you're querying
-			'fields'         => 'ids',  // get only ids
-			'posts_per_page' => -1, // get all posts
+		$args = array(
+			'post_type'                      => 'page',
+			// change this to the post type you're querying
+							'fields'         => 'ids',
+			// get only ids
+							'posts_per_page' => -1,
+		// get all posts
 		);
 		$query = new WP_Query( $args );
 
