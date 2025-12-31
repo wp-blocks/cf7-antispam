@@ -37,6 +37,7 @@ class CF7_AntiSpam_Admin_Tools {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC', $wpdb->prefix . 'cf7a_blacklist' ) );
 		foreach ( $blacklisted as $row ) {
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 			$meta      = unserialize( $row->meta );
 			$row->meta = $meta;
 		}

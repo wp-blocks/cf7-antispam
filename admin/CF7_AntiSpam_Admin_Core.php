@@ -79,6 +79,7 @@ class CF7_AntiSpam_Admin_Core {
 			'wpcf7',
 			__( 'Antispam', 'cf7-antispam' ),
 			__( 'Antispam', 'cf7-antispam' ),
+			// phpcs:ignore WordPress.WP.Capabilities.Unknown
 			'wpcf7_edit_contact_forms',
 			$this->plugin_name,
 			array( $this, 'cf7a_admin_dashboard' )
