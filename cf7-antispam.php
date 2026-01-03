@@ -68,85 +68,79 @@ require_once CF7ANTISPAM_PLUGIN_DIR . '/core/functions.php';
 
 /**
  * The code that runs during plugin activation.
+ *
+ * @param bool $network_wide - Whether to activate the plugin for the en
  */
-/* phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound */
-function activate_cf7_antispam( $network_wide ) {
+function cf7a_activate( bool $network_wide ) {
 	\CF7_AntiSpam\Engine\CF7_AntiSpam_Activator::on_activate( $network_wide );
 }
-register_activation_hook( CF7ANTISPAM_PLUGIN, 'activate_cf7_antispam' );
+register_activation_hook( CF7ANTISPAM_PLUGIN, 'cf7a_activate' );
 
 /**
  * Creating the cf7-antispam tables whenever a new blog is created
  *
- * @since 0.4.5
- *
  * @param int $blog_id - The ID of the new blog.
+ *
+ * @since 0.4.5
  */
-/* phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound */
-function on_create_blog( $blog_id ) {
+function cf7a_on_create_blog( int $blog_id ) {
 	if ( is_plugin_active_for_network( 'cf7-antispam/cf7-antispam.php' ) ) {
 		switch_to_blog( $blog_id );
 		\CF7_AntiSpam\Engine\CF7_AntiSpam_Activator::activate();
 		restore_current_blog();
 	}
 }
-add_action( 'wpmu_new_blog', 'on_create_blog' );
+add_action( 'wpmu_new_blog', 'cf7a_on_create_blog' );
 
 /**
  * Deleting the table whenever a blog is deleted
  *
- * @since 0.4.5
- *
  * @param array $tables - Array of tables.
+ *
+ * @since 0.4.5
  */
-/* phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound */
-function on_delete_blog( $tables ) {
+function cf7a_on_delete_blog( array $tables ): array {
 	global $wpdb;
 	$tables[] = $wpdb->prefix . 'cf7a_wordlist';
 	$tables[] = $wpdb->prefix . 'cf7a_blacklist';
 	return $tables;
 }
-add_filter( 'wpmu_drop_tables', 'on_delete_blog' );
+add_filter( 'wpmu_drop_tables', 'cf7a_on_delete_blog' );
 
 /**
  * The code that runs during plugin deactivation.
  */
-/* phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound */
-function deactivate_cf7_antispam() {
+function cf7a_deactivate() {
 	\CF7_AntiSpam\Engine\CF7_AntiSpam_Deactivator::deactivate();
 }
-register_deactivation_hook( CF7ANTISPAM_PLUGIN, 'deactivate_cf7_antispam' );
+register_deactivation_hook( CF7ANTISPAM_PLUGIN, 'cf7a_deactivate' );
 
 /**
  * The code that runs during plugin un-installation.
  */
-/* phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound */
-function uninstall_cf7_antispam() {
+function cf7a_uninstall() {
 	\CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller::uninstall();
 }
-register_uninstall_hook( CF7ANTISPAM_PLUGIN, 'uninstall_cf7_antispam' );
+register_uninstall_hook( CF7ANTISPAM_PLUGIN, 'cf7a_uninstall' );
 
 
 /**
- * Call the integration action to mount our plugin as a component
- * into the intefration page
+ * Call the integration action to mount our plugin as a component into the integration page
  */
-/* phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound */
-function cf7_antispam_register_service() {
+function cf7a_register_service() {
 	$integration = WPCF7_Integration::get_instance();
 	$integration->add_service(
 		'cf7-antispam',
 		\CF7_AntiSpam\Core\CF7_Antispam_Service::get_instance()
 	);
 }
-add_action( 'wpcf7_init', 'cf7_antispam_register_service', 2, 0 );
+add_action( 'wpcf7_init', 'cf7a_register_service', 2, 0 );
 
 /**
  * Executes CF7-AntiSpam
  */
-/* phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound */
-function run_cf7a() {
+function cf7a_run() {
 	$cf7a = new \CF7_AntiSpam\Core\CF7_AntiSpam();
 	$cf7a->run();
 }
-add_action( 'init', 'run_cf7a', 11 );
+add_action( 'init', 'cf7a_run', 11 );
