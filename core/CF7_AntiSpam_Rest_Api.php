@@ -1,7 +1,4 @@
 <?php
-
-namespace CF7_AntiSpam\Core;
-
 /**
  * REST API related functions.
  *
@@ -10,6 +7,8 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
+namespace CF7_AntiSpam\Core;
 
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
@@ -106,8 +105,15 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		return true;
 	}
 
+	/**
+	 * Download the GeoIP database.
+	 *
+	 * @since    0.6.5
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
 	public function cf7a_download_geoip_db( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -149,7 +155,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		$data = array(
 			'plugin_version' => CF7ANTISPAM_VERSION,
 			'status'         => $this->options['cf7a_enable'] ? 'enabled' : 'disabled',
-			'timestamp'      => current_time( 'timestamp' ),
+			'timestamp'      => date_i18n( 'Y-m-d H:i:s' ),
 		);
 
 		return rest_ensure_response( $data );
@@ -163,7 +169,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return WP_Error|WP_REST_Response A response object or a WP_Error object. The response object contains the message.
 	 */
 	public function cf7a_resend_message( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -184,6 +190,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 				return rest_ensure_response(
 					array(
 						'success' => false,
+						/* translators: %s is the mail id. */
 						'message' => sprintf( __( 'Error: unable to resend email with id %s.', 'cf7-antispam' ), $mail_id ) . ' ' . $r['message'],
 						'log'     => $r['log'],
 					)
@@ -198,7 +205,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 					)
 				);
 			}
-		}
+		}//end if
 
 		return rest_ensure_response(
 			array(
@@ -217,7 +224,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return WP_Error|WP_REST_Response A response object or a WP_Error object. The response object contains the message.
 	 */
 	public function cf7a_force_update( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -260,7 +267,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   WP_REST_Response
 	 */
 	public function cf7a_reset_blacklist( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -298,7 +305,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   WP_REST_Response
 	 */
 	public function cf7a_reset_dictionary( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -336,7 +343,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   WP_REST_Response
 	 */
 	public function cf7a_full_reset( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -374,7 +381,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   WP_REST_Response
 	 */
 	public function cf7a_rebuild_dictionary( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -412,7 +419,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   WP_REST_Response
 	 */
 	public function cf7a_unban_ip( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -463,7 +470,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   WP_REST_Response
 	 */
 	public function cf7a_ban_forever( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(
@@ -498,7 +505,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   WP_REST_Response
 	 */
 	public function cf7a_export_blacklist( $request ) {
-		/** verify nonce */
+		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
 				array(

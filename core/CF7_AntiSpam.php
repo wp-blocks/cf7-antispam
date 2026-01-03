@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The core plugin class.
  *
@@ -147,7 +146,7 @@ class CF7_AntiSpam {
 	 * @access   private
 	 */
 	private function set_locale() {
-		$plugin_i18n = new CF7_AntiSpam_i18n();
+		$plugin_i18n = new CF7_AntiSpam_I18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
@@ -204,7 +203,7 @@ class CF7_AntiSpam {
 	 */
 	private function load_admin() {
 
-		/** the rest api */
+		/** Enable the rest api */
 		new CF7_AntiSpam_Rest_Api();
 
 		if ( is_admin() ) {
@@ -245,7 +244,7 @@ class CF7_AntiSpam {
 				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_d8_column' ), 10, 2 );
 				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_resend_column' ), 11, 2 );
 			}
-		}
+		}//end if
 	}
 
 	/**
@@ -376,8 +375,8 @@ class CF7_AntiSpam {
 	/**
 	 * This function is used to generate the spam report email.
 	 *
-	 * @param $mail_body string The email body
-	 * @param $last_report_timestamp int The last report timestamp
+	 * @param string $mail_body The email body
+	 * @param int    $last_report_timestamp The last report timestamp
 	 *
 	 * @return string The email body
 	 */

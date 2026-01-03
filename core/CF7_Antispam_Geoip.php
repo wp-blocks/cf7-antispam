@@ -1,7 +1,4 @@
 <?php
-
-namespace CF7_AntiSpam\Core;
-
 /**
  * Geoip related functions.
  *
@@ -10,6 +7,8 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
+namespace CF7_AntiSpam\Core;
 
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use PharData;
@@ -65,6 +64,11 @@ class CF7_Antispam_Geoip {
 	private const DATABASE_FILE   = 'GeoLite2-Country.mmdb';
 	private const UPDATE_INTERVAL = '+1 month';
 
+	/**
+	 * The constructor
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 		$this->options     = CF7_AntiSpam::get_options();
 		$this->license     = $this->set_license();
@@ -80,7 +84,7 @@ class CF7_Antispam_Geoip {
 	 * @return bool
 	 */
 	public function is_ready() {
-		return $this->reader !== false;
+		return false !== $this->reader;
 	}
 
 	/**
@@ -143,7 +147,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Manual upload the database
 	 *
-	 * @param string $file
+	 * @param string $file The file to upload.
 	 *
 	 * @return bool
 	 */
@@ -153,8 +157,6 @@ class CF7_Antispam_Geoip {
 
 	/**
 	 * Schedule update
-	 *
-	 * @param bool $now
 	 *
 	 * @return void
 	 */
@@ -167,9 +169,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Check the IP
 	 *
-	 * @param string $ip
+	 * @param string $ip The IP to check.
 	 *
-	 * @return array
+	 * @return array The IP data.
 	 */
 	public function check_ip( $ip ) {
 		try {
@@ -195,7 +197,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Set the license
 	 *
-	 * @return string
+	 * @return string The license key.
 	 */
 	private function set_license() {
 		if ( defined( 'CF7ANTISPAM_GEOIP_KEY' ) && CF7ANTISPAM_GEOIP_KEY ) {
@@ -236,7 +238,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Get the upload directory
 	 *
-	 * @return string
+	 * @return string The upload directory.
 	 */
 	private function get_upload_dir() {
 		$upload_dir = wp_upload_dir();
@@ -246,7 +248,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Get the database path
 	 *
-	 * @return string
+	 * @return string The database path.
 	 */
 	private function get_database_path() {
 		return $this->get_upload_dir() . self::DATABASE_FILE;
@@ -257,7 +259,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Ensure the upload directory exists
 	 *
-	 * @return string
+	 * @return string The upload directory.
 	 */
 	private function ensure_upload_directory() {
 		$upload_dir = $this->get_upload_dir();
@@ -274,7 +276,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Protect the directory
 	 *
-	 * @param string $upload_dir
+	 * @param string $upload_dir The upload directory.
 	 *
 	 * @return void
 	 */
@@ -286,7 +288,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Create the .htaccess file
 	 *
-	 * @param string $upload_dir
+	 * @param string $upload_dir The upload directory.
 	 *
 	 * @return void
 	 */
@@ -306,7 +308,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Create the index.php file
 	 *
-	 * @param string $upload_dir
+	 * @param string $upload_dir The upload directory.
 	 *
 	 * @return void
 	 */
@@ -324,7 +326,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Download the database
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
 	private function download_database() {
 		if ( empty( $this->license ) ) {
@@ -359,7 +361,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Get the download URL
 	 *
-	 * @return string
+	 * @return string The download URL.
 	 */
 	private function get_download_url() {
 		return esc_url_raw(
@@ -374,10 +376,10 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Download the file
 	 *
-	 * @param string $url
-	 * @param string $destination
+	 * @param string $url The URL to download the file from.
+	 * @param string $destination The destination to save the file to.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
 	private function download_file( $url, $destination ) {
 		$wp_filesystem = $this->get_filesystem();
@@ -401,9 +403,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Log the download error
 	 *
-	 * @param string    $url
-	 * @param string    $destination
-	 * @param Exception $exception
+	 * @param string    $url The URL to download the file from.
+	 * @param string    $destination The destination to save the file to.
+	 * @param Exception $exception The exception that was thrown.
 	 *
 	 * @return void
 	 */
@@ -422,9 +424,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Upload the file
 	 *
-	 * @param string $file
+	 * @param string $file The file to upload.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
 	private function upload_file( $file ) {
 		if ( ! $this->validate_upload_file( $file ) ) {
@@ -451,9 +453,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Validate the upload file
 	 *
-	 * @param string $file
+	 * @param string $file The file to validate.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
 	private function validate_upload_file( $file ) {
 		if ( empty( $file ) || ! file_exists( $file ) ) {
@@ -496,12 +498,11 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Extract and install the file
 	 *
-	 * @param string $tar_file
-	 * @param string $destination
+	 * @param string $tar_file The file to extract.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
-	private function extract_and_install( $tar_file, $destination ) {
+	private function extract_and_install( $tar_file ) {
 		try {
 			if ( ! class_exists( 'PharData' ) ) {
 				$this->log_extraction_error( 'PharData class not available' );
@@ -524,17 +525,17 @@ class CF7_Antispam_Geoip {
 		} catch ( Exception $e ) {
 			$this->log_extraction_error( $e->getMessage(), $e );
 			return false;
-		}
+		}//end try
 	}
 
 	/**
 	 * Validate the tar.gz file
 	 *
-	 * @param string $file
+	 * @param string $file The file to validate.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
-	private function validate_tar_gz( $file ) {
+	private function validate_tar_gz( string $file ): bool {
 		// SECURITY FIX: Check MIME type
 		$finfo     = finfo_open( FILEINFO_MIME_TYPE );
 		$mime_type = finfo_file( $finfo, $file );
@@ -547,17 +548,23 @@ class CF7_Antispam_Geoip {
 			return false;
 		}
 
-		// Validate file signature (magic bytes) to prevent MIME spoofing
-		$f = fopen( $file, 'rb' );
-		if ( ! $f ) {
-			cf7a_log( 'Unable to open file for signature validation', 2 );
+		// Initialize WordPress Filesystem
+		$wp_filesystem = $this->get_filesystem();
+
+		// Validate file signature (magic bytes) using WP_Filesystem get_contents
+		// We only need the first 2 bytes, but get_contents reads the whole file/chunk.
+		// To be efficient, we specify the offset and length.
+		$header_bytes = $wp_filesystem->get_contents( $file, false, 0, 2 );
+
+		if ( false === $header_bytes ) {
+			cf7a_log( 'Unable to read file for signature validation', 2 );
 			return false;
 		}
-		$header = bin2hex( fread( $f, 2 ) );
-		fclose( $f );
+
+		$header = bin2hex( $header_bytes );
 
 		// GZIP magic bytes are 0x1f8b
-		if ( $header !== '1f8b' ) {
+		if ( '1f8b' !== $header ) {
 			cf7a_log( 'Invalid GZIP file signature. Expected: 1f8b, Got: ' . $header, 2 );
 			return false;
 		}
@@ -568,9 +575,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Extract the .mmdb file from the archive
 	 *
-	 * @param string $tar_file
+	 * @param string $tar_file The file to extract.
 	 *
-	 * @return string|false
+	 * @return string|false The path to the extracted file, or false on failure.
 	 */
 	private function extract_mmdb_from_archive( $tar_file ) {
 		$upload_dir = $this->get_upload_dir();
@@ -602,10 +609,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Finalize the installation
 	 *
-	 * @param string $extracted_file
-	 * @param string $destination
+	 * @param string $extracted_file The extracted file.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
 	private function finalize_installation( $extracted_file ) {
 		$mmdb_full_path = $this->get_upload_dir() . '/' . $extracted_file;
@@ -651,10 +657,10 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Install the .mmdb file
 	 *
-	 * @param string $source
-	 * @param string $destination
+	 * @param string $source The source file.
+	 * @param string $destination The destination file.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
 	private function install_mmdb_file( $source, $destination ) {
 		if ( ! $this->validate_mmdb_file( $source ) ) {
@@ -665,7 +671,7 @@ class CF7_Antispam_Geoip {
 		$wp_filesystem = $this->get_filesystem();
 		$contents      = $wp_filesystem->get_contents( $source );
 
-		if ( $contents === false ) {
+		if ( false === $contents ) {
 			cf7a_log( 'Unable to read source file: ' . $source, 2 );
 			return false;
 		}
@@ -682,9 +688,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Validate the .mmdb file
 	 *
-	 * @param string $file
+	 * @param string $file The file to validate.
 	 *
-	 * @return bool
+	 * @return bool True on success, false on failure.
 	 */
 	private function validate_mmdb_file( $file ) {
 		// we are going to try the uploaded database in order to know if it is working
@@ -704,7 +710,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Cleanup the file
 	 *
-	 * @param string $file
+	 * @param string $file The file to cleanup.
 	 *
 	 * @return void
 	 */
@@ -716,7 +722,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Cleanup the extraction directory
 	 *
-	 * @param string $extracted_file
+	 * @param string $extracted_dir The extraction directory.
 	 *
 	 * @return void
 	 */
@@ -730,7 +736,7 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Get the filesystem
 	 *
-	 * @return WP_Filesystem
+	 * @return WP_Filesystem The filesystem.
 	 */
 	private function get_filesystem() {
 		global $wp_filesystem;
@@ -763,8 +769,8 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Log the extraction error
 	 *
-	 * @param string    $message
-	 * @param Exception $exception
+	 * @param string    $message The message to log.
+	 * @param Exception $exception The exception that was thrown.
 	 *
 	 * @return void
 	 */
@@ -782,9 +788,9 @@ class CF7_Antispam_Geoip {
 	/**
 	 * Get the database version
 	 *
-	 * @return string
+	 * @return string The database version.
 	 *
-	 * @throws InvalidDatabaseException
+	 * @throws InvalidDatabaseException If the database is invalid.
 	 */
 	public function get_database_version() {
 		$reader = new Reader( $this->get_database_path() );
@@ -792,6 +798,6 @@ class CF7_Antispam_Geoip {
 		$build_epoch = $reader->metadata()->buildEpoch ?? 0;
 		// Database description
 		$description = $reader->metadata()->description['en'] ?? 'Unknown';
-		return sprintf( '(Database: %s - Built on: %s)', $description, date( 'Y-m-d H:i:s', $build_epoch ) );
+		return sprintf( '(Database: %s - Built on: %s)', $description, gmdate( 'Y-m-d H:i:s', $build_epoch ) );
 	}
 }

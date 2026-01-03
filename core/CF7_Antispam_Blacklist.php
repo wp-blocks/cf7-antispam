@@ -30,7 +30,7 @@ class CF7_Antispam_Blacklist {
 	 *
 	 * @return array|object|null - the row from the database that matches the IP address.
 	 */
-	public static function cf7a_blacklist_get_ip( $ip ) {
+	public static function cf7a_blacklist_get_ip( string $ip ) {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 		if ( $ip ) {
 			global $wpdb;
@@ -76,6 +76,7 @@ class CF7_Antispam_Blacklist {
 				array(
 					'ip'     => $ip,
 					'status' => $status,
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 					'meta'   => serialize(
 						array(
 							'reason' => $reason,
@@ -89,7 +90,7 @@ class CF7_Antispam_Blacklist {
 			if ( $r > - 1 ) {
 				return true;
 			}
-		}
+		}//end if
 
 		return false;
 	}
@@ -190,11 +191,11 @@ class CF7_Antispam_Blacklist {
 			array( '%d' )
 		);
 
-		return $result !== false;
+		return false !== $result;
 	}
 
 	/**
-	 * Ban an IP forever by adding it to the permanent ban list.
+	 * Ban an IP forever by adding it to the permanent banlist.
 	 *
 	 * @since    0.7.0
 	 * @param    int $id The blocklist entry ID.
@@ -231,7 +232,7 @@ class CF7_Antispam_Blacklist {
 					! empty( $ban_ip->ip ) ? $ban_ip->ip : 'not available'
 				),
 			);
-		}
+		}//end if
 	}
 
 	/**
@@ -254,7 +255,7 @@ class CF7_Antispam_Blacklist {
 				$meta = '';
 				if ( isset( $row->meta ) ) {
 					if ( is_array( $row->meta ) && ! empty( $row->meta ) ) {
-						$meta = '"' . str_replace( '"', '""', json_encode( $row->meta, JSON_UNESCAPED_UNICODE ) ) . '"';
+						$meta = '"' . str_replace( '"', '""', wp_json_encode( $row->meta, JSON_UNESCAPED_UNICODE ) ) . '"';
 					} elseif ( ! empty( $row->meta ) ) {
 						$meta = '"' . str_replace( '"', '""', $row->meta ) . '"';
 					}
@@ -267,7 +268,7 @@ class CF7_Antispam_Blacklist {
 			}
 		} else {
 			$csv .= "No blocklisted IPs found\n";
-		}
+		}//end if
 
 		$filename = 'cf7-antispam-blocklist-' . gmdate( 'Y-m-d-H-i-s' ) . '.csv';
 
@@ -293,7 +294,7 @@ class CF7_Antispam_Blacklist {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$result = $wpdb->query( "TRUNCATE TABLE {$table_name}" );
 
-		return $result !== false;
+		return false !== $result;
 	}
 
 	/**
@@ -327,7 +328,7 @@ class CF7_Antispam_Blacklist {
 				$table_name,
 				array(
 					'status'   => $status,
-					'meta'     => is_array( $meta ) ? json_encode( $meta ) : $meta,
+					'meta'     => is_array( $meta ) ? wp_json_encode( $meta ) : $meta,
 					'modified' => current_time( 'mysql' ),
 				),
 				array( 'ip' => $ip ),
@@ -342,15 +343,15 @@ class CF7_Antispam_Blacklist {
 				array(
 					'ip'       => $ip,
 					'status'   => $status,
-					'meta'     => is_array( $meta ) ? json_encode( $meta ) : $meta,
+					'meta'     => is_array( $meta ) ? wp_json_encode( $meta ) : $meta,
 					'created'  => current_time( 'mysql' ),
 					'modified' => current_time( 'mysql' ),
 				),
 				array( '%s', '%s', '%s', '%s', '%s' )
 			);
-		}
+		}//end if
 
-		return $result !== false;
+		return false !== $result;
 	}
 
 	/**
@@ -431,22 +432,20 @@ class CF7_Antispam_Blacklist {
 	public function cf7a_cron_unban() {
 		global $wpdb;
 
-		/* We remove 1 from the status column */
+		// We remove 1 from the status column
 		$status_decrement = 1;
 
-		/* Below 0 is not anymore a valid status for a blocklist entry, so we can remove it */
+		// Below 0 is not anymore a valid status for a blocklist entry, so we can remove it
 		$lower_bound = 0;
 
 		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
 
-		/*
-		removes a status count at each balcklisted ip */
+		// Removes a status count at each blocklisted ip
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET `status` = `status` - %d', $blacklist_table, $status_decrement ) );
 		cf7a_log( "Status updated for blocklisted (score -1) - $updated users", 1 );
 
-		/*
-		when the line has 0 in status, we can remove it from the blocklist */
+		// When the line has 0 in status, we can remove it from the blocklist
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated_deletion = $wpdb->delete(
 			$blacklist_table,
