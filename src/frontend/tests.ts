@@ -300,7 +300,7 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 				if (
 					void 0 === canvas2d ||
 					'function' !==
-					typeof canvasElement?.getContext('2d')?.fillText
+						typeof canvasElement?.getContext('2d')?.fillText
 				) {
 					isOkCanvas = false;
 				} else {

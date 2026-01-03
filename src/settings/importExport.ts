@@ -75,7 +75,6 @@ function importExportOptions(e: SubmitEvent) {
 		})
 			.then((response) => response)
 			.then((response) => {
-				console.log(response);
 				// Handle the response
 				if (response.status === 200) {
 					// eslint-disable-next-line no-alert
