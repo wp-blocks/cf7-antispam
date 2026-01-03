@@ -1,7 +1,4 @@
 <?php
-
-namespace CF7_AntiSpam\Engine;
-
 /**
  * Fired during deactivation.
  *
@@ -10,6 +7,8 @@ namespace CF7_AntiSpam\Engine;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
+namespace CF7_AntiSpam\Engine;
 
 /**
  * Fired during plugin deactivation.

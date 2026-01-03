@@ -1,7 +1,4 @@
 <?php
-
-namespace CF7_AntiSpam\Engine;
-
 /**
  * Fired during Uninstall.
  *
@@ -10,6 +7,8 @@ namespace CF7_AntiSpam\Engine;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
+namespace CF7_AntiSpam\Engine;
 
 /**
  * Fired during plugin deactivation.
@@ -103,8 +102,8 @@ class CF7_AntiSpam_Uninstaller {
 	 *
 	 * @param bool $force If set to true, the cf7-antispam database and options tables delete will be forced otherwise it will be skipped.
 	 */
-	public static function uninstall( $force = true ) {
-		if ( ( defined( CF7ANTISPAM_DEBUG_EXTENDED ) && CF7ANTISPAM_DEBUG_EXTENDED === true ) || $force === false ) {
+	public static function uninstall( bool $force = true ) {
+		if ( ( defined( 'CF7ANTISPAM_DEBUG_EXTENDED' ) && true === CF7ANTISPAM_DEBUG_EXTENDED ) || false === $force ) {
 			cf7a_log( 'CONTACT FORM 7 ANTISPAM - constant "CF7ANTISPAM_DEBUG_EXTENDED" is set so options and database will NOT be deleted.' );
 			return false;
 		} else {
@@ -131,6 +130,6 @@ class CF7_AntiSpam_Uninstaller {
 			// Always remove the main site database tables and options.
 			self::cf7a_plugin_drop_tables();
 			self::cf7a_plugin_drop_options();
-		}
+		}//end if
 	}
 }
