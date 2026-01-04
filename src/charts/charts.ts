@@ -1,4 +1,7 @@
 /* global spamChartData */
+/**
+ * External dependencies
+ */
 import Chart from 'chart.js/auto';
 
 function spamCharts() {
