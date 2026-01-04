@@ -1,3 +1,6 @@
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 const loader = (): HTMLDivElement => {
 	// create an element to show loading with a svg loader
@@ -95,7 +98,7 @@ function importExportOptions(e: SubmitEvent) {
 /**
  * Download the options content to a file
  *
- * @param optionsContent The options content to download
+ * @param {string} optionsContent The options content to download
  */
 function downloadText(optionsContent: string) {
 	try {

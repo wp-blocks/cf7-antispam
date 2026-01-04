@@ -1,20 +1,24 @@
+/**
+ * WordPress dependencies
+ */
 import apiFetch from '@wordpress/api-fetch';
 
-type ApiResponse = { message: string; success: boolean; log?: string };
+type ApiResponse = { mes: string; success: boolean; log?: string };
 type CallbackFunction = null | ((res: ApiResponse) => void);
 
 /**
  * A function that handles the actions for the admin tabs
  *
- * @param e               HTMLElement The button element
- * @param dataset         object The dataset of the button element
- * @param dataset.message string The message to display in the confirmation alert
- * @param dataset.nonce   string T
- * @param dataset.action
- * @param dataset.id
+ * @param {HTMLElement} el                  The button element
+ * @param {Object}      el.dataset          The dataset of the button element
+ * @param {string}      el.dataset.message  The message to display in the confirmation alert
+ * @param {string}      el.dataset.nonce    The nonce to verify the request
+ * @param {string}      el.dataset.action   The action to run
+ * @param {string}      el.dataset.id       The id of the row to hide
+ * @param {string}      el.dataset.callback The callback function to run
  */
-function actionHandler(e: HTMLElement) {
-	const { action, message, callback, nonce } = e.dataset as {
+function actionHandler(el: HTMLElement) {
+	const { action, message, callback, nonce } = el.dataset as {
 		action: string;
 		message: string;
 		nonce: string;
@@ -29,6 +33,7 @@ function actionHandler(e: HTMLElement) {
 	if (
 		// eslint-disable-next-line no-alert
 		message &&
+		// eslint-disable-next-line no-alert
 		!confirm(message)
 	) {
 		return;
@@ -47,7 +52,7 @@ function actionHandler(e: HTMLElement) {
 		 */
 		if (callback === 'hide') {
 			cb = function () {
-				e.closest('.row')?.classList.add('hidden');
+				el.closest('.row')?.classList.add('hidden');
 			};
 		}
 
@@ -78,8 +83,8 @@ function actionHandler(e: HTMLElement) {
 		nonce,
 	};
 
-	if (e.dataset.id) {
-		data.id = Number(e.dataset.id);
+	if (el.dataset.id) {
+		data.id = Number(el.dataset.id);
 	}
 
 	apiFetch({
@@ -88,20 +93,24 @@ function actionHandler(e: HTMLElement) {
 		data,
 	})
 		.then((res) => {
-			const { message, success, log } = res as ApiResponse;
+			const { mes, success, log } = res as ApiResponse;
 			if (success) {
-				if (message) {
-					alert(message);
+				if (mes) {
+					// eslint-disable-next-line no-alert
+					alert(mes);
 				}
 				if (cb) {
 					cb(res as ApiResponse);
 				}
 			} else {
-				console.error('Error:', message, log as string);
+				// eslint-disable-next-line no-console
+				console.error('Error:', mes, log as string);
 			}
 		})
 		.catch((error: any) => {
+			// eslint-disable-next-line no-console
 			console.error('Error:', error.message);
+			// eslint-disable-next-line no-alert
 			alert('Request failed: ' + error.message);
 		});
 }

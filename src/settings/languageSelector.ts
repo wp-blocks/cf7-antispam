@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { getAll } from 'isotolanguage';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Initialize the language selector for allowed and disallowed languages.
@@ -19,8 +26,11 @@ export const initLanguageSelector = () => {
 	allowedTextarea.style.display = 'none';
 	disallowedTextarea.style.display = 'none';
 
-	createSelectorUI(allowedTextarea, 'Allowed Languages');
-	createSelectorUI(disallowedTextarea, 'Disallowed Languages');
+	createSelectorUI(allowedTextarea, __('Allowed Languages', 'cf7-antispam'));
+	createSelectorUI(
+		disallowedTextarea,
+		__('Disallowed Languages', 'cf7-antispam')
+	);
 };
 
 const createSelectorUI = (textarea: HTMLTextAreaElement, label: string) => {
@@ -34,6 +44,7 @@ const createSelectorUI = (textarea: HTMLTextAreaElement, label: string) => {
 	const toggleLabel = document.createElement('label');
 	toggleLabel.style.display = 'block';
 	toggleLabel.style.marginBottom = '10px';
+	toggleLabel.appendChild(document.createTextNode(label));
 
 	const toggleCheckbox = document.createElement('input');
 	toggleCheckbox.type = 'checkbox';
