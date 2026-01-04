@@ -1,3 +1,6 @@
+/**
+ * Internal dependencies
+ */
 /** The admin styles */
 import './admin-style.scss';
 

@@ -1,5 +1,5 @@
 /**
- * Script Types declaration
+ * Internal dependencies
  */
 import { cf7antispam } from './frontend/script';
 
@@ -8,9 +8,9 @@ import { cf7antispam } from './frontend/script';
  */
 (function () {
 	/**
-	 * Wait for the document to be ready and then execute the function
+	 * Wait for the document to be ready and then execute the antispam function
 	 *
-	 * @param fn the function to execute
+	 * @param {() => void} fn the function to execute
 	 */
 	function ready(fn: { (): void }): void {
 		if (document.readyState !== 'loading') {

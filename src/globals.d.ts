@@ -16,16 +16,16 @@ declare global {
 		prefix: string;
 		version: string;
 		disableReload: string;
-	}
+	};
 
 	let spamChartData: {
 		lineData: any;
 		pieData: any;
-	}
+	};
 
 	let cf7a_admin_settings: {
 		alertMessage: string;
-	}
+	};
 }
 
-export {}
+export {};
