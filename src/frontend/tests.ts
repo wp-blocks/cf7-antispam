@@ -1,10 +1,13 @@
+/**
+ * Internal dependencies
+ */
 import { ExtendedNavigator, Tests } from './types';
 import { createCF7Afield } from './utils';
 
 /**
  * Mouse activity test - detects mouse clicks and touch events
- * @param hiddenInputsContainer
- * @param cf7aPrefix
+ * @param {HTMLElement} hiddenInputsContainer The Element that contains the hidden fields
+ * @param {string}      cf7aPrefix            the hidden field predix
  */
 export function setupMouseActivityTest(
 	hiddenInputsContainer: HTMLElement,
@@ -45,8 +48,8 @@ export function setupMouseActivityTest(
 
 /**
  * Mouse movement test - detects mouse movement direction changes
- * @param hiddenInputsContainer
- * @param tests
+ * @param {HTMLElement} hiddenInputsContainer The Element that contains the hidden fields
+ * @param {Tests}       tests                 The tests object
  */
 export function setupMouseMovementTest(
 	hiddenInputsContainer: HTMLElement,
@@ -91,7 +94,8 @@ export function setupMouseMovementTest(
 
 /**
  * WebGL vendor and renderer test
- * @param hiddenInputsContainer
+ *
+ * @param {HTMLElement} hiddenInputsContainer The Element that contains the hidden fields
  */
 export function setupWebGLTest(hiddenInputsContainer: HTMLElement): void {
 	const wpcf7box = document.createElement('div');
@@ -187,7 +191,8 @@ export function setupWebGLTest(hiddenInputsContainer: HTMLElement): void {
 
 /**
  * Canvas fingerprinting test
- * @param hiddenInputsContainer
+ *
+ * @param {HTMLElement} hiddenInputsContainer The Element that contains the hidden fields
  */
 export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 	// Add hashCode method to String prototype
@@ -380,8 +385,9 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 
 /**
  * Browser language test
- * @param hiddenInputsContainer
- * @param getBrowserLanguage
+ *
+ * @param {HTMLElement}  hiddenInputsContainer The Element that contains the hidden fields
+ * @param {() => string} getBrowserLanguage    The function that returns the browser language
  */
 export function setupLanguageTest(
 	hiddenInputsContainer: HTMLElement,
@@ -394,10 +400,11 @@ export function setupLanguageTest(
 
 /**
  * Standard bot fingerprint test
- * @param hiddenInputsContainer
- * @param cf7aPrefix
- * @param tests
- * @param wpcf7Form
+ *
+ * @param {HTMLElement}     hiddenInputsContainer The Element that contains the hidden fields
+ * @param {string}          cf7aPrefix            The prefix for the hidden fields
+ * @param {Tests}           tests                 The tests object
+ * @param {HTMLFormElement} wpcf7Form             The form element
  */
 export function setupBotFingerprintTest(
 	hiddenInputsContainer: HTMLElement,

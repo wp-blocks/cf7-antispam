@@ -1,3 +1,6 @@
+/**
+ * Internal dependencies
+ */
 import { processExistingForms, setupMutationObserver } from './core';
 
 declare const wpcf7: {
