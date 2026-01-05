@@ -29,8 +29,8 @@
 	<config name="minimum_supported_wp_version" value="6.2"/>
 
 
-	<!--
 	<rule ref="WordPress" />
+	<!--
 	<rule ref="WordPress-Docs"/>
 	<rule ref="WordPress-Extra"/>
 	-->
@@ -52,6 +52,22 @@
 			</property>
 		</properties>
 		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound"/>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName">
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+	</rule>
+
+	<rule ref="Squiz.Commenting">
+		<exclude name="Squiz.Commenting.FileComment.Missing"/>
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
+		<exclude name="Squiz.Commenting.FileComment.SpacingAfterComment"/>
+	</rule>
+
+	<rule ref="Universal.Operators">
+		<exclude name="Universal.Operators.DisallowShortTernary.Found"/>
 	</rule>
 
 	<!-- What to scan -->

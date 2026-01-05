@@ -1,13 +1,8 @@
 <?php
-
-namespace CF7_AntiSpam\Core;
-
-/*
-The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
-functionality. */
-
 /**
  * Contact Form 7 Integration.
+ * The above class is a PHP integration for the Contact Form 7 plugin that provides antispam
+ * functionality.
  *
  * @since      0.0.1
  * @package    CF7_AntiSpam
@@ -15,10 +10,11 @@ functionality. */
  * @author     Codekraft Studio <info@codekraft.it>
  */
 
+namespace CF7_AntiSpam\Core;
+
 /**
  * Integration class from Contact Form 7
  */
-
 use WPCF7_Service as GlobalWPCF7_Service;
 
 if ( ! class_exists( 'WPCF7_Service' ) ) {
@@ -27,7 +23,6 @@ if ( ! class_exists( 'WPCF7_Service' ) ) {
 /**
  * This Extension represents the skeleton of the integration API
  */
-
 class CF7_Antispam_Service extends GlobalWPCF7_Service {
 
 	/**
@@ -44,6 +39,11 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 */
 	public $options;
 
+	/**
+	 * Get the instance of the class
+	 *
+	 * @return self
+	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
@@ -52,6 +52,9 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		return self::$instance;
 	}
 
+	/**
+	 * The constructor
+	 */
 	public function __construct() {
 		$this->options = CF7_AntiSpam::get_options();
 
@@ -118,6 +121,11 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		);
 	}
 
+	/**
+	 * The function `admin_notice` is used to display a message to the user in the admin area.
+	 *
+	 * @param string $message The message to display.
+	 */
 	public function admin_notice( $message = '' ) {
 	}
 
@@ -156,7 +164,7 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 	 */
 	public function load( $action = '' ) {
 		if ( ! empty( $_SERVER['REQUEST_METHOD'] ) ) {
-			if ( 'setup' == $action && 'POST' == $_SERVER['REQUEST_METHOD'] ) {
+			if ( 'setup' === $action && 'POST' === $_SERVER['REQUEST_METHOD'] ) {
 				if ( ! empty( $_POST['reset'] ) ) {
 					// check the nonce
 					if ( empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'cf7a' ) ) {
@@ -170,11 +178,12 @@ class CF7_Antispam_Service extends GlobalWPCF7_Service {
 		}
 	}
 
-
-
 	/**
 	 * The `display` function is used to display information about the Antispam plugin and provide options for
 	 * setup integration.
+	 *
+	 * @param string $action this parameter is used to determine the specific action that needs to be
+	 * performed.
 	 */
 	public function display( $action = '' ) {
 		printf(

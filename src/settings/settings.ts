@@ -1,3 +1,6 @@
+/**
+ * WordPress dependencies
+ */
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 
@@ -142,11 +145,13 @@ function adminSettingsHelper() {
 		})
 			.then((response) => {
 				if (response) {
+					// eslint-disable-next-line camelcase
 					const { status, plugin_version, timestamp } = response as {
 						status: string;
 						plugin_version: string;
 						timestamp: string;
 					};
+					// eslint-disable-next-line camelcase
 					restApiStatus.innerHTML = `<p>${__('Status', 'cf7-antispam')}: ${status}</p><p>${__('CF7 Antispam plugin version is', 'cf7-antispam')} ${plugin_version} - (${__('Request timestamp', 'cf7-antispam')}: ${timestamp})</p>`;
 				} else {
 					restApiStatus.textContent = 'No response';
@@ -154,6 +159,7 @@ function adminSettingsHelper() {
 			})
 			.catch((error) => {
 				restApiStatus.textContent = 'Error: ' + error.message;
+				// eslint-disable-next-line no-console
 				console.error('CF7A Error:', error.message, error.code);
 			});
 	}

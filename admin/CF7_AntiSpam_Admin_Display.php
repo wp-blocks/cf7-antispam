@@ -37,17 +37,22 @@ class CF7_AntiSpam_Admin_Display {
 		$this->options = CF7_AntiSpam::get_options();
 	}
 
+	/**
+	 * Check if Flamingo is active
+	 */
 	private static function is_flamingo_active() {
 		return is_plugin_active( 'flamingo/flamingo.php' );
 	}
 
+	/**
+	 * Display the welcome message
+	 */
 	private static function cf7a_welcome_message() {
 		self::is_flamingo_active()
 			/* translators: %s is the shortcode */
 			? printf( esc_html__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ), '<code>flamingo_message: "[your-message]"</code>' )
 			: esc_html_e( 'Please install and activate the Flamingo plugin to enable advanced B8 Bayesian filtering.', 'cf7-antispam' );
 	}
-
 
 	/**
 	 * It adds actions to the `cf7a_dashboard` hook
@@ -68,7 +73,8 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private function render_tabbed_interface() {
 
-		$active_tab = 'dashboard'; // Default tab
+		$active_tab = 'dashboard';
+		// Default tab
 
 		// Check if 'tab' is present in the GET request.
 		$nonce_action = 'cf7a_admin_tab_switch';
@@ -81,73 +87,73 @@ class CF7_AntiSpam_Admin_Display {
 		?>
 		<div class="cf7a-nav-tab-wrapper">
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'dashboard' ), $nonce_action ) ); ?>"
-				class="cf7a-nav-tab tab-dashboard <?php echo $active_tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-dashboard <?php echo 'dashboard' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-dashboard"></span> <?php esc_html_e( 'Dashboard', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'settings' ), $nonce_action ) ); ?>"
-				class="cf7a-nav-tab tab-settings <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-settings <?php echo 'settings' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Settings', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'blocklist' ), $nonce_action ) ); ?>"
-				class="cf7a-nav-tab tab-blocklist <?php echo $active_tab === 'blocklist' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-blocklist <?php echo 'blocklist' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blocklist', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'tools' ), $nonce_action ) ); ?>"
-				class="cf7a-nav-tab tab-tools <?php echo $active_tab === 'tools' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-tools <?php echo 'tools' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'import-export' ), $nonce_action ) ); ?>"
-				class="cf7a-nav-tab tab-import-export <?php echo $active_tab === 'import-export' ? 'nav-tab-active' : ''; ?>">
+				class="cf7a-nav-tab tab-import-export <?php echo 'import-export' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import/Export', 'cf7-antispam' ); ?>
 			</a>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
 				<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'debug' ), $nonce_action ) ); ?>"
-					class="cf7a-nav-tab tab-debug <?php echo $active_tab === 'debug' ? 'nav-tab-active' : ''; ?>">
+					class="cf7a-nav-tab tab-debug <?php echo 'debug' === $active_tab ? 'nav-tab-active' : ''; ?>">
 					<span class="dashicons dashicons-code-standards"></span> <?php esc_html_e( 'Debug', 'cf7-antispam' ); ?>
 				</a>
 			<?php endif; ?>
 		</div>
 
 		<div class="cf7a-tab-content">
-			<div id="dashboard" class="cf7a-tab-panel <?php echo $active_tab === 'dashboard' ? 'active' : ''; ?>">
+			<div id="dashboard" class="cf7a-tab-panel <?php echo 'dashboard' === $active_tab ? 'active' : ''; ?>">
 				<?php
-				if ( $active_tab === 'dashboard' ) {
+				if ( 'dashboard' === $active_tab ) {
 					$this->render_dashboard_tab();
 				}
 				?>
 			</div>
-			<div id="settings" class="cf7a-tab-panel <?php echo $active_tab === 'settings' ? 'active' : ''; ?>">
+			<div id="settings" class="cf7a-tab-panel <?php echo 'settings' === $active_tab ? 'active' : ''; ?>">
 				<?php
-				if ( $active_tab === 'settings' ) {
+				if ( 'settings' === $active_tab ) {
 					$this->render_settings_tab();
 				}
 				?>
 			</div>
-			<div id="blocklist" class="cf7a-tab-panel <?php echo $active_tab === 'blocklist' ? 'active' : ''; ?>">
+			<div id="blocklist" class="cf7a-tab-panel <?php echo 'blocklist' === $active_tab ? 'active' : ''; ?>">
 				<?php
-				if ( $active_tab === 'blocklist' ) {
+				if ( 'blocklist' === $active_tab ) {
 					$this->render_blacklist_tab();
 				}
 				?>
 			</div>
-			<div id="tools" class="cf7a-tab-panel <?php echo $active_tab === 'tools' ? 'active' : ''; ?>">
+			<div id="tools" class="cf7a-tab-panel <?php echo 'tools' === $active_tab ? 'active' : ''; ?>">
 				<?php
-				if ( $active_tab === 'tools' ) {
+				if ( 'tools' === $active_tab ) {
 					$this->render_tools_tab();
 				}
 				?>
 			</div>
-			<div id="import-export" class="cf7a-tab-panel <?php echo $active_tab === 'import-export' ? 'active' : ''; ?>">
+			<div id="import-export" class="cf7a-tab-panel <?php echo 'import-export' === $active_tab ? 'active' : ''; ?>">
 				<?php
-				if ( $active_tab === 'import-export' ) {
+				if ( 'import-export' === $active_tab ) {
 					$this->render_import_export_tab();
 				}
 				?>
 			</div>
 			<?php if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) : ?>
-				<div id="debug" class="cf7a-tab-panel <?php echo $active_tab === 'debug' ? 'active' : ''; ?>">
+				<div id="debug" class="cf7a-tab-panel <?php echo 'debug' === $active_tab ? 'active' : ''; ?>">
 					<?php
-					if ( $active_tab === 'debug' ) {
+					if ( 'debug' === $active_tab ) {
 						$this->render_debug_tab();
 					}
 					?>
@@ -159,6 +165,10 @@ class CF7_AntiSpam_Admin_Display {
 
 	/**
 	 * Get tab URL
+	 *
+	 * @param string $tab The tab to get the URL for
+	 *
+	 * @return string The URL for the tab
 	 */
 	private function get_tab_url( $tab ) {
 		return add_query_arg( 'tab', $tab, menu_page_url( 'cf7-antispam', false ) );
@@ -232,7 +242,7 @@ class CF7_AntiSpam_Admin_Display {
 
 				<p class="cf7a-empty-state-tip">
 					<span class="dashicons dashicons-lightbulb"></span>
-					<span class="cf7a-empty-state-tip-text"><?php echo self::cf7a_get_a_random_tip(); ?></span>
+					<span class="cf7a-empty-state-tip-text"><?php echo esc_html( self::cf7a_get_a_random_tip() ); ?></span>
 				</p>
 			</div>
 		</div>
@@ -257,11 +267,14 @@ class CF7_AntiSpam_Admin_Display {
 		$this->render_stats_overview();
 	}
 
+	/**
+	 * Render the one-time alert banner
+	 */
 	private function render_one_time_alert_banner() {
 		$dismissible_banner_class = get_user_meta( get_current_user_id(), 'cf7a_hide_welcome_panel_on', true ) ? 'hidden' : '';
 		?>
 		<div id="welcome-notice" class="cf7a-card cf7-notice dismissible <?php echo sanitize_html_class( $dismissible_banner_class ); ?>">
-			<a class="welcome-panel-close" href="<?php echo wp_nonce_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ), 'dismiss-banner' ); ?>"><span class="screen-reader-text"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></span></a>
+			<a class="welcome-panel-close" href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'action', 'dismiss-banner', menu_page_url( 'cf7-antispam', false ) ), 'dismiss-banner' ) ); ?>"><span class="screen-reader-text"><?php echo esc_html( __( 'Dismiss', 'contact-form-7' ) ); ?></span></a>
 			<span class="dashicons dashicons-megaphone" aria-hidden="true"></span>
 			<p>
 				<?php self::cf7a_welcome_message(); ?>
@@ -270,6 +283,9 @@ class CF7_AntiSpam_Admin_Display {
 		<?php
 	}
 
+	/**
+	 * Render Antispam Charts
+	 */
 	private function render_antispam_charts() {
 		$cf7a_charts = new CF7_AntiSpam_Admin_Charts();
 
@@ -288,8 +304,10 @@ class CF7_AntiSpam_Admin_Display {
 		global $wpdb;
 
 		// Set cache expiration times (in seconds)
-		$cache_time_short = 5 * MINUTE_IN_SECONDS;  // 5 minutes for frequently changing data
-		$cache_time_long  = 15 * MINUTE_IN_SECONDS; // 15 minutes for more stable data
+		$cache_time_short = 5 * MINUTE_IN_SECONDS;
+		// 5 minutes for frequently changing data
+		$cache_time_long = 15 * MINUTE_IN_SECONDS;
+		// 15 minutes for more stable data
 
 		// Get basic stats with caching
 		$cache_key_total = 'cf7a_total_blocked_count';
@@ -396,7 +414,7 @@ class CF7_AntiSpam_Admin_Display {
 			}
 
 			wp_cache_set( $cache_key_reasons, $reason_counts, 'cf7a_blacklist_stats', $cache_time_short );
-		}
+		}//end if
 
 		// Sort reasons by count and get top 5
 		arsort( $reason_counts );
@@ -553,6 +571,10 @@ class CF7_AntiSpam_Admin_Display {
 
 	/**
 	 * Format reason names for better display
+	 *
+	 * @param string $reason_key The reason key to format
+	 *
+	 * @return string The formatted reason name
 	 */
 	private function format_reason_name( $reason_key ): string {
 		// Handle special cases
@@ -644,6 +666,9 @@ class CF7_AntiSpam_Admin_Display {
 		<?php
 	}
 
+	/**
+	 * Render the Export Button
+	 */
 	private function cf7a_export_button() {
 		printf(
 			'<p class="cf7a-export-blocklist-button alignright"><button class="button cf7a_export_action" data-action="export-blocklist" data-nonce="%s">%s</button></p>',
@@ -779,6 +804,7 @@ class CF7_AntiSpam_Admin_Display {
 			$rows  = '';
 
 			foreach ( $blacklisted as $row ) {
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				$meta         = unserialize( $row->meta );
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
@@ -797,7 +823,7 @@ class CF7_AntiSpam_Admin_Display {
 					esc_html__( 'First seen on', 'cf7-antispam' ),
 					$row->created
 				);
-			}
+			}//end foreach
 
 			/* The table */
 			printf(
@@ -829,7 +855,7 @@ class CF7_AntiSpam_Admin_Display {
 			);
 		} else {
 			echo '<p>' . esc_html__( 'No blacklisted IPs found.', 'cf7-antispam' ) . '</p>';
-		}
+		}//end if
 	}
 
 	/**
@@ -904,7 +930,7 @@ class CF7_AntiSpam_Admin_Display {
 			}
 
 			$this->cf7a_get_debug_info_options();
-		}
+		}//end if
 	}
 
 	/**
@@ -969,7 +995,7 @@ class CF7_AntiSpam_Admin_Display {
 				esc_html( $flamingo_message_val ?: '-' ),
 				$status_icon
 			);
-		}
+		}//end foreach
 
 		printf(
 			'<h3>%s</h3>
@@ -1013,7 +1039,14 @@ class CF7_AntiSpam_Admin_Display {
 		);
 	}
 
-	private function get_plugin_version( $plugin_file ) {
+	/**
+	 * Returns the version of a plugin
+	 *
+	 * @param string $plugin_file The path to the plugin file
+	 *
+	 * @return string The version of the plugin
+	 */
+	private function get_plugin_version( string $plugin_file ): string {
 		if ( file_exists( $plugin_file ) ) {
 			$plugin_data = get_plugin_data( $plugin_file );
 			if ( ! empty( $plugin_data['Version'] ) ) {
@@ -1074,10 +1107,10 @@ class CF7_AntiSpam_Admin_Display {
 	private function cf7a_get_debug_ip_analysis() {
 		printf( '<h2 class="title">%s</h2>', esc_html__( 'IP Analysis', 'cf7-antispam' ) );
 
-		$php_ip       = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'unavailable';
+		$php_ip       = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unavailable';
 		$real_ip      = cf7a_get_real_ip();
-		$cf_ip        = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : 'unavailable';
-		$forwarded_ip = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 'unavailable';
+		$cf_ip        = isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) : 'unavailable';
+		$forwarded_ip = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) : 'unavailable';
 
 		printf(
 			'<table class="widefat striped" style="max-width: 600px;">
@@ -1161,7 +1194,7 @@ class CF7_AntiSpam_Admin_Display {
 					)
 				);
 			}
-		}
+		}//end if
 	}
 
 	/**
@@ -1220,7 +1253,7 @@ class CF7_AntiSpam_Admin_Display {
 					esc_html__( 'Your IP address', 'cf7-antispam' ),
 					$your_ip
 				);
-			}
+			}//end if
 
 			// return the result to the frontend
 			return $res;
@@ -1231,6 +1264,6 @@ class CF7_AntiSpam_Admin_Display {
 				'title'   => esc_html__( 'Geo-IP test', 'cf7-antispam' ),
 				'content' => sprintf( '<p>%s</p><pre>%s</pre>', esc_html__( 'Geo-IP Test Error', 'cf7-antispam' ), $error_message && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error' ),
 			);
-		}
+		}//end try
 	}
 }

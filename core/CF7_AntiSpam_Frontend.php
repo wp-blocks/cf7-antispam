@@ -1,7 +1,4 @@
 <?php
-
-namespace CF7_AntiSpam\Core;
-
 /**
  * Front face related stuff
  *
@@ -10,6 +7,8 @@ namespace CF7_AntiSpam\Core;
  * @subpackage CF7_AntiSpam/includes
  * @author     Codekraft Studio <info@codekraft.it>
  */
+
+namespace CF7_AntiSpam\Core;
 
 use WP_Query;
 use WPCF7_ContactForm;
@@ -89,6 +88,11 @@ class CF7_AntiSpam_Frontend {
 		add_action( $hook, array( $this, 'enqueue_scripts' ) );
 	}
 
+	/**
+	 * Handles loading scripts
+	 *
+	 * @return void
+	 */
 	public function setup() {
 		/* It adds hidden fields to the form */
 		add_filter( 'wpcf7_form_hidden_fields', array( $this, 'cf7a_add_hidden_fields' ), 1 );
@@ -145,11 +149,11 @@ class CF7_AntiSpam_Frontend {
 	/**
 	 * Remove "unsafe email config" error messsage
 	 *
-	 * @param array  $error_codes  List of error codes.
-	 * @param object $contact_form Current contact form object.
+	 * @param array $error_codes  List of error codes.
+	 *
 	 * @return array               Modified array of error codes, without "unsafe_email_without_protection".
 	 */
-	public function cf7a_remove_cf7_error_message( $error_codes, $contact_form ) {
+	public function cf7a_remove_cf7_error_message( array $error_codes ): array {
 		// List error codes to disable here.
 		$error_codes_to_disable = array(
 			'unsafe_email_without_protection',
@@ -208,7 +212,7 @@ class CF7_AntiSpam_Frontend {
 					break;
 				}
 			}
-		}
+		}//end foreach
 
 		return $form_elements;
 	}
@@ -229,18 +233,18 @@ class CF7_AntiSpam_Frontend {
 		$excluded_ids = apply_filters( 'cf7a_honeyform_excluded_id', array() );
 		$current_id   = get_the_ID();
 
-		// Check if the current post ID is in the excluded IDs array
-		if ( in_array( $current_id, $excluded_ids ) ) {
-			// If the current post ID is excluded, return the original content
+		// Check if the current post-ID is in the excluded IDs array
+		if ( in_array( $current_id, $excluded_ids, true ) ) {
+			// If the current post-ID is excluded, return the original content
 			return $content;
 		}
 
-		if ( is_array( $this->options['honeyform_excluded_pages'] ) && in_array( $current_id, $this->options['honeyform_excluded_pages'] ) ) {
-			// If the current post ID is excluded, return the original content
+		if ( is_array( $this->options['honeyform_excluded_pages'] ) && in_array( $current_id, $this->options['honeyform_excluded_pages'], true ) ) {
+			// If the current post-ID is excluded, return the original content
 			return $content;
 		}
 
-		/* $html will store the honeyform html */
+		/* The $html variable will store the honeyform HTML code */
 		$html = '';
 
 		$form_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
@@ -352,7 +356,14 @@ class CF7_AntiSpam_Frontend {
 		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
 	}
 
-	function generateHash( $length = 12 ) {
+	/**
+	 * It generates a random string of characters
+	 *
+	 * @param int $length The length of the string.
+	 *
+	 * @return string The generated string.
+	 */
+	public function generate_hash( int $length = 12 ): string {
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$hash       = '';
 
@@ -395,7 +406,7 @@ class CF7_AntiSpam_Frontend {
 
 		/* whenever required add the hash to the form to prevent multiple submissions */
 		if ( intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
-			$fields[ $prefix . 'hash' ] = $this->generateHash();
+			$fields[ $prefix . 'hash' ] = $this->generate_hash();
 		}
 
 		/* add the default hidden fields */
@@ -573,9 +584,9 @@ class CF7_AntiSpam_Frontend {
 	/**
 	 * Check if the form should be aborted if mail was sent or invalid
 	 *
-	 * @param $cf7 WPCF7_ContactForm - the contact form object
-	 * @param $abort boolean - if the form should be aborted? not sure because undocumented
-	 * @param $submission WPCF7_Submission - the form object
+	 * @param WPCF7_ContactForm $cf7 - the contact form object
+	 * @param boolean           $abort - if the form should be aborted? not sure because undocumented
+	 * @param WPCF7_Submission  $submission - the form object
 	 *
 	 * @return void - if the form should be aborted
 	 */
@@ -616,7 +627,7 @@ class CF7_AntiSpam_Frontend {
 			delete_transient( "mail_sent_$hash" );
 			set_transient( "mail_sent_$hash", true, $expire );
 			return;
-		}
+		}//end if
 
 		// abort the form
 		$abort = true;

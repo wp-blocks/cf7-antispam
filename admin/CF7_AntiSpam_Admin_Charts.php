@@ -7,25 +7,21 @@ use WP_Query;
 /**
  * The admin-specific functionality of the plugin.
  *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
- *
  * @package    CF7_AntiSpam
  * @subpackage CF7_AntiSpam/admin
  * @author     Codekraft Studio <info@codekraft.it>
  */
-
 class CF7_AntiSpam_Admin_Charts {
 	/**
 	 * It queries the database for all the emails received in the last week, then it creates two lists:
 	 * one with the number of emails received per day, and one with the number of emails received per type (ham or spam)
 	 *
-	 * @param $max_mail_count int The maximum number of emails to retrieve
-	 * @param $date_after string The date after which the emails will be retrieved
+	 * @param int    $max_mail_count The maximum number of emails to retrieve
+	 * @param string $date_after The date after which the emails will be retrieved
 	 *
 	 * @return WP_Query The query object
 	 */
-	public function cf7a_get_flamingo_stats( $max_mail_count, $date_after = '1 week ago' ) {
+	public function cf7a_get_flamingo_stats( int $max_mail_count, string $date_after = '1 week ago' ): WP_Query {
 			$args = array(
 				'post_type'      => 'flamingo_inbound',
 				'post_status'    => array( 'flamingo-spam', 'publish' ),
@@ -106,7 +102,7 @@ class CF7_AntiSpam_Admin_Charts {
 						esc_url( admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ) ),
 						(int) $post->ID,
 						$is_ham ? '🔵' : '🔴',
-						esc_html( get_post_meta( $post->ID, '_from' )[0] ),
+						esc_html( get_post_meta( $post->ID, '_from', true )[0] ),
 						esc_html( $post->post_title )
 					);
 			}

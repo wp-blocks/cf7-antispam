@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Some utility function used alongside the plugin
  *
@@ -41,7 +40,14 @@ function cf7a_get_real_ip() {
 	return '';
 }
 
-function cf7a_strip_weight( $str ) {
+/**
+ * Strips the weight from a language code.
+ *
+ * @param string $str The language code.
+ *
+ * @return string The language code without the weight.
+ */
+function cf7a_strip_weight( string $str ): string {
 	$str = trim( $str );
 	if ( strpos( $str, ';' ) !== false ) {
 		$str = substr( $str, 0, strpos( $str, ';' ) );
@@ -53,9 +59,10 @@ function cf7a_strip_weight( $str ) {
  * Generate an array of languages and locales based on the accept language header.
  *
  * @param string $accept_language The accept language header.
+ *
  * @return string[] The array of language-locale codes.
  */
-function cf7a_init_languages_locales_array( $accept_language ) {
+function cf7a_init_languages_locales_array( string $accept_language ): array {
 	return array_reduce(
 		explode( ',', $accept_language ),
 		function ( $res, $el ) {
@@ -74,7 +81,7 @@ function cf7a_init_languages_locales_array( $accept_language ) {
  *
  * @return array assoc array of languages and locales
  */
-function cf7a_get_browser_languages_locales_array( $languages_locales ) {
+function cf7a_get_browser_languages_locales_array( string $languages_locales ): array {
 	$result = array_reduce(
 		explode( ',', $languages_locales ),
 		function ( $res, $el ) {
@@ -174,6 +181,7 @@ function cf7a_get_accept_locales_array( $locales ) {
  * @param array $schedules This is the name of the hook that we're adding a schedule to.
  */
 function cf7a_add_cron_steps( $schedules ) {
+	// phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval
 	return array_merge(
 		$schedules,
 		array(
@@ -188,7 +196,7 @@ function cf7a_add_cron_steps( $schedules ) {
 		)
 	);
 }
-
+// phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval
 add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 
 /**
@@ -339,13 +347,13 @@ function cf7a_format_status( $rank ) {
  * It takes an array and returns a string with the array's keys and values separated by a colon and a space, and each
  * key/value pair separated by a semicolon and a space
  *
- * @param array $array - the array of reasons to ban.
+ * @param array $arr - the array of reasons to ban.
  * @param bool  $is_html - true to return an HTML string.
  *
  * @return false|string Compress arrays into "key:value; " pair
  */
-function cf7a_compress_array( $array, $is_html = false ) {
-	if ( ! is_array( $array ) ) {
+function cf7a_compress_array( $arr, $is_html = false ) {
+	if ( ! is_array( $arr ) ) {
 		return false;
 	}
 	$is_html = intval( $is_html );
@@ -364,19 +372,19 @@ function cf7a_compress_array( $array, $is_html = false ) {
 							', ',
 							array_map(
 								function ( $item ) {
-									return is_array( $item ) ? json_encode( $item ) : (string) $item;
+									return is_array( $item ) ? wp_json_encode( $item ) : (string) $item;
 								},
 								$v
 							)
 						) . ']';
 					}
 				} elseif ( is_object( $v ) ) {
-					$v = json_encode( $v );
+					$v = wp_json_encode( $v );
 				} elseif ( is_bool( $v ) ) {
 					$v = $v ? 'true' : 'false';
 				} elseif ( is_null( $v ) ) {
 					$v = 'null';
-				}
+				}//end if
 
 				// Handles HTML output
 				if ( $is_html ) {
@@ -385,8 +393,8 @@ function cf7a_compress_array( $array, $is_html = false ) {
 					return sprintf( '%s: %s', $k, $v );
 				}
 			},
-			$array,
-			array_keys( $array )
+			$arr,
+			array_keys( $arr )
 		)
 	);
 }
@@ -401,30 +409,46 @@ function cf7a_compress_array( $array, $is_html = false ) {
  * @return void
  */
 function cf7a_log( $log_data, $log_level = 0 ) {
-	if ( ! empty( $log_data ) ) {
-		if ( 0 === $log_level || 1 >= $log_level && CF7ANTISPAM_DEBUG || 2 >= $log_level && CF7ANTISPAM_DEBUG_EXTENDED ) {
-			// Mask sensitive data in production logs
-			// In extended debug mode, log everything; otherwise mask certain patterns
-			if ( is_string( $log_data ) && ! CF7ANTISPAM_DEBUG_EXTENDED ) {
-				// Hash IP addresses in production mode (pattern: xxx.xxx.xxx.xxx or IPv6)
-				$log_data = preg_replace_callback(
-					'/\b(?:\d{1,3}\.){3}\d{1,3}\b/',
-					function ( $matches ) {
-						return 'IP:' . substr( md5( $matches[0] ), 0, 8 );
-					},
-					$log_data
-				);
-			}
+	if ( empty( $log_data ) ) {
+		return;
+	}
 
-			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log(
-				is_string( $log_data )
-				? CF7ANTISPAM_LOG_PREFIX . $log_data
-				// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
-				: CF7ANTISPAM_LOG_PREFIX . print_r( $log_data, true )
+	// Define visibility flags
+	$debug_enabled          = defined( 'CF7ANTISPAM_DEBUG' ) && CF7ANTISPAM_DEBUG;
+	$extended_debug_enabled = defined( 'CF7ANTISPAM_DEBUG_EXTENDED' ) && CF7ANTISPAM_DEBUG_EXTENDED;
+
+	$should_log = false;
+
+	// Cascading logic
+	if ( 0 === $log_level ) {
+		$should_log = true;
+	} elseif ( 1 === $log_level && ( $debug_enabled || $extended_debug_enabled ) ) {
+		$should_log = true;
+	} elseif ( 2 === $log_level && $extended_debug_enabled ) {
+		$should_log = true;
+	}
+
+	if ( $should_log ) {
+		// Mask sensitive data if NOT in extended debug mode
+		$is_extended = defined( 'CF7ANTISPAM_DEBUG_EXTENDED' ) && CF7ANTISPAM_DEBUG_EXTENDED;
+
+		if ( is_string( $log_data ) && ! $is_extended ) {
+			// Hash IP addresses (IPv4 pattern)
+			$log_data = preg_replace_callback(
+				'/\b(?:\d{1,3}\.){3}\d{1,3}\b/',
+				function ( $matches ) {
+					return 'IP:' . substr( md5( $matches[0] ), 0, 8 );
+				},
+				$log_data
 			);
 		}
-	}
+
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		$output = is_string( $log_data ) ? $log_data : print_r( $log_data, true );
+
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( CF7ANTISPAM_LOG_PREFIX . $output );
+	}//end if
 }
 
 /**
@@ -478,7 +502,7 @@ function cf7a_str_array_to_uint_array( $str_array ) {
 		array_filter(
 			$str_array,
 			function ( $value ) {
-				return is_int( $value ) || is_numeric( $value ) && $value > 0 && intval( $value ) == $value;
+				return is_int( $value ) || ( is_numeric( $value ) && $value > 0 && intval( $value ) === $value );
 			}
 		)
 	);

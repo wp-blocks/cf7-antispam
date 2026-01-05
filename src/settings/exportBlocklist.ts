@@ -1,11 +1,15 @@
+/**
+ * WordPress dependencies
+ */
 import apiFetch from '@wordpress/api-fetch';
 
 /**
  * A function that handles all the function that download some files from the server via API
- * @param e HTMLElement The button element
+ *
+ * @param {HTMLElement} el HTMLElement The button element
  */
-function exportActionHandler(e: HTMLElement) {
-	const { action, nonce } = e.dataset as {
+function exportActionHandler(el: HTMLElement) {
+	const { action, nonce } = el.dataset as {
 		action: string;
 		nonce: string;
 	};
@@ -38,11 +42,14 @@ function exportActionHandler(e: HTMLElement) {
 					window.URL.revokeObjectURL(url);
 				}
 			} else {
+				// eslint-disable-next-line no-console
 				console.error('Error: Failed to export file', message);
 			}
 		})
 		.catch((error: any) => {
+			// eslint-disable-next-line no-console
 			console.error('Error:', error.message);
+			// eslint-disable-next-line no-alert
 			alert('Request failed: ' + error.message);
 		});
 }

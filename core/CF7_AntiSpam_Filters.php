@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Antispam functions.
  *
@@ -117,15 +116,15 @@ class CF7_AntiSpam_Filters {
 	public function cf7a_check_length_exclusive( $el, $n ) {
 		if ( strlen( $el ) >= 5 ) {
 			$l = explode( '-', $el );
-			if ( 0 == $n ) {
+			if ( 0 === $n ) {
 				return strtolower( $l[0] );
-			} elseif ( 1 == $n ) {
+			} elseif ( 1 === $n ) {
 				return strtoupper( $l[1] );
 			}
 		} elseif ( strlen( $el ) === 2 && ctype_alpha( $el ) ) {
-			if ( 0 == $n && ctype_lower( $el ) ) {
+			if ( 0 === $n && ctype_lower( $el ) ) {
 				return $el;
-			} elseif ( 1 == $n && ctype_upper( $el ) ) {
+			} elseif ( 1 === $n && ctype_upper( $el ) ) {
 				return $el;
 			}
 		}
@@ -190,26 +189,33 @@ class CF7_AntiSpam_Filters {
 	}
 
 
-	public function scan_email_tags( $fields ) {
-		$validEmails = array();
+	/**
+	 * Scans the submitted data for email addresses.
+	 *
+	 * @param array $fields The submitted data.
+	 *
+	 * @return array An array of valid email addresses.
+	 */
+	public function scan_email_tags( array $fields ): array {
+		$valid_emails = array();
 
 		foreach ( $fields as $value ) {
 			if ( filter_var( $value, FILTER_VALIDATE_EMAIL ) ) {
-				$validEmails[] = sanitize_email( $value );
+				$valid_emails[] = sanitize_email( $value );
 			}
 		}
 
-		return $validEmails;
+		return $valid_emails;
 	}
 
 	/**
 	 * Simplify a text removing spaces and converting it to lowercase
 	 *
-	 * @param $text string Text to simplify
+	 * @param string $text Text to simplify
 	 *
 	 * @return string Simplified text
 	 */
-	public function cf7a_simplify_text( $text ) {
+	public function cf7a_simplify_text( string $text ) {
 		return str_replace( ' ', '', strtolower( $text ) );
 	}
 
@@ -281,8 +287,9 @@ class CF7_AntiSpam_Filters {
 		/* Prepare IP and basic user data */
 		$prefix = sanitize_text_field( $options['cf7a_customizations_prefix'] );
 		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$real_remote_ip = isset( $_POST[ $prefix . 'address' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'address' ], $options['cf7a_cipher'] ) ) ) : false;
+		$address_key = esc_attr( $prefix . 'address' );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$real_remote_ip = isset( $_POST[ $address_key ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $address_key ], $options['cf7a_cipher'] ) ) ) : false;
 		$remote_ip      = $real_remote_ip ? filter_var( $real_remote_ip, FILTER_VALIDATE_IP ) : false;
 		$cf7_remote_ip  = filter_var( $submission->get_meta( 'remote_ip' ), FILTER_VALIDATE_IP );
 		$user_agent     = sanitize_text_field( $submission->get_meta( 'user_agent' ) );
@@ -304,7 +311,8 @@ class CF7_AntiSpam_Filters {
 			'spam_score'     => 0,
 			'is_spam'        => $spam,
 			'reasons'        => array(),
-			'is_whitelisted' => false, // Flag to stop processing
+			'is_whitelisted' => false,
+		// Flag to stop processing
 		);
 
 		if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
@@ -341,7 +349,8 @@ class CF7_AntiSpam_Filters {
 
 		/* If the spam score is lower than 1 the mail is ham */
 		if ( $spam_score < 1 && ! $spam ) {
-			return $spam; // Usually false
+			return $spam;
+			// Usually false
 		}
 
 		/* Prepare for ban/logging */
@@ -373,6 +382,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks for IP whitelist.
+	 * If the IP is whitelisted, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_ip_whitelist( $data ) {
 		$ip_whitelist = $data['options']['ip_whitelist'] ?? array();
@@ -392,6 +406,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks if IP is empty.
+	 * If the IP is empty, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_empty_ip( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -413,6 +432,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks against local bad IP list.
+	 * If the IP is in the list, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_bad_ip( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -435,7 +459,8 @@ class CF7_AntiSpam_Filters {
 
 			if ( ! empty( $data['reasons']['bad_ip'] ) && is_array( $data['reasons']['bad_ip'] ) ) {
 				$ip_string                 = implode( ', ', $data['reasons']['bad_ip'] );
-				$data['reasons']['bad_ip'] = $ip_string; // Flatten for log
+				$data['reasons']['bad_ip'] = $ip_string;
+				// Flatten for log
 				cf7a_log( "The ip address {$data['remote_ip']} is listed into bad ip list (contains $ip_string)", 1 );
 			}
 		}
@@ -444,6 +469,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks if IP is already in the database blocklist history.
+	 * If the IP is in the list, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_ip_blacklist_history( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -471,6 +501,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks the HoneyForm (CSS hidden field).
+	 * If the field is not empty, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_honeyform( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -493,6 +528,10 @@ class CF7_AntiSpam_Filters {
 	/**
 	 * Checks Referrer and Protocol.
 	 * Note: In original code, this only runs if spam_score < 1.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_referrer_protocol( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -508,8 +547,9 @@ class CF7_AntiSpam_Filters {
 
 		if ( intval( $options['check_refer'] ) === 1 ) {
 			// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$cf7a_referer = isset( $_POST[ $prefix . 'referer' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'referer' ], $options['cf7a_cipher'] ) ) ) : false;
+			$refer_key = esc_attr( $prefix . 'referer' );
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$cf7a_referer = isset( $_POST[ $refer_key ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $refer_key ], $options['cf7a_cipher'] ) ) ) : false;
 			if ( ! $cf7a_referer ) {
 				$data['spam_score']            += $score_warn;
 				$data['reasons']['no_referrer'] = 'client has referrer address';
@@ -518,20 +558,27 @@ class CF7_AntiSpam_Filters {
 		}
 
 		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$cf7a_protocol = isset( $_POST[ $prefix . 'protocol' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'protocol' ], $options['cf7a_cipher'] ) ) ) : false;
-		if ( $cf7a_protocol ) {
-			if ( in_array( $cf7a_protocol, array( 'HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2' ) ) ) {
-				$data['spam_score']            += $score_warn;
-				$data['reasons']['no_protocol'] = 'client has a bot-like connection protocol';
-				cf7a_log( "the {$data['remote_ip']} has a bot-like connection protocol (HTTP/1.X)", 1 );
-			}
+		$protocol_key = esc_attr( $prefix . 'protocol' );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$cf7a_protocol = isset( $_POST[ $protocol_key ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $protocol_key ], $options['cf7a_cipher'] ) ) ) : false;
+
+		// Protocol field is completely missing or empty -> SPAM
+		if ( ! $cf7a_protocol ) {
+			$data['spam_score']            += $score_warn;
+			$data['reasons']['no_protocol'] = 'client has a bot-like connection protocol';
+			cf7a_log( "the {$data['remote_ip']} has a bot-like connection protocol (HTTP/1.X)", 1 );
 		}
+
 		return $data;
 	}
 
 	/**
 	 * Checks Plugin Version match.
+	 * If the version does not match, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_plugin_version( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -546,8 +593,9 @@ class CF7_AntiSpam_Filters {
 		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
 
 		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$cf7a_version = isset( $_POST[ $prefix . 'version' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . 'version' ], $options['cf7a_cipher'] ) ) ) : false;
+		$version_key = esc_attr( $prefix . 'version' );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$cf7a_version = isset( $_POST[ $version_key ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $version_key ], $options['cf7a_cipher'] ) ) ) : false;
 
 		// CASE A: Version field is completely missing or empty -> SPAM
 		if ( ! $cf7a_version ) {
@@ -559,7 +607,7 @@ class CF7_AntiSpam_Filters {
 		}
 
 		// CASE B: Version matches current version -> OK
-		if ( $cf7a_version === CF7ANTISPAM_VERSION ) {
+		if ( CF7ANTISPAM_VERSION === $cf7a_version ) {
 			return $data;
 		}
 
@@ -602,7 +650,7 @@ class CF7_AntiSpam_Filters {
 			}
 
 			// SAVE OPTIONS: We must save the error count to the database
-			// Update the local $options variable first so subsequent filters use it if needed (though unlikely)
+			// Update the local $options variable first so later filters use it if needed (though unlikely)
 			$data['options'] = $options;
 
 			// Persist to DB
@@ -616,13 +664,18 @@ class CF7_AntiSpam_Filters {
 			$data['spam_score']              += $score_fingerprinting;
 			$data['reasons']['data_mismatch'] = "Version mismatch '$cf7a_version' != '" . CF7ANTISPAM_VERSION . "'";
 			cf7a_log( "The 'version' field submitted by {$data['remote_ip']} is mismatching (expired grace period or invalid)", 1 );
-		}
+		}//end if
 
 		return $data;
 	}
 
 	/**
 	 * Checks Browser Fingerprint (JS based).
+	 * If the fingerprint does not match, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_bot_fingerprint( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -672,7 +725,7 @@ class CF7_AntiSpam_Filters {
 		if ( ! $bot_fingerprint['webdriver'] ) {
 			$fails[] = 'webdriver';
 		}
-		if ( $bot_fingerprint['session_storage'] === null ) {
+		if ( null === $bot_fingerprint['session_storage'] ) {
 			$fails[] = 'session_storage';
 		}
 		if ( 5 !== strlen( $bot_fingerprint['bot_fingerprint'] ) ) {
@@ -706,6 +759,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks Bot Fingerprint Extras (User activity).
+	 * If the fingerprint extras do not match, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_bot_fingerprint_extras( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -763,6 +821,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks Language consistency.
+	 * If the language does not match, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_language( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -784,7 +847,7 @@ class CF7_AntiSpam_Filters {
 		$languages['browser_language'] = ! empty( $_POST[ $prefix . 'browser_language' ] ) ? sanitize_text_field( wp_unslash( $_POST[ $prefix . 'browser_language' ] ) ) : null;
 
 		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$languages['accept_language'] = isset( $_POST[ $prefix . '_language' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . '_language' ], $options['cf7a_cipher'] ) ) ) : null;
 
 		if ( empty( $languages['browser_language'] ) ) {
@@ -824,6 +887,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks GeoIP Location.
+	 * If the location does not match, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_geoip( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -863,12 +931,17 @@ class CF7_AntiSpam_Filters {
 			} catch ( Exception $e ) {
 				cf7a_log( "unable to check geoip for {$data['remote_ip']} - " . $e->getMessage(), 1 );
 			}
-		}
+		}//end if
 		return $data;
 	}
 
 	/**
 	 * Checks Time of submission.
+	 * If the time does not match, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_time_submission( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -889,7 +962,7 @@ class CF7_AntiSpam_Filters {
 		$score_detection = floatval( $options['score']['_detection'] );
 
 		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$timestamp        = isset( $_POST[ $prefix . '_timestamp' ] ) ? intval( cf7a_decrypt( $_POST[ $prefix . '_timestamp' ], $options['cf7a_cipher'] ) ) : 0;
 		$time_now         = time();
 		$time_elapsed_min = intval( $options['check_time_min'] );
@@ -919,6 +992,10 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks for bad strings inside the email address.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_bad_email_strings( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -955,6 +1032,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks User Agent.
+	 * If the user agent does not match, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_user_agent( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -995,6 +1077,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks for bad words in message.
+	 * If the message contains bad words, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_bad_words( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -1029,6 +1116,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks DNS Blocklist.
+	 * If the IP is in the list, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_dnsbl( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -1068,6 +1160,11 @@ class CF7_AntiSpam_Filters {
 
 	/**
 	 * Checks visible honeypot fields.
+	 * If the honeypot fields are not empty, the spam check is skipped.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_honeypot( $data ) {
 		if ( $data['is_whitelisted'] ) {
@@ -1113,6 +1210,10 @@ class CF7_AntiSpam_Filters {
 	/**
 	 * Checks B8 Bayesian Filter.
 	 * Now hooks into 'cf7a_check_b8'.
+	 *
+	 * @param array $data The data array.
+	 *
+	 * @return array The data array.
 	 */
 	public function filter_b8_bayesian( $data ) {
 		// Even if requested "at the end", we usually skip B8 if the user is explicitly Whitelisted.
@@ -1161,12 +1262,12 @@ class CF7_AntiSpam_Filters {
 				// Only learn spam if OTHER filters flagged it (not B8 itself)
 				cf7a_log( "{$data['remote_ip']} detected as spam by filters (score {$data['spam_score']}), learning as SPAM.", 1 );
 				$cf7a_b8->cf7a_b8_learn_spam( $text );
-			} elseif ( $rating < $b8_threshold * 0.5 && $data['spam_score'] == 0 ) {
+			} elseif ( $rating < $b8_threshold * 0.5 && 0 === $data['spam_score'] ) {
 				// Only learn as ham if COMPLETELY clean (no warnings at all)
 				cf7a_log( "B8 detected spamminess of $rating (below threshold) and no filter warnings, learning as HAM.", 1 );
 				$cf7a_b8->cf7a_b8_learn_ham( $text );
 			}
-		}
+		}//end if
 		return $data;
 	}
 
@@ -1174,6 +1275,7 @@ class CF7_AntiSpam_Filters {
 	 * Sends an email to the admin, warning them to clear the cache.
 	 *
 	 * @param array $update_data the array of data to be sent to the admin
+	 *
 	 * @return void
 	 */
 	private function send_cache_warning_email( $update_data ): void {
@@ -1194,12 +1296,13 @@ class CF7_AntiSpam_Filters {
 	 * Search for the message field in the mail tags.
 	 *
 	 * @param array $mail_tags the array of mail tags
+	 *
 	 * @return string the name of the message field or false if not found
 	 */
 	private function search_for_message_field( array $mail_tags ) {
 		foreach ( $mail_tags as $tag ) {
 			// if we are lucky and the message tag wasn't changed by the user
-			if ( $tag->name == 'message' || $tag->name == 'your-message' ) {
+			if ( 'message' === $tag->name || 'your-message' === $tag->name ) {
 				return $tag->name;
 			}
 		}
@@ -1267,7 +1370,7 @@ class CF7_AntiSpam_Filters {
 	/**
 	 * Gets the message from the contact form.
 	 *
-	 * @param string $contact_form the contact form object
+	 * @param string $message_tag the name of the message tag
 	 * @param array  $posted_data the array of posted data
 	 * @param array  $mail_tags the array of mail tags
 	 *

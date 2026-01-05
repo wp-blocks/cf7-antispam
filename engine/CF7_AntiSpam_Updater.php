@@ -1,10 +1,30 @@
 <?php
+/**
+ * Handles database updates for the plugin.
+ *
+ * @package    CF7_AntiSpam
+ * @subpackage CF7_AntiSpam/engine
+ */
 
 namespace CF7_AntiSpam\Engine;
 
+/**
+ * Handles database updates for the plugin.
+ */
 class CF7_AntiSpam_Updater {
 
+	/**
+	 * The hardcoded version.
+	 *
+	 * @var string The hardcoded version.
+	 */
 	public $hc_version;
+
+	/**
+	 * The options.
+	 *
+	 * @var mixed The options.
+	 */
 	public $current_options;
 
 	/**
@@ -57,7 +77,7 @@ class CF7_AntiSpam_Updater {
 				$this->current_options['cf7a_version'] = $this->hc_version;
 				return update_option( 'cf7a_options', $this->current_options );
 			}
-		}
+		}//end if
 
 		return false;
 	}
@@ -126,7 +146,7 @@ class CF7_AntiSpam_Updater {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			$result = $wpdb->query( $sql );
 
-			if ( $result !== false ) {
+			if ( false !== $result ) {
 				cf7a_log( 'CF7-antispam updated to 0.7.0: added modified column to blocklist table', 2 );
 				$updated = true;
 			} else {
@@ -149,17 +169,11 @@ class CF7_AntiSpam_Updater {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->query( $sql );
 
-			if ( $result !== false ) {
+			if ( false !== $result ) {
 				cf7a_log( 'CF7-antispam updated to 0.7.0: added created column to blocklist table', 2 );
 				$updated = true;
 			} else {
 				cf7a_log( 'CF7-antispam update to 0.7.0: failed to add created column to blocklist table', 1 );
-			}
-
-			// if flamingo is enabled, try to get the created date from the flamingo post meta
-			if ( class_exists( 'Flamingo' ) ) {
-				// get all flamingo posts
-				// TODO: get the post by ip addr and get the related item of the backlist table, then copy the flamingo dates to the item found
 			}
 		}
 

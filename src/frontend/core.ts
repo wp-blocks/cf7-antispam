@@ -1,3 +1,6 @@
+/**
+ * Internal dependencies
+ */
 import {
 	browserFingerprint,
 	getBrowserLanguage,
@@ -12,7 +15,8 @@ import { createCF7Afield } from './utils';
 
 /**
  * Process a single CF7 form
- * @param wpcf7Form
+ *
+ * @param {HTMLFormElement} wpcf7Form The Contact form to process
  */
 function processCF7Form(wpcf7Form: HTMLFormElement): void {
 	if (!window.wpcf7) {

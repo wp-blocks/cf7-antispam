@@ -121,7 +121,7 @@ class CF7_AntiSpam_Flamingo {
 							$b8->cf7a_b8_learn_spam( $message );
 
 							if ( $options['autostore_bad_ip'] ) {
-								CF7_Antispam_Blacklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], ['flamingo ban'] );
+								CF7_Antispam_Blacklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' ) );
 							}
 						} elseif ( $flamingo_post->spam && 'ham' === $action ) {
 							$b8->cf7a_b8_unlearn_spam( $message );
@@ -147,10 +147,10 @@ class CF7_AntiSpam_Flamingo {
 							),
 							1
 						);
-					}
-				}
-			}
-		}
+					}//end if
+				}//end foreach
+			}//end if
+		}//end if
 	}
 
 	/**
@@ -192,7 +192,7 @@ class CF7_AntiSpam_Flamingo {
 					return esc_html( $message );
 				}
 			}
-		}
+		}//end if
 
 		if ( 'message' === $field ) {
 			cf7a_log( 'Original contact form slug not found for flamingo post id ' . $flamingo_post->id() . '. please check your contact form 7 shortcode / settings', 2 );
@@ -266,8 +266,8 @@ class CF7_AntiSpam_Flamingo {
 						}
 					}
 				}
-			}
-		}
+			}//end if
+		}//end if
 
 		// Fallback to stored recipient or admin email
 		if ( empty( $recipient ) || ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) ) {
@@ -446,7 +446,7 @@ class CF7_AntiSpam_Flamingo {
 			}
 
 			return update_post_meta( $result['flamingo_inbound_id'], '_fields', $fields );
-		}
+		}//end if
 
 		return true;
 	}
