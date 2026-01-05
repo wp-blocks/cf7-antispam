@@ -200,6 +200,42 @@ class CF7_AntiSpam_Updater {
 	 * @return void|mixed
 	 */
 	public function update_db_procedure_to_0_7_3() {
+		global $wpdb;
+
+		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
+		$blocklist_table = $wpdb->prefix . 'cf7a_blocklist';
+
+		$updated = false;
+
+		// Check if the old table exists
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$has_blacklist_table = $wpdb->get_var(
+			$wpdb->prepare(
+				'SHOW TABLES LIKE %s',
+				$wpdb->esc_like( $blacklist_table )
+			)
+		);
+
+		// If the old table exists and the new one doesn't, rename it
+		if ( $has_blacklist_table === $blacklist_table ) {
+			// Check if new table already exists
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$has_blocklist_table = $wpdb->get_var(
+				$wpdb->prepare(
+					'SHOW TABLES LIKE %s',
+					$wpdb->esc_like( $blocklist_table )
+				)
+			);
+
+			if ( $has_blocklist_table !== $blocklist_table ) {
+				// Rename the table
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( "RENAME TABLE `{$blacklist_table}` TO `{$blocklist_table}`" );
+				cf7a_log( 'CF7-antispam updated to 0.7.3: cf7a_blacklist table renamed to cf7a_blocklist', 1 );
+				$updated = true;
+			}
+		}
+
 		if ( array_key_exists( 'ip_whitelist', $this->current_options ) ) {
 			$this->current_options['cf7a_version'] = $this->hc_version;
 			$this->current_options['ip_allowlist'] = $this->current_options['ip_whitelist'];
@@ -207,10 +243,9 @@ class CF7_AntiSpam_Updater {
 			unset( $this->current_options['ip_whitelist'] );
 
 			cf7a_log( 'CF7-antispam updated to 0.7.3: ip_whitelist option migrated to ip_allowlist', 1 );
-
-			return $this->current_options;
+			$updated = true;
 		}
 
-		return false;
+		return $updated ? $this->current_options : false;
 	}
 }
