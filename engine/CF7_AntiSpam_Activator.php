@@ -156,8 +156,7 @@ class CF7_AntiSpam_Activator {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$table_wordlist  = $wpdb->prefix . 'cf7a_wordlist';
-		$table_blacklist = $wpdb->prefix . 'cf7a_blacklist';
+		$table_wordlist = $wpdb->prefix . 'cf7a_wordlist';
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
@@ -186,11 +185,12 @@ class CF7_AntiSpam_Activator {
 		}
 
 		// Create the blocklist database
+		$table_blocklist = $wpdb->prefix . 'cf7a_blocklist';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$has_blacklist_table = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES like %s', $table_blacklist ) );
-		if ( $has_blacklist_table !== $table_blacklist ) {
+		$has_blocklist_table = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES like %s', $table_blocklist ) );
+		if ( $has_blocklist_table !== $table_blocklist ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
-			$cf7a_database = "CREATE TABLE IF NOT EXISTS $table_blacklist (
+			$cf7a_database = "CREATE TABLE IF NOT EXISTS $table_blocklist (
 				 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				 `ip` varchar(45) NOT NULL,
 				 `status` int(10) unsigned DEFAULT NULL,
@@ -204,9 +204,9 @@ class CF7_AntiSpam_Activator {
 			$result = dbDelta( $cf7a_database );
 
 			if ( $result ) {
-				cf7a_log( "{$table_blacklist} table creation/update succeeded", 2 );
+				cf7a_log( "{$table_blocklist} table creation/update succeeded", 2 );
 			} else {
-				cf7a_log( "{$table_blacklist} table creation/update failed", 1 );
+				cf7a_log( "{$table_blocklist} table creation/update failed", 1 );
 			}
 		}//end if
 	}
