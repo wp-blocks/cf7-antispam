@@ -229,7 +229,7 @@ class CF7_AntiSpam_Updater {
 
 			if ( $has_blocklist_table !== $blocklist_table ) {
 				// Rename the table
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->query( "RENAME TABLE `{$blacklist_table}` TO `{$blocklist_table}`" );
 				cf7a_log( 'CF7-antispam updated to 0.7.3: cf7a_blacklist table renamed to cf7a_blocklist', 1 );
 				$updated = true;
