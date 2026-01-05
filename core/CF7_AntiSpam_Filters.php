@@ -30,7 +30,7 @@ class CF7_AntiSpam_Filters {
 		// Priority 10: Standard checks
 		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_empty_ip' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_bad_ip' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_ip_blacklist_history' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_ip_blocklist_history' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_honeyform' ), 10 );
 
 		// Checks that originally ran only if score < 1 (See logic inside methods)
@@ -475,14 +475,14 @@ class CF7_AntiSpam_Filters {
 	 *
 	 * @return array The data array.
 	 */
-	public function filter_ip_blacklist_history( $data ) {
+	public function filter_ip_blocklist_history( $data ) {
 		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 
 		$options = $data['options'];
 		if ( $data['remote_ip'] && $options['max_attempts'] ) {
-			$ip_data        = CF7_Antispam_Blocklist::cf7a_blacklist_get_ip( $data['remote_ip'] );
+			$ip_data        = CF7_Antispam_Blocklist::cf7a_blocklist_get_ip( $data['remote_ip'] );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
 			$max_attempts   = intval( $options['max_attempts'] );
 
