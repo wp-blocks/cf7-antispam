@@ -234,14 +234,17 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			);
 		}
 
-		/* Update the plugin database */
+		// Hack the updater option version to force update
+		$this->options['cf7a_version'] = '0.0.0';
+
+		// Update the plugin database
 		$updater = new CF7_AntiSpam_Updater( CF7ANTISPAM_VERSION, $this->options );
 		$res     = $updater->may_do_updates();
 
-		/* Update the plugin options */
+		// Update the plugin options
 		CF7_AntiSpam_Activator::update_options();
 
-		// if update failed
+		// if the update fails
 		if ( ! $res ) {
 			return rest_ensure_response(
 				array(
@@ -266,7 +269,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @param    WP_REST_Request $request Full data about the request.
 	 * @return   WP_REST_Response
 	 */
-	public function cf7a_reset_blacklist( $request ) {
+	public function cf7a_reset_blocklist( $request ) {
 		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
@@ -278,7 +281,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		/* uninstall class contains the database utility functions */
-		$r = CF7_AntiSpam_Uninstaller::cf7a_clean_blacklist();
+		$r = CF7_AntiSpam_Uninstaller::cf7a_clean_blocklist();
 
 		if ( $r ) {
 			return rest_ensure_response(
@@ -504,7 +507,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @param    WP_REST_Request $request Full data about the request.
 	 * @return   WP_REST_Response
 	 */
-	public function cf7a_export_blacklist( $request ) {
+	public function cf7a_export_blocklist( $request ) {
 		/** Verify nonce */
 		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
 			return rest_ensure_response(
@@ -516,7 +519,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		$blacklist   = new CF7_Antispam_Blocklist();
-		$export_data = $blacklist->cf7a_export_blacklist();
+		$export_data = $blacklist->cf7a_export_blocklist();
 
 		return rest_ensure_response(
 			array(
@@ -536,9 +539,9 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @since    0.6.5
 	 * @return   array
 	 */
-	private function cf7a_get_blacklist_data() {
+	private function cf7a_get_blocklist_data() {
 		$blacklist = new CF7_Antispam_Blocklist();
-		return $blacklist->cf7a_get_blacklist_data();
+		return $blacklist->cf7a_get_blocklist_data();
 	}
 
 
@@ -637,7 +640,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'cf7a_reset_blacklist' ),
+					'callback'            => array( $this, 'cf7a_reset_blocklist' ),
 					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
 					'args'                => array(
 						'nonce' => array(
@@ -777,7 +780,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'cf7a_get_blacklist_data' ),
+					'callback'            => array( $this, 'cf7a_get_blocklist_data' ),
 					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
 					'args'                => array(
 						'nonce' => array(
@@ -798,7 +801,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'cf7a_export_blacklist' ),
+					'callback'            => array( $this, 'cf7a_export_blocklist' ),
 					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
 					'args'                => array(
 						'nonce' => array(
