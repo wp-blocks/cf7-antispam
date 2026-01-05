@@ -1685,9 +1685,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		$args = array(
 			'post_type'                      => 'page',
 			// change this to the post type you're querying
-							'fields'         => 'ids',
+			'fields'         => 'ids',
 			// get only ids
-							'posts_per_page' => -1,
+			'posts_per_page' => -1,
 		// get all posts
 		);
 		$query = new WP_Query( $args );
