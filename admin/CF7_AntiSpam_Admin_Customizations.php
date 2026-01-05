@@ -78,9 +78,9 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Section Bot Fingerprint */
 		add_settings_section(
-			'cf7a_auto_blacklist',
+			'cf7a_auto_blocklist',
 			__( 'Ban automatically spammers', 'cf7-antispam' ),
-			array( $this, 'cf7a_print_section_auto_blacklist' ),
+			array( $this, 'cf7a_print_section_auto_blocklist' ),
 			'cf7a-settings'
 		);
 
@@ -90,7 +90,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'Automatic spammer IP Blocklist', 'cf7-antispam' ),
 			array( $this, 'cf7a_autostore_bad_ip_callback' ),
 			'cf7a-settings',
-			'cf7a_auto_blacklist'
+			'cf7a_auto_blocklist'
 		);
 
 		/* Settings check_time */
@@ -99,7 +99,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'Mail blocked before Ban', 'cf7-antispam' ),
 			array( $this, 'cf7a_max_attempts' ),
 			'cf7a-settings',
-			'cf7a_auto_blacklist'
+			'cf7a_auto_blocklist'
 		);
 
 		/* Unban after */
@@ -108,7 +108,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'Automatic Unban', 'cf7-antispam' ),
 			array( $this, 'cf7a_unban_after_callback' ),
 			'cf7a-settings',
-			'cf7a_auto_blacklist'
+			'cf7a_auto_blocklist'
 		);
 
 		/* Section Bot Fingerprint */
@@ -725,7 +725,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * It prints a paragraph with a description of the section
 	 */
-	public function cf7a_print_section_auto_blacklist() {
+	public function cf7a_print_section_auto_blocklist() {
 		printf( '<p>' . esc_html__( 'How many failed attempts before being banned', 'cf7-antispam' ) . '</p>' );
 		$next = wp_next_scheduled( 'cf7a_cron' );
 		if ( $next ) {
