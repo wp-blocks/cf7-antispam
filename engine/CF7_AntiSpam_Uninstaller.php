@@ -22,10 +22,10 @@ class CF7_AntiSpam_Uninstaller {
 	 *
 	 * @return bool - The result of the query.
 	 */
-	public static function cf7a_clean_blacklist() {
+	public static function cf7a_clean_blocklist() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$r = $wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}cf7a_blacklist`" );
+		$r = $wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}cf7a_blocklist`" );
 		return ! is_wp_error( $r );
 	}
 
@@ -55,7 +55,7 @@ class CF7_AntiSpam_Uninstaller {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_wordlist' );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blacklist' );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'cf7a_blocklist' );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->query(
@@ -86,9 +86,9 @@ class CF7_AntiSpam_Uninstaller {
 		}
 
 		/* clear cache */
-		wp_cache_delete( 'cf7a_total_blocked_count', 'cf7a_blacklist_stats' );
-		wp_cache_delete( 'cf7a_status_breakdown', 'cf7a_blacklist_stats' );
-		wp_cache_delete( 'cf7a_reason_counts', 'cf7a_blacklist_stats' );
+		wp_cache_delete( 'cf7a_total_blocked_count', 'cf7a_blocklist_stats' );
+		wp_cache_delete( 'cf7a_status_breakdown', 'cf7a_blocklist_stats' );
+		wp_cache_delete( 'cf7a_reason_counts', 'cf7a_blocklist_stats' );
 		wp_cache_delete( 'cf7a_top_spam_words', 'cf7a_wordlist_stats' );
 		wp_cache_delete( 'cf7a_top_ham_words', 'cf7a_wordlist_stats' );
 

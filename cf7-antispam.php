@@ -102,7 +102,7 @@ add_action( 'wpmu_new_blog', 'cf7a_on_create_blog' );
 function cf7a_on_delete_blog( array $tables ): array {
 	global $wpdb;
 	$tables[] = $wpdb->prefix . 'cf7a_wordlist';
-	$tables[] = $wpdb->prefix . 'cf7a_blacklist';
+	$tables[] = $wpdb->prefix . 'cf7a_blocklist';
 	return $tables;
 }
 add_filter( 'wpmu_drop_tables', 'cf7a_on_delete_blog' );
