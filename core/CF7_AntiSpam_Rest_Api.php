@@ -440,7 +440,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			);
 		}
 
-		$blacklist = new CF7_Antispam_Blacklist();
+		$blacklist = new CF7_Antispam_Blocklist();
 		$r         = $blacklist->cf7a_unban_by_id( $unban_id );
 
 		if ( $r ) {
@@ -491,7 +491,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			);
 		}
 
-		$blacklist = new CF7_Antispam_Blacklist();
+		$blacklist = new CF7_Antispam_Blocklist();
 		$result    = $blacklist->cf7a_ban_forever( $ban_id );
 
 		return rest_ensure_response( $result );
@@ -515,7 +515,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			);
 		}
 
-		$blacklist   = new CF7_Antispam_Blacklist();
+		$blacklist   = new CF7_Antispam_Blocklist();
 		$export_data = $blacklist->cf7a_export_blacklist();
 
 		return rest_ensure_response(
@@ -537,7 +537,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	 * @return   array
 	 */
 	private function cf7a_get_blacklist_data() {
-		$blacklist = new CF7_Antispam_Blacklist();
+		$blacklist = new CF7_Antispam_Blocklist();
 		return $blacklist->cf7a_get_blacklist_data();
 	}
 

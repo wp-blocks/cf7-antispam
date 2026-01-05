@@ -14,7 +14,7 @@ namespace CF7_AntiSpam\Core;
 /**
  * It's a class that handles blocklist management
  */
-class CF7_Antispam_Blacklist {
+class CF7_Antispam_Blocklist {
 
 	/**
 	 * CF7_Antispam_Blacklist constructor.
