@@ -4,7 +4,7 @@ namespace CF7_AntiSpam\Tests\PhpUnit\Tests;
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
-use CF7_AntiSpam\Core\CF7_Antispam_Blacklist;
+use CF7_AntiSpam\Core\CF7_Antispam_Blocklist;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use PHPUnit\Framework\TestCase;
 
@@ -48,7 +48,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 			'spam_score'    => 0,
 			'is_spam'       => false,
 			'reasons'       => array(),
-			'is_whitelisted'=> false,
+			'is_allowlisted'=> false,
 		);
 
 		// Ensure global $_POST is clean
@@ -59,30 +59,30 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 	// TEST 1: IP Whitelist
 	// -------------------------------------------------------------------------
 
-	public function test_filter_ip_whitelist_matches_valid_ip() {
+	public function test_filter_ip_allowlist_matches_valid_ip() {
 		// Arrange
 		$data = $this->base_spam_data;
-		$data['options']['ip_whitelist'] = array( '192.168.1.10' );
+		$data['options']['ip_allowlist'] = array( '192.168.1.10' );
 		$data['remote_ip'] = '192.168.1.10';
 
 		// Act
-		$result = $this->filters->filter_ip_whitelist( $data );
+		$result = $this->filters->filter_ip_allowlist( $data );
 
 		// Assert
-		$this->assertTrue( $result['is_whitelisted'], 'IP should be whitelisted.' );
+		$this->assertTrue( $result['is_allowlisted'], 'IP should be allowlisted.' );
 	}
 
-	public function test_filter_ip_whitelist_ignores_unknown_ip() {
+	public function test_filter_ip_allowlist_ignores_unknown_ip() {
 		// Arrange
 		$data = $this->base_spam_data;
-		$data['options']['ip_whitelist'] = array( '10.0.0.1' );
+		$data['options']['ip_allowlist'] = array( '10.0.0.1' );
 		$data['remote_ip'] = '192.168.1.10';
 
 		// Act
-		$result = $this->filters->filter_ip_whitelist( $data );
+		$result = $this->filters->filter_ip_allowlist( $data );
 
 		// Assert
-		$this->assertFalse( $result['is_whitelisted'], 'IP should NOT be whitelisted.' );
+		$this->assertFalse( $result['is_allowlisted'], 'IP should NOT be allowlisted.' );
 	}
 
 	// -------------------------------------------------------------------------
@@ -380,7 +380,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data = $this->base_spam_data;
 		$data['options']['max_attempts'] = 3;
 		$data['remote_ip'] = '100.100.100.101';
-		$blacklist = new CF7_Antispam_Blacklist();
+		$blacklist = new CF7_Antispam_Blocklist();
 
 		// Case 1: Status 1 (Below Threshold)
 		$blacklist->cf7a_add_to_blacklist( '100.100.100.101', 1 );
@@ -405,12 +405,12 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$this->assertTrue( $result['is_spam'], 'Status 5 SHOULD be spam when max is 3' );
 
 		// Clean up
-		CF7_Antispam_Blacklist::cf7a_unban_by_ip( '100.100.100.101' );
+		CF7_Antispam_Blocklist::cf7a_unban_by_ip( '100.100.100.101' );
 	}
 
 	public function test_filter_ip_blacklist_history_does_not_affect_other_ips() {
 		// Arrange
-		$blacklist = new CF7_Antispam_Blacklist();
+		$blacklist = new CF7_Antispam_Blocklist();
 
 		// Ban IP 100.100.100.101 with status 5 (above max_attempts 3)
 		$data = $this->base_spam_data;
@@ -426,7 +426,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$result_not_banned = $this->filters->filter_ip_blacklist_history( $data );
 
 		// Clean up
-		CF7_Antispam_Blacklist::cf7a_unban_by_ip( '100.100.100.101' );
+		CF7_Antispam_Blocklist::cf7a_unban_by_ip( '100.100.100.101' );
 
 		// Assert
 		$this->assertTrue( $result_banned['is_spam'], 'IP 100.100.100.101 should be banned' );

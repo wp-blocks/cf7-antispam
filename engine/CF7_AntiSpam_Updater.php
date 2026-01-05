@@ -72,6 +72,15 @@ class CF7_AntiSpam_Updater {
 				}
 			}
 
+			/* Update to 0.7.3 if needed */
+			if ( version_compare( $this->current_options['cf7a_version'], '0.7.3', '<' ) ) {
+				$new_options = $this->update_db_procedure_to_0_7_3();
+				if ( ! empty( $new_options ) ) {
+					$this->current_options = $new_options;
+					$updated               = true;
+				}
+			}
+
 			/* Update the version to current if any updates were made */
 			if ( $updated ) {
 				$this->current_options['cf7a_version'] = $this->hc_version;
@@ -182,5 +191,26 @@ class CF7_AntiSpam_Updater {
 		}
 
 		return $updated;
+	}
+
+	/**
+	 * Update the db procedure to 0.7.3
+	 * Substitute "ip_whitelist" with "ip_allowlist"
+	 *
+	 * @return void|mixed
+	 */
+	public function update_db_procedure_to_0_7_3() {
+		if ( array_key_exists( 'ip_whitelist', $this->current_options ) ) {
+			$this->current_options['cf7a_version'] = $this->hc_version;
+			$this->current_options['ip_allowlist'] = $this->current_options['ip_whitelist'];
+
+			unset( $this->current_options['ip_whitelist'] );
+
+			cf7a_log( 'CF7-antispam updated to 0.7.3: ip_whitelist option migrated to ip_allowlist', 1 );
+
+			return $this->current_options;
+		}
+
+		return false;
 	}
 }
