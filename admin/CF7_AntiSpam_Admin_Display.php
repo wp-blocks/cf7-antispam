@@ -617,7 +617,7 @@ class CF7_AntiSpam_Admin_Display {
 			__( 'The Honeypot feature adds a hidden field that only bots fill out. Ensure it\'s enabled in the Settings for effortless protection.', 'cf7-antispam' ),
 			__( 'Too fast? The "Time Submission" check flags forms submitted inhumanly quickly. You can adjust the minimum time required.', 'cf7-antispam' ),
 			__( 'Check the Blocklist tab to see blocked IPs. You can manually ban or unban IPs and view the reasons for their blocking.', 'cf7-antispam' ),
-			__( 'Have a trusted static IP? Add it to the IP Whitelist in Settings to ensure your own tests or admin submissions are never blocked.', 'cf7-antispam' ),
+			__( 'Have a trusted static IP? Add it to the IP Allowlist in Settings to ensure your own tests or admin submissions are never blocked.', 'cf7-antispam' ),
 			__( 'The "Max Attempts" setting automatically blocks IPs that repeatedly trigger spam filters. Adjust this limit to be stricter or more lenient.', 'cf7-antispam' ),
 			__( 'Browser fingerprinting helps identify bots even if they change IPs. Ensure "Check Bot Fingerprint" is active for robust detection.', 'cf7-antispam' ),
 		);
