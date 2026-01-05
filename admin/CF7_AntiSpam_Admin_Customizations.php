@@ -1038,7 +1038,9 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * Clean and sanitize a value recursively.
 	 *
-	 * @param array $json_data the data t
+	 * @param array $json_data The data to clean.
+	 *
+	 * @return array The cleaned data.
 	 */
 	private function cf7a_clean_recursive( $json_data ) {
 		$input = array();
