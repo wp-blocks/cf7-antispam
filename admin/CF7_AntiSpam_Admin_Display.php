@@ -183,7 +183,7 @@ class CF7_AntiSpam_Admin_Display {
 		global $wpdb;
 		// Check blocklist entries
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklist_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $wpdb->prefix . 'cf7a_blacklist' ) );
+		$blacklist_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $wpdb->prefix . 'cf7a_blocklist' ) );
 		$has_blacklist   = intval( $blacklist_count ) > 0;
 
 		// Check wordlist entries (beyond just the b8*texts token)
@@ -311,19 +311,19 @@ class CF7_AntiSpam_Admin_Display {
 
 		// Get basic stats with caching
 		$cache_key_total = 'cf7a_total_blocked_count';
-		$total_blocked   = wp_cache_get( $cache_key_total, 'cf7a_blacklist_stats' );
+		$total_blocked   = wp_cache_get( $cache_key_total, 'cf7a_blocklist_stats' );
 
-		$blacklist_table = $wpdb->prefix . 'cf7a_blacklist';
+		$blacklist_table = $wpdb->prefix . 'cf7a_blocklist';
 
 		if ( false === $total_blocked ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$total_blocked = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $blacklist_table ) );
-			wp_cache_set( $cache_key_total, $total_blocked, 'cf7a_blacklist_stats', $cache_time_short );
+			wp_cache_set( $cache_key_total, $total_blocked, 'cf7a_blocklist_stats', $cache_time_short );
 		}
 
 		// Get status breakdown with caching
 		$cache_key_status = 'cf7a_status_breakdown';
-		$status_data      = wp_cache_get( $cache_key_status, 'cf7a_blacklist_stats' );
+		$status_data      = wp_cache_get( $cache_key_status, 'cf7a_blocklist_stats' );
 
 		if ( false === $status_data ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -336,7 +336,7 @@ class CF7_AntiSpam_Admin_Display {
 					$blacklist_table
 				)
 			);
-			wp_cache_set( $cache_key_status, $status_data, 'cf7a_blacklist_stats', $cache_time_short );
+			wp_cache_set( $cache_key_status, $status_data, 'cf7a_blocklist_stats', $cache_time_short );
 		}
 
 		// Group status into ranges
@@ -378,7 +378,7 @@ class CF7_AntiSpam_Admin_Display {
 
 		// Get detailed reason stats with caching
 		$cache_key_reasons = 'cf7a_reason_counts';
-		$reason_counts     = wp_cache_get( $cache_key_reasons, 'cf7a_blacklist_stats' );
+		$reason_counts     = wp_cache_get( $cache_key_reasons, 'cf7a_blocklist_stats' );
 
 		if ( false === $reason_counts ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -387,7 +387,7 @@ class CF7_AntiSpam_Admin_Display {
 					"SELECT meta
 			FROM %i
 			WHERE meta IS NOT NULL AND meta != '' AND meta != 'a:0:{}'",
-					$wpdb->prefix . 'cf7a_blacklist'
+					$wpdb->prefix . 'cf7a_blocklist'
 				)
 			);
 
@@ -413,7 +413,7 @@ class CF7_AntiSpam_Admin_Display {
 				}
 			}
 
-			wp_cache_set( $cache_key_reasons, $reason_counts, 'cf7a_blacklist_stats', $cache_time_short );
+			wp_cache_set( $cache_key_reasons, $reason_counts, 'cf7a_blocklist_stats', $cache_time_short );
 		}//end if
 
 		// Sort reasons by count and get top 5
@@ -784,7 +784,11 @@ class CF7_AntiSpam_Admin_Display {
 		?>
 		<div class="cf7a-card card-debug">
 			<h2 class="title cf7a-card-title"><?php esc_html_e( 'Debug Information', 'cf7-antispam' ); ?></h2>
+
 			<p><?php esc_html_e( 'Debug information is only visible when WP_DEBUG or CF7ANTISPAM_DEBUG are enabled.', 'cf7-antispam' ); ?></p>
+
+			<p><strong><?php esc_html_e( 'Plugin Version:', 'cf7-antispam' ); ?></strong> <?php echo esc_html( CF7ANTISPAM_VERSION ); ?></p>
+
 			<?php $this->cf7a_get_debug_info(); ?>
 		</div>
 		<?php
@@ -796,7 +800,7 @@ class CF7_AntiSpam_Admin_Display {
 	public static function cf7a_get_blacklisted_table() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blacklist' ) );
+		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blocklist' ) );
 		$nonce       = wp_create_nonce( 'cf7a-nonce' );
 
 		if ( $blacklisted ) {
@@ -859,78 +863,44 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * It outputs a card with a bunch of buttons that perform various actions on the database
-	 *
-	 * @return string the html
-	 */
-	public static function cf7a_advanced_settings() {
-		// This method is now integrated into the Tools tab
-		// Keeping for backward compatibility but functionality moved to render_advanced_tools()
-		return '';
-	}
-
-	/**
 	 * It outputs a debug panel if WP_DEBUG or CF7ANTISPAM_DEBUG are true
 	 */
 	public function cf7a_get_debug_info() {
-		if ( WP_DEBUG || CF7ANTISPAM_DEBUG ) {
-			if ( CF7ANTISPAM_DEBUG ) {
-				printf(
-					'<p class="debug">%s</p>',
-					'<code>CF7ANTISPAM_DEBUG</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
-				);
-			}
+			$this->cf7a_get_debug_options();
 
-			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
-				printf(
-					'<p class="debug">%s</p>',
-					'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
-				);
-
-				printf(
-					'<p class="debug"><code>%s</code> %s</p>',
-					esc_html__( 'Your ip address', 'cf7-antispam' ),
-					filter_var( cf7a_get_real_ip(), FILTER_VALIDATE_IP )
-				);
-			} else {
-				printf(
-					'<p class="debug">%s</p>',
-					'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is disabled, use CF7ANTISPAM_DEBUG_EXTENDED to enable it if needed', 'cf7-antispam' ) )
-				);
-			}
+			$this->cf7a_get_debug_info_tables();
 
 			$this->cf7a_get_debug_ip_analysis();
 
 			$this->cf7a_get_debug_info_rest_api();
 
-			if ( ! empty( $this->options['check_language'] ) ) {
-				$result = $this->cf7a_get_debug_info_geoip();
-				if ( $result ) {
-					printf(
-						'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3>%s',
-						esc_html( $result['title'] ),
-						// phpcs:ignore WordPress.Security.EscapeOutput
-						$result['content']
-					);
-				}
-			} else {
+		if ( ! empty( $this->options['check_language'] ) ) {
+			$result = $this->cf7a_get_debug_info_geoip();
+			if ( $result ) {
 				printf(
-					'<h3 class="title"><span class="dashicons dashicons-location"></span> GeoIP</h3><p><b>GeoIP</b> %s</p>',
-					esc_html__( 'is disabled', 'cf7-antispam' )
+					'<h3 class="title"><span class="dashicons dashicons-location"></span> %s</h3>%s',
+					esc_html( $result['title'] ),
+					// phpcs:ignore WordPress.Security.EscapeOutput
+					$result['content']
 				);
 			}
+		} else {
+			printf(
+				'<h3 class="title"><span class="dashicons dashicons-location"></span> GeoIP</h3><p><b>GeoIP</b> %s</p>',
+				esc_html__( 'is disabled', 'cf7-antispam' )
+			);
+		}
 
-			if ( ! empty( $this->options['check_dnsbl'] ) && ! empty( $this->options['dnsbl_list'] ) ) {
-				$this->cf7a_get_debug_info_dnsbl();
-			} else {
-				printf(
-					'<h3 class="title"><span class="dashicons dashicons-networking"></span> DNSBL</h3><p><b>DNSBL</b> %s</p>',
-					esc_html__( 'is disabled', 'cf7-antispam' )
-				);
-			}
+		if ( ! empty( $this->options['check_dnsbl'] ) && ! empty( $this->options['dnsbl_list'] ) ) {
+			$this->cf7a_get_debug_info_dnsbl();
+		} else {
+			printf(
+				'<h3 class="title"><span class="dashicons dashicons-networking"></span> DNSBL</h3><p><b>DNSBL</b> %s</p>',
+				esc_html__( 'is disabled', 'cf7-antispam' )
+			);
+		}
 
 			$this->cf7a_get_debug_info_options();
-		}//end if
 	}
 
 	/**
@@ -1265,5 +1235,66 @@ class CF7_AntiSpam_Admin_Display {
 				'content' => sprintf( '<p>%s</p><pre>%s</pre>', esc_html__( 'Geo-IP Test Error', 'cf7-antispam' ), $error_message && $error_message['error'] ? esc_html( $error_message['error'] ) : 'error' ),
 			);
 		}//end try
+	}
+
+	/**
+	 * Will display the database tables information (if available and number of rows)
+	 */
+	private function cf7a_get_debug_info_tables() {
+		global $wpdb;
+		// Database Tables
+		$tables = array(
+			'cf7a_wordlist'  => $wpdb->prefix . 'cf7a_wordlist',
+			'cf7a_blocklist' => $wpdb->prefix . 'cf7a_blocklist',
+		);
+		?>
+		<h4><?php esc_html_e( 'Database Tables', 'cf7-antispam' ); ?></h4>
+		<ul>
+			<?php
+			foreach ( $tables as $name => $table_name ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) === $table_name;
+
+				if ( $table_exists ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+					$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					echo '<li>' . esc_html( $table_name ) . ': <span style="color:green">' . esc_html__( 'Available', 'cf7-antispam' ) . '</span> (' . intval( $count ) . ' ' . esc_html__( 'rows', 'cf7-antispam' ) . ')</li>';
+				} else {
+					echo '<li>' . esc_html( $table_name ) . ': <span style="color:red">' . esc_html__( 'Not Available', 'cf7-antispam' ) . '</span></li>';
+				}
+			}
+			?>
+		</ul>
+		<?php
+	}
+
+	/**
+	 * It outputs a debug panel if WP_DEBUG or CF7ANTISPAM_DEBUG are true
+	 */
+	private function cf7a_get_debug_options() {
+		if ( CF7ANTISPAM_DEBUG ) {
+			printf(
+				'<p class="debug">%s</p>',
+				'<code>CF7ANTISPAM_DEBUG</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
+			);
+		}
+
+		if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
+			printf(
+				'<p class="debug">%s</p>',
+				'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
+			);
+
+			printf(
+				'<p class="debug"><code>%s</code> %s</p>',
+				esc_html__( 'Your ip address', 'cf7-antispam' ),
+				filter_var( cf7a_get_real_ip(), FILTER_VALIDATE_IP )
+			);
+		} else {
+			printf(
+				'<p class="debug">%s</p>',
+				'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is disabled, use CF7ANTISPAM_DEBUG_EXTENDED to enable it if needed', 'cf7-antispam' ) )
+			);
+		}
 	}
 }
