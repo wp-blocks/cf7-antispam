@@ -77,7 +77,7 @@ class CF7_AntiSpam_Activator {
 			'mailbox_protection_multiple_send' => 0,
 			'bad_words_list'                   => array(),
 			'bad_ip_list'                      => array(),
-			'ip_whitelist'                     => array(),
+			'ip_allowlist'                     => array(),
 			'bad_email_strings_list'           => array(),
 			'bad_user_agent_list'              => array(),
 			'dnsbl_list'                       => array(),
