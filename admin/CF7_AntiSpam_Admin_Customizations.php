@@ -78,9 +78,9 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		/* Section Bot Fingerprint */
 		add_settings_section(
-			'cf7a_auto_blacklist',
+			'cf7a_auto_blocklist',
 			__( 'Ban automatically spammers', 'cf7-antispam' ),
-			array( $this, 'cf7a_print_section_auto_blacklist' ),
+			array( $this, 'cf7a_print_section_auto_blocklist' ),
 			'cf7a-settings'
 		);
 
@@ -90,7 +90,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'Automatic spammer IP Blocklist', 'cf7-antispam' ),
 			array( $this, 'cf7a_autostore_bad_ip_callback' ),
 			'cf7a-settings',
-			'cf7a_auto_blacklist'
+			'cf7a_auto_blocklist'
 		);
 
 		/* Settings check_time */
@@ -99,7 +99,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'Mail blocked before Ban', 'cf7-antispam' ),
 			array( $this, 'cf7a_max_attempts' ),
 			'cf7a-settings',
-			'cf7a_auto_blacklist'
+			'cf7a_auto_blocklist'
 		);
 
 		/* Unban after */
@@ -108,7 +108,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			__( 'Automatic Unban', 'cf7-antispam' ),
 			array( $this, 'cf7a_unban_after_callback' ),
 			'cf7a-settings',
-			'cf7a_auto_blacklist'
+			'cf7a_auto_blocklist'
 		);
 
 		/* Section Bot Fingerprint */
@@ -320,11 +320,11 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bad_ip'
 		);
 
-		/* Settings ip_whitelist */
+		/* Settings ip_allowlist */
 		add_settings_field(
-			'ip_whitelist',
-			__( 'IP Whitelist', 'cf7-antispam' ),
-			array( $this, 'cf7a_ip_whitelist_callback' ),
+			'ip_allowlist',
+			__( 'IP Allowlist', 'cf7-antispam' ),
+			array( $this, 'cf7a_ip_allowlist_callback' ),
 			'cf7a-settings',
 			'cf7a_bad_ip'
 		);
@@ -725,7 +725,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/**
 	 * It prints a paragraph with a description of the section
 	 */
-	public function cf7a_print_section_auto_blacklist() {
+	public function cf7a_print_section_auto_blocklist() {
 		printf( '<p>' . esc_html__( 'How many failed attempts before being banned', 'cf7-antispam' ) . '</p>' );
 		$next = wp_next_scheduled( 'cf7a_cron' );
 		if ( $next ) {
@@ -1072,7 +1072,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			if ( ! empty( $json_data ) && is_object( $json_data ) ) {
 				$input                                    = $this->cf7a_clean_recursive( $json_data );
 				$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
-				$input['ip_whitelist']                    = implode( ',', $input['ip_whitelist'] );
+				$input['ip_allowlist']                    = implode( ',', $input['ip_allowlist'] );
 				$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
 				$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] );
 				$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] );
@@ -1209,8 +1209,8 @@ class CF7_AntiSpam_Admin_Customizations {
 		if ( isset( $input['bad_ip_list'] ) && is_string( $input['bad_ip_list'] ) ) {
 			$new_input['bad_ip_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_ip_list'] ) );
 		}
-		if ( isset( $input['ip_whitelist'] ) && is_string( $input['ip_whitelist'] ) ) {
-			$new_input['ip_whitelist'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['ip_whitelist'] ) );
+		if ( isset( $input['ip_allowlist'] ) && is_string( $input['ip_allowlist'] ) ) {
+			$new_input['ip_allowlist'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['ip_allowlist'] ) );
 		}
 
 		/* bad words */
@@ -1555,12 +1555,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/**
-	 * It creates a textarea with the id of "ip whitelist"
+	 * It creates a textarea with the id of "ip allowlist"
 	 */
-	public function cf7a_ip_whitelist_callback() {
+	public function cf7a_ip_allowlist_callback() {
 		printf(
-			'<textarea id="ip_whitelist" name="cf7a_options[ip_whitelist]" />%s</textarea>',
-			isset( $this->options['ip_whitelist'] ) && is_array( $this->options['ip_whitelist'] ) ? esc_textarea( implode( "\r\n", $this->options['ip_whitelist'] ) ) : ''
+			'<textarea id="ip_allowlist" name="cf7a_options[ip_allowlist]" />%s</textarea>',
+			isset( $this->options['ip_allowlist'] ) && is_array( $this->options['ip_allowlist'] ) ? esc_textarea( implode( "\r\n", $this->options['ip_allowlist'] ) ) : ''
 		);
 	}
 
@@ -1683,7 +1683,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function cf7a_honeyform_excluded_pages_callback() {
 		$args = array(
-			'post_type'                      => 'page',
+			'post_type'      => 'page',
 			// change this to the post type you're querying
 			'fields'         => 'ids',
 			// get only ids

@@ -32,16 +32,16 @@ class CF7_AntiSpam_Admin_Tools {
 	/**
 	 * It exports the blocklist
 	 */
-	public static function cf7a_export_blacklist() {
+	public static function cf7a_export_blocklist() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC', $wpdb->prefix . 'cf7a_blacklist' ) );
-		foreach ( $blacklisted as $row ) {
+		$blocklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC', $wpdb->prefix . 'cf7a_blocklist' ) );
+		foreach ( $blocklisted as $row ) {
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 			$meta      = unserialize( $row->meta );
 			$row->meta = $meta;
 		}
-		return $blacklisted;
+		return $blocklisted;
 	}
 
 	/**

@@ -24,13 +24,13 @@ class CF7_AntiSpam_Filters {
 	 * Registers the individual spam checks to the custom filter hook.
 	 */
 	public function __construct() {
-		// Priority 5: Whitelist checks (should run first to stop processing if safe)
-		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_ip_whitelist' ), 5 );
+		// Priority 5: Allowlist checks (should run first to stop processing if safe)
+		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_ip_allowlist' ), 5 );
 
 		// Priority 10: Standard checks
 		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_empty_ip' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_bad_ip' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_ip_blacklist_history' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_ip_blocklist_history' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this, 'filter_honeyform' ), 10 );
 
 		// Checks that originally ran only if score < 1 (See logic inside methods)
@@ -311,7 +311,7 @@ class CF7_AntiSpam_Filters {
 			'spam_score'     => 0,
 			'is_spam'        => $spam,
 			'reasons'        => array(),
-			'is_whitelisted' => false,
+			'is_allowlisted' => false,
 		// Flag to stop processing
 		);
 
@@ -328,7 +328,7 @@ class CF7_AntiSpam_Filters {
 		/**
 		 * BAYESIAN FILTER (B8)
 		 * Placed explicitly here to ensure it runs at the end of the function,
-		 * regardless of previous spam detection (unless whitelisted).
+		 * regardless of previous spam detection (unless allowlisted).
 		 */
 		$spam_data = apply_filters( 'cf7a_check_b8', $spam_data );
 
@@ -358,7 +358,7 @@ class CF7_AntiSpam_Filters {
 
 		/* If the auto-store ip is enabled */
 		if ( isset( $options['autostore_bad_ip'] ) && $options['autostore_bad_ip'] ) {
-			if ( CF7_Antispam_Blacklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
+			if ( CF7_Antispam_Blocklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
 				cf7a_log( "Ban for $remote_ip - results - " . $reasons_for_ban, 2 );
 			} else {
 				cf7a_log( "Unable to ban $remote_ip" );
@@ -381,22 +381,22 @@ class CF7_AntiSpam_Filters {
 	// -------------------------
 
 	/**
-	 * Checks for IP whitelist.
-	 * If the IP is whitelisted, the spam check is skipped.
+	 * Checks for IP allowlist.
+	 * If the IP is allowlisted, the spam check is skipped.
 	 *
 	 * @param array $data The data array.
 	 *
 	 * @return array The data array.
 	 */
-	public function filter_ip_whitelist( $data ) {
-		$ip_whitelist = $data['options']['ip_whitelist'] ?? array();
+	public function filter_ip_allowlist( $data ) {
+		$ip_allowlist = $data['options']['ip_allowlist'] ?? array();
 
-		if ( ! empty( $ip_whitelist ) && $data['remote_ip'] ) {
-			foreach ( $ip_whitelist as $good_ip ) {
+		if ( ! empty( $ip_allowlist ) && $data['remote_ip'] ) {
+			foreach ( $ip_allowlist as $good_ip ) {
 				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
 				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
 				if ( $good_ip && $data['remote_ip'] === $good_ip ) {
-					$data['is_whitelisted'] = true;
+					$data['is_allowlisted'] = true;
 					return $data;
 				}
 			}
@@ -413,7 +413,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_empty_ip( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 
@@ -439,7 +439,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_bad_ip( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 
@@ -475,14 +475,14 @@ class CF7_AntiSpam_Filters {
 	 *
 	 * @return array The data array.
 	 */
-	public function filter_ip_blacklist_history( $data ) {
-		if ( $data['is_whitelisted'] ) {
+	public function filter_ip_blocklist_history( $data ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 
 		$options = $data['options'];
 		if ( $data['remote_ip'] && $options['max_attempts'] ) {
-			$ip_data        = CF7_Antispam_Blacklist::cf7a_blacklist_get_ip( $data['remote_ip'] );
+			$ip_data        = CF7_Antispam_Blocklist::cf7a_blocklist_get_ip( $data['remote_ip'] );
 			$ip_data_status = isset( $ip_data->status ) ? intval( $ip_data->status ) : 0;
 			$max_attempts   = intval( $options['max_attempts'] );
 
@@ -508,7 +508,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_honeyform( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 
@@ -534,7 +534,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_referrer_protocol( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -581,7 +581,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_plugin_version( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -678,7 +678,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_bot_fingerprint( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -766,7 +766,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_bot_fingerprint_extras( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -828,7 +828,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_language( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -894,7 +894,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_geoip( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -944,7 +944,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_time_submission( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -998,7 +998,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_bad_email_strings( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -1017,14 +1017,14 @@ class CF7_AntiSpam_Filters {
 			foreach ( $bad_email_strings as $bad_email_string ) {
 				if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
 					$data['spam_score']                    += $score_bad_string;
-					$data['reasons']['email_blacklisted'][] = $bad_email_string;
+					$data['reasons']['email_blocklisted'][] = $bad_email_string;
 				}
 			}
 		}
 
-		if ( isset( $data['reasons']['email_blacklisted'] ) && is_array( $data['reasons']['email_blacklisted'] ) ) {
-			$data['reasons']['email_blacklisted'] = implode( ',', $data['reasons']['email_blacklisted'] );
-			cf7a_log( "The ip address {$data['remote_ip']} sent a mail using bad string {$data['reasons']['email_blacklisted']}", 1 );
+		if ( isset( $data['reasons']['email_blocklisted'] ) && is_array( $data['reasons']['email_blocklisted'] ) ) {
+			$data['reasons']['email_blocklisted'] = implode( ',', $data['reasons']['email_blocklisted'] );
+			cf7a_log( "The ip address {$data['remote_ip']} sent a mail using bad string {$data['reasons']['email_blocklisted']}", 1 );
 		}
 
 		return $data;
@@ -1039,7 +1039,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_user_agent( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -1084,7 +1084,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_bad_words( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -1123,7 +1123,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_dnsbl( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -1167,7 +1167,7 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_honeypot( $data ) {
-		if ( $data['is_whitelisted'] ) {
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 		if ( $data['is_spam'] ) {
@@ -1216,8 +1216,8 @@ class CF7_AntiSpam_Filters {
 	 * @return array The data array.
 	 */
 	public function filter_b8_bayesian( $data ) {
-		// Even if requested "at the end", we usually skip B8 if the user is explicitly Whitelisted.
-		if ( $data['is_whitelisted'] ) {
+		// Even if requested "at the end", we usually skip B8 if the user is explicitly Allowlisted.
+		if ( $data['is_allowlisted'] ) {
 			return $data;
 		}
 
