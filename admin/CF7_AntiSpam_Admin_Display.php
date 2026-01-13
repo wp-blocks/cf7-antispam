@@ -793,19 +793,19 @@ class CF7_AntiSpam_Admin_Display {
 	}
 
 	/**
-	 * It gets the blacklisted IPs from the database and displays them in a table
+	 * It gets the blocklisted IPs from the database and displays them in a table
 	 */
-	public static function cf7a_get_blacklisted_table() {
+	public static function cf7a_get_blocklisted_table() {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blocklist' ) );
+		$blocklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blocklist' ) );
 		$nonce       = wp_create_nonce( 'cf7a-nonce' );
 
-		if ( $blacklisted ) {
-			$count = count( $blacklisted );
+		if ( $blocklisted ) {
+			$count = count( $blocklisted );
 			$rows  = '';
 
-			foreach ( $blacklisted as $row ) {
+			foreach ( $blocklisted as $row ) {
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				$meta         = unserialize( $row->meta );
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
@@ -850,13 +850,13 @@ class CF7_AntiSpam_Admin_Display {
 					)
 				),
 				sprintf(
-					/* translators: %d is the number of blacklisted IPs */
-					esc_html__( 'Showing %d blacklisted IPs', 'cf7-antispam' ),
+					/* translators: %d is the number of blocklisted IPs */
+					esc_html__( 'Showing %d blocklisted IPs', 'cf7-antispam' ),
 					intval( $count )
 				)
 			);
 		} else {
-			echo '<p>' . esc_html__( 'No blacklisted IPs found.', 'cf7-antispam' ) . '</p>';
+			echo '<p>' . esc_html__( 'No blocklisted IPs found.', 'cf7-antispam' ) . '</p>';
 		}//end if
 	}
 
@@ -864,6 +864,13 @@ class CF7_AntiSpam_Admin_Display {
 	 * It outputs a debug panel if WP_DEBUG or CF7ANTISPAM_DEBUG are true
 	 */
 	public function cf7a_get_debug_info() {
+
+			printf(
+				'<p><strong>%s</strong> %s</p>',
+				esc_html__( 'Plugin Version:', 'cf7-antispam' ),
+				esc_html( CF7ANTISPAM_VERSION )
+			);
+
 			$this->cf7a_get_debug_options();
 
 			$this->cf7a_get_debug_info_tables();
@@ -1250,15 +1257,15 @@ class CF7_AntiSpam_Admin_Display {
 		<ul>
 			<?php
 			foreach ( $tables as $name => $table_name ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) === $table_name;
 
 				if ( $table_exists ) {
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-					$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-					echo '<li>' . esc_html( $table_name ) . ': <span style="color:green">' . esc_html__( 'Available', 'cf7-antispam' ) . '</span> (' . intval( $count ) . ' ' . esc_html__( 'rows', 'cf7-antispam' ) . ')</li>';
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
+					echo '<li><code>' . esc_html( $table_name ) . ':</code> <span style="color:green">' . esc_html__( 'Available', 'cf7-antispam' ) . '</span> (' . intval( $count ) . ' ' . esc_html__( 'rows', 'cf7-antispam' ) . ')</li>';
 				} else {
-					echo '<li>' . esc_html( $table_name ) . ': <span style="color:red">' . esc_html__( 'Not Available', 'cf7-antispam' ) . '</span></li>';
+					echo '<li><code>' . esc_html( $table_name ) . ':</code> <span style="color:red">' . esc_html__( 'Not Available', 'cf7-antispam' ) . '</span></li>';
 				}
 			}
 			?>
@@ -1270,6 +1277,7 @@ class CF7_AntiSpam_Admin_Display {
 	 * It outputs a debug panel if WP_DEBUG or CF7ANTISPAM_DEBUG are true
 	 */
 	private function cf7a_get_debug_options() {
+
 		if ( CF7ANTISPAM_DEBUG ) {
 			printf(
 				'<p class="debug">%s</p>',
@@ -1281,12 +1289,6 @@ class CF7_AntiSpam_Admin_Display {
 			printf(
 				'<p class="debug">%s</p>',
 				'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is enabled', 'cf7-antispam' ) )
-			);
-
-			printf(
-				'<p class="debug"><code>%s</code> %s</p>',
-				esc_html__( 'Your ip address', 'cf7-antispam' ),
-				filter_var( cf7a_get_real_ip(), FILTER_VALIDATE_IP )
 			);
 		} else {
 			printf(
