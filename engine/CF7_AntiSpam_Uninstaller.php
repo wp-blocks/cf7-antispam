@@ -18,7 +18,7 @@ namespace CF7_AntiSpam\Engine;
 class CF7_AntiSpam_Uninstaller {
 
 	/**
-	 * It deletes all the blacklisted ip
+	 * It deletes all the blocklisted ip
 	 *
 	 * @return bool - The result of the query.
 	 */
