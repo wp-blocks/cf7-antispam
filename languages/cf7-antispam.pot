@@ -1,4 +1,4 @@
-# Copyright (C) 2025 AntiSpam for Contact Form 7
+# Copyright (C) 2026 AntiSpam for Contact Form 7
 # This file is distributed under the GPLv2 or later license.
 msgid ""
 msgstr ""
@@ -8,8 +8,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2025-12-09T15:55:56.596Z\n"
-"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2026-01-13T00:22:03.838Z\n"
+"PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Codekraft <erik@codekraft.it>\n"
 "Language-Team: Codekraft <erik@codekraft.it>\n"
 "X-Generator: @wp-blocks/make-pot 1.6.3\n"
@@ -36,639 +36,630 @@ msgstr ""
 msgid "Codekraft"
 msgstr ""
 
-#: core/functions.php:193
-msgid "Every 5 Minutes"
-msgstr ""
-
-#: core/functions.php:197
-msgid "Every 60 seconds"
-msgstr ""
-
-#: core/functions.php:312
-#: core/CF7_AntiSpam_Flamingo.php:481
-msgid "none"
-msgstr ""
-
-# warn because not yet banned but already listed
-#: core/functions.php:336
-msgid "??"
-msgstr ""
-
-# champion of spammer (>100 mail)
-#: core/functions.php:340
-msgid "??"
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:78
-#: admin/CF7_AntiSpam_Admin_Core.php:80
-#: admin/CF7_AntiSpam_Admin_Core.php:81
-msgid "Antispam"
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:182
-msgid "Antispam for Contact Form 7 is a free plugin for Contact Form 7."
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:186
-msgid ""
-"It blocks bots from flooding your mailbox, without tedious configuration "
-"and without captcha. (which may introduce issues)"
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:190
-msgid ""
-"CF7-AntiSpam uses different in and off page bots traps and an auto-learning "
-"mechanism based on a statistical ?Bayesian? spam filter called B8."
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:194
-msgid "It\\'s recommended to install "
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:198
-msgid " which will provide additional controls and a dashboard widget."
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:208
-msgid "https://wordpress.org/plugins/cf7-antispam/"
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:217
-msgid "CF7-Antispam is active on this site."
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:229
-msgid "Disable"
-msgstr ""
-
-#: core/CF7_Antispam_Service.php:229
-msgid "Enable"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:101
-msgid "You cannot view the plugin status."
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:115
-#: core/CF7_AntiSpam_Rest_Api.php:172
-#: core/CF7_AntiSpam_Rest_Api.php:215
-#: core/CF7_AntiSpam_Rest_Api.php:248
-#: core/CF7_AntiSpam_Rest_Api.php:286
-#: core/CF7_AntiSpam_Rest_Api.php:324
-#: core/CF7_AntiSpam_Rest_Api.php:362
-#: core/CF7_AntiSpam_Rest_Api.php:400
-#: core/CF7_AntiSpam_Rest_Api.php:451
-#: core/CF7_AntiSpam_Rest_Api.php:486
-msgid "Invalid nonce"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:127
-msgid "Error: unable to download GeoIP database"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:135
-msgid "GeoIP database downloaded successfully"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:185
-msgid "Error: unable to resend email with id %s."
-msgstr ""
-
-# %s is the mail id.
-#: core/CF7_AntiSpam_Rest_Api.php:197
-msgid "Ops! something went wrong... unable to resend email with id %s"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:229
-msgid "Nothing to update"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:232
-msgid "Contact Form 7 Antispam Options and Database updated successfully!"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:260
-msgid "Success: ip blocklist cleaned"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:267
-msgid "Error: unable to clean blocklist. Please refresh and try again!"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:298
-msgid "b8 dictionary reset successful"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:305
-msgid ""
-"Something goes wrong while deleting b8 dictionary. Please refresh and try "
-"again!"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:336
-msgid ""
-"CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 "
-"manually if needed"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:343
-msgid "Ops! something went wrong... Please refresh and try again!"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:373
-msgid "b8 dictionary rebuild successful"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:380
-msgid ""
-"Something goes wrong while rebuilding b8 dictionary. Please refresh and try "
-"again!"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:411
-#: core/CF7_AntiSpam_Rest_Api.php:462
-msgid "Invalid ID"
-msgstr ""
-
-# %s is the ip address.
-#: core/CF7_AntiSpam_Rest_Api.php:424
-msgid "Success: ip %s unbanned"
-msgstr ""
-
-# %s is the ip address.
-#: core/CF7_AntiSpam_Rest_Api.php:432
-msgid "Error: unable to unban %s"
-msgstr ""
-
-#: core/CF7_AntiSpam_Rest_Api.php:497
-msgid "Blocklist exported successfully"
-msgstr ""
-
-#: core/CF7_Antispam_Geoip.php:434
-msgid ""
-"Unable to download the geo-ip database. Please check that the key is "
-"correct!"
-msgstr ""
-
-#: core/CF7_Antispam_Geoip.php:810
-msgid "GEO-IP Database extraction failed"
-msgstr ""
-
-#: core/CF7_AntiSpam_Frontend.php:600
-msgid "Missing hash."
-msgstr ""
-
-#: core/CF7_AntiSpam_Frontend.php:605
-msgid "Something went wrong. Please reload the page."
-msgstr ""
-
-# % is the number of seconds to wait
-#: core/CF7_AntiSpam_Frontend.php:612
-msgid "Slow down, please wait %s seconds before resending."
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:108
-msgid "Security check failed. Please refresh the page and try again."
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:108
-msgid "Security Error"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:118
-msgid "%s has no message text so can't be analyzed"
-msgstr ""
-
-# %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email (like 0.6/1)
-#: core/CF7_AntiSpam_Flamingo.php:145
-msgid ""
-"b8 has learned this e-mail from %1$s was %2$s - score before/after: "
-"%3$f/%4$f"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:228
-msgid "Cannot find the original post"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:286
-msgid "Email sent with success"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:289
-msgid "Ops! something went wrong... unable to resend email"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:462
-msgid "D8 classification"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:463
-msgid "CF7-AntiSpam actions"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:507
-msgid "Do you want to resend this email?"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:508
-msgid "Resend Email"
-msgstr ""
-
-# the %1$s is the user id and %2$s is the ip address.
-#: core/CF7_Antispam_Blacklist.php:209
-msgid "Ban forever id %1$s (ip %2$s) successful"
-msgstr ""
-
-# the %1$s is the user id and %2$s is the ip address.
-#: core/CF7_Antispam_Blacklist.php:219
-msgid "Error: unable to ban forever id %1$s (ip %2$s)"
-msgstr ""
-
-#: core/CF7_AntiSpam.php:282
-msgid "CF7 AntiSpam need "
-msgstr ""
-
-#: core/CF7_AntiSpam.php:284
-msgid "Contact Form 7"
-msgstr ""
-
-#: core/CF7_AntiSpam.php:285
-msgid " installed and enabled in order to work."
-msgstr ""
-
-# %1$s overall spam attempts, %2$s since last report
-#: core/CF7_AntiSpam.php:406
-msgid "%1$s overall spam attempts, %2$s since last report"
-msgstr ""
-
-#: engine/CF7_AntiSpam_Activator.php:281
+#: engine/CF7_AntiSpam_Activator.php:274
 msgid ""
 "CF7 AntiSpam updated successful! Please flush cache to refresh hidden form "
 "data"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:47
+#: core/functions.php:190
+msgid "Every 5 Minutes"
+msgstr ""
+
+#: core/functions.php:194
+msgid "Every 60 seconds"
+msgstr ""
+
+#: core/functions.php:303
+#: core/CF7_AntiSpam_Flamingo.php:486
+msgid "none"
+msgstr ""
+
+# warn because not yet banned but already listed
+#: core/functions.php:326
+msgid "??"
+msgstr ""
+
+# champion of spammer (>100 mail)
+#: core/functions.php:330
+msgid "??"
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:81
+#: admin/CF7_AntiSpam_Admin_Core.php:80
+#: admin/CF7_AntiSpam_Admin_Core.php:81
+msgid "Antispam"
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:191
+msgid "Antispam for Contact Form 7 is a free plugin for Contact Form 7."
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:195
+msgid ""
+"It blocks bots from flooding your mailbox, without tedious configuration "
+"and without captcha. (which may introduce issues)"
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:199
+msgid ""
+"CF7-AntiSpam uses different in and off page bots traps and an auto-learning "
+"mechanism based on a statistical ?Bayesian? spam filter called B8."
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:203
+msgid "It\\'s recommended to install "
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:207
+msgid " which will provide additional controls and a dashboard widget."
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:217
+msgid "https://wordpress.org/plugins/cf7-antispam/"
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:226
+msgid "CF7-Antispam is active on this site."
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:238
+msgid "Disable"
+msgstr ""
+
+#: core/CF7_Antispam_Service.php:238
+msgid "Enable"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:100
+msgid "You cannot view the plugin status."
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:121
+#: core/CF7_AntiSpam_Rest_Api.php:177
+#: core/CF7_AntiSpam_Rest_Api.php:232
+#: core/CF7_AntiSpam_Rest_Api.php:278
+#: core/CF7_AntiSpam_Rest_Api.php:316
+#: core/CF7_AntiSpam_Rest_Api.php:354
+#: core/CF7_AntiSpam_Rest_Api.php:392
+#: core/CF7_AntiSpam_Rest_Api.php:430
+#: core/CF7_AntiSpam_Rest_Api.php:481
+#: core/CF7_AntiSpam_Rest_Api.php:516
+msgid "Invalid nonce"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:133
+msgid "Error: unable to download GeoIP database"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:141
+msgid "GeoIP database downloaded successfully"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:194
+msgid "Error: unable to resend email with id %s."
+msgstr ""
+
+# %s is the mail id.
+#: core/CF7_AntiSpam_Rest_Api.php:214
+msgid "Ops! something went wrong... unable to resend email with id %s"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:252
+msgid "Nothing to update"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:260
+msgid "Contact Form 7 Antispam Options and Database updated successfully!"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:290
+msgid "Success: ip blocklist cleaned"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:297
+msgid "Error: unable to clean blocklist. Please refresh and try again!"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:328
+msgid "b8 dictionary reset successful"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:335
+msgid ""
+"Something goes wrong while deleting b8 dictionary. Please refresh and try "
+"again!"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:366
+msgid ""
+"CF7 AntiSpam fully reinitialized with success. You need to rebuild B8 "
+"manually if needed"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:373
+msgid "Ops! something went wrong... Please refresh and try again!"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:403
+msgid "b8 dictionary rebuild successful"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:410
+msgid ""
+"Something goes wrong while rebuilding b8 dictionary. Please refresh and try "
+"again!"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:441
+#: core/CF7_AntiSpam_Rest_Api.php:492
+msgid "Invalid ID"
+msgstr ""
+
+# %s is the ip address.
+#: core/CF7_AntiSpam_Rest_Api.php:454
+msgid "Success: ip %s unbanned"
+msgstr ""
+
+# %s is the ip address.
+#: core/CF7_AntiSpam_Rest_Api.php:462
+msgid "Error: unable to unban %s"
+msgstr ""
+
+#: core/CF7_AntiSpam_Rest_Api.php:527
+msgid "Blocklist exported successfully"
+msgstr ""
+
+#: core/CF7_Antispam_Geoip.php:413
+msgid ""
+"Unable to download the geo-ip database. Please check that the key is "
+"correct!"
+msgstr ""
+
+#: core/CF7_Antispam_Geoip.php:778
+msgid "GEO-IP Database extraction failed"
+msgstr ""
+
+#: core/CF7_AntiSpam_Frontend.php:610
+msgid "Missing hash."
+msgstr ""
+
+#: core/CF7_AntiSpam_Frontend.php:615
+msgid "Something went wrong. Please reload the page."
+msgstr ""
+
+# % is the number of seconds to wait
+#: core/CF7_AntiSpam_Frontend.php:622
+msgid "Slow down, please wait %s seconds before resending."
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:105
+msgid "Security check failed. Please refresh the page and try again."
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:105
+msgid "Security Error"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:115
+msgid "%s has no message text so can't be analyzed"
+msgstr ""
+
+# %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email (like 0.6/1)
+#: core/CF7_AntiSpam_Flamingo.php:142
+msgid ""
+"b8 has learned this e-mail from %1$s was %2$s - score before/after: "
+"%3$f/%4$f"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:225
+msgid "Cannot find the original post"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:287
+msgid "Email sent with success"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:293
+msgid "Ops! something went wrong... unable to resend email"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:468
+msgid "D8 classification"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:469
+msgid "CF7-AntiSpam actions"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:511
+msgid "Do you want to resend this email?"
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:512
+msgid "Resend Email"
+msgstr ""
+
+# the %1$s is the user id and %2$s is the ip address.
+#: core/CF7_Antispam_Blocklist.php:220
+msgid "Ban forever id %1$s (ip %2$s) successful"
+msgstr ""
+
+# the %1$s is the user id and %2$s is the ip address.
+#: core/CF7_Antispam_Blocklist.php:230
+msgid "Error: unable to ban forever id %1$s (ip %2$s)"
+msgstr ""
+
+#: core/CF7_AntiSpam.php:281
+msgid "CF7 AntiSpam need "
+msgstr ""
+
+#: core/CF7_AntiSpam.php:283
+msgid "Contact Form 7"
+msgstr ""
+
+#: core/CF7_AntiSpam.php:284
+msgid " installed and enabled in order to work."
+msgstr ""
+
+# %1$s overall spam attempts, %2$s since last report
+#: core/CF7_AntiSpam.php:410
+msgid "%1$s overall spam attempts, %2$s since last report"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:53
 msgid ""
 "Please do not forget to add %s to your forms to enable B8 Bayesian "
 "filtering."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:48
+#: admin/CF7_AntiSpam_Admin_Display.php:54
 msgid ""
 "Please install and activate the Flamingo plugin to enable advanced B8 "
 "Bayesian filtering."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:85
+#: admin/CF7_AntiSpam_Admin_Display.php:91
 msgid "Dashboard"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:89
+#: admin/CF7_AntiSpam_Admin_Display.php:95
 msgid "Settings"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:93
+#: admin/CF7_AntiSpam_Admin_Display.php:99
 msgid "Blocklist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:97
+#: admin/CF7_AntiSpam_Admin_Display.php:103
 msgid "Tools"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:101
+#: admin/CF7_AntiSpam_Admin_Display.php:107
 msgid "Import/Export"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:106
+#: admin/CF7_AntiSpam_Admin_Display.php:112
 msgid "Debug"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:188
+#: admin/CF7_AntiSpam_Admin_Display.php:210
 msgid "Welcome to CF7 AntiSpam!"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:192
+#: admin/CF7_AntiSpam_Admin_Display.php:214
 msgid ""
 "Your protection is active, but we haven't collected any data yet. Once your "
 "forms start receiving submissions, you'll see detailed statistics here."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:198
-#: admin/CF7_AntiSpam_Admin_Display.php:265
+#: admin/CF7_AntiSpam_Admin_Display.php:220
+#: admin/CF7_AntiSpam_Admin_Display.php:293
 msgid "Email Statistics"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:202
+#: admin/CF7_AntiSpam_Admin_Display.php:224
 msgid "IPs Blocklist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:206
+#: admin/CF7_AntiSpam_Admin_Display.php:228
 msgid "Customizable Filter"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:213
+#: admin/CF7_AntiSpam_Admin_Display.php:235
 msgid "Configure Settings"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:217
+#: admin/CF7_AntiSpam_Admin_Display.php:239
 msgid "Read Documentation"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:252
+#: admin/CF7_AntiSpam_Admin_Display.php:277
 msgid "Dismiss"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:412
+#: admin/CF7_AntiSpam_Admin_Display.php:465
 msgid "Warning Count Ranges"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:416
+#: admin/CF7_AntiSpam_Admin_Display.php:469
 msgid "Total Blocked IPs"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:430
+#: admin/CF7_AntiSpam_Admin_Display.php:483
 msgid "No warning data available"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:437
+#: admin/CF7_AntiSpam_Admin_Display.php:490
 msgid "B8 Wordlist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:442
+#: admin/CF7_AntiSpam_Admin_Display.php:495
 msgid "Top Spam Words"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:453
+#: admin/CF7_AntiSpam_Admin_Display.php:506
 msgid "No spam words available"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:459
+#: admin/CF7_AntiSpam_Admin_Display.php:512
 msgid "Top Ham Words"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:470
+#: admin/CF7_AntiSpam_Admin_Display.php:523
 msgid "No ham words available"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:479
+#: admin/CF7_AntiSpam_Admin_Display.php:532
 msgid "Top Block Reasons"
 msgstr ""
 
 # %d is the number of unique reasons
-#: admin/CF7_AntiSpam_Admin_Display.php:499
+#: admin/CF7_AntiSpam_Admin_Display.php:552
 msgid "Total unique reasons: %d"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:511
+#: admin/CF7_AntiSpam_Admin_Display.php:564
 msgid "No reason data available"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:556
+#: admin/CF7_AntiSpam_Admin_Display.php:613
 msgid ""
 "Did you know? You can customize the spam score threshold for individual "
 "filters in the Settings tab to fine-tune protection."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:557
+#: admin/CF7_AntiSpam_Admin_Display.php:614
 msgid ""
 "Tip: Enable the Flamingo plugin to unlock advanced B8 Bayesian filtering, "
 "which learns from your ham and spam messages."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:558
+#: admin/CF7_AntiSpam_Admin_Display.php:615
 msgid ""
 "Secure your forms by blocking specific languages. Go to Settings > Language "
 "to disallow messages in languages irrelevant to your business."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:559
+#: admin/CF7_AntiSpam_Admin_Display.php:616
 msgid ""
 "Use GeoIP filtering to block submissions from specific countries or "
 "continents often associated with spam."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:560
+#: admin/CF7_AntiSpam_Admin_Display.php:617
 msgid ""
 "The Honeypot feature adds a hidden field that only bots fill out. Ensure "
 "it\\'s enabled in the Settings for effortless protection."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:561
+#: admin/CF7_AntiSpam_Admin_Display.php:618
 msgid ""
 "Too fast? The \"Time Submission\" check flags forms submitted inhumanly "
 "quickly. You can adjust the minimum time required."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:562
+#: admin/CF7_AntiSpam_Admin_Display.php:619
 msgid ""
 "Check the Blocklist tab to see blocked IPs. You can manually ban or unban "
 "IPs and view the reasons for their blocking."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:563
+#: admin/CF7_AntiSpam_Admin_Display.php:620
 msgid ""
-"Have a trusted static IP? Add it to the IP Whitelist in Settings to ensure "
+"Have a trusted static IP? Add it to the IP Allowlist in Settings to ensure "
 "your own tests or admin submissions are never blocked."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:564
+#: admin/CF7_AntiSpam_Admin_Display.php:621
 msgid ""
 "The \"Max Attempts\" setting automatically blocks IPs that repeatedly "
 "trigger spam filters. Adjust this limit to be stricter or more lenient."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:565
+#: admin/CF7_AntiSpam_Admin_Display.php:622
 msgid ""
 "Browser fingerprinting helps identify bots even if they change IPs. Ensure "
 "\"Check Bot Fingerprint\" is active for robust detection."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:584
+#: admin/CF7_AntiSpam_Admin_Display.php:641
 msgid "Tip:"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:598
+#: admin/CF7_AntiSpam_Admin_Display.php:655
 msgid "Plugin Settings"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:616
+#: admin/CF7_AntiSpam_Admin_Display.php:676
 msgid "Export blocklist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:627
-msgid "Blacklisted IPs"
+#: admin/CF7_AntiSpam_Admin_Display.php:687
+msgid "Blocklisted IPs"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:628
-msgid "Here you can see all the IPs that have been blacklisted by the plugin."
+#: admin/CF7_AntiSpam_Admin_Display.php:688
+msgid "Here you can see all the IPs that have been blocklisted by the plugin."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:640
+#: admin/CF7_AntiSpam_Admin_Display.php:700
 msgid "Export/Import Options"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:652
+#: admin/CF7_AntiSpam_Admin_Display.php:712
 msgid "Advanced Tools"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:653
+#: admin/CF7_AntiSpam_Admin_Display.php:713
 msgid ""
 "This section contains features that completely change what is stored in the "
 "cf7-antispam database, use them with caution!"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:667
-#: admin/CF7_AntiSpam_Admin_Display.php:669
+#: admin/CF7_AntiSpam_Admin_Display.php:727
+#: admin/CF7_AntiSpam_Admin_Display.php:729
 msgid "Update Database"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:668
+#: admin/CF7_AntiSpam_Admin_Display.php:728
 msgid ""
 "If something has gone wrong during updates, you can perform a forced "
 "database and options update."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:672
+#: admin/CF7_AntiSpam_Admin_Display.php:732
 msgid "Danger Zone"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:673
+#: admin/CF7_AntiSpam_Admin_Display.php:733
 msgid ""
 "These actions are irreversible. Please make sure you know what you are "
 "doing."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:675
+#: admin/CF7_AntiSpam_Admin_Display.php:735
 msgid "Blocklist Reset"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:676
-msgid "Remove all blacklisted IPs from the database."
+#: admin/CF7_AntiSpam_Admin_Display.php:736
+msgid "Remove all blocklisted IPs from the database."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:677
-msgid "Remove all blacklisted IP"
+#: admin/CF7_AntiSpam_Admin_Display.php:737
+msgid "Remove all blocklisted IP"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:679
+#: admin/CF7_AntiSpam_Admin_Display.php:739
 msgid "Dictionary Reset"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:680
+#: admin/CF7_AntiSpam_Admin_Display.php:740
 msgid "Reset the entire b8 dictionary used for spam detection."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:681
+#: admin/CF7_AntiSpam_Admin_Display.php:741
 msgid "Reset b8 dictionary"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:683
+#: admin/CF7_AntiSpam_Admin_Display.php:743
 msgid "Rebuild Dictionary"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:684
+#: admin/CF7_AntiSpam_Admin_Display.php:744
 msgid "Reanalyze all Flamingo inbound emails to rebuild the dictionary."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:685
+#: admin/CF7_AntiSpam_Admin_Display.php:745
 msgid "Rebuild b8 dictionary"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:687
+#: admin/CF7_AntiSpam_Admin_Display.php:747
 msgid "Full Reset"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:688
+#: admin/CF7_AntiSpam_Admin_Display.php:748
 msgid "Completely reset the plugin to its initial state."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:689
+#: admin/CF7_AntiSpam_Admin_Display.php:749
 msgid "Are you sure? This will reset the plugin to its initial state."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:689
+#: admin/CF7_AntiSpam_Admin_Display.php:749
 msgid "FULL RESET"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:709
+#: admin/CF7_AntiSpam_Admin_Display.php:769
 msgid "Copy or paste here the settings to import it or export it"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:726
+#: admin/CF7_AntiSpam_Admin_Display.php:786
 msgid "Debug Information"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:727
+#: admin/CF7_AntiSpam_Admin_Display.php:788
 msgid ""
 "Debug information is only visible when WP_DEBUG or CF7ANTISPAM_DEBUG are "
 "enabled."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:757
+#: admin/CF7_AntiSpam_Admin_Display.php:820
 msgid "[unban ip]"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:760
+#: admin/CF7_AntiSpam_Admin_Display.php:823
 msgid "[ban forever]"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:762
+#: admin/CF7_AntiSpam_Admin_Display.php:825
 msgid "First seen on"
 msgstr ""
 
-# %d is the number of blacklisted IPs
-#: admin/CF7_AntiSpam_Admin_Display.php:791
-msgid "Showing %d blacklisted IPs"
+# %d is the number of blocklisted IPs
+#: admin/CF7_AntiSpam_Admin_Display.php:854
+msgid "Showing %d blocklisted IPs"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:796
-msgid "No blacklisted IPs found."
+#: admin/CF7_AntiSpam_Admin_Display.php:859
+msgid "No blocklisted IPs found."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:819
-#: admin/CF7_AntiSpam_Admin_Display.php:826
-msgid "is enabled"
+#: admin/CF7_AntiSpam_Admin_Display.php:870
+msgid "Plugin Version:"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:831
-msgid "Your ip address"
-msgstr ""
-
-#: admin/CF7_AntiSpam_Admin_Display.php:837
-msgid "is disabled, use CF7ANTISPAM_DEBUG_EXTENDED to enable it if needed"
-msgstr ""
-
-#: admin/CF7_AntiSpam_Admin_Display.php:853
-#: admin/CF7_AntiSpam_Admin_Display.php:862
+#: admin/CF7_AntiSpam_Admin_Display.php:895
+#: admin/CF7_AntiSpam_Admin_Display.php:904
 msgid "is disabled"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:889
+#: admin/CF7_AntiSpam_Admin_Display.php:930
 msgid "Contact Forms"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:890
+#: admin/CF7_AntiSpam_Admin_Display.php:931
 msgid ""
 "No Contact Form 7 forms found. Please create a form before using this "
 "plugin."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:952
+#: admin/CF7_AntiSpam_Admin_Display.php:993
 msgid "Contact Forms Configuration"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:953
+#: admin/CF7_AntiSpam_Admin_Display.php:994
 msgid ""
 "Please ensure that the Flamingo message tag is correctly configured. This "
 "tag tells the plugin which textarea field contains the message content. Add "
 "the following in the Additional Settings tab:"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:955
+#: admin/CF7_AntiSpam_Admin_Display.php:996
 msgid " (replace [your-message-field] with the actual name of your textarea field)."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:956
+#: admin/CF7_AntiSpam_Admin_Display.php:997
 msgid ""
 "If the field is not defined, the plugin will try to detect it "
 "automatically. It will first look for a textarea named similar to "
@@ -678,395 +669,428 @@ msgid ""
 "recommended."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:957
+#: admin/CF7_AntiSpam_Admin_Display.php:998
 msgid "Form Name & Link"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:958
+#: admin/CF7_AntiSpam_Admin_Display.php:999
 msgid "Flamingo Message Value"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:959
+#: admin/CF7_AntiSpam_Admin_Display.php:1000
 msgid "Valid"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:972
+#: admin/CF7_AntiSpam_Admin_Display.php:1013
 msgid "Waiting for Rest API Status..."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1014
+#: admin/CF7_AntiSpam_Admin_Display.php:1065
 msgid "Options debug"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1017
+#: admin/CF7_AntiSpam_Admin_Display.php:1068
 msgid "The plugin options are:"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1051
+#: admin/CF7_AntiSpam_Admin_Display.php:1083
+msgid "IP Analysis"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:1117
+msgid "Variable"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:1118
+msgid "Value"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:1151
 msgid "spam"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1051
+#: admin/CF7_AntiSpam_Admin_Display.php:1151
 msgid "ham"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1059
+#: admin/CF7_AntiSpam_Admin_Display.php:1159
 msgid "DNSBL performance test:"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1060
+#: admin/CF7_AntiSpam_Admin_Display.php:1160
 msgid ""
 "Results below 0.01 are fine, OK/Spam indicates the status of your ip on "
 "DNSBL servers"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1061
-#: admin/CF7_AntiSpam_Admin_Display.php:1117
-#: admin/CF7_AntiSpam_Admin_Display.php:1128
+#: admin/CF7_AntiSpam_Admin_Display.php:1161
+#: admin/CF7_AntiSpam_Admin_Display.php:1217
+#: admin/CF7_AntiSpam_Admin_Display.php:1228
 msgid "Your IP address"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1084
+#: admin/CF7_AntiSpam_Admin_Display.php:1184
 msgid "not set"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1096
-#: admin/CF7_AntiSpam_Admin_Display.php:1139
+#: admin/CF7_AntiSpam_Admin_Display.php:1196
+#: admin/CF7_AntiSpam_Admin_Display.php:1239
 msgid "Geo-IP test"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1104
-#: admin/CF7_AntiSpam_Admin_Display.php:1125
+#: admin/CF7_AntiSpam_Admin_Display.php:1204
+#: admin/CF7_AntiSpam_Admin_Display.php:1225
 msgid "Geo-IP"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1105
+#: admin/CF7_AntiSpam_Admin_Display.php:1205
 msgid "Enabled"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1105
+#: admin/CF7_AntiSpam_Admin_Display.php:1205
 msgid "Geo-ip database next scheduled update: "
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1126
+#: admin/CF7_AntiSpam_Admin_Display.php:1226
 msgid "is disabled."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1127
+#: admin/CF7_AntiSpam_Admin_Display.php:1227
 msgid ""
 "To enable it, please go to the settings page and enable the \"Detect "
 "location using GeoIP\" checkbox."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Display.php:1140
+#: admin/CF7_AntiSpam_Admin_Display.php:1240
 msgid "Geo-IP Test Error"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:57
-msgid "Administrators only"
+#: admin/CF7_AntiSpam_Admin_Display.php:1256
+msgid "Database Tables"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:84
+#: admin/CF7_AntiSpam_Admin_Display.php:1266
+msgid "Available"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:1266
+msgid "rows"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:1268
+msgid "Not Available"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:1284
+#: admin/CF7_AntiSpam_Admin_Display.php:1291
+msgid "is enabled"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Display.php:1296
+msgid "is disabled, use CF7ANTISPAM_DEBUG_EXTENDED to enable it if needed"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Customizations.php:82
 msgid "Ban automatically spammers"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:92
+#: admin/CF7_AntiSpam_Admin_Customizations.php:90
 msgid "Automatic spammer IP Blocklist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:101
+#: admin/CF7_AntiSpam_Admin_Customizations.php:99
 msgid "Mail blocked before Ban"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:110
+#: admin/CF7_AntiSpam_Admin_Customizations.php:108
 msgid "Automatic Unban"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:119
+#: admin/CF7_AntiSpam_Admin_Customizations.php:117
 msgid "Bot Fingerprinting"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:127
+#: admin/CF7_AntiSpam_Admin_Customizations.php:125
 msgid "Enable anti-bot checks"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:136
+#: admin/CF7_AntiSpam_Admin_Customizations.php:134
 msgid "Enable anti-bot extra checks"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:145
+#: admin/CF7_AntiSpam_Admin_Customizations.php:143
 msgid "Append hidden fields on submit"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:154
+#: admin/CF7_AntiSpam_Admin_Customizations.php:152
 msgid "GeoIP"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:162
+#: admin/CF7_AntiSpam_Admin_Customizations.php:160
 msgid "Enable automatic download"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:174
+#: admin/CF7_AntiSpam_Admin_Customizations.php:172
 msgid "MaxMind Update Key"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:184
+#: admin/CF7_AntiSpam_Admin_Customizations.php:182
 msgid "Force database download"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:195
+#: admin/CF7_AntiSpam_Admin_Customizations.php:193
 msgid "Database manual upload"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:205
+#: admin/CF7_AntiSpam_Admin_Customizations.php:203
 msgid "Database available"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:214
+#: admin/CF7_AntiSpam_Admin_Customizations.php:212
 msgid "Language Checks"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:222
+#: admin/CF7_AntiSpam_Admin_Customizations.php:220
 msgid "Check Browser Language"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:231
+#: admin/CF7_AntiSpam_Admin_Customizations.php:229
 msgid "Detect location using GeoIP"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:240
+#: admin/CF7_AntiSpam_Admin_Customizations.php:238
 msgid "Allowed browser Languages"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:249
+#: admin/CF7_AntiSpam_Admin_Customizations.php:247
 msgid "Disallowed browser Languages"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:258
+#: admin/CF7_AntiSpam_Admin_Customizations.php:256
 msgid "Time checks"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:266
+#: admin/CF7_AntiSpam_Admin_Customizations.php:264
 msgid "Check the elapsed time"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:275
+#: admin/CF7_AntiSpam_Admin_Customizations.php:273
 msgid "Minimum elapsed time"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:284
+#: admin/CF7_AntiSpam_Admin_Customizations.php:282
 msgid "Maximum elapsed time"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:293
+#: admin/CF7_AntiSpam_Admin_Customizations.php:291
 msgid "Bad IP Address"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:301
+#: admin/CF7_AntiSpam_Admin_Customizations.php:299
 msgid "Check HTTP referrer"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:310
+#: admin/CF7_AntiSpam_Admin_Customizations.php:308
 msgid "Check Bad IP Address"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:319
+#: admin/CF7_AntiSpam_Admin_Customizations.php:317
 msgid "Bad IP Address List"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:328
-msgid "IP Whitelist"
+#: admin/CF7_AntiSpam_Admin_Customizations.php:326
+msgid "IP Allowlist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:337
+#: admin/CF7_AntiSpam_Admin_Customizations.php:335
 msgid "Bad words"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:345
+#: admin/CF7_AntiSpam_Admin_Customizations.php:343
 msgid "Check the message for prohibited words"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:354
+#: admin/CF7_AntiSpam_Admin_Customizations.php:352
 msgid "Bad words List"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:363
+#: admin/CF7_AntiSpam_Admin_Customizations.php:361
 msgid "Bad email strings"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:371
+#: admin/CF7_AntiSpam_Admin_Customizations.php:369
 msgid "Check the email for prohibited words"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:380
+#: admin/CF7_AntiSpam_Admin_Customizations.php:378
 msgid "Email prohibited words"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:389
+#: admin/CF7_AntiSpam_Admin_Customizations.php:387
 msgid "User Agent blocklist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:397
+#: admin/CF7_AntiSpam_Admin_Customizations.php:395
 msgid "Enable User Agent blocklist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:406
+#: admin/CF7_AntiSpam_Admin_Customizations.php:404
 msgid "Disallowed user agents"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:415
+#: admin/CF7_AntiSpam_Admin_Customizations.php:413
 msgid "DNS Blocklists"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:423
+#: admin/CF7_AntiSpam_Admin_Customizations.php:421
 msgid "Check IP on DNS blocklist"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:432
+#: admin/CF7_AntiSpam_Admin_Customizations.php:430
 msgid "DNS blocklist servers"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:441
+#: admin/CF7_AntiSpam_Admin_Customizations.php:439
 msgid "Honeypot"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:449
+#: admin/CF7_AntiSpam_Admin_Customizations.php:447
 msgid "Add some fake input inside the form"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:458
+#: admin/CF7_AntiSpam_Admin_Customizations.php:456
 msgid "Name for the honeypots inputs[*]"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:467
+#: admin/CF7_AntiSpam_Admin_Customizations.php:465
 msgid "Honeyform <span class=\"label alert monospace\">[experimental]</span>"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:475
+#: admin/CF7_AntiSpam_Admin_Customizations.php:473
 msgid "Add an hidden form inside the page content"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:484
+#: admin/CF7_AntiSpam_Admin_Customizations.php:482
 msgid "Select where the honeyform will be placed"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:493
+#: admin/CF7_AntiSpam_Admin_Customizations.php:491
 msgid "Exclude pages"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:502
+#: admin/CF7_AntiSpam_Admin_Customizations.php:500
 msgid "Mailbox Protection"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:510
+#: admin/CF7_AntiSpam_Admin_Customizations.php:508
 msgid "Avoid multiple send"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:519
+#: admin/CF7_AntiSpam_Admin_Customizations.php:517
 msgid "Identity Protection"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:527
+#: admin/CF7_AntiSpam_Admin_Customizations.php:525
 msgid "Enforce user protection"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:536
+#: admin/CF7_AntiSpam_Admin_Customizations.php:534
 msgid "Enforce WordPress protection"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:545
+#: admin/CF7_AntiSpam_Admin_Customizations.php:543
 msgid "B8 statistical \"Bayesian\" spam filter"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:553
+#: admin/CF7_AntiSpam_Admin_Customizations.php:551
 msgid "Enable B8"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:562
+#: admin/CF7_AntiSpam_Admin_Customizations.php:560
 msgid "B8 spam threshold"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:571
+#: admin/CF7_AntiSpam_Admin_Customizations.php:569
 msgid "Spam filter customizations"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:579
+#: admin/CF7_AntiSpam_Admin_Customizations.php:577
 msgid "Your unique css class"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:588
+#: admin/CF7_AntiSpam_Admin_Customizations.php:586
 msgid "Your unique fields prefix"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:597
+#: admin/CF7_AntiSpam_Admin_Customizations.php:595
 msgid "The encryption method"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:606
+#: admin/CF7_AntiSpam_Admin_Customizations.php:604
 msgid "Optimizations"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:614
+#: admin/CF7_AntiSpam_Admin_Customizations.php:612
 msgid "Optimize scripts loading"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:623
+#: admin/CF7_AntiSpam_Admin_Customizations.php:621
 msgid "Disable cf7 form reload if the page is cached"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:632
+#: admin/CF7_AntiSpam_Admin_Customizations.php:630
 msgid "Spam Score Rating"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:640
+#: admin/CF7_AntiSpam_Admin_Customizations.php:638
 msgid "Anti-spam control level"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:649
+#: admin/CF7_AntiSpam_Admin_Customizations.php:647
 msgid "Enable advanced settings"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:658
+#: admin/CF7_AntiSpam_Admin_Customizations.php:656
 msgid "Scoring Tweaks (1 = Ban)"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:666
+#: admin/CF7_AntiSpam_Admin_Customizations.php:664
 msgid "Bot fingerprinting score <small>(for each failed test)</small>"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:675
+#: admin/CF7_AntiSpam_Admin_Customizations.php:673
 msgid "Time checks score"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:684
+#: admin/CF7_AntiSpam_Admin_Customizations.php:682
 msgid "String found"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:693
+#: admin/CF7_AntiSpam_Admin_Customizations.php:691
 msgid "DNSBL score <small>(for each server)</small>"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:702
+#: admin/CF7_AntiSpam_Admin_Customizations.php:700
 msgid "Honeypot fill score <small>(for each fail)</small>"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:711
+#: admin/CF7_AntiSpam_Admin_Customizations.php:709
 msgid "Bot detected"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:720
+#: admin/CF7_AntiSpam_Admin_Customizations.php:718
 msgid "Bot warn"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:732
+#: admin/CF7_AntiSpam_Admin_Customizations.php:729
 msgid "How many failed attempts before being banned"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:737
+#: admin/CF7_AntiSpam_Admin_Customizations.php:734
 msgid "Next scheduled unban event:"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:749
+#: admin/CF7_AntiSpam_Admin_Customizations.php:745
 msgid ""
 "Fingerprinting is a method used for exploiting data from browser in order "
 "to check whether it is a real browser. A script checks software and "
@@ -1074,124 +1098,124 @@ msgid ""
 "and OS version, that usually aren't available for bots."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:750
+#: admin/CF7_AntiSpam_Admin_Customizations.php:746
 msgid ""
 "The last option, append on submit, causes fingerprinting to take place "
 "after the submit button has been pressed, making it even more difficult for "
 "a bot to circumvent the protection."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:759
+#: admin/CF7_AntiSpam_Admin_Customizations.php:754
 msgid ""
 "Checks that the form has been submitted within a reasonable timeframe, "
 "timestamp is encrypted so any manipulation of the data will result in 0."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:760
+#: admin/CF7_AntiSpam_Admin_Customizations.php:755
 msgid ""
 "Just set a few seconds as the minimum time (bots usually take 5 seconds at "
 "most, usually 3) and as the maximum time I recommend 1 year*."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:761
+#: admin/CF7_AntiSpam_Admin_Customizations.php:756
 msgid ""
 "* A small note.... If you use a caching system for the contact page make "
 "sure you set you set the maximum elapsed time at least equal to the cache "
 "regeneration."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:762
+#: admin/CF7_AntiSpam_Admin_Customizations.php:757
 msgid "Values in seconds, 0 to disable"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:771
+#: admin/CF7_AntiSpam_Admin_Customizations.php:765
 msgid "Detect user location using MaxMind GeoIP2 database."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:772
+#: admin/CF7_AntiSpam_Admin_Customizations.php:766
 msgid "In order to enable this functionality you need to agree at  "
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:773
+#: admin/CF7_AntiSpam_Admin_Customizations.php:767
 msgid "GeoLite2 End User License Agreement"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:774
+#: admin/CF7_AntiSpam_Admin_Customizations.php:768
 msgid "and sign up "
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:775
+#: admin/CF7_AntiSpam_Admin_Customizations.php:769
 msgid "GeoLite2 Downloadable Databases"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:776
+#: admin/CF7_AntiSpam_Admin_Customizations.php:770
 msgid ""
 "After registration you will get a key, paste it into the input below and "
 "CF7-Antispam will be able to automatically download the updated GeoIP "
 "database every month."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:782
+#: admin/CF7_AntiSpam_Admin_Customizations.php:776
 msgid "Recommended - define a key your config.php the key in this way: "
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:796
+#: admin/CF7_AntiSpam_Admin_Customizations.php:789
 msgid ""
 "Check the user browser language / user keyboard. Use the interactive "
 "selector below to easily allow or disallow specific Countries or Languages."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:797
+#: admin/CF7_AntiSpam_Admin_Customizations.php:790
 msgid ""
 "Allowed languages means that all other languages will be blocked. Leave "
 "empty to allow all languages. Disallow languages means that all other "
 "languages will be allowed. Leave empty to disable."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:798
+#: admin/CF7_AntiSpam_Admin_Customizations.php:791
 msgid ""
 "You can also manually enter codes by toggling the \"Show raw input\" "
 "checkbox. Supported formats: Country Code (e.g., \"US\"), Language Code "
 "(e.g., \"en\"), or Locale (e.g., \"en-US\")."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:799
+#: admin/CF7_AntiSpam_Admin_Customizations.php:792
 msgid "If you are unsure please consult these ISO standards:"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:800
+#: admin/CF7_AntiSpam_Admin_Customizations.php:793
 msgid "- Language codes (use ctrl+f for search) "
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:801
+#: admin/CF7_AntiSpam_Admin_Customizations.php:794
 msgid "- Country codes (refer to \"Alpha-2 code\"), "
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:808
+#: admin/CF7_AntiSpam_Admin_Customizations.php:800
 msgid ""
 "After an ip check via the http headers, it is checked that the ip is not "
 "blocklisted in the following list, one \"bad\" ip each line"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:814
+#: admin/CF7_AntiSpam_Admin_Customizations.php:805
 msgid ""
 "Check if the mail message contains \"bad\" words, all e-mails containing "
 "one of these words in the text will be flagged. A bad string per line"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:820
+#: admin/CF7_AntiSpam_Admin_Customizations.php:810
 msgid ""
 "Check if the mail content contains a word and in this case flag this mail, "
 "one forbidden word per line"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:826
+#: admin/CF7_AntiSpam_Admin_Customizations.php:815
 msgid ""
 "Enter a list of forbidden user agents, one per line. When the string match "
 "the user agent (or a part of) the mail will be flagged"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:832
+#: admin/CF7_AntiSpam_Admin_Customizations.php:820
 msgid ""
 "Check sender ip on DNS Blocklists, DNSBL are real-time lists of "
 "proven/recognised spam addresses. These may include lists of addresses of "
@@ -1202,54 +1226,54 @@ msgid ""
 msgstr ""
 
 # %s%s%s - a spam score of xyz will be added
-#: admin/CF7_AntiSpam_Admin_Customizations.php:834
+#: admin/CF7_AntiSpam_Admin_Customizations.php:822
 msgid ""
 "?? Use FEW servers, those you tested reliable, and consider that for each "
 "server reporting the ip a spam score of "
 msgstr ""
 
 # %s%s%s - a spam score of xyz will be added
-#: admin/CF7_AntiSpam_Admin_Customizations.php:834
+#: admin/CF7_AntiSpam_Admin_Customizations.php:822
 msgid " will be added to the spam rating, 1 equal spam."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:837
+#: admin/CF7_AntiSpam_Admin_Customizations.php:825
 msgid "Here a you can find a list of servers: "
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:848
+#: admin/CF7_AntiSpam_Admin_Customizations.php:835
 msgid ""
 "the honeypot is a \"trap\" field that is hidden with css or js from the "
 "user but remains visible to bots. Since this fields are automatically added "
 "and appended inside the forms with standard names."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:849
+#: admin/CF7_AntiSpam_Admin_Customizations.php:836
 msgid ""
 "Please check the list below because the name MUST differ from the cf7 tag "
 "class names"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:856
+#: admin/CF7_AntiSpam_Admin_Customizations.php:842
 msgid ""
 "Instead of relying on trap fields, we utilize honeyforms, that are forms "
 "specifically designed as deceptive 'trap' forms. Similar to honeypots, "
 "these forms are crafted to mislead and catch potential threats."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:863
+#: admin/CF7_AntiSpam_Admin_Customizations.php:848
 msgid ""
 "When activated, this feature prevents consecutive email deliveries to the "
 "user\\'s mailbox by imposing delay between each message."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:863
+#: admin/CF7_AntiSpam_Admin_Customizations.php:848
 msgid ""
 " seconds has been set as the resend timeout, check the documentation if you "
 "want to change it"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:869
+#: admin/CF7_AntiSpam_Admin_Customizations.php:853
 msgid ""
 "After monitoring and analysing some bots, I noticed that it is necessary to "
 "block the way bots collect (user) data from the website, otherwise "
@@ -1257,13 +1281,13 @@ msgid ""
 "registrations, spam comments and other attacks"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:875
+#: admin/CF7_AntiSpam_Admin_Customizations.php:858
 msgid ""
 "Tells you whether a text is spam or not, using statistical text analysis of "
 "the text message"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:876
+#: admin/CF7_AntiSpam_Admin_Customizations.php:859
 msgid ""
 "The threshold value is the minimum score required for a text to be "
 "considered spam. 1 is spam. 0 is not spam. If the threshold value is too "
@@ -1271,11 +1295,11 @@ msgid ""
 "some spam."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:884
+#: admin/CF7_AntiSpam_Admin_Customizations.php:866
 msgid "RECOMMENDED: Site related configuration"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:885
+#: admin/CF7_AntiSpam_Admin_Customizations.php:867
 msgid ""
 "create your own and unique css class and customized fields name. "
 "Optionally, you can choose in encryption method. But, After changing cypher "
@@ -1283,7 +1307,7 @@ msgid ""
 "the format of the form data."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:892
+#: admin/CF7_AntiSpam_Admin_Customizations.php:873
 msgid ""
 "The calculation system of antispam for contact form 7 works like this: each "
 "failed test has its own score (shown below where you can refine it to your "
@@ -1292,112 +1316,120 @@ msgid ""
 "text and learns the words of a spam mail."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:898
+#: admin/CF7_AntiSpam_Admin_Customizations.php:878
 msgid "Choose the protection level you want to apply to your site"
 msgstr ""
 
 # %s is the error message
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1172
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1155
 msgid "Error uploading file: %s"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1184
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1167
 msgid "GeoIP database uploaded successfully."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1188
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1171
 msgid "Error processing the uploaded file."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1481
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1452
 msgid "Force Download"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1491
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1461
 msgid "Choose DB File..."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1492
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1462
 msgid "No file selected"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1494
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1464
 msgid "Accepted formats: .mmdb or .tar.gz"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1525
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1493
 msgid "KEY provided"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1786
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1736
 msgid "Add"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1788
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1738
 msgid "Remove"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1881
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1822
 msgid ""
 "You can optimize the loading performance of the antispam scripts. Since "
 "optimization is a risky business, we do not recommend enabling this option "
 "without trying it first."
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Core.php:99
+#: admin/CF7_AntiSpam_Admin_Core.php:100
 msgid "Antispam Settings"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Core.php:101
+#: admin/CF7_AntiSpam_Admin_Core.php:102
 msgid "Activate Contact Form 7 integration"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Core.php:134
+#: admin/CF7_AntiSpam_Admin_Core.php:135
 msgid "Antispam setting updated with success"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Core.php:199
+#: admin/CF7_AntiSpam_Admin_Core.php:200
 msgid "Are you sure?"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Core.php:226
+#: admin/CF7_AntiSpam_Admin_Core.php:227
 msgid "Stats for CF7 Antispam"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Charts.php:92
+#: admin/CF7_AntiSpam_Admin_Charts.php:88
 msgid "Last Week Emails"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Charts.php:211
+#: admin/CF7_AntiSpam_Admin_Charts.php:207
 msgid "Flamingo Inbound Messages"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Charts.php:217
+#: admin/CF7_AntiSpam_Admin_Charts.php:213
 msgid "CF7-Antispam setup"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Charts.php:230
+#: admin/CF7_AntiSpam_Admin_Charts.php:226
 msgid "You have not received any e-mails in the last 7 days."
 msgstr ""
 
-#: src/settings/settings.ts:150
+#: src/settings/settings.ts:155
 msgid "Status"
 msgstr ""
 
-#: src/settings/settings.ts:150
+#: src/settings/settings.ts:155
 msgid "CF7 Antispam plugin version is"
 msgstr ""
 
-#: src/settings/settings.ts:150
+#: src/settings/settings.ts:155
 msgid "Request timestamp"
 msgstr ""
 
-#: src/settings/importExport.ts:24
+#: src/settings/languageSelector.ts:29
+msgid "Allowed Languages"
+msgstr ""
+
+#: src/settings/languageSelector.ts:32
+msgid "Disallowed Languages"
+msgstr ""
+
+#: src/settings/importExport.ts:27
 msgid ""
 "Are you sure you want to import options? This will overwrite your current "
 "settings."
 msgstr ""
 
-#: src/settings/importExport.ts:48
+#: src/settings/importExport.ts:51
 msgid "Invalid JSON. Please check your file and try again."
 msgstr ""
