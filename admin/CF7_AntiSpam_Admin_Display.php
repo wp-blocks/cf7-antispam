@@ -132,7 +132,7 @@ class CF7_AntiSpam_Admin_Display {
 			<div id="blocklist" class="cf7a-tab-panel <?php echo 'blocklist' === $active_tab ? 'active' : ''; ?>">
 				<?php
 				if ( 'blocklist' === $active_tab ) {
-					$this->render_blacklist_tab();
+					$this->render_blocklist_tab();
 				}
 				?>
 			</div>
@@ -183,15 +183,15 @@ class CF7_AntiSpam_Admin_Display {
 		global $wpdb;
 		// Check blocklist entries
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blacklist_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $wpdb->prefix . 'cf7a_blocklist' ) );
-		$has_blacklist   = intval( $blacklist_count ) > 0;
+		$blocklist_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $wpdb->prefix . 'cf7a_blocklist' ) );
+		$has_blocklist   = intval( $blocklist_count ) > 0;
 
 		// Check wordlist entries (beyond just the b8*texts token)
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wordlist_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE token != 'b8*texts' AND token != 'b8*dbversion'", $wpdb->prefix . 'cf7a_wordlist' ) );
 		$has_wordlist   = intval( $wordlist_count ) > 0;
 
-		return $has_blacklist || $has_wordlist;
+		return $has_blocklist || $has_wordlist;
 	}
 
 	/**
@@ -313,11 +313,11 @@ class CF7_AntiSpam_Admin_Display {
 		$cache_key_total = 'cf7a_total_blocked_count';
 		$total_blocked   = wp_cache_get( $cache_key_total, 'cf7a_blocklist_stats' );
 
-		$blacklist_table = $wpdb->prefix . 'cf7a_blocklist';
+		$blocklist_table = $wpdb->prefix . 'cf7a_blocklist';
 
 		if ( false === $total_blocked ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$total_blocked = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $blacklist_table ) );
+			$total_blocked = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $blocklist_table ) );
 			wp_cache_set( $cache_key_total, $total_blocked, 'cf7a_blocklist_stats', $cache_time_short );
 		}
 
@@ -333,7 +333,7 @@ class CF7_AntiSpam_Admin_Display {
 			FROM %i
 			GROUP BY status
 			ORDER BY status ASC',
-					$blacklist_table
+					$blocklist_table
 				)
 			);
 			wp_cache_set( $cache_key_status, $status_data, 'cf7a_blocklist_stats', $cache_time_short );
@@ -579,7 +579,7 @@ class CF7_AntiSpam_Admin_Display {
 	private function format_reason_name( $reason_key ): string {
 		// Handle special cases
 		$reason_mappings = array(
-			'blacklisted_score'      => 'Recidive',
+			'blocklisted_score'      => 'Recidive',
 			'blacklisted score'      => 'Recidive',
 			'data_mismatch'          => 'Data Mismatch',
 			'bot_fingerprint'        => 'Bot Fingerprint',
@@ -680,13 +680,13 @@ class CF7_AntiSpam_Admin_Display {
 	/**
 	 * Render the Blocklist Tab
 	 */
-	private function render_blacklist_tab() {
+	private function render_blocklist_tab() {
 		?>
 		<div class="cf7a-card">
 			<?php $this->cf7a_export_button(); ?>
-			<h3><?php esc_html_e( 'Blacklisted IPs', 'cf7-antispam' ); ?></h3>
-			<p><?php esc_html_e( 'Here you can see all the IPs that have been blacklisted by the plugin.', 'cf7-antispam' ); ?></p>
-			<?php $this->cf7a_get_blacklisted_table(); ?>
+			<h3><?php esc_html_e( 'Blocklisted IPs', 'cf7-antispam' ); ?></h3>
+			<p><?php esc_html_e( 'Here you can see all the IPs that have been blocklisted by the plugin.', 'cf7-antispam' ); ?></p>
+			<?php $this->cf7a_get_blocklisted_table(); ?>
 		</div>
 		<?php
 	}
@@ -733,8 +733,8 @@ class CF7_AntiSpam_Admin_Display {
 			<p><?php esc_html_e( 'These actions are irreversible. Please make sure you know what you are doing.', 'cf7-antispam' ); ?></p>
 
 			<h4><?php esc_html_e( 'Blocklist Reset', 'cf7-antispam' ); ?></h4>
-			<p><?php esc_html_e( 'Remove all blacklisted IPs from the database.', 'cf7-antispam' ); ?></p>
-			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="reset-blocklist" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Remove all blacklisted IP', 'cf7-antispam' ); ?></button>
+			<p><?php esc_html_e( 'Remove all blocklisted IPs from the database.', 'cf7-antispam' ); ?></p>
+			<button class="cf7a_action-button cf7a_action cf7a-action-danger" data-action="reset-blocklist" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Remove all blocklisted IP', 'cf7-antispam' ); ?></button>
 
 			<h4><?php esc_html_e( 'Dictionary Reset', 'cf7-antispam' ); ?></h4>
 			<p><?php esc_html_e( 'Reset the entire b8 dictionary used for spam detection.', 'cf7-antispam' ); ?></p>
@@ -786,8 +786,6 @@ class CF7_AntiSpam_Admin_Display {
 			<h2 class="title cf7a-card-title"><?php esc_html_e( 'Debug Information', 'cf7-antispam' ); ?></h2>
 
 			<p><?php esc_html_e( 'Debug information is only visible when WP_DEBUG or CF7ANTISPAM_DEBUG are enabled.', 'cf7-antispam' ); ?></p>
-
-			<p><strong><?php esc_html_e( 'Plugin Version:', 'cf7-antispam' ); ?></strong> <?php echo esc_html( CF7ANTISPAM_VERSION ); ?></p>
 
 			<?php $this->cf7a_get_debug_info(); ?>
 		</div>
