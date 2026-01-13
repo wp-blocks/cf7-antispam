@@ -92,7 +92,7 @@ class CF7_AntiSpam_Activator {
 				'_time'           => 0.3,
 				'_bad_string'     => 0.5,
 				'_dnsbl'          => 0.1,
-				'_honeypot'       => 0.3,
+				'_honeypot'       => 0.5,
 				'_detection'      => 0.7,
 				'_warn'           => 0.3,
 			),
