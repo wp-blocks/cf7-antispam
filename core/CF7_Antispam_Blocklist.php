@@ -242,12 +242,12 @@ class CF7_Antispam_Blocklist {
 	 * @return   array Array with 'csv' content and 'filename'
 	 */
 	public function cf7a_export_blocklist() {
-		$blacklist = $this->cf7a_get_blocklist_data();
+		$blocklist = $this->cf7a_get_blocklist_data();
 
 		$csv = "ID,IP,Status,Meta,Modified,Created\n";
 
-		if ( ! empty( $blacklist ) ) {
-			foreach ( $blacklist as $row ) {
+		if ( ! empty( $blocklist ) ) {
+			foreach ( $blocklist as $row ) {
 				$id     = $row->id;
 				$ip     = '"' . str_replace( '"', '""', $row->ip ) . '"';
 				$status = $row->status ?? '';
@@ -438,17 +438,17 @@ class CF7_Antispam_Blocklist {
 		// Below 0 is not anymore a valid status for a blocklist entry, so we can remove it
 		$lower_bound = 0;
 
-		$blacklist_table = $wpdb->prefix . 'cf7a_blocklist';
+		$blocklist_table = $wpdb->prefix . 'cf7a_blocklist';
 
 		// Removes a status count at each blocklisted ip
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$updated = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET `status` = `status` - %d', $blacklist_table, $status_decrement ) );
+		$updated = $wpdb->query( $wpdb->prepare( 'UPDATE %i SET `status` = `status` - %d', $blocklist_table, $status_decrement ) );
 		cf7a_log( "Status updated for blocklisted (score -1) - $updated users", 1 );
 
 		// When the line has 0 in status, we can remove it from the blocklist
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$updated_deletion = $wpdb->delete(
-			$blacklist_table,
+			$blocklist_table,
 			array( 'status' => $lower_bound ),
 			array( '%d' )
 		);
