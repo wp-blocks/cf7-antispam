@@ -263,7 +263,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 		// Assert
 		$this->assertEquals( 4, $result['spam_score'] );
-		$this->assertStringContainsString( 'spam.com', $result['reasons']['email_blacklisted'] );
+		$this->assertStringContainsString( 'spam.com', $result['reasons']['email_blocklisted'] );
 	}
 
 	public function test_filter_bad_email_strings_passes_good_email() {

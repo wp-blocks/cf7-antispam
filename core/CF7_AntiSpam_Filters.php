@@ -1017,14 +1017,14 @@ class CF7_AntiSpam_Filters {
 			foreach ( $bad_email_strings as $bad_email_string ) {
 				if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
 					$data['spam_score']                    += $score_bad_string;
-					$data['reasons']['email_blacklisted'][] = $bad_email_string;
+					$data['reasons']['email_blocklisted'][] = $bad_email_string;
 				}
 			}
 		}
 
-		if ( isset( $data['reasons']['email_blacklisted'] ) && is_array( $data['reasons']['email_blacklisted'] ) ) {
-			$data['reasons']['email_blacklisted'] = implode( ',', $data['reasons']['email_blacklisted'] );
-			cf7a_log( "The ip address {$data['remote_ip']} sent a mail using bad string {$data['reasons']['email_blacklisted']}", 1 );
+		if ( isset( $data['reasons']['email_blocklisted'] ) && is_array( $data['reasons']['email_blocklisted'] ) ) {
+			$data['reasons']['email_blocklisted'] = implode( ',', $data['reasons']['email_blocklisted'] );
+			cf7a_log( "The ip address {$data['remote_ip']} sent a mail using bad string {$data['reasons']['email_blocklisted']}", 1 );
 		}
 
 		return $data;
