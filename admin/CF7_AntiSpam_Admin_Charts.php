@@ -102,8 +102,8 @@ class CF7_AntiSpam_Admin_Charts {
 						esc_url( admin_url( 'admin.php?page=flamingo_inbound&post=' . $post->ID . '&action=edit' ) ),
 						(int) $post->ID,
 						$is_ham ? '🔵' : '🔴',
-						esc_html( get_post_meta( $post->ID, '_from', true )[0] ),
-						esc_html( $post->post_title )
+						esc_html( get_post_meta( $post->ID, '_from', true ) ?? '' ),
+						esc_html( substr( $post->post_content, 0, 16 ) )
 					);
 			}
 		}
