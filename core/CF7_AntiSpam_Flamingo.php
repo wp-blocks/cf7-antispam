@@ -172,9 +172,9 @@ class CF7_AntiSpam_Flamingo {
 			}
 
 			if ( isset( $action ) && isset( $_REQUEST['post'] ) ) {
-				// phpcs:ignore: WordPress.Security.NonceVerification.Recommended
-				foreach ( (array) $_REQUEST['post'] as $post_id ) {
-					$this->process_flamingo_update( intval( $post_id ), $action );
+				$posts_ids = array_map( 'intval', (array) wp_unslash( $_REQUEST['post'] ) );
+				foreach ( $posts_ids as $post_id ) {
+					$this->process_flamingo_update( $post_id, $action );
 				}
 			}//end if
 		}//end if
