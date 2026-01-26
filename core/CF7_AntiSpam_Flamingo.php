@@ -73,82 +73,109 @@ class CF7_AntiSpam_Flamingo {
 	}
 
 	/**
+	 * Process the updated flamingo message after it was changed from spam to ham or vice-versa
+	 *
+	 * @param int    $post_id the post-id
+	 * @param string $action the new status for the post
+	 */
+	private function process_flamingo_update( int $post_id, string $action ) {
+		$options = get_option( 'cf7a_options' );
+
+		$b8 = new CF7_AntiSpam_B8();
+
+		$flamingo_post = new Flamingo_Inbound_Message( $post_id );
+
+		/* Get the message from flamingo mail */
+		$message = self::cf7a_get_mail_field( $flamingo_post, 'message' );
+
+		if ( empty( $message ) ) {
+			update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', 'none' );
+
+			/* translators: %s - the post id. */
+			cf7a_log( sprintf( __( "%s has no message text so can't be analyzed", 'cf7-antispam' ), $post_id ), 1 );
+		} else {
+			$rating = ! empty( $flamingo_post->meta['_cf7a_b8_classification'] ) ? $flamingo_post->meta['_cf7a_b8_classification'] : $b8->cf7a_b8_classify( $message );
+
+			if ( ! $flamingo_post->spam && 'spam' === $action ) {
+				$b8->cf7a_b8_unlearn_ham( $message );
+				$b8->cf7a_b8_learn_spam( $message );
+
+				if ( $options['autostore_bad_ip'] ) {
+					CF7_Antispam_Blocklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' ) );
+				}
+			} elseif ( $flamingo_post->spam && 'ham' === $action ) {
+				$b8->cf7a_b8_unlearn_spam( $message );
+				$b8->cf7a_b8_learn_ham( $message );
+
+				if ( $options['autostore_bad_ip'] ) {
+					CF7_Antispam_Blocklist::cf7a_unban_by_ip( $flamingo_post->meta['remote_ip'] );
+				}
+			}
+
+			$rating_after = $b8->cf7a_b8_classify( $message, true );
+
+			update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', $rating_after );
+
+			cf7a_log(
+				CF7ANTISPAM_LOG_PREFIX . sprintf(
+				/* translators: %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email (like 0.6/1) */
+					__( 'b8 has learned this e-mail from %1$s was %2$s - score before/after: %3$f/%4$f', 'cf7-antispam' ),
+					$flamingo_post->from_email,
+					$action,
+					$rating,
+					$rating_after
+				),
+				1
+			);
+		}//end if
+	}
+
+	/**
 	 * It adds a column to the Flamingo spam folder, and when you mark a message as spam or ham, it learns from it
 	 */
 	public function cf7a_d8_flamingo_classify() {
+		// If $_REQUEST is not available is not our business
+		if ( ! isset( $_REQUEST ) ) {
+			return;
+		}
+
+		// Get the action field
 		$req_action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
-		$req_save   = isset( $_REQUEST['save'] ) ? sanitize_key( wp_unslash( $_REQUEST['save'] ) ) : false;
-		$req_status = isset( $_REQUEST['inbound']['status'] ) ? sanitize_key( wp_unslash( $_REQUEST['inbound']['status'] ) ) : false;
-		$req_id     = isset( $_REQUEST['post'] ) ? intval( $_REQUEST['post'] ) : false;
 
-		if ( $req_action && ( 'spam' === $req_action || 'unspam' === $req_action || 'save' === $req_action ) ) {
+		if ( 'spam' === $req_action || 'unspam' === $req_action || 'save' === $req_action ) {
+
+			// Detect the selected action
+			$req_save = isset( $_REQUEST['save'] ) ? sanitize_key( wp_unslash( $_REQUEST['save'] ) ) : false;
 			if ( 'save' === $req_action && 'Update' === $req_save ) {
-				$action = 'spam' === $req_status ? 'spam' : 'ham';
-			}
-
-			if ( 'spam' === $req_action ) {
+				$req_status = isset( $_REQUEST['inbound']['status'] ) ? sanitize_key( wp_unslash( $_REQUEST['inbound']['status'] ) ) : false;
+				$action     = 'spam' === $req_status ? 'spam' : 'ham';
+			} elseif ( 'spam' === $req_action ) {
 				$action = 'spam';
 			} elseif ( 'unspam' === $req_action ) {
 				$action = 'ham';
 			}
 
-			if ( isset( $action ) ) {
-				$options = get_option( 'cf7a_options' );
+			// We are going to mimic the same security check used in flamingo (flamingo/admin/includes/meta-boxes.php:210)
+			// phpcs:ignore: WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_REQUEST['post'] ) && ! current_user_can( 'flamingo_edit_inbound_message', intval( $_REQUEST['post'] ) ) ) {
+				wp_die(
+					wp_kses_data( __( 'You are not allowed to edit this item.', 'flamingo' ) )
+				);
+			}
 
-				$b8 = new CF7_AntiSpam_B8();
-				foreach ( (array) $req_id as $post_id ) {
-					$flamingo_post = new Flamingo_Inbound_Message( $post_id );
+			if ( is_array( $_REQUEST['post'] ) ) {
+				check_admin_referer( 'bulk-posts' );
+			} else {
+				// checking referer page
+				$post_id = intval( $_REQUEST['post'] );
+				check_admin_referer( "flamingo-{$req_action}-inbound-message_{$post_id}" );
+			}
 
-					$nonce_field  = '_wpnonce';
-					$nonce_action = 'flamingo-update-inbound_' . $flamingo_post->id();
-					if ( ! isset( $_REQUEST[ $nonce_field ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST[ $nonce_field ] ) ), $nonce_action ) ) {
-						wp_die( esc_html__( 'Security check failed. Please refresh the page and try again.', 'cf7-antispam' ), esc_html__( 'Security Error', 'cf7-antispam' ), array( 'response' => 403 ) );
-					}
-
-					/* get the message from flamingo mail */
-					$message = $this->cf7a_get_mail_field( $flamingo_post, 'message' );
-
-					if ( empty( $message ) ) {
-						update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', 'none' );
-
-						/* translators: %s - the post id. */
-						cf7a_log( sprintf( __( "%s has no message text so can't be analyzed", 'cf7-antispam' ), $post_id ), 1 );
-					} else {
-						$rating = ! empty( $flamingo_post->meta['_cf7a_b8_classification'] ) ? $flamingo_post->meta['_cf7a_b8_classification'] : $b8->cf7a_b8_classify( $message );
-
-						if ( ! $flamingo_post->spam && 'spam' === $action ) {
-							$b8->cf7a_b8_unlearn_ham( $message );
-							$b8->cf7a_b8_learn_spam( $message );
-
-							if ( $options['autostore_bad_ip'] ) {
-								CF7_Antispam_Blocklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' ) );
-							}
-						} elseif ( $flamingo_post->spam && 'ham' === $action ) {
-							$b8->cf7a_b8_unlearn_spam( $message );
-							$b8->cf7a_b8_learn_ham( $message );
-
-							if ( $options['autostore_bad_ip'] ) {
-								CF7_Antispam_Blocklist::cf7a_unban_by_ip( $flamingo_post->meta['remote_ip'] );
-							}
-						}
-
-						$rating_after = $b8->cf7a_b8_classify( $message, true );
-
-						update_post_meta( $flamingo_post->id(), '_cf7a_b8_classification', $rating_after );
-
-						cf7a_log(
-							CF7ANTISPAM_LOG_PREFIX . sprintf(
-								/* translators: %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email (like 0.6/1) */
-								__( 'b8 has learned this e-mail from %1$s was %2$s - score before/after: %3$f/%4$f', 'cf7-antispam' ),
-								$flamingo_post->from_email,
-								$action,
-								$rating,
-								$rating_after
-							),
-							1
-						);
-					}//end if
-				}//end foreach
+			if ( isset( $action ) && isset( $_REQUEST['post'] ) ) {
+				$posts_ids = array_map( 'intval', (array) wp_unslash( $_REQUEST['post'] ) );
+				foreach ( $posts_ids as $post_id ) {
+					$this->process_flamingo_update( $post_id, $action );
+				}
 			}//end if
 		}//end if
 	}
@@ -482,7 +509,7 @@ class CF7_AntiSpam_Flamingo {
 		$classification = get_post_meta( $post_id, '_cf7a_b8_classification', true );
 		if ( 'd8' === $column ) {
 			echo wp_kses(
-				/* translators: none is a label, please keep it short! thanks! */
+			/* translators: none is a label, please keep it short! thanks! */
 				cf7a_format_rating( 'none' === $classification ? esc_html__( 'none', 'cf7-antispam' ) : floatval( $classification ) ),
 				array(
 					'span' => array(
@@ -526,15 +553,15 @@ class CF7_AntiSpam_Flamingo {
 
 		$table = $wpdb->prefix . 'cf7a_wordlist';
 
-			$r = $wpdb->query(
-				$wpdb->prepare( 'TRUNCATE TABLE %i', $table )
-			);
+		$r = $wpdb->query(
+			$wpdb->prepare( 'TRUNCATE TABLE %i', $table )
+		);
 
 		if ( ! is_wp_error( $r ) ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (`token`, `count_ham`) VALUES (%s, %d)', $table, 'b8*dbversion', 3 ) );
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (`token`, `count_ham`, `count_spam`) VALUES (%s, %d, %d)', $table, 'b8*texts', 0, 0 ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (`token`, `count_ham`) VALUES (%s, %d)', $table, 'b8*dbversion', 3 ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (`token`, `count_ham`, `count_spam`) VALUES (%s, %d, %d)', $table, 'b8*texts', 0, 0 ) );
 
 			return true;
 		}
@@ -547,14 +574,14 @@ class CF7_AntiSpam_Flamingo {
 	 */
 	public static function cf7a_reset_b8_classification() {
 		global $wpdb;
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$r = $wpdb->query(
-				$wpdb->prepare(
-					'DELETE FROM %i WHERE `meta_key` = %s',
-					$wpdb->prefix . 'postmeta',
-					'_cf7a_b8_classification'
-				)
-			);
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$r = $wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE `meta_key` = %s',
+				$wpdb->prefix . 'postmeta',
+				'_cf7a_b8_classification'
+			)
+		);
 		return ( ! is_wp_error( $r ) );
 	}
 
