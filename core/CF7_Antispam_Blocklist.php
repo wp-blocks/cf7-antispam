@@ -64,7 +64,9 @@ class CF7_Antispam_Blocklist {
 			if ( $ip_row ) {
 				// if the ip is in the blocklist, update the status
 				$status = isset( $ip_row->status ) ? floatval( $ip_row->status ) + floatval( $spam_score ) : 1;
-
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+				$meta             = ! empty( $ip_row->meta ) ? unserialize( $ip_row->meta ) : array();
+				$previous_reasons = ! empty( $meta ) && ! empty( $meta['reason'] ) ? $meta['reason'] : array();
 			} else {
 				// if the ip is not in the blocklist, add it and initialize the status
 				$status = floatval( $spam_score );
@@ -79,8 +81,9 @@ class CF7_Antispam_Blocklist {
 					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 					'meta'   => serialize(
 						array(
-							'reason' => $reason,
-							'meta'   => null,
+							'reason' => ! empty( $previous_reasons )
+								? array_merge( $previous_reasons, $reason )
+								: $reason,
 						)
 					),
 				),
