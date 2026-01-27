@@ -53,7 +53,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	 */
 	public function __construct() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			exit();
+			return;
 		}
 
 		/* the plugin options */
