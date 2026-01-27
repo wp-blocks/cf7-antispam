@@ -350,11 +350,11 @@ function cf7a_format_status( $rank ) {
  * @param array $arr - the array of reasons to ban.
  * @param bool  $is_html - true to return an HTML string.
  *
- * @return false|string Compress arrays into "key:value; " pair
+ * @return string Compress arrays into "key:value; " pair
  */
-function cf7a_compress_array( $arr, $is_html = false ) {
+function cf7a_compress_array( array $arr, bool $is_html = false ): string {
 	if ( ! is_array( $arr ) ) {
-		return false;
+		return '';
 	}
 	$is_html = intval( $is_html );
 
