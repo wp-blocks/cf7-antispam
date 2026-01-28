@@ -243,7 +243,18 @@ function cf7a_crypt( $value, $cipher = 'aes-256-cbc' ) {
 		return $value;
 	}
 
-	return openssl_encrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+	// 1. Calculate the specific IV length required by this cipher
+	$iv_len = openssl_cipher_iv_length( $cipher );
+
+	// 2. Prepare the IV (handle 0-length ciphers like ECB)
+	$iv = '';
+	if ( $iv_len > 0 ) {
+		// Cut the salt to exactly the length required
+		$iv = substr( wp_salt( 'nonce' ), 0, $iv_len );
+	}
+
+	// 3. Encrypt using the dynamic IV
+	return openssl_encrypt( $value, $cipher, wp_salt( 'nonce' ), 0, $iv );
 }
 
 /**
@@ -260,7 +271,18 @@ function cf7a_decrypt( string $value, string $cipher = 'aes-256-cbc' ): string {
 			return $value;
 		}
 
-		return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+		// 1. Calculate the specific IV length required by this cipher
+		$iv_len = openssl_cipher_iv_length( $cipher );
+
+		// 2. Prepare the IV (must match the one used during encryption)
+		$iv = '';
+		if ( $iv_len > 0 ) {
+			$iv = substr( wp_salt( 'nonce' ), 0, $iv_len );
+		}
+
+		// 3. Decrypt using the dynamic IV
+		return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), 0, $iv );
+
 	} catch ( Exception $e ) {
 		return $value;
 	}
