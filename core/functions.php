@@ -481,7 +481,7 @@ function cf7a_log( $log_data, $log_level = 0 ) {
  *
  * @return string the clean tag string
  */
-function cf7a_get_mail_meta( $tag ) {
+function cf7a_get_mail_meta( string $tag ) {
 	return is_string( $tag ) ? substr( $tag, 2, -2 ) : '';
 }
 
@@ -507,9 +507,9 @@ function cf7a_maybe_split_mail_meta( array $posted_data, string $message_tag, st
 		}
 
 		return $message;
-	} else {
-		return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : false;
 	}
+
+	return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : '';
 }
 
 /**
