@@ -357,25 +357,6 @@ class CF7_AntiSpam_Frontend {
 	}
 
 	/**
-	 * It generates a random string of characters
-	 *
-	 * @param int $length The length of the string.
-	 *
-	 * @return string The generated string.
-	 */
-	public function generate_hash( int $length = 12 ): string {
-		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$hash       = '';
-
-		for ( $i = 0; $i < $length; $i++ ) {
-			$rand_index = wp_rand( 0, strlen( $characters ) - 1 );
-			$hash      .= $characters[ $rand_index ];
-		}
-
-		return $hash;
-	}
-
-	/**
 	 * It adds hidden fields to the form
 	 *
 	 * @param array $fields the array of hidden fields that will be added to the form.
