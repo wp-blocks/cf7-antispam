@@ -488,15 +488,15 @@ function cf7a_get_mail_meta( $tag ) {
 
 /**
  * If the message tag contains a space, it's a multiple meta tag,
- * so split it up and return the value of the meta tag
+ * so split it up and return the value of the meta-tag
  *
  * @param array  $posted_data The form data array.
  * @param string $message_tag The tag of the field you want to retrieve.
- * @param string $explode_pattern Used to split multiple cf7 user tags .
+ * @param string $explode_pattern Used to split multiple cf7 user tags.
  *
- * @return string|false the field requested
+ * @return string | false the field requested
  */
-function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_pattern = '] [' ) {
+function cf7a_maybe_split_mail_meta( array $posted_data, string $message_tag, string $explode_pattern = '] [' ) {
 	if ( strpos( $message_tag, $explode_pattern ) !== false ) {
 		$message = '';
 		foreach ( explode( $explode_pattern, $message_tag ) as $message_tag_chunk ) {
