@@ -481,7 +481,7 @@ function cf7a_log( $log_data, $log_level = 0 ) {
  *
  * @return string the clean tag string
  */
-function cf7a_get_mail_meta( string $tag ) {
+function cf7a_get_mail_meta( $tag ) {
 	return is_string( $tag ) ? substr( $tag, 2, -2 ) : '';
 }
 
