@@ -623,8 +623,10 @@ class CF7_AntiSpam_Frontend {
 				)
 			);
 		} else {
-			delete_transient( "mail_sent_$hash" );
-			set_transient( "mail_sent_$hash", true, $expire );
+			// Compatibility with caching: append the IP to the hash to make it unique per user
+			$ip_hash = md5( $hash . \cf7a_get_real_ip() );
+			delete_transient( "mail_sent_$ip_hash" );
+			set_transient( "mail_sent_$ip_hash", true, $expire );
 			return;
 		}//end if
 
