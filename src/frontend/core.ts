@@ -11,7 +11,14 @@ import {
 	setupLanguageTest,
 	setupBotFingerprintTest,
 } from './tests';
-import { createCF7Afield, randomString } from './utils';
+import { createCF7Afield, setTimestamp, randomString } from './utils';
+
+// eslint-disable-next-line camelcase
+declare const cf7a_settings: {
+	prefix: string;
+	version: string;
+	restUrl: string;
+};
 
 /**
  * Process a single CF7 form
@@ -24,9 +31,7 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 	}
 
 	// eslint-disable-next-line camelcase
-	const cf7aPrefix: string = cf7a_settings.prefix;
-	// eslint-disable-next-line camelcase
-	const cf7aVersion: string = cf7a_settings.version;
+	const { prefix, version, restUrl } = cf7a_settings;
 
 	const hiddenInputsContainer = (wpcf7Form.querySelector(
 		'form > .hidden-fields-container'
@@ -42,7 +47,7 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 
 	// Check if the form is already processed
 	const alreadyProcessed = hiddenInputsContainer.querySelector(
-		'input[name=' + cf7aPrefix + 'processed]'
+		'input[name=' + prefix + 'processed]'
 	);
 	if (alreadyProcessed) {
 		return; // Skip if already processed
@@ -58,41 +63,44 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 
 	// Hash Field (With Cache Compatibility)
 	const cf7aHashInput = hiddenInputsContainer.querySelector(
-		'input[name=' + cf7aPrefix + 'hash]'
+		'input[name=' + prefix + 'hash]'
 	) as HTMLInputElement | null;
-
 	if (cf7aHashInput && !cf7aHashInput.value) {
 		cf7aHashInput.setAttribute('value', randomString());
 	}
 
+	// Timestamp Field (With Cache Compatibility)
+	const tsInput = hiddenInputsContainer.querySelector(
+		'input[name=' + prefix + '_timestamp]'
+	) as HTMLInputElement | null;
+	// We should replace the initial timestamp with a new one since it could be cached
+	if (tsInput) {
+		setTimestamp(tsInput, restUrl);
+	}
+
 	// Set the cf7 antispam version field
 	const cf7aVersionInput = hiddenInputsContainer.querySelector(
-		'input[name=' + cf7aPrefix + 'version]'
+		'input[name=' + prefix + 'version]'
 	) as HTMLInputElement | null;
 
 	if (cf7aVersionInput) {
-		cf7aVersionInput?.setAttribute('value', cf7aVersion);
+		cf7aVersionInput?.setAttribute('value', version);
 	}
 
 	// Get browser fingerprint data
 	const tests = browserFingerprint();
 
 	// 1) Standard bot checks
-	setupBotFingerprintTest(
-		hiddenInputsContainer,
-		cf7aPrefix,
-		tests,
-		wpcf7Form
-	);
+	setupBotFingerprintTest(hiddenInputsContainer, prefix, tests, wpcf7Form);
 
 	// 2) Bot fingerprint extra checks
 	if (
 		hiddenInputsContainer.querySelector(
-			'input[name=' + cf7aPrefix + 'bot_fingerprint_extras]'
+			'input[name=' + prefix + 'bot_fingerprint_extras]'
 		)
 	) {
 		// 2.1) Mouse activity test
-		setupMouseActivityTest(hiddenInputsContainer, cf7aPrefix);
+		setupMouseActivityTest(hiddenInputsContainer, prefix);
 
 		// 2.2) Mouse movement test
 		setupMouseMovementTest(hiddenInputsContainer, tests);
@@ -106,7 +114,7 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 
 	// 3) Language check
 	const languageChecksEnabled = hiddenInputsContainer.querySelector(
-		'input[name=' + cf7aPrefix + '_language]'
+		'input[name=' + prefix + '_language]'
 	);
 
 	if (languageChecksEnabled) {

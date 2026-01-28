@@ -45,3 +45,25 @@ export function randomString(length: number = 12): string {
 	}
 	return result;
 }
+
+/**
+ * Fetch and set the timestamp if it's missing
+ *
+ * @param {HTMLInputElement} tsInput the input that contains the timestamp value
+ * @param {string}           restUrl The rest url of the current website
+ */
+export async function setTimestamp(tsInput: HTMLInputElement, restUrl: string) {
+	try {
+		const response = await fetch(`${restUrl}/get-timestamp`);
+		if (response.ok) {
+			const data = await response.json();
+			if (data.timestamp) {
+				tsInput.setAttribute('value', data.timestamp);
+				tsInput.value = data.timestamp;
+			}
+		}
+	} catch (e) {
+		// eslint-disable-next-line no-console
+		console.error('CF7 Antispam: Failed to fetch timestamp', e);
+	}
+}
