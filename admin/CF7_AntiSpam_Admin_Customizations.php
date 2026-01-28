@@ -845,7 +845,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It prints the user protection info text */
 	public function cf7a_print_mailbox_protection() {
 		$expire = apply_filters( 'cf7a_resend_timeout', 5 );
-		printf( '<p>%s</p><p>%s%s</p>', esc_html__( 'When activated, this feature prevents consecutive email deliveries to the user\'s mailbox by imposing delay between each message.', 'cf7-antispam' ), esc_html( $expire ), esc_html__( ' seconds has been set as the resend timeout, check the documentation if you want to change it', 'cf7-antispam' ) );
+		printf( '<p>%s</p><p>%s%s</p>', esc_html__( 'When activated, this feature prevents consecutive email deliveries to the user\'s mailbox by imposing delay between each message. ', 'cf7-antispam' ), esc_html( $expire ), esc_html__( ' seconds has been set as the resend timeout, check the documentation if you want to change it', 'cf7-antispam' ) );
 	}
 
 	/** It prints the user protection info text */
@@ -864,7 +864,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<p>%s</p><p>%s</p>',
 			esc_html__( 'RECOMMENDED: Site related configuration', 'cf7-antispam' ),
-			esc_html__( "create your own and unique css class and customized fields name. Optionally, you can choose in encryption method. But, After changing cypher do a couple of tests because a small amount of them aren't compatible with the format of the form data.", 'cf7-antispam' )
+			esc_html__( 'Create unique CSS classes and custom field names. You can choose an encryption method, but after making a selection, please verify that the green check mark is still visible next to the dropdown. A warning indicates that the method is incompatible with the website metadata.', 'cf7-antispam' )
 		);
 	}
 
@@ -1799,13 +1799,17 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_customizations_cipher_callback() {
 		if ( ! extension_loaded( 'openssl' ) ) {
 			echo 'error: php extension openssl not enabled';
+			return;
 		}
+
+		$current_cipher = $this->options['cf7a_cipher'] ?? 'aes-128-cbc';
+
 		printf(
 			'<select id="cipher" name="cf7a_options[cf7a_cipher]">%s</select>',
 			wp_kses(
 				$this->cf7a_generate_options(
 					openssl_get_cipher_methods(),
-					isset( $this->options['cf7a_cipher'] ) ? esc_attr( $this->options['cf7a_cipher'] ) : 'aes-128-cbc'
+					esc_attr( $current_cipher )
 				),
 				array(
 					'option' => array(
@@ -1815,6 +1819,40 @@ class CF7_AntiSpam_Admin_Customizations {
 				)
 			)
 		);
+
+		// Test the current cipher
+		$test_string = 'CF7 AntiSpam 123';
+		$works       = false;
+
+		// If the cipher is bad, this returns false silently.
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$encrypted = @cf7a_crypt( $test_string, $current_cipher );
+
+		// Only try to decrypt if encryption actually returned a string
+		if ( $encrypted ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$decrypted = @cf7a_decrypt( $encrypted, $current_cipher );
+			$works     = ( $decrypted === $test_string );
+		}
+
+		// Output the result
+		if ( $works ) {
+			echo '<span title="' . esc_attr__( 'Encryption works', 'cf7-antispam' ) . '" style="margin-left:5px;">✅</span>';
+		} else {
+			echo '<span title="' . esc_attr__( 'Encryption failed', 'cf7-antispam' ) . '" style="margin-left:5px;">⚠️</span>';
+			printf(
+				'<div class="notice notice-error inline" style="margin-top: 10px;"><p>%s</p></div>',
+				esc_html__( 'Attention: The selected encryption method is not working properly on this server. It is required to select another encryption method.', 'cf7-antispam' )
+			);
+
+			if ( ! empty( $err_message ) ) {
+				printf(
+					'<div class="notice notice-warning inline" style="margin-top: 10px;"><p><strong>%s:</strong> %s</p></div>',
+					esc_html__( 'Error Details', 'cf7-antispam' ),
+					esc_html( $err_message )
+				);
+			}
+		}
 	}
 
 	/** It prints the optimizations info */

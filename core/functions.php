@@ -243,7 +243,18 @@ function cf7a_crypt( $value, $cipher = 'aes-256-cbc' ) {
 		return $value;
 	}
 
-	return openssl_encrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+	// 1. Calculate the specific IV length required by this cipher
+	$iv_len = openssl_cipher_iv_length( $cipher );
+
+	// 2. Prepare the IV (handle 0-length ciphers like ECB)
+	$iv = '';
+	if ( $iv_len > 0 ) {
+		// Cut the salt to exactly the length required
+		$iv = substr( wp_salt( 'nonce' ), 0, $iv_len );
+	}
+
+	// 3. Encrypt using the dynamic IV
+	return openssl_encrypt( $value, $cipher, wp_salt( 'nonce' ), 0, $iv );
 }
 
 /**
@@ -260,7 +271,18 @@ function cf7a_decrypt( string $value, string $cipher = 'aes-256-cbc' ): string {
 			return $value;
 		}
 
-		return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), $options = 0, substr( wp_salt( 'nonce' ), 0, 16 ) );
+		// 1. Calculate the specific IV length required by this cipher
+		$iv_len = openssl_cipher_iv_length( $cipher );
+
+		// 2. Prepare the IV (must match the one used during encryption)
+		$iv = '';
+		if ( $iv_len > 0 ) {
+			$iv = substr( wp_salt( 'nonce' ), 0, $iv_len );
+		}
+
+		// 3. Decrypt using the dynamic IV
+		return openssl_decrypt( $value, $cipher, wp_salt( 'nonce' ), 0, $iv );
+
 	} catch ( Exception $e ) {
 		return $value;
 	}
@@ -466,15 +488,15 @@ function cf7a_get_mail_meta( $tag ) {
 
 /**
  * If the message tag contains a space, it's a multiple meta tag,
- * so split it up and return the value of the meta tag
+ * so split it up and return the value of the meta-tag
  *
  * @param array  $posted_data The form data array.
  * @param string $message_tag The tag of the field you want to retrieve.
- * @param string $explode_pattern Used to split multiple cf7 user tags .
+ * @param string $explode_pattern Used to split multiple cf7 user tags.
  *
- * @return string|false the field requested
+ * @return string | false the field requested
  */
-function cf7a_maybe_split_mail_meta( $posted_data, $message_tag, $explode_pattern = '] [' ) {
+function cf7a_maybe_split_mail_meta( array $posted_data, string $message_tag, string $explode_pattern = '] [' ) {
 	if ( strpos( $message_tag, $explode_pattern ) !== false ) {
 		$message = '';
 		foreach ( explode( $explode_pattern, $message_tag ) as $message_tag_chunk ) {
