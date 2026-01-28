@@ -105,6 +105,9 @@ class CF7_AntiSpam {
 		/* the admin area */
 		$this->load_admin();
 
+		/* the public rest api */
+		new CF7_AntiSpam_Public_Rest_Api();
+
 		/* the frontend area */
 		$this->load_frontend();
 	}

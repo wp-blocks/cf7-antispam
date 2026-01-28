@@ -545,6 +545,8 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	}
 
 
+
+
 	/**
 	 * Register the routes for the objects of the controller.
 	 *

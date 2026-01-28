@@ -373,8 +373,8 @@ class CF7_AntiSpam_Frontend {
 
 		/* add the language if required */
 		if ( intval( $this->options['check_language'] ) === 1 ) {
-			$fields[ $prefix . '_language' ] = '';
 			// Handled by Cache Compatibility
+			$fields[ $prefix . '_language' ] = '';
 		}
 
 		/* add the timestamp if required */
@@ -384,21 +384,19 @@ class CF7_AntiSpam_Frontend {
 
 		/* whenever required, add the hash to the form to prevent multiple submissions */
 		if ( intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
-			$fields[ $prefix . 'hash' ] = '';
 			// Served empty for caching compatibility, populated via JS
+			$fields[ $prefix . 'hash' ] = '';
 		}
 
 		/* add the default hidden fields */
 		return array_merge(
 			$fields,
 			array(
-				$prefix . 'version' => '1.0',
-				$prefix . 'address' => '',
+				$prefix . 'version'  => '1.0',
 				// Handled by Cache Compatibility
-												$prefix . 'referer' => '',
-				// Handled by Cache Compatibility
-												$prefix . 'protocol' => '',
-			// Handled by Cache Compatibility
+				$prefix . 'address'  => '',
+				$prefix . 'referer'  => '',
+				$prefix . 'protocol' => '',
 			)
 		);
 	}
@@ -548,6 +546,7 @@ class CF7_AntiSpam_Frontend {
 				'prefix'        => $this->options['cf7a_customizations_prefix'],
 				'disableReload' => $this->options['cf7a_disable_reload'],
 				'version'       => cf7a_crypt( CF7ANTISPAM_VERSION, $this->options['cf7a_cipher'] ),
+				'restUrl'       => get_rest_url( null, 'cf7-antispam/v1' ),
 			)
 		);
 	}
