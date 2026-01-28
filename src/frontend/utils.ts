@@ -29,3 +29,19 @@ export function createCF7Afield(
 	e.setAttribute('value', stringValue);
 	return e;
 }
+
+/**
+ * Generate a random string
+ *
+ * @param {number} length - The length of the string to generate.
+ * @return {string} The generated string.
+ */
+export function randomString(length: number = 12): string {
+	const chars =
+		'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	let result = '';
+	for (let i = length; i > 0; --i) {
+		result += chars[Math.floor(Math.random() * chars.length)];
+	}
+	return result;
+}

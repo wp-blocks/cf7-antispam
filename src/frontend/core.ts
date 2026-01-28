@@ -11,7 +11,7 @@ import {
 	setupLanguageTest,
 	setupBotFingerprintTest,
 } from './tests';
-import { createCF7Afield } from './utils';
+import { createCF7Afield, randomString } from './utils';
 
 /**
  * Process a single CF7 form
@@ -54,6 +54,15 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 	// Get the fake field and skip it
 	if (wpcf7Form.querySelector('form')?.getAttribute('autocomplete')) {
 		return;
+	}
+
+	// Hash Field (With Cache Compatibility)
+	const cf7aHashInput = hiddenInputsContainer.querySelector(
+		'input[name=' + cf7aPrefix + 'hash]'
+	) as HTMLInputElement | null;
+
+	if (cf7aHashInput && !cf7aHashInput.value) {
+		cf7aHashInput.setAttribute('value', randomString());
 	}
 
 	// Set the cf7 antispam version field

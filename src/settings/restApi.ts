@@ -3,7 +3,7 @@
  */
 import apiFetch from '@wordpress/api-fetch';
 
-type ApiResponse = { mes: string; success: boolean; log?: string };
+type ApiResponse = { message: string; success: boolean; log?: string };
 type CallbackFunction = null | ((res: ApiResponse) => void);
 
 /**
@@ -92,19 +92,23 @@ function actionHandler(el: HTMLElement) {
 		method: 'POST',
 		data,
 	})
-		.then((res) => {
-			const { mes, success, log } = res as ApiResponse;
-			if (success) {
-				if (mes) {
+		.then((r) => {
+			const response = r as ApiResponse;
+			if (response.success) {
+				if (response.message) {
 					// eslint-disable-next-line no-alert
-					alert(mes);
+					alert(response.message);
 				}
 				if (cb) {
-					cb(res as ApiResponse);
+					cb(response);
 				}
 			} else {
 				// eslint-disable-next-line no-console
-				console.error('Error:', mes, log as string);
+				console.error(
+					'Error:',
+					response.message,
+					response.log as string
+				);
 			}
 		})
 		.catch((error: any) => {

@@ -261,6 +261,10 @@ class CF7_AntiSpam {
 
 			$plugin_frontend->setup();
 			$plugin_frontend->load_scripts();
+
+			/* Cache compatibility */
+			$plugin_cache = new CF7_AntiSpam_Cache_Compatibility( $this->get_plugin_name(), $this->get_version() );
+			$plugin_cache->setup();
 		}
 	}
 
