@@ -1222,8 +1222,6 @@ class CF7_AntiSpam_Filters {
 		}
 
 		$options = $data['options'];
-		$text    = stripslashes( $data['message'] );
-		\assert( \is_string( $text ) );
 
 		// There is no reason to check B8 if the ip was already blocklisted
 		if ( isset( $data['reasons']['blocklisted'] ) ) {
@@ -1231,13 +1229,25 @@ class CF7_AntiSpam_Filters {
 			return $data;
 		}
 
+		// Ensure $text is a string or return $data or, If there is no message, skip B8
+		if ( ! isset( $data['message'] ) || ! is_string( $data['message'] ) ) {
+			return $data;
+		}
+
+		$text = stripslashes( $data['message'] );
+
+		if ( empty( trim( $text ) ) ) {
+			cf7a_log( "Skipping B8 for {$data['remote_ip']}: message is empty", 1 );
+			return $data;
+		}
+
 		// log the result of the pre-checks
 		if ( $data['is_spam'] ) {
-			cf7a_log( "Submission failed for {$data['remote_ip']}, spam detected with score {$data['spam_score']} - message: {$data['message']}", 1 );
+			cf7a_log( "Submission failed for {$data['remote_ip']}, spam detected with score {$data['spam_score']} - message: {$text}", 1 );
 		}
 
 		// Ensure B8 is enabled and there is a message to check
-		if ( $options['enable_b8'] && $data['message'] ) {
+		if ( $options['enable_b8'] ) {
 			$b8_threshold    = floatval( $options['b8_threshold'] );
 			$b8_threshold    = $b8_threshold > 0 && $b8_threshold < 1 ? $b8_threshold : 1;
 			$score_detection = floatval( $options['score']['_detection'] );
