@@ -507,9 +507,9 @@ function cf7a_maybe_split_mail_meta( array $posted_data, string $message_tag, st
 		}
 
 		return $message;
-	} else {
-		return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : false;
 	}
+
+	return isset( $posted_data[ $message_tag ] ) ? sanitize_textarea_field( $posted_data[ $message_tag ] ) : '';
 }
 
 /**

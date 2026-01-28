@@ -21,6 +21,11 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 	private $base_spam_data;
 
 	/**
+	 * @var array
+	 */
+	private $options;
+
+	/**
 	 * Setup before each test.
 	 */
 	protected function setUp(): void {

@@ -93,7 +93,7 @@ class CF7_AntiSpam_B8 {
 
 		$charset = get_option( 'blog_charset' );
 
-		$rating = $this->b8->classify( htmlspecialchars( $message, ENT_QUOTES, $charset ) );
+		$rating = $this->b8->classify( htmlspecialchars( self::sanitize_message( $message ), ENT_QUOTES, $charset ) );
 
 		if ( $verbose ) {
 			if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
@@ -119,7 +119,7 @@ class CF7_AntiSpam_B8 {
 	 */
 	public function cf7a_b8_learn_spam( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::SPAM );
+			$this->b8->learn( htmlspecialchars( self::sanitize_message( $message ), ENT_QUOTES, get_option( 'blog_charset' ) ), b8::SPAM );
 		}
 	}
 
@@ -130,7 +130,7 @@ class CF7_AntiSpam_B8 {
 	 */
 	public function cf7a_b8_unlearn_spam( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::SPAM );
+			$this->b8->unlearn( htmlspecialchars( self::sanitize_message( $message ), ENT_QUOTES, get_option( 'blog_charset' ) ), b8::SPAM );
 		}
 	}
 
@@ -141,18 +141,28 @@ class CF7_AntiSpam_B8 {
 	 */
 	public function cf7a_b8_learn_ham( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->learn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::HAM );
+			$this->b8->learn( htmlspecialchars( self::sanitize_message( $message ), ENT_QUOTES, get_option( 'blog_charset' ) ), b8::HAM );
 		}
 	}
 
 	/**
-	 * It takes the message from the contact form, converts it to HTML entities, and then unlearns it as ham
+	 * It takes a message, converts it to HTML entities, and then unlearns it as ham
 	 *
 	 * @param string $message The message to unlearn.
 	 */
 	public function cf7a_b8_unlearn_ham( $message ) {
 		if ( ! empty( $message ) ) {
-			$this->b8->unlearn( htmlspecialchars( $message, ENT_QUOTES, get_option( 'blog_charset' ) ), b8::HAM );
+			$this->b8->unlearn( htmlspecialchars( self::sanitize_message( $message ), ENT_QUOTES, get_option( 'blog_charset' ) ), b8::HAM );
 		}
+	}
+
+	/**
+	 * Remove 4-byte characters from the string (mostly emojis)
+	 *
+	 * @param string $message The message to sanitize.
+	 * @return string The sanitized message.
+	 */
+	public static function sanitize_message( $message ) {
+		return preg_replace( '/[\xF0-\xF7][\x80-\xBF]{3}/', '', $message );
 	}
 }
