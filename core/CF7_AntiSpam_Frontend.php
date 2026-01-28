@@ -368,7 +368,6 @@ class CF7_AntiSpam_Frontend {
 		$hash       = '';
 
 		for ( $i = 0; $i < $length; $i++ ) {
-			// TODO: after upgrade to PHP>7.x, use random_int()
 			$rand_index = wp_rand( 0, strlen( $characters ) - 1 );
 			$hash      .= $characters[ $rand_index ];
 		}
@@ -393,10 +392,8 @@ class CF7_AntiSpam_Frontend {
 
 		/* add the language if required */
 		if ( intval( $this->options['check_language'] ) === 1 ) {
-			$accept                          = empty( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ? false : sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) );
-			$fields[ $prefix . '_language' ] = $accept ?
-				cf7a_crypt( $accept, $this->options['cf7a_cipher'] ) :
-				cf7a_crypt( 'language not detected', $this->options['cf7a_cipher'] );
+			$fields[ $prefix . '_language' ] = '';
+			// Handled by Cache Compatibility
 		}
 
 		/* add the timestamp if required */
@@ -404,21 +401,23 @@ class CF7_AntiSpam_Frontend {
 			$fields[ $prefix . '_timestamp' ] = cf7a_crypt( time(), $this->options['cf7a_cipher'] );
 		}
 
-		/* whenever required add the hash to the form to prevent multiple submissions */
+		/* whenever required, add the hash to the form to prevent multiple submissions */
 		if ( intval( $this->options['mailbox_protection_multiple_send'] ) === 1 ) {
-			$fields[ $prefix . 'hash' ] = $this->generate_hash();
+			$fields[ $prefix . 'hash' ] = '';
+			// Served empty for caching compatibility, populated via JS
 		}
 
 		/* add the default hidden fields */
-		$referrer = ! empty( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : false;
-		$protocol = ! empty( $_SERVER['SERVER_PROTOCOL'] ) ? esc_url_raw( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) : false;
 		return array_merge(
 			$fields,
 			array(
-				$prefix . 'version'  => '1.0',
-				$prefix . 'address'  => cf7a_crypt( cf7a_get_real_ip(), $this->options['cf7a_cipher'] ),
-				$prefix . 'referer'  => cf7a_crypt( $referrer ? $referrer : '', $this->options['cf7a_cipher'] ),
-				$prefix . 'protocol' => cf7a_crypt( $protocol ? $protocol : '', $this->options['cf7a_cipher'] ),
+				$prefix . 'version' => '1.0',
+				$prefix . 'address' => '',
+				// Handled by Cache Compatibility
+												$prefix . 'referer' => '',
+				// Handled by Cache Compatibility
+												$prefix . 'protocol' => '',
+			// Handled by Cache Compatibility
 			)
 		);
 	}
