@@ -8,7 +8,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"POT-Creation-Date: 2026-01-13T00:22:03.838Z\n"
+"POT-Creation-Date: 2026-01-28T23:33:00.280Z\n"
 "PO-Revision-Date: 2026-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Codekraft <erik@codekraft.it>\n"
 "Language-Team: Codekraft <erik@codekraft.it>\n"
@@ -50,18 +50,18 @@ msgstr ""
 msgid "Every 60 seconds"
 msgstr ""
 
-#: core/functions.php:303
-#: core/CF7_AntiSpam_Flamingo.php:486
+#: core/functions.php:325
+#: core/CF7_AntiSpam_Flamingo.php:513
 msgid "none"
 msgstr ""
 
 # warn because not yet banned but already listed
-#: core/functions.php:326
+#: core/functions.php:348
 msgid "??"
 msgstr ""
 
 # champion of spammer (>100 mail)
-#: core/functions.php:330
+#: core/functions.php:352
 msgid "??"
 msgstr ""
 
@@ -220,90 +220,86 @@ msgstr ""
 msgid "GEO-IP Database extraction failed"
 msgstr ""
 
-#: core/CF7_AntiSpam_Frontend.php:610
+#: core/CF7_AntiSpam_Frontend.php:589
 msgid "Missing hash."
 msgstr ""
 
-#: core/CF7_AntiSpam_Frontend.php:615
+#: core/CF7_AntiSpam_Frontend.php:594
 msgid "Something went wrong. Please reload the page."
 msgstr ""
 
 # % is the number of seconds to wait
-#: core/CF7_AntiSpam_Frontend.php:622
+#: core/CF7_AntiSpam_Frontend.php:601
 msgid "Slow down, please wait %s seconds before resending."
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:105
-msgid "Security check failed. Please refresh the page and try again."
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:105
-msgid "Security Error"
-msgstr ""
-
-#: core/CF7_AntiSpam_Flamingo.php:115
+#: core/CF7_AntiSpam_Flamingo.php:95
 msgid "%s has no message text so can't be analyzed"
 msgstr ""
 
 # %1$s is the mail "from" field (the sender). %2$s spam/ham. %3$s and %4$s the rating of the processed email (like 0.6/1)
-#: core/CF7_AntiSpam_Flamingo.php:142
+#: core/CF7_AntiSpam_Flamingo.php:122
 msgid ""
 "b8 has learned this e-mail from %1$s was %2$s - score before/after: "
 "%3$f/%4$f"
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:225
+#: core/CF7_AntiSpam_Flamingo.php:162
+msgid "You are not allowed to edit this item."
+msgstr ""
+
+#: core/CF7_AntiSpam_Flamingo.php:252
 msgid "Cannot find the original post"
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:287
+#: core/CF7_AntiSpam_Flamingo.php:314
 msgid "Email sent with success"
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:293
+#: core/CF7_AntiSpam_Flamingo.php:320
 msgid "Ops! something went wrong... unable to resend email"
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:468
+#: core/CF7_AntiSpam_Flamingo.php:495
 msgid "D8 classification"
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:469
+#: core/CF7_AntiSpam_Flamingo.php:496
 msgid "CF7-AntiSpam actions"
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:511
+#: core/CF7_AntiSpam_Flamingo.php:538
 msgid "Do you want to resend this email?"
 msgstr ""
 
-#: core/CF7_AntiSpam_Flamingo.php:512
+#: core/CF7_AntiSpam_Flamingo.php:539
 msgid "Resend Email"
 msgstr ""
 
 # the %1$s is the user id and %2$s is the ip address.
-#: core/CF7_Antispam_Blocklist.php:220
+#: core/CF7_Antispam_Blocklist.php:223
 msgid "Ban forever id %1$s (ip %2$s) successful"
 msgstr ""
 
 # the %1$s is the user id and %2$s is the ip address.
-#: core/CF7_Antispam_Blocklist.php:230
+#: core/CF7_Antispam_Blocklist.php:233
 msgid "Error: unable to ban forever id %1$s (ip %2$s)"
 msgstr ""
 
-#: core/CF7_AntiSpam.php:281
+#: core/CF7_AntiSpam.php:288
 msgid "CF7 AntiSpam need "
 msgstr ""
 
-#: core/CF7_AntiSpam.php:283
+#: core/CF7_AntiSpam.php:290
 msgid "Contact Form 7"
 msgstr ""
 
-#: core/CF7_AntiSpam.php:284
+#: core/CF7_AntiSpam.php:291
 msgid " installed and enabled in order to work."
 msgstr ""
 
 # %1$s overall spam attempts, %2$s since last report
-#: core/CF7_AntiSpam.php:410
+#: core/CF7_AntiSpam.php:417
 msgid "%1$s overall spam attempts, %2$s since last report"
 msgstr ""
 
@@ -1264,7 +1260,7 @@ msgstr ""
 #: admin/CF7_AntiSpam_Admin_Customizations.php:848
 msgid ""
 "When activated, this feature prevents consecutive email deliveries to the "
-"user\\'s mailbox by imposing delay between each message."
+"user\\'s mailbox by imposing delay between each message. "
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:848
@@ -1301,10 +1297,10 @@ msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:867
 msgid ""
-"create your own and unique css class and customized fields name. "
-"Optionally, you can choose in encryption method. But, After changing cypher "
-"do a couple of tests because a small amount of them aren't compatible with "
-"the format of the form data."
+"Create unique CSS classes and custom field names. You can choose an "
+"encryption method, but after making a selection, please verify that the "
+"green check mark is still visible next to the dropdown. A warning indicates "
+"that the method is incompatible with the website metadata."
 msgstr ""
 
 #: admin/CF7_AntiSpam_Admin_Customizations.php:873
@@ -1361,7 +1357,25 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: admin/CF7_AntiSpam_Admin_Customizations.php:1822
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1840
+msgid "Encryption works"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1842
+msgid "Encryption failed"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1845
+msgid ""
+"Attention: The selected encryption method is not working properly on this "
+"server. It is required to select another encryption method."
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1851
+msgid "Error Details"
+msgstr ""
+
+#: admin/CF7_AntiSpam_Admin_Customizations.php:1860
 msgid ""
 "You can optimize the loading performance of the antispam scripts. Since "
 "optimization is a risky business, we do not recommend enabling this option "
