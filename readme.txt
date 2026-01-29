@@ -178,8 +178,15 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 * Security: Email strings are now properly sanitized before being sent
 * Enhancement: New dashboard empty-state view
 * Enhancement: Added JS selector for allowed/disallowed countries and languages
-* Typo: Replaced "blacklis" with "blocklist"
+* Typo: Replaced "blacklist" with "blocklist" and "whitelist" with "allowlist" (thanks to @WORX Developer for waning me about this mistake)
 * Enhancement: New summary table added at the top of the settings page to display form configuration status
+* Enhancement: Cache compatibility improvements
+* Enhancement: Removed UCEPROTECT from predefined blocklists: We have optimized the default DNSBL configuration by removing the uceprotect service. This strategic change reduces the risk of false positives for legitimate users hosted on shared environments and improves the overall form submission speed by eliminating redundant DNS queries.
+* Fix: Fix cf7a_ban_by_ip reason parameter: Addressed a bug where the ban reason was not correctly passed to the blocking function. Logs will now accurately reflect the specific trigger (e.g., Honeypot violation, DNSBL match) that caused an IP ban, restoring full observability for administrators (Thanks to @sdellenb - PR #163).
+* Compatibility: Implemented a fix for WEBGL_debug_renderer_info in iOS/Safari on newer iOS devices. This resolves potential JavaScript execution errors during browser fingerprinting, ensuring seamless form functionality on iPhones and iPads with strict privacy settings.
+* Enhancement: Added blueprint.json: Introduced a configuration file for WordPress Playground. Contributors and users can now instantly spin up a browser-based testing environment for the plugin without local setup.
+* Enhancement: Updated unit tests to display GeoIP database information if available. This enhances local debugging capabilities by verifying that geolocation data is loaded correctly during test runs.
+* Enhancement: Applied comprehensive PHP linting to the Admin interface files, enforcing WordPress Coding Standards for better maintainability.
 
 = 0.7.2 =
 * Update fallback (thanks for the idea to @lemurnick)
@@ -398,6 +405,7 @@ MeliEve - [#42](https://github.com/wp-blocks/cf7-antispam/pull/42) Fix "internal
 MeliEve - [#61](https://github.com/wp-blocks/cf7-antispam/pull/61)  Handle deferrer script loading
 Zodiac1978 - [#67](https://github.com/wp-blocks/cf7-antispam/pull/67) Remove warning for unsafe email configuration w/o protection
 JohnHooks - [#66](https://github.com/wp-blocks/cf7-antispam/pull/61) Readme + plugin env
+sdellenb - [#66](https://github.com/wp-blocks/cf7-antispam/pull/163) Fix $reason parameter for calling cf7a_ban_by_ip
 
 == Special thanks ==
 This project is tested with BrowserStack. [Browserstack](https://www.browserstack.com/)
