@@ -1356,7 +1356,7 @@ class CF7_AntiSpam_Filters {
 			}
 
 			// Skip empty values or non-string values
-			if ( empty( $value ) || ! is_string( $value ) ) {
+			if ( ! is_string( $value ) || empty( trim( $value ) ) ) {
 				continue;
 			}
 
