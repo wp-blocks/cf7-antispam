@@ -1350,19 +1350,31 @@ class CF7_AntiSpam_Filters {
 		 * @return string the message created from the posted data
 		 */
 		foreach ( $posted_data as $key => $value ) {
+			// Handle array values (e.g., checkboxes, multi-selects)
+			if ( is_array( $value ) ) {
+				$value = implode( ' ', array_filter( $value ) );
+			}
+
+			// Skip empty values or non-string values
+			if ( empty( $value ) || ! is_string( $value ) ) {
+				continue;
+			}
+
 			// is email?
 			if ( is_email( $value ) ) {
 				continue;
 			}
+
 			// is phone?
 			if ( $this->is_phone( $value ) ) {
 				continue;
 			}
+
 			// is too short?
 			if ( strlen( $value ) >= $minimum_field_length ) {
 				$message .= $value . "\n";
 			}
-		}
+		}//end foreach
 		return $message;
 	}
 

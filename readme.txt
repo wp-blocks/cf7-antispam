@@ -4,7 +4,7 @@ Tags: antispam, honeypot, geoip, security
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.7.3
+Stable tag: 0.7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -171,6 +171,9 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.7.4 =
+* Fix: Improve message sanitization: handle arrays, skip empty/non-string values, and refine length checks (thanks to @sleepygoth for reporting it)
 
 = 0.7.3 =
 * Fix: Dismissing the "Flamingo Message" notice now works correctly (thanks to @WORX Developer for reporting it)
