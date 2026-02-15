@@ -6,6 +6,7 @@ use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 use WP_Query;
 use WPCF7_ContactForm;
 use WPCF7_Submission;
+use WPCF7_Mail;
 use Flamingo_Inbound_Message;
 /**
  * Flamingo related functions.
@@ -277,9 +278,8 @@ class CF7_AntiSpam_Flamingo {
 	 */
 	public function cf7a_resend_mail( int $mail_id ): array {
 		$flamingo_data = new Flamingo_Inbound_Message( $mail_id );
-		$message       = self::cf7a_get_mail_field( $flamingo_data, 'message' );
 
-		if ( empty( $message ) ) {
+		if ( ! $flamingo_data->id() ) {
 			return array(
 				'success' => false,
 				'message' => __( 'Cannot find the original post', 'cf7-antispam' ),
@@ -287,59 +287,81 @@ class CF7_AntiSpam_Flamingo {
 			);
 		}
 
-		/* the mail data */
-		$sender  = sanitize_email( $flamingo_data->from );
-		$subject = sanitize_text_field( $flamingo_data->subject );
-		$body    = $message;
+		// 1. Get Form ID from Channel
+		// Flamingo stores the contact form association in the 'channel' property (taxonomy term)
 
-		// get the form id from the meta
-		$form_id = $flamingo_data->meta['form_id'];
+		/* get the form tax using the slug we find in the flamingo message */
+		$channel = isset( $flamingo_data->meta['channel'] ) ?
+			get_term( $flamingo_data->channel, 'flamingo_inbound_channel' ) :
+			get_term_by( 'slug', $flamingo_data->channel, 'flamingo_inbound_channel' );
 
-		// TODO: we are skipping the mail_2 for now
-
-		// Get the mail recipient from CF7 form configuration
-		$recipient = null;
-		$form      = WPCF7_ContactForm::get_instance( $form_id );
-
-		if ( ! empty( $form ) ) {
-			$form_props = $form->get_properties();
-
-			if ( isset( $form_props['mail']['recipient'] ) ) {
-				$recipient = $form_props['mail']['recipient'];
-
-				// Handle special CF7 tags
-				if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) && ! empty( $recipient ) ) {
-					if ( '[_site_admin_email]' === $recipient ) {
-						$recipient = $flamingo_data->meta['site_admin_email'] ?? get_option( 'admin_email' );
-					} elseif ( '[_post_author]' === $recipient ) {
-						$recipient = $flamingo_data->meta['post_author_email'];
-					} else {
-						// Handle form field references like [your-email]
-						$recipient = $this->cf7a_parse_mail_tags( $recipient, $flamingo_data );
-
-						// SECURITY FIX: Sanitize recipient email
-						$recipient = sanitize_email( $recipient );
-
-						// If still not a valid email, fallback to admin
-						if ( ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) ) {
-							$recipient = sanitize_email( get_option( 'admin_email' ) );
-						}
-					}
-				}
-			}//end if
-		}//end if
-
-		// Fallback to stored recipient or admin email
-		if ( empty( $recipient ) || ! filter_var( $recipient, FILTER_VALIDATE_EMAIL ) ) {
-			if ( ! empty( $flamingo_data->meta['recipient'] ) ) {
-				$recipient = sanitize_email( $flamingo_data->meta['recipient'] );
-			} else {
-				$recipient = sanitize_email( get_option( 'admin_email' ) );
+		$form_id = 0;
+		if ( isset( $channel->slug ) ) {
+			/* get the post where are stored the form data */
+			$form_post = get_page_by_path( $channel->slug, '', 'wpcf7_contact_form' );
+			if ( $form_post ) {
+				$form_id = $form_post->ID;
 			}
 		}
 
-		$tools  = new CF7_AntiSpam_Admin_Tools();
-		$result = $tools->send_email_to_admin( $subject, $recipient, $body, $sender );
+		if ( empty( $form_id ) ) {
+			// Fallback: check if we have it in meta (from previous versions or explicit storage)
+			$form_id = get_post_meta( $mail_id, '_wpcf7_form_id', true );
+			if ( empty( $form_id ) && isset( $flamingo_data->meta['form_id'] ) ) {
+				$form_id = $flamingo_data->meta['form_id'];
+			}
+		}
+
+		if ( empty( $form_id ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Original Contact Form ID not found.', 'cf7-antispam' ),
+				'log'     => $flamingo_data,
+			);
+		}
+
+		// 2. Load Form Context
+		$contact_form = WPCF7_ContactForm::get_instance( $form_id );
+
+		if ( ! $contact_form ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Contact Form not found (it might have been deleted).', 'cf7-antispam' ),
+				'log'     => $form_id,
+			);
+		}
+
+		// 3. Mock the Submission
+		// We utilize the WPCF7_Submission class to handle tag replacement ([your-name])
+		// precisely as it does during a real submission.
+
+		// Flamingo stores fields in $flamingo_data->fields
+		$submission_data = $flamingo_data->fields;
+
+		// Ensure we have an array
+		if ( ! is_array( $submission_data ) ) {
+			$submission_data = array();
+		}
+
+		$mock_submission = WPCF7_Submission::get_instance(
+			$contact_form,
+			array(
+				'posted_data' => $submission_data,
+			)
+		);
+
+		// 4. Send using the Template
+		$mail_template = $contact_form->prop( 'mail' );
+
+		// We use WPCF7_Mail to generate and send the email
+		// Note: Use static send() method since constructor is private
+		$result = WPCF7_Mail::send( $mail_template, 'mail' );
+
+		// 5. Send Mail 2 if active
+		$mail_2_template = $contact_form->prop( 'mail_2' );
+		if ( $result && ! empty( $mail_2_template ) && ! empty( $mail_2_template['active'] ) ) {
+			$result = WPCF7_Mail::send( $mail_2_template, 'mail_2' );
+		}
 
 		if ( $result ) {
 			return array(
@@ -352,10 +374,8 @@ class CF7_AntiSpam_Flamingo {
 			'success' => false,
 			'message' => __( 'Ops! something went wrong... unable to resend email', 'cf7-antispam' ),
 			'log'     => array(
-				'recipient' => $recipient,
-				'sender'    => $sender,
-				'subject'   => $subject,
-				'body'      => $body,
+				'form_id' => $form_id,
+				'data'    => $submission_data,
 			),
 		);
 	}
