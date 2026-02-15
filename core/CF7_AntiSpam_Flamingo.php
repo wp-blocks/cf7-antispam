@@ -142,37 +142,70 @@ class CF7_AntiSpam_Flamingo {
 		// Get the action field
 		$req_action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : false;
 
+		// Allowed actions
 		if ( 'spam' === $req_action || 'unspam' === $req_action || 'save' === $req_action ) {
 
-			// Detect the selected action
+			// Detect the intended resulting status.
+			$action = null;
+
+			// User clicked "Update" inside a single message.
 			$req_save = isset( $_REQUEST['save'] ) ? sanitize_key( wp_unslash( $_REQUEST['save'] ) ) : false;
+
 			if ( 'save' === $req_action && 'Update' === $req_save ) {
 				$req_status = isset( $_REQUEST['inbound']['status'] ) ? sanitize_key( wp_unslash( $_REQUEST['inbound']['status'] ) ) : false;
 				$action     = 'spam' === $req_status ? 'spam' : 'ham';
 			} elseif ( 'spam' === $req_action ) {
+				// Direct link or Bulk action (spam/unspam).
 				$action = 'spam';
 			} elseif ( 'unspam' === $req_action ) {
 				$action = 'ham';
 			}
 
-			// We are going to mimic the same security check used in flamingo (flamingo/admin/includes/meta-boxes.php:210)
-			// phpcs:ignore: WordPress.Security.NonceVerification.Recommended
-			if ( isset( $_REQUEST['post'] ) && ! current_user_can( 'flamingo_edit_inbound_message', intval( $_REQUEST['post'] ) ) ) {
+			// If we couldn't determine an action (spam/ham), exit early.
+			if ( ! $action ) {
+				return;
+			}
+
+			// Check Capabilities.
+			// Note: $_REQUEST['post'] can be array or string. We check the first one or the single one.
+			// We are going to mimic the same security check used in flamingo (flamingo/admin/includes/meta-boxes.php:210).
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$req_post = isset( $_REQUEST['post'] ) ? wp_unslash( $_REQUEST['post'] ) : 0;
+
+			// Use reset() if array, otherwise use the value (cast to int for safety).
+			$check_id = is_array( $req_post ) ? intval( reset( $req_post ) ) : intval( $req_post );
+
+			if ( ! current_user_can( 'flamingo_edit_inbound_message', $check_id ) ) {
 				wp_die(
 					wp_kses_data( __( 'You are not allowed to edit this item.', 'flamingo' ) )
 				);
 			}
 
-			if ( is_array( $_REQUEST['post'] ) ) {
+			// Check Nonces
+			if ( is_array( $req_post ) ) {
+				// Bulk action.
 				check_admin_referer( 'bulk-posts' );
 			} else {
-				// checking referer page
-				$post_id = intval( $_REQUEST['post'] );
-				check_admin_referer( "flamingo-{$req_action}-inbound-message_{$post_id}" );
+				// Single action.
+				$post_id = intval( wp_unslash( $req_post ) );
+
+				if ( 'save' === $req_action ) {
+					// Flamingo uses a different nonce name for saving/updating.
+					check_admin_referer( "flamingo-update-inbound_{$post_id}" );
+				} else {
+					// Standard nonce for spam/unspam/trash actions.
+					check_admin_referer( "flamingo-{$req_action}-inbound-message_{$post_id}" );
+				}
 			}
 
-			if ( isset( $action ) && isset( $_REQUEST['post'] ) ) {
-				$posts_ids = array_map( 'intval', (array) wp_unslash( $_REQUEST['post'] ) );
+			// Process the classification.
+			if ( ! empty( $req_post ) ) {
+				// Ensure we are working with an array for the loop.
+				// We use array_map on the unslashed values to be safe and clean.
+				$raw_posts = is_array( $req_post ) ? $req_post : array( $req_post );
+				$posts_ids = array_map( 'intval', wp_unslash( $raw_posts ) );
+
 				foreach ( $posts_ids as $post_id ) {
 					$this->process_flamingo_update( $post_id, $action );
 				}
