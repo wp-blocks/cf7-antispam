@@ -173,8 +173,13 @@ class CF7_AntiSpam {
 		$blocklist = new CF7_Antispam_Blocklist();
 		add_action( 'cf7a_cron', array( $blocklist, 'cf7a_cron_unban' ) );
 
+		/* 3d party plugins */
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		/* flamingo */
-		if ( defined( 'FLAMINGO_VERSION' ) ) {
+		if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'flamingo/flamingo.php' ) ) {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 
 			/* if flamingo is defined the mail will be analyzed after flamingo has stored */
@@ -192,7 +197,7 @@ class CF7_AntiSpam {
 		}
 
 		/* smtp */
-		if ( defined( 'cf7_smtp' ) ) {
+		if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'cf7-smtp/cf7-smtp.php' ) ) {
 			add_filter( 'cf7_smtp_report_mailbody', array( $this, 'spam_mail_report' ), 10, 2 );
 		}
 	}
