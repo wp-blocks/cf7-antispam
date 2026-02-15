@@ -21,3 +21,6 @@ import './settings/exportBlocklist';
 
 /** The language selector scripts */
 import './settings/languageSelector';
+
+/** The wordlist management scripts */
+import './settings/wordlist';
