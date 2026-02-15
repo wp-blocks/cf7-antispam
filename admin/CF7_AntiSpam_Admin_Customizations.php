@@ -650,6 +650,58 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_advanced'
 		);
 
+		/* Section Countermeasures */
+		add_settings_section(
+			'cf7a_countermeasures',
+			__( 'Spam Trap & Countermeasures', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_countermeasures' ),
+			'cf7a-settings'
+		);
+
+		/* Enable Countermeasures */
+		add_settings_field(
+			'enable_countermeasures',
+			__( 'Enable Countermeasures', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_countermeasures_callback' ),
+			'cf7a-settings',
+			'cf7a_countermeasures'
+		);
+
+		/* Countermeasure Mode */
+		add_settings_field(
+			'countermeasure_mode',
+			__( 'Countermeasure Mode', 'cf7-antispam' ),
+			array( $this, 'cf7a_countermeasure_mode_callback' ),
+			'cf7a-settings',
+			'cf7a_countermeasures'
+		);
+
+		/* Section Countermeasures */
+		add_settings_section(
+			'cf7a_countermeasures',
+			__( 'Spam Trap & Countermeasures', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_countermeasures' ),
+			'cf7a-settings'
+		);
+
+		/* Enable Countermeasures */
+		add_settings_field(
+			'enable_countermeasures',
+			__( 'Enable Countermeasures', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_countermeasures_callback' ),
+			'cf7a-settings',
+			'cf7a_countermeasures'
+		);
+
+		/* Countermeasure Mode */
+		add_settings_field(
+			'countermeasure_mode',
+			__( 'Countermeasure Mode', 'cf7-antispam' ),
+			array( $this, 'cf7a_countermeasure_mode_callback' ),
+			'cf7a-settings',
+			'cf7a_countermeasures'
+		);
+
 		/* Section Personalization */
 		add_settings_section(
 			'cf7a_scoring',
@@ -1937,6 +1989,57 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="enable_advanced_settings" name="cf7a_options[enable_advanced_settings]" %s />',
 			! empty( $this->options['enable_advanced_settings'] ) ? 'checked="true"' : ''
+		);
+	}
+
+	/**
+	 * It prints the countermeasures section info text
+	 */
+	public function cf7a_print_section_countermeasures() {
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'Configure how the plugin should react when a spam bot is detected and confirmed.', 'cf7-antispam' )
+		);
+	}
+
+	/**
+	 * Callback for enable_countermeasures
+	 */
+	public function cf7a_enable_countermeasures_callback() {
+		$value = isset( $this->options['enable_countermeasures'] ) ? $this->options['enable_countermeasures'] : 0;
+		printf(
+			'<input type="checkbox" id="enable_countermeasures" name="cf7a_options[enable_countermeasures]" value="1" %s />',
+			checked( 1, $value, false )
+		);
+		printf(
+			'<p class="description">%s</p>',
+			esc_html__( 'If enabled, confirmed spam submissions will be redirected to a trap page.', 'cf7-antispam' )
+		);
+	}
+
+	/**
+	 * Callback for countermeasure_mode
+	 */
+	public function cf7a_countermeasure_mode_callback() {
+		$value   = isset( $this->options['countermeasure_mode'] ) ? $this->options['countermeasure_mode'] : 'loop';
+		$options = array(
+			'loop'   => __( 'Redirect Loop (The Carousel)', 'cf7-antispam' ),
+			'tarpit' => __( 'Tarpit (Fake Infinite Form)', 'cf7-antispam' ),
+		);
+
+		echo '<select id="countermeasure_mode" name="cf7a_options[countermeasure_mode]">';
+		foreach ( $options as $key => $label ) {
+			printf(
+				'<option value="%s" %s>%s</option>',
+				esc_attr( $key ),
+				selected( $key, $value, false ),
+				esc_html( $label )
+			);
+		}
+		echo '</select>';
+		printf(
+			'<p class="description">%s</p>',
+			esc_html__( 'Choose the strategy to use for trapped bots.', 'cf7-antispam' )
 		);
 	}
 
