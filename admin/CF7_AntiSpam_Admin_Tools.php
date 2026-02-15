@@ -30,6 +30,17 @@ class CF7_AntiSpam_Admin_Tools {
 	}
 
 	/**
+	 * SANITIZE HEADER
+	 * It strips newline characters (\r, \n, %0A, %0D) from any data mapped to email headers
+	 *
+	 * @param string $input The input string to sanitize.
+	 * @return string The sanitized string.
+	 */
+	public static function sanitize_header( string $input ): string {
+		return trim( str_replace( array( "\r", "\n", '%0A', '%0D' ), '', $input ) );
+	}
+
+	/**
 	 * It exports the blocklist
 	 */
 	public static function cf7a_export_blocklist() {
@@ -93,8 +104,9 @@ class CF7_AntiSpam_Admin_Tools {
 		$body = apply_filters( 'cf7a_before_resend_email', $body, $sender, $subject, $recipient );
 
 		// Set up headers correctly
-		$site_name  = get_bloginfo( 'name' );
-		$from_email = get_option( 'admin_email' );
+		$site_name  = self::sanitize_header( get_bloginfo( 'name' ) );
+		$from_email = self::sanitize_header( get_option( 'admin_email' ) );
+		$sender     = self::sanitize_header( $sender );
 
 		$headers  = "From: {$site_name} <{$from_email}>\n";
 		$headers .= "Content-Type: text/html\n";
