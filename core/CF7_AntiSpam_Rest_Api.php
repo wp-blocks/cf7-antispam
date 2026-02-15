@@ -544,7 +544,244 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		return $blocklist->cf7a_get_blocklist_data();
 	}
 
+	/**
+	 * Get wordlist data with pagination and filtering.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_get_wordlist( $request ) {
+		global $wpdb;
 
+		$page     = isset( $request['page'] ) ? max( 1, intval( $request['page'] ) ) : 1;
+		$per_page = isset( $request['per_page'] ) ? min( 100, max( 10, intval( $request['per_page'] ) ) ) : 50;
+		$type     = isset( $request['type'] ) ? sanitize_text_field( $request['type'] ) : 'all';
+		$search   = isset( $request['search'] ) ? sanitize_text_field( $request['search'] ) : '';
+		$orderby  = isset( $request['orderby'] ) ? sanitize_text_field( $request['orderby'] ) : 'measure';
+		$order    = isset( $request['order'] ) ? strtoupper( sanitize_text_field( $request['order'] ) ) : 'DESC';
+		$offset   = ( $page - 1 ) * $per_page;
+
+		$table = $wpdb->prefix . 'cf7a_wordlist';
+
+		// Build WHERE clause
+		$where_clauses = array( "token != 'b8*texts'", "token != 'b8*dbversion'" );
+
+		if ( 'spam' === $type ) {
+			$where_clauses[] = 'count_spam > 0';
+		} elseif ( 'ham' === $type ) {
+			$where_clauses[] = 'count_ham > 0';
+		}
+
+		if ( ! empty( $search ) ) {
+			$where_clauses[] = $wpdb->prepare( 'token LIKE %s', '%' . $wpdb->esc_like( $search ) . '%' );
+		}
+
+		$where = implode( ' AND ', $where_clauses );
+
+		// Validate order params
+		if ( ! in_array( $order, array( 'ASC', 'DESC' ), true ) ) {
+			$order = 'DESC';
+		}
+
+		$allowed_orderby = array( 'token', 'count_spam', 'count_ham', 'measure' );
+		if ( ! in_array( $orderby, $allowed_orderby, true ) ) {
+			$orderby = 'measure';
+		}
+
+		$order_clause = '';
+		switch ( $orderby ) {
+			case 'token':
+				$order_clause = "token {$order}";
+				break;
+			case 'count_spam':
+				$order_clause = "count_spam {$order}";
+				break;
+			case 'count_ham':
+				$order_clause = "count_ham {$order}";
+				break;
+			case 'measure':
+			default:
+				$order_clause = "(COALESCE(count_spam, 0) + COALESCE(count_ham, 0)) {$order}";
+				break;
+		}
+
+		// Get total count
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM %i WHERE {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$table
+			)
+		);
+
+		// Get paginated results
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$words = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT token, count_spam, count_ham FROM %i WHERE {$where} ORDER BY {$order_clause} LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$table,
+				$per_page,
+				$offset
+			)
+		);
+
+		return rest_ensure_response(
+			array(
+				'success'     => true,
+				'words'       => $words,
+				'total'       => intval( $total ),
+				'page'        => $page,
+				'per_page'    => $per_page,
+				'total_pages' => ceil( $total / $per_page ),
+			)
+		);
+	}
+
+	/**
+	 * Update a word's spam/ham counts.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_update_word( $request ) {
+		global $wpdb;
+
+		/** Verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$token      = isset( $request['token'] ) ? sanitize_text_field( $request['token'] ) : '';
+		$count_spam = isset( $request['count_spam'] ) ? max( 0, intval( $request['count_spam'] ) ) : null;
+		$count_ham  = isset( $request['count_ham'] ) ? max( 0, intval( $request['count_ham'] ) ) : null;
+
+		if ( empty( $token ) || in_array( $token, array( 'b8*texts', 'b8*dbversion' ), true ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid token', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$table = $wpdb->prefix . 'cf7a_wordlist';
+
+		$update_data = array();
+		if ( null !== $count_spam ) {
+			$update_data['count_spam'] = $count_spam;
+		}
+		if ( null !== $count_ham ) {
+			$update_data['count_ham'] = $count_ham;
+		}
+
+		if ( empty( $update_data ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'No data to update', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->update(
+			$table,
+			$update_data,
+			array( 'token' => $token ),
+			array_fill( 0, count( $update_data ), '%d' ),
+			array( '%s' )
+		);
+
+		// Clear wordlist cache
+		wp_cache_delete( 'cf7a_top_spam_words', 'cf7a_wordlist_stats' );
+		wp_cache_delete( 'cf7a_top_ham_words', 'cf7a_wordlist_stats' );
+
+		if ( false !== $result ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					/* translators: %s is the token. */
+					'message' => sprintf( __( 'Word "%s" updated successfully', 'cf7-antispam' ), $token ),
+				)
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => false,
+				'message' => __( 'Failed to update word', 'cf7-antispam' ),
+			)
+		);
+	}
+
+	/**
+	 * Delete a word from the dictionary.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_delete_word( $request ) {
+		global $wpdb;
+
+		/** Verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$token = isset( $request['token'] ) ? sanitize_text_field( $request['token'] ) : '';
+
+		if ( empty( $token ) || in_array( $token, array( 'b8*texts', 'b8*dbversion' ), true ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid token', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$table = $wpdb->prefix . 'cf7a_wordlist';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->delete(
+			$table,
+			array( 'token' => $token ),
+			array( '%s' )
+		);
+
+		// Clear wordlist cache
+		wp_cache_delete( 'cf7a_top_spam_words', 'cf7a_wordlist_stats' );
+		wp_cache_delete( 'cf7a_top_ham_words', 'cf7a_wordlist_stats' );
+
+		if ( $result ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					/* translators: %s is the token. */
+					'message' => sprintf( __( 'Word "%s" deleted successfully', 'cf7-antispam' ), $token ),
+				)
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => false,
+				'message' => __( 'Failed to delete word', 'cf7-antispam' ),
+			)
+		);
+	}
 
 
 	/**
@@ -811,6 +1048,109 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
 								return $this->cf7a_validate_param( $param );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		// Wordlist management routes
+		register_rest_route(
+			$this->namespace,
+			'get-wordlist',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'cf7a_get_wordlist' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'page'     => array(
+							'required' => false,
+							'type'     => 'integer',
+							'default'  => 1,
+						),
+						'per_page' => array(
+							'required' => false,
+							'type'     => 'integer',
+							'default'  => 50,
+						),
+						'type'     => array(
+							'required' => false,
+							'type'     => 'string',
+							'default'  => 'all',
+						),
+						'search'   => array(
+							'required' => false,
+							'type'     => 'string',
+							'default'  => '',
+						),
+						'orderby'  => array(
+							'required' => false,
+							'type'     => 'string',
+							'default'  => 'measure',
+						),
+						'order'    => array(
+							'required' => false,
+							'type'     => 'string',
+							'default'  => 'DESC',
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'update-word',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_update_word' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'token'      => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+						'count_spam' => array(
+							'required' => false,
+							'type'     => 'integer',
+						),
+						'count_ham'  => array(
+							'required' => false,
+							'type'     => 'integer',
+						),
+						'nonce'      => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'delete-word',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_delete_word' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'token' => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
 							},
 						),
 					),
