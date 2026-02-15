@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="WordPress Coding Standards based custom ruleset for your plugin">
+<ruleset name="CF7 Antispam Plugin Coding Standards">
 	<description>Generally-applicable sniffs for WordPress plugins.</description>
 
 	<arg name="cache"/>
@@ -27,6 +27,7 @@
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards -->
 	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties -->
 	<config name="minimum_supported_wp_version" value="6.2"/>
+
 
 
 	<rule ref="WordPress" />
