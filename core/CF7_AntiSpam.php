@@ -256,7 +256,7 @@ class CF7_AntiSpam {
 				add_filter( 'manage_flamingo_inbound_posts_columns', array( $cf7a_flamingo, 'flamingo_columns' ) );
 				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_d8_column' ), 10, 2 );
 				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_resend_column' ), 11, 2 );
-			}
+			}//end if
 		}//end if
 	}
 
