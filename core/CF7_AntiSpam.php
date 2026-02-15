@@ -240,7 +240,17 @@ class CF7_AntiSpam {
 				/* the action that handles the spam and ham requests and pass the mail message to b8 */
 				add_action( 'load-flamingo_page_flamingo_inbound', array( $cf7a_flamingo, 'cf7a_d8_flamingo_classify' ), 9, 0 );
 
-				$this->loader->add_action( 'wp_dashboard_setup', $plugin_admin, 'cf7a_dashboard_widget' );
+				/**
+				 * Widget Visibility
+				 * Define the capability needed to see the widget (default: manage_options for Admins).
+				 *
+				 * @since 0.7.4
+				 */
+				$capability = apply_filters( 'cf7a_stats_capability', 'manage_options' );
+
+				if ( current_user_can( $capability ) ) {
+					$this->loader->add_action( 'wp_dashboard_setup', $plugin_admin, 'cf7a_dashboard_widget' );
+				}
 
 				/* adds the custom table columns*/
 				add_filter( 'manage_flamingo_inbound_posts_columns', array( $cf7a_flamingo, 'flamingo_columns' ) );
