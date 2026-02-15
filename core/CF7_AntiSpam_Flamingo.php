@@ -332,8 +332,9 @@ class CF7_AntiSpam_Flamingo {
 		}
 
 		// 3. Mock the Submission
-		// We utilize the WPCF7_Submission class to handle tag replacement ([your-name])
-		// precisely as it does during a real submission.
+		// WPCF7_Submission reads posted data from $_POST in setup_posted_data().
+		// We must temporarily inject Flamingo data into $_POST so the submission
+		// picks it up during initialization.
 
 		// Flamingo stores fields in $flamingo_data->fields
 		$submission_data = $flamingo_data->fields;
@@ -343,12 +344,35 @@ class CF7_AntiSpam_Flamingo {
 			$submission_data = array();
 		}
 
+		// Reset WPCF7_Submission singleton if one already exists
+		if ( class_exists( 'WPCF7_Submission' ) ) {
+			$existing = WPCF7_Submission::get_instance();
+			if ( $existing ) {
+				$reflection = new \ReflectionClass( $existing );
+				$property   = $reflection->getProperty( 'instance' );
+				$property->setAccessible( true );
+				$property->setValue( null, null );
+			}
+		}
+
+		// Back up current $_POST and inject Flamingo submission data.
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified upstream before cf7a_resend_mail is called.
+		$original_post = $_POST;
+		$_POST         = $submission_data;
+
+		// Skip spam checks and validation during resend.
+		add_filter( 'wpcf7_skip_spam_check', '__return_true' );
+
 		$mock_submission = WPCF7_Submission::get_instance(
 			$contact_form,
 			array(
-				'posted_data' => $submission_data,
+				'skip_mail' => true,
 			)
 		);
+
+		// Restore original $_POST.
+		$_POST = $original_post;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		// 4. Send using the Template
 		$mail_template = $contact_form->prop( 'mail' );
@@ -359,6 +383,7 @@ class CF7_AntiSpam_Flamingo {
 
 		// 5. Send Mail 2 if active
 		$mail_2_template = $contact_form->prop( 'mail_2' );
+
 		if ( $result && ! empty( $mail_2_template ) && ! empty( $mail_2_template['active'] ) ) {
 			$result = WPCF7_Mail::send( $mail_2_template, 'mail_2' );
 		}
@@ -412,7 +437,7 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @return array The additional settings of the form.
 	 */
-	public static function cf7a_get_mail_additional_data( $form_post_id ) {
+	public static function cf7a_get_mail_additional_data( int $form_post_id ): array {
 
 		/* get the additional setting of the form */
 		$form_additional_settings = get_post_meta( $form_post_id, '_additional_settings', true );
@@ -500,7 +525,7 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @return bool|int
 	 */
-	public function cf7a_flamingo_remove_honeypot( $result ) {
+	public function cf7a_flamingo_remove_honeypot( array $result ) {
 		$options = get_option( 'cf7a_options', array() );
 
 		if ( isset( $options['check_honeypot'] ) && intval( $options['check_honeypot'] ) === 1 ) {
@@ -541,7 +566,7 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @return array The new columns set for flamingo inbound page
 	 */
-	public static function flamingo_columns( $columns ) {
+	public static function flamingo_columns( array $columns ): array {
 		return array_merge(
 			$columns,
 			array(
@@ -558,7 +583,7 @@ class CF7_AntiSpam_Flamingo {
 	 * @param string $column The name of the column to display.
 	 * @param int    $post_id The post ID of the post being displayed.
 	 */
-	public static function flamingo_d8_column( $column, $post_id ) {
+	public static function flamingo_d8_column( string $column, int $post_id ) {
 		$classification = get_post_meta( $post_id, '_cf7a_b8_classification', true );
 		if ( 'd8' === $column ) {
 			echo wp_kses(
@@ -581,7 +606,7 @@ class CF7_AntiSpam_Flamingo {
 	 * @param string $column The name of the column.
 	 * @param int    $post_id The post ID of the post being displayed.
 	 */
-	public static function flamingo_resend_column( $column, $post_id ) {
+	public static function flamingo_resend_column( string $column, int $post_id ) {
 		if ( 'resend' === $column ) {
 			$nonce = wp_create_nonce( 'cf7a-nonce' );
 			printf(
@@ -601,7 +626,7 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @return bool - The result of the query.
 	 */
-	public static function cf7a_reset_dictionary() {
+	public static function cf7a_reset_dictionary(): bool {
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'cf7a_wordlist';
@@ -624,8 +649,10 @@ class CF7_AntiSpam_Flamingo {
 
 	/**
 	 * It deletes all the _cf7a_b8_classification metadata from the database
+	 *
+	 * @return bool - The result of the query.
 	 */
-	public static function cf7a_reset_b8_classification() {
+	public static function cf7a_reset_b8_classification(): bool {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$r = $wpdb->query(
@@ -643,7 +670,7 @@ class CF7_AntiSpam_Flamingo {
 	 *
 	 * @return bool - The return value is the number of mails that were analyzed.
 	 */
-	public static function cf7a_rebuild_dictionary() {
+	public static function cf7a_rebuild_dictionary(): bool {
 		if ( self::cf7a_reset_dictionary() ) {
 			if ( self::cf7a_reset_b8_classification() ) {
 				return self::cf7a_flamingo_analyze_stored_mails();
