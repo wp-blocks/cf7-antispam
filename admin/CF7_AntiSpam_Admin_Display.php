@@ -924,6 +924,13 @@ class CF7_AntiSpam_Admin_Display {
 				$meta         = unserialize( $row->meta );
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
+				// Ensure reason is properly formatted for cf7a_compress_array
+				$reason = isset( $meta['reason'] ) ? $meta['reason'] : array();
+				if ( is_string( $reason ) ) {
+					// Convert legacy string reasons to array format
+					$reason = array( 'legacy' => $reason );
+				}
+
 				$rows .= sprintf(
 					'<div class="row row-%s"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></p><span class="data">%s</span><span class="data date"><b>%s:</b> %s</span></div></div>',
 					esc_attr( intval( $row->id ) ),
@@ -935,7 +942,7 @@ class CF7_AntiSpam_Admin_Display {
 					esc_attr( $row->id ),
 					esc_attr( $nonce ),
 					esc_html__( '[ban forever]', 'cf7-antispam' ),
-					cf7a_compress_array( $meta['reason'], true ),
+					cf7a_compress_array( $reason, true ),
 					esc_html__( 'First seen on', 'cf7-antispam' ),
 					$row->created
 				);

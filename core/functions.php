@@ -374,8 +374,12 @@ function cf7a_format_status( $rank ) {
  *
  * @return string Compress arrays into "key:value; " pair
  */
-function cf7a_compress_array( array $arr, bool $is_html = false ): string {
+function cf7a_compress_array( $arr, bool $is_html = false ): string {
 	if ( ! is_array( $arr ) ) {
+		// Handle string data
+		if ( is_string( $arr ) && ! empty( $arr ) ) {
+			return $arr;
+		}
 		return '';
 	}
 	$is_html = intval( $is_html );
