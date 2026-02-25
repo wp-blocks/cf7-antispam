@@ -467,20 +467,32 @@ class CF7_AntiSpam_Frontend {
 		 *
 		 * @return array $endpoints the value of the variable $endpoints.
 		 */
-		if ( ! is_user_logged_in() ) {
-			add_filter(
-				'rest_endpoints',
-				function ( $endpoints ) {
-					if ( isset( $endpoints['/wp/v2/users'] ) ) {
-						unset( $endpoints['/wp/v2/users'] );
-					}
-					if ( isset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] ) ) {
-						unset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
-					}
-					return $endpoints;
+		add_filter(
+			'rest_endpoints',
+			function ( $endpoints ) {
+				// Checking inside the callback prevents early-execution fatal errors
+				if ( ! is_user_logged_in() ) {
+					unset( $endpoints['/wp/v2/users'] );
+					unset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
 				}
-			);
-		}
+				return $endpoints;
+			}
+		);
+
+		/**
+		 * Block Author Enumeration
+		 * Bots append /?author=1, /?author=2 to URLs to force WordPress to redirect to the author's archive, revealing their exact login username in the URL structure
+		 */
+		add_filter(
+			'template_redirect',
+			function () {
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( ! is_admin() && isset( $_REQUEST['author'] ) && preg_match( '/^\d+$/', sanitize_text_field( wp_unslash( $_REQUEST['author'] ) ) ) ) {
+					wp_safe_redirect( home_url(), 301 );
+					exit;
+				}
+			}
+		);
 	}
 
 	/**
@@ -495,7 +507,7 @@ class CF7_AntiSpam_Frontend {
 
 		/* removes version number (WordPress/WooCommerce) */
 		remove_action( 'wp_head', 'wp_generator' );
-		remove_action( 'wp_head', 'woo_version' );
+		remove_action( 'wp_head', 'wc_generator' );
 
 		remove_action( 'wp_head', 'rest_output_link_wp_head' );
 		remove_action( 'template_redirect', 'rest_output_link_header', 20 );
@@ -503,17 +515,20 @@ class CF7_AntiSpam_Frontend {
 		unset( $headers['X-Pingback'] );
 		unset( $headers['X-Powered-By'] );
 
+		if ( function_exists( 'header_remove' ) ) {
+			header_remove( 'X-Powered-By' );
+		}
 		if ( empty( $headers['X-Frame-Options'] ) ) {
 			$headers['X-Frame-Options'] = 'SAMEORIGIN';
 		}
 		if ( empty( $headers['X-Content-Type-Options'] ) ) {
 			$headers['X-Content-Type-Options'] = 'nosniff';
 		}
-		if ( empty( $headers['X-XSS-Protection'] ) ) {
-			$headers['X-XSS-Protection'] = '1; mode=block';
+		if ( empty( $headers['Referrer-Policy'] ) ) {
+			$headers['Referrer-Policy'] = 'strict-origin-when-cross-origin';
 		}
 		if ( empty( $headers['Strict-Transport-Security'] ) ) {
-			$headers['Strict-Transport-Security'] = 'max-age=31536000';
+			$headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
 		}
 
 		return $headers;
