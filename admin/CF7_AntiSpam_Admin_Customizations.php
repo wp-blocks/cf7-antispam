@@ -511,6 +511,23 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_mailbox_protection'
 		);
 
+		/* Section Comments Protection */
+		add_settings_section(
+			'cf7a_comments',
+			__( 'Comments protection', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_comments_settings' ),
+			'cf7a-settings'
+		);
+
+		/* Enable comment protection */
+		add_settings_field(
+			'cf7_antispam_enable_comment_protection',
+			__( 'Protect WordPress Comments', 'cf7-antispam' ),
+			array( $this, 'cf7a_enable_comment_protection_callback' ),
+			'cf7a-settings',
+			'cf7a_comments'
+		);
+
 		/* Identity Protection */
 		add_settings_section(
 			'cf7a_identity_protection',
@@ -723,6 +740,26 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 	/**
+	 * It prints the comments protection section info
+	 */
+	public function cf7a_print_comments_settings() {
+		printf(
+			'<p>%s</p>',
+			esc_html__( 'Extend the use of time check and b8 for the comment section.', 'cf7-antispam' )
+		);
+	}
+
+	/**
+	 * Callback for the comment protection checkbox
+	 */
+	public function cf7a_enable_comment_protection_callback() {
+		printf(
+			'<input type="checkbox" id="cf7_antispam_enable_comment_protection" name="cf7a_options[cf7_antispam_enable_comment_protection]" value="1" %s />',
+			checked( 1, isset( $this->options['cf7_antispam_enable_comment_protection'] ) ? $this->options['cf7_antispam_enable_comment_protection'] : 0, false )
+		);
+	}
+
+	/**
 	 * It prints a paragraph with a description of the section
 	 */
 	public function cf7a_print_section_auto_blocklist() {
@@ -850,7 +887,7 @@ class CF7_AntiSpam_Admin_Customizations {
 
 	/** It prints the user protection info text */
 	public function cf7a_print_identity_protection() {
-		printf( '<p>%s</p>', esc_html__( 'After monitoring and analysing some bots, I noticed that it is necessary to block the way bots collect (user) data from the website, otherwise protecting the form may have no effect. This also blocks some registrations, spam comments and other attacks', 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( 'Harden your site against automated enumeration and data harvesting. User protection disable the XML-RPC protocol, restrict unauthenticated access to REST API user directories, and block author enumeration. WordPress protection option, on the other hand, strip generator meta tags to hide your footprint and enforce strict HTTP security headers (HSTS, SAMEORIGIN, nosniff, Referrer-Policy).', 'cf7-antispam' ) );
 	}
 
 	/** It prints the b8 info text */
@@ -1264,6 +1301,9 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* identity protection */
 		$new_input['identity_protection_user'] = isset( $input['identity_protection_user'] ) ? 1 : 0;
 		$new_input['identity_protection_wp']   = isset( $input['identity_protection_wp'] ) ? 1 : 0;
+
+		/* comment protection */
+		$new_input['cf7_antispam_enable_comment_protection'] = isset( $input['cf7_antispam_enable_comment_protection'] ) ? 1 : 0;
 
 		/* b8 */
 		$new_input['enable_b8']    = isset( $input['enable_b8'] ) ? 1 : 0;
