@@ -3,17 +3,21 @@
 namespace CF7_AntiSpam\Tests\PhpUnit\Tests;
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
-use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
 use CF7_AntiSpam\Core\CF7_Antispam_Blocklist;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
+use CF7_AntiSpam\Core\Filters\Filter_IP_Allowlist;
+use CF7_AntiSpam\Core\Filters\Filter_Empty_IP;
+use CF7_AntiSpam\Core\Filters\Filter_Bad_IP;
+use CF7_AntiSpam\Core\Filters\Filter_Honeyform;
+use CF7_AntiSpam\Core\Filters\Filter_Bad_Words;
+use CF7_AntiSpam\Core\Filters\Filter_Time_Submission;
+use CF7_AntiSpam\Core\Filters\Filter_Bad_Email_Strings;
+use CF7_AntiSpam\Core\Filters\Filter_User_Agent;
+use CF7_AntiSpam\Core\Filters\Filter_Honeypot;
+use CF7_AntiSpam\Core\Filters\Filter_IP_Blocklist_History;
 use PHPUnit\Framework\TestCase;
 
 class CF7_AntiSpam_FiltersTest extends TestCase {
-
-	/**
-	 * @var CF7_AntiSpam_Filters
-	 */
-	private $filters;
 
 	/**
 	 * @var array
@@ -33,8 +37,6 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 		// Ensure tables exist
 		CF7_AntiSpam_Activator::install();
-
-		$this->filters = new CF7_AntiSpam_Filters();
 
 		$this->options = CF7_AntiSpam::get_options();
 
@@ -71,7 +73,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['remote_ip'] = '192.168.1.10';
 
 		// Act
-		$result = $this->filters->filter_ip_allowlist( $data );
+		$filter = new Filter_IP_Allowlist();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertTrue( $result['is_allowlisted'], 'IP should be allowlisted.' );
@@ -84,7 +87,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['remote_ip'] = '192.168.1.10';
 
 		// Act
-		$result = $this->filters->filter_ip_allowlist( $data );
+		$filter = new Filter_IP_Allowlist();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertFalse( $result['is_allowlisted'], 'IP should NOT be allowlisted.' );
@@ -101,7 +105,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['cf7_remote_ip'] = '';
 
 		// Act
-		$result = $this->filters->filter_empty_ip( $data );
+		$filter = new Filter_Empty_IP();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertTrue( $result['is_spam'], 'Should be spam if IP is missing.' );
@@ -115,7 +120,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['remote_ip'] = '123.123.123.123';
 
 		// Act
-		$result = $this->filters->filter_empty_ip( $data );
+		$filter = new Filter_Empty_IP();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertFalse( $result['is_spam'] );
@@ -134,7 +140,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['remote_ip'] = '5.6.7.8';
 
 		// Act
-		$result = $this->filters->filter_bad_ip( $data );
+		$filter = new Filter_Bad_IP();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertTrue( $result['is_spam'] );
@@ -149,7 +156,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['remote_ip'] = '9.9.9.9'; // Safe IP
 
 		// Act
-		$result = $this->filters->filter_bad_ip( $data );
+		$filter = new Filter_Bad_IP();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertFalse( $result['is_spam'] );
@@ -169,7 +177,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$_POST['_wpcf7_my-trap'] = 'I am a bot';
 
 		// Act
-		$result = $this->filters->filter_honeyform( $data );
+		$filter = new Filter_Honeyform();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertTrue( $result['is_spam'] );
@@ -186,7 +195,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		unset($_POST['_wpcf7_my-trap']);
 
 		// Act
-		$result = $this->filters->filter_honeyform( $data );
+		$filter = new Filter_Honeyform();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertFalse( $result['is_spam'] );
@@ -205,7 +215,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['message'] = 'Hello, please buy now very cheap!';
 
 		// Act
-		$result = $this->filters->filter_bad_words( $data );
+		$filter = new Filter_Bad_Words();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertTrue( $result['spam_score'] >= 5 );
@@ -220,7 +231,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['message'] = 'Just saying hello.';
 
 		// Act
-		$result = $this->filters->filter_bad_words( $data );
+		$filter = new Filter_Bad_Words();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 0, $result['spam_score'] );
@@ -242,7 +254,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$_POST[ $prefix . '_timestamp' ] = cf7a_crypt(time() - 5, $data['options']['cf7a_cipher']);
 
 		// Act
-		$result = $this->filters->filter_time_submission( $data );
+		$filter = new Filter_Time_Submission();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertFalse( $result['is_spam'] ); // False because the time check doesn't force the mail to be spam if wrong
@@ -264,7 +277,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['emails'] = array( 'user@spam.com' );
 
 		// Act
-		$result = $this->filters->filter_bad_email_strings( $data );
+		$filter = new Filter_Bad_Email_Strings();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 4, $result['spam_score'] );
@@ -279,7 +293,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['emails'] = array( 'user@google.com' );
 
 		// Act
-		$result = $this->filters->filter_bad_email_strings( $data );
+		$filter = new Filter_Bad_Email_Strings();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 0, $result['spam_score'] );
@@ -297,7 +312,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['user_agent'] = ''; // Empty UA
 
 		// Act
-		$result = $this->filters->filter_user_agent( $data );
+		$filter = new Filter_User_Agent();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 2, $result['spam_score'] );
@@ -313,7 +329,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['user_agent'] = 'Mozilla/5.0 (compatible; BadBot/1.0)'; // Contains "BadBot"
 
 		// Act
-		$result = $this->filters->filter_user_agent( $data );
+		$filter = new Filter_User_Agent();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 3, $result['spam_score'] );
@@ -328,7 +345,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['user_agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
 
 		// Act
-		$result = $this->filters->filter_user_agent( $data );
+		$filter = new Filter_User_Agent();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 0, $result['spam_score'] );
@@ -356,7 +374,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$_POST['hp_email'] = 'bot@spam.com';
 
 		// Act
-		$result = $this->filters->filter_honeypot( $data );
+		$filter = new Filter_Honeypot();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 10, $result['spam_score'] );
@@ -374,7 +393,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		unset( $_POST['hp_email'] );
 
 		// Act
-		$result = $this->filters->filter_honeypot( $data );
+		$filter = new Filter_Honeypot();
+		$result = $filter->check( $data );
 
 		// Assert
 		$this->assertEquals( 0, $result['spam_score'] );
@@ -386,26 +406,30 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['options']['max_attempts'] = 3;
 		$data['remote_ip'] = '100.100.100.101';
 		$blocklist = new CF7_Antispam_Blocklist();
+		
 		// Case 1: Status 1 (Below Threshold)
 		$blocklist->cf7a_add_to_blocklist( '100.100.100.101', 1 );
-		$result = $this->filters->filter_ip_blocklist_history( $data );
+		
+		$filter = new Filter_IP_Blocklist_History();
+		$result = $filter->check( $data );
+		
 		$this->assertFalse( $result['is_spam'], 'Status 1 should NOT be spam when max is 3' );
 		$this->assertEquals( 0, $result['spam_score'] );
 
 		// Case 2: Status 2 (Below Threshold)
 		$blocklist->cf7a_add_to_blocklist( '100.100.100.101', 2 );
-		$result = $this->filters->filter_ip_blocklist_history( $data );
+		$result = $filter->check( $data );
 		$this->assertFalse( $result['is_spam'], 'Status 2 should NOT be spam when max is 3' );
 
 		// Case 3: Status 3 (At Threshold)
 		$blocklist->cf7a_add_to_blocklist( '100.100.100.101', 3 );
-		$result = $this->filters->filter_ip_blocklist_history( $data );
+		$result = $filter->check( $data );
 		$this->assertTrue( $result['is_spam'], 'Status 3 SHOULD be spam when max is 3' );
 		$this->assertEquals( 3, $result['reasons']['blocklisted'] );
 
 		// Case 4: Status 5 (Above Threshold)
 		$blocklist->cf7a_add_to_blocklist( '100.100.100.101', 5 );
-		$result = $this->filters->filter_ip_blocklist_history( $data );
+		$result = $filter->check( $data );
 		$this->assertTrue( $result['is_spam'], 'Status 5 SHOULD be spam when max is 3' );
 
 		// Clean up
@@ -415,6 +439,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 	public function test_filter_ip_blocklist_history_does_not_affect_other_ips() {
 		// Arrange
 		$blocklist = new CF7_Antispam_Blocklist();
+		$filter = new Filter_IP_Blocklist_History();
 
 		// Ban IP 100.100.100.101 with status 5 (above max_attempts 3)
 		$data = $this->base_spam_data;
@@ -423,11 +448,11 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 		// Act: Check 100.100.100.101 (should be banned)
 		$data['remote_ip'] = '100.100.100.101';
-		$result_banned = $this->filters->filter_ip_blocklist_history( $data );
+		$result_banned = $filter->check( $data );
 
 		// Act: Check 100.100.100.102 (should NOT be banned)
 		$data['remote_ip'] = '100.100.100.102';
-		$result_not_banned = $this->filters->filter_ip_blocklist_history( $data );
+		$result_not_banned = $filter->check( $data );
 
 		// Clean up
 		CF7_Antispam_Blocklist::cf7a_unban_by_ip( '100.100.100.101' );
