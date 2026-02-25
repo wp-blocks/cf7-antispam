@@ -10,12 +10,12 @@
 
 namespace CF7_AntiSpam\Core;
 
+use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
+use Exception;
+use GeoIp2\Database\Reader;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use PharData;
-use Exception;
 use RecursiveIteratorIterator;
-use GeoIp2\Database\Reader;
-use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 
 /**
  * It checks if the CF7ANTISPAM_GEOIP_KEY constant is set, and if it is, it uses that as the license key. Otherwise, it

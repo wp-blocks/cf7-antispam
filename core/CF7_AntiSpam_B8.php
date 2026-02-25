@@ -2,8 +2,9 @@
 
 namespace CF7_AntiSpam\Core;
 
-use Exception;
 use b8\b8;
+use Exception;
+
 /**
  * B8 related functions
  *

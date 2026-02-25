@@ -2,12 +2,12 @@
 
 namespace CF7_AntiSpam\Core;
 
-use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
+use Flamingo_Inbound_Message;
 use WP_Query;
 use WPCF7_ContactForm;
-use WPCF7_Submission;
 use WPCF7_Mail;
-use Flamingo_Inbound_Message;
+use WPCF7_Submission;
+
 /**
  * Flamingo related functions.
  *

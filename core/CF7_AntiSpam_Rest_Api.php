@@ -13,11 +13,11 @@ namespace CF7_AntiSpam\Core;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Updater;
+use WP_Error;
 use WP_REST_Controller;
-use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
-use WP_Error;
+use WP_REST_Server;
 
 /**
  * Handles REST API endpoints for the CF7 AntiSpam plugin
