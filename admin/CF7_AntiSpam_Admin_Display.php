@@ -631,6 +631,9 @@ class CF7_AntiSpam_Admin_Display {
 			__( 'Have a trusted static IP? Add it to the IP Allowlist in Settings to ensure your own tests or admin submissions are never blocked.', 'cf7-antispam' ),
 			__( 'The "Max Attempts" setting automatically blocks IPs that repeatedly trigger spam filters. Adjust this limit to be stricter or more lenient.', 'cf7-antispam' ),
 			__( 'Browser fingerprinting helps identify bots even if they change IPs. Ensure "Check Bot Fingerprint" is active for robust detection.', 'cf7-antispam' ),
+			__( 'Do you face an error message? Check the Debug Info tab to see the debug information. You may need to add the CF7ANTISPAM_DEBUG constant to your wp-config.php file.', 'cf7-antispam' ),
+			__( 'Do you have a suggestion, a feature request or a bug report? Please let us know by opening a ticket on the support forum.', 'cf7-antispam' ),
+			__( 'You can create your own antispam rules using the cf7a_spam_check_chain filter. Learn more on the documentation.', 'cf7-antispam' ),
 		);
 
 		return $tips[ round( wp_rand( 0, count( $tips ) - 1 ) ) ];
