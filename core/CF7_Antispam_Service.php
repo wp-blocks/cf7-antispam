@@ -15,6 +15,7 @@ namespace CF7_AntiSpam\Core;
 /**
  * Integration class from Contact Form 7
  */
+
 use WPCF7_Service as GlobalWPCF7_Service;
 
 if ( ! class_exists( 'WPCF7_Service' ) ) {

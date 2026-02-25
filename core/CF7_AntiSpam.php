@@ -200,6 +200,9 @@ class CF7_AntiSpam {
 		if ( function_exists( 'is_plugin_active' ) && is_plugin_active( 'cf7-smtp/cf7-smtp.php' ) ) {
 			add_filter( 'cf7_smtp_report_mailbody', array( $this, 'spam_mail_report' ), 10, 2 );
 		}
+
+		/* comment protection */
+		new CF7_AntiSpam_Comments();
 	}
 
 	/**
