@@ -2,38 +2,29 @@
 
 namespace PhpUnit\Tests;
 
-use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
+
+use CF7_AntiSpam\Core\CF7_AntiSpam_Rules;
 use PHPUnit\Framework\TestCase;
 
 class CF7_AntiSpam_UtilsTest extends TestCase {
 
-	/**
-	 * @var CF7_AntiSpam_Filters
-	 */
-	private $filters;
-
-	public function __construct( $name = null, $data = array(), $dataName = '' ) {
-		parent::__construct( $name, $data, $dataName );
-		$this->filters = new CF7_AntiSpam_Filters();
-	}
-
 	public function testCf7a_check_dnsbl() {
 		/* Barracuda returns always spam for 2.0.0.127 */
-		$this->assertTrue( $this->filters->cf7a_check_dnsbl( '2.0.0.127', 'b.barracudacentral.org' ) );
+		$this->assertTrue( CF7_AntiSpam_Rules::cf7a_check_dnsbl( '2.0.0.127', 'b.barracudacentral.org' ) );
 		/* Barracuda returns always ham for 1.0.0.127 */
-		$this->assertFalse( $this->filters->cf7a_check_dnsbl( '1.0.0.127', 'b.barracudacentral.org' ) );
+		$this->assertFalse( CF7_AntiSpam_Rules::cf7a_check_dnsbl( '1.0.0.127', 'b.barracudacentral.org' ) );
 	}
 
 	public function testCf7a_reverse_ipv6() {
 		$mail     = '::1';
-		$reversed = $this->filters->cf7a_reverse_ipv6( $mail );
+		$reversed = CF7_AntiSpam_Rules::cf7a_reverse_ipv6( $mail );
 		$this->assertIsString( $reversed );
 		$this->returnValue( '1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0' );
 	}
 
 	public function testCf7a_reverse_ipv4() {
 		$mail     = '192.168.1.1';
-		$reversed = $this->filters->cf7a_reverse_ipv4( $mail );
+		$reversed = CF7_AntiSpam_Rules::cf7a_reverse_ipv4( $mail );
 		$this->assertIsString( $reversed );
 		$this->returnValue( '1.1.168.192' );
 	}
@@ -248,7 +239,7 @@ class CF7_AntiSpam_UtilsTest extends TestCase {
 		);
 
 		foreach ( $testCases as $testCase ) {
-			$result = $this->filters->cf7a_check_languages_locales_allowed( $testCase['lan_loc'], $testCase['disalloweds'], $testCase['alloweds'] );
+			$result = CF7_AntiSpam_Rules::cf7a_check_languages_locales_allowed( $testCase['lan_loc'], $testCase['disalloweds'], $testCase['alloweds'] );
 			$this->assertEquals(
 				$testCase['assert'],
 				$result,
@@ -274,7 +265,7 @@ class CF7_AntiSpam_UtilsTest extends TestCase {
 		);
 
 		foreach ( $tests as $test ) {
-			$result = $this->filters->cf7a_get_languages_or_locales( $test['languages_locales'], $test['string'] );
+			$result = CF7_AntiSpam_Rules::cf7a_get_languages_or_locales( $test['languages_locales'], $test['string'] );
 			$this->assertEquals( $test['expected'], $result, 'error expected ' . print_r( $test, true ) . ' result ' . print_r( $result, true ) );
 		}
 	}
