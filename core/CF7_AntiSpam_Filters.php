@@ -177,6 +177,62 @@ class CF7_AntiSpam_Filters {
 		 */
 		$spam_data = apply_filters( 'cf7a_check_b8', $spam_data );
 
+		/**
+		 * Define how reasons map to score options
+		 *
+		 * @var array $score_mapping The score mapping array.
+		 */
+		$score_mapping = apply_filters(
+			'cf7a_score_mapping',
+			array(
+				'b8'                     => '_detection',
+				'bad_word'               => '_bad_string',
+				'email_blocklisted'      => '_bad_string',
+				'bad_ip'                 => '_bad_ip',
+				'bot_fingerprint'        => '_fingerprinting',
+				'bot_fingerprint_extras' => '_fingerprinting',
+				'dnsbl'                  => '_dnsbl',
+				'no_ip'                  => '_warn',
+				'geo_ip'                 => '_warn',
+				'high_entropy'           => '_bad_string',
+				'honeyform'              => '_honeypot',
+				'honeypot'               => '_honeypot',
+				'blocklisted'            => '_warn',
+				'browser_language'       => '_detection',
+				'language_field'         => '_detection',
+				'language_incoherence'   => '_detection',
+				'disallowed_language'    => '_detection',
+				'data_mismatch'          => '_fingerprinting',
+				'no_referrer'            => '_warn',
+				'no_protocol'            => '_warn',
+				'timestamp'              => '_detection',
+				'min_time_elapsed'       => '_time',
+				'max_time_elapsed'       => '_time',
+				'user_agent'             => '_bad_string',
+				'fallback'               => '_warn',
+			)
+		);
+
+		// Centralized Score Calculation
+		foreach ( $spam_data['reasons'] as $reason_key => $reason_values ) {
+			if ( isset( $score_mapping[ $reason_key ] ) ) {
+				$option_key = $score_mapping[ $reason_key ];
+
+				// Ensure a penalty score exists in the options
+				if ( isset( $options['score'][ $option_key ] ) ) {
+					$score_per_violation = floatval( $options['score'][ $option_key ] );
+
+					// Multiply the score by the number of times the rule was broken
+					$occurrences = is_array( $reason_values ) ? count( $reason_values ) : 1;
+
+					$spam_data['spam_score'] += ( $score_per_violation * $occurrences );
+				}
+			} else {
+				// Fallback to warn if no score preset is found
+				$spam_data['spam_score'] += floatval( $options['score'][ $score_mapping['fallback'] ] );
+			}
+		}
+
 		// Extract results
 		$spam_score = $spam_data['spam_score'];
 		$reason     = $spam_data['reasons'];
