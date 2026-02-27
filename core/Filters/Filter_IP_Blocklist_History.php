@@ -34,9 +34,8 @@ class Filter_IP_Blocklist_History extends Abstract_CF7_AntiSpam_Filter {
 			$max_attempts   = intval( $options['max_attempts'] );
 
 			if ( $ip_data_status >= $max_attempts ) {
-				++$data['spam_score'];
-				$data['is_spam']                = true;
-				$data['reasons']['blocklisted'] = $ip_data_status;
+				$data['is_spam']                  = true;
+				$data['reasons']['blocklisted'][] = $ip_data_status;
 
 				cf7a_log( "The {$data['remote_ip']} has reached max attempts threshold (status: $ip_data_status, max: $max_attempts)", 1 );
 			} elseif ( defined( 'CF7ANTISPAM_DEBUG' ) && CF7ANTISPAM_DEBUG && $ip_data_status > 0 ) {

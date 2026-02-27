@@ -31,8 +31,7 @@ class Filter_Bot_Fingerprint_Extras extends Abstract_CF7_AntiSpam_Filter {
 			return $data;
 		}
 
-		$prefix               = $this->get_prefix( $options );
-		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
+		$prefix = $this->get_prefix( $options );
 
 		$extras = array(
 			'activity'               => intval( $this->get_posted_value( $prefix . 'activity', 0 ) ),
@@ -64,8 +63,7 @@ class Filter_Bot_Fingerprint_Extras extends Abstract_CF7_AntiSpam_Filter {
 		}
 
 		if ( ! empty( $fails ) ) {
-			$data['spam_score']                       += count( $fails ) * $score_fingerprinting;
-			$data['reasons']['bot_fingerprint_extras'] = implode( ', ', $fails );
+			$data['reasons']['bot_fingerprint_extras'] = $fails;
 			cf7a_log( "The {$data['remote_ip']} ip hasn't passed fingerprint extra test", 1 );
 		}
 

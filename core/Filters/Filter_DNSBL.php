@@ -32,8 +32,7 @@ class Filter_DNSBL extends Abstract_CF7_AntiSpam_Filter {
 			return $data;
 		}
 
-		$score_dnsbl = floatval( $options['score']['_dnsbl'] );
-		$reverse_ip  = '';
+		$reverse_ip = '';
 
 		if ( filter_var( $data['remote_ip'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
 			$reverse_ip = CF7_AntiSpam_Rules::cf7a_reverse_ipv4( $data['remote_ip'] );
@@ -45,14 +44,13 @@ class Filter_DNSBL extends Abstract_CF7_AntiSpam_Filter {
 			foreach ( $options['dnsbl_list'] as $dnsbl ) {
 				if ( CF7_AntiSpam_Rules::cf7a_check_dnsbl( $reverse_ip, $dnsbl ) ) {
 					$data['reasons']['dnsbl'][] = $dnsbl;
-					$data['spam_score']        += $score_dnsbl;
 				}
 			}
 		}
 
-		if ( isset( $data['reasons']['dnsbl'] ) && is_array( $data['reasons']['dnsbl'] ) ) {
-			$data['reasons']['dnsbl'] = implode( ', ', $data['reasons']['dnsbl'] );
-			cf7a_log( "{$data['remote_ip']} is listed in DNSBL ({$data['reasons']['dnsbl']})", 1 );
+		if ( ! empty( $data['reasons']['dnsbl'] ) ) {
+			$logged_reasons = implode( ', ', $data['reasons']['dnsbl'] );
+			cf7a_log( "{$data['remote_ip']} is listed in DNSBL ({$logged_reasons})", 1 );
 		}
 		return $data;
 	}
