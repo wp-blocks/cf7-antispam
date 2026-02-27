@@ -25,9 +25,8 @@ class Filter_Referrer_Protocol extends Abstract_CF7_AntiSpam_Filter {
 	 * @return array The data array.
 	 */
 	public function process( array $data ): array {
-		$options    = $data['options'];
-		$prefix     = $this->get_prefix( $options );
-		$score_warn = floatval( $options['score']['_warn'] );
+		$options = $data['options'];
+		$prefix  = $this->get_prefix( $options );
 
 		if ( intval( $options['check_refer'] ) === 1 ) {
 			// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
@@ -35,8 +34,7 @@ class Filter_Referrer_Protocol extends Abstract_CF7_AntiSpam_Filter {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
 			$cf7a_referer = isset( $_POST[ $refer_key ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $refer_key ], $options['cf7a_cipher'] ) ) ) : false;
 			if ( ! $cf7a_referer ) {
-				$data['spam_score']            += $score_warn;
-				$data['reasons']['no_referrer'] = 'client has referrer address';
+				$data['reasons']['no_referrer'][] = 'client has referrer address';
 				cf7a_log( "the {$data['remote_ip']} has reached the contact form page without any referrer", 1 );
 			}
 		}
@@ -48,8 +46,7 @@ class Filter_Referrer_Protocol extends Abstract_CF7_AntiSpam_Filter {
 
 		// Protocol field is completely missing or empty -> SPAM
 		if ( ! $cf7a_protocol ) {
-			$data['spam_score']            += $score_warn;
-			$data['reasons']['no_protocol'] = 'client has a bot-like connection protocol';
+			$data['reasons']['no_protocol'][] = 'client has a bot-like connection protocol';
 			cf7a_log( "the {$data['remote_ip']} has a bot-like connection protocol (HTTP/1.X)", 1 );
 		}
 

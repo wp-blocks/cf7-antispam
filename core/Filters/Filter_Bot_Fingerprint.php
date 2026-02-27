@@ -31,8 +31,7 @@ class Filter_Bot_Fingerprint extends Abstract_CF7_AntiSpam_Filter {
 			return $data;
 		}
 
-		$prefix               = $this->get_prefix( $options );
-		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
+		$prefix = $this->get_prefix( $options );
 
 		$bot_fingerprint = array(
 			'timezone'        => $this->get_posted_value( $prefix . 'timezone' ),
@@ -96,9 +95,9 @@ class Filter_Bot_Fingerprint extends Abstract_CF7_AntiSpam_Filter {
 		}
 
 		if ( ! empty( $fails ) ) {
-			$data['spam_score']                += count( $fails ) * $score_fingerprinting;
-			$data['reasons']['bot_fingerprint'] = implode( ', ', $fails );
-			cf7a_log( "The {$data['remote_ip']} ip hasn't passed fingerprint test ({$data['reasons']['bot_fingerprint']})", 1 );
+			$data['reasons']['bot_fingerprint'] = $fails;
+			$logged_reasons                     = implode( ', ', $fails );
+			cf7a_log( "The {$data['remote_ip']} ip hasn't passed fingerprint test ({$logged_reasons})", 1 );
 		}
 
 		return $data;

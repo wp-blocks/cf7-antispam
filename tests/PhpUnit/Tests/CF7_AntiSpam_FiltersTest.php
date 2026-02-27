@@ -4,17 +4,17 @@ namespace CF7_AntiSpam\Tests\PhpUnit\Tests;
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Blocklist;
-use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
-use CF7_AntiSpam\Core\Filters\Filter_IP_Allowlist;
-use CF7_AntiSpam\Core\Filters\Filter_Empty_IP;
-use CF7_AntiSpam\Core\Filters\Filter_Bad_IP;
-use CF7_AntiSpam\Core\Filters\Filter_Honeyform;
-use CF7_AntiSpam\Core\Filters\Filter_Bad_Words;
-use CF7_AntiSpam\Core\Filters\Filter_Time_Submission;
 use CF7_AntiSpam\Core\Filters\Filter_Bad_Email_Strings;
-use CF7_AntiSpam\Core\Filters\Filter_User_Agent;
+use CF7_AntiSpam\Core\Filters\Filter_Bad_IP;
+use CF7_AntiSpam\Core\Filters\Filter_Bad_Words;
+use CF7_AntiSpam\Core\Filters\Filter_Empty_IP;
+use CF7_AntiSpam\Core\Filters\Filter_Honeyform;
 use CF7_AntiSpam\Core\Filters\Filter_Honeypot;
+use CF7_AntiSpam\Core\Filters\Filter_IP_Allowlist;
 use CF7_AntiSpam\Core\Filters\Filter_IP_Blocklist_History;
+use CF7_AntiSpam\Core\Filters\Filter_Time_Submission;
+use CF7_AntiSpam\Core\Filters\Filter_User_Agent;
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use PHPUnit\Framework\TestCase;
 
 class CF7_AntiSpam_FiltersTest extends TestCase {
@@ -111,7 +111,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		// Assert
 		$this->assertTrue( $result['is_spam'], 'Should be spam if IP is missing.' );
 		$this->assertArrayHasKey( 'no_ip', $result['reasons'] );
-		$this->assertEquals( 1, $result['spam_score'] );
+		$this->assertEquals( 0, $result['spam_score'] );
 	}
 
 	public function test_filter_empty_ip_passes_valid_ip() {
@@ -145,7 +145,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 		// Assert
 		$this->assertTrue( $result['is_spam'] );
-		$this->assertStringContainsString( '5.6.7.8', $result['reasons']['bad_ip'] );
+		$this->assertStringContainsString( '5.6.7.8', $result['reasons']['bad_ip'][0] );
 	}
 
 	public function test_filter_bad_ip_passes_clean_ip() {
@@ -182,7 +182,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 		// Assert
 		$this->assertTrue( $result['is_spam'] );
-		$this->assertEquals( 'true', $result['reasons']['honeyform'] );
+		$this->assertEquals( 'true', $result['reasons']['honeyform'][0] );
 	}
 
 	public function test_filter_honeyform_passes_empty_field() {
@@ -219,8 +219,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$result = $filter->check( $data );
 
 		// Assert
-		$this->assertTrue( $result['spam_score'] >= 5 );
-		$this->assertStringContainsString( 'buy now', $result['reasons']['bad_word'] );
+		$this->assertEquals( 0, $result['spam_score'] );
+		$this->assertStringContainsString( 'buy now', $result['reasons']['bad_word'][0] );
 	}
 
 	public function test_filter_bad_words_passes_clean_message() {
@@ -259,9 +259,9 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 		// Assert
 		$this->assertFalse( $result['is_spam'] ); // False because the time check doesn't force the mail to be spam if wrong
-		$this->assertEquals( $data['options']['score']['_time'], $result['spam_score'] ); // Assert that the spam score is correct
+		$this->assertEquals( 0, $result['spam_score'] ); // Individual filters return 0, score is calculated centrally
 		$this->assertIsArray( $result['reasons'] ); // Assert that the reasons are not empty
-		$this->assertEquals( $time_elapsed, $result['reasons']['min_time_elapsed'] ); // Assert that the time elapsed is correct
+		$this->assertEquals( $time_elapsed, $result['reasons']['min_time_elapsed'][0] ); // Assert that the time elapsed is correct
 	}
 
 	// -------------------------------------------------------------------------
@@ -281,8 +281,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$result = $filter->check( $data );
 
 		// Assert
-		$this->assertEquals( 4, $result['spam_score'] );
-		$this->assertStringContainsString( 'spam.com', $result['reasons']['email_blocklisted'] );
+		$this->assertEquals( 0, $result['spam_score'] );
+		$this->assertStringContainsString( 'spam.com', $result['reasons']['email_blocklisted'][0] );
 	}
 
 	public function test_filter_bad_email_strings_passes_good_email() {
@@ -316,8 +316,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$result = $filter->check( $data );
 
 		// Assert
-		$this->assertEquals( 2, $result['spam_score'] );
-		$this->assertEquals( 'empty', $result['reasons']['user_agent'] );
+		$this->assertEquals( 0, $result['spam_score'] );
+		$this->assertEquals( 'empty', $result['reasons']['user_agent'][0] );
 	}
 
 	public function test_filter_user_agent_detects_blacklisted_bot() {
@@ -333,8 +333,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$result = $filter->check( $data );
 
 		// Assert
-		$this->assertEquals( 3, $result['spam_score'] );
-		$this->assertStringContainsString( 'BadBot', $result['reasons']['user_agent'] );
+		$this->assertEquals( 0, $result['spam_score'] );
+		$this->assertStringContainsString( 'BadBot', $result['reasons']['user_agent'][0] );
 	}
 
 	public function test_filter_user_agent_passes_valid_ua() {
@@ -378,8 +378,8 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$result = $filter->check( $data );
 
 		// Assert
-		$this->assertEquals( 10, $result['spam_score'] );
-		$this->assertStringContainsString( 'hp_email', $result['reasons']['honeypot'] );
+		$this->assertEquals( 0, $result['spam_score'] );
+		$this->assertStringContainsString( 'hp_email', $result['reasons']['honeypot'][0] );
 	}
 
 	public function test_filter_honeypot_skips_if_post_empty() {
@@ -406,13 +406,13 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$data['options']['max_attempts'] = 3;
 		$data['remote_ip'] = '100.100.100.101';
 		$blocklist = new CF7_Antispam_Blocklist();
-		
+
 		// Case 1: Status 1 (Below Threshold)
 		$blocklist->cf7a_add_to_blocklist( '100.100.100.101', 1 );
-		
+
 		$filter = new Filter_IP_Blocklist_History();
 		$result = $filter->check( $data );
-		
+
 		$this->assertFalse( $result['is_spam'], 'Status 1 should NOT be spam when max is 3' );
 		$this->assertEquals( 0, $result['spam_score'] );
 
@@ -425,7 +425,7 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 		$blocklist->cf7a_add_to_blocklist( '100.100.100.101', 3 );
 		$result = $filter->check( $data );
 		$this->assertTrue( $result['is_spam'], 'Status 3 SHOULD be spam when max is 3' );
-		$this->assertEquals( 3, $result['reasons']['blocklisted'] );
+		$this->assertEquals( 3, $result['reasons']['blocklisted'][0] );
 
 		// Case 4: Status 5 (Above Threshold)
 		$blocklist->cf7a_add_to_blocklist( '100.100.100.101', 5 );
