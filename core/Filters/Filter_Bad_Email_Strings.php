@@ -51,14 +51,12 @@ class Filter_Bad_Email_Strings extends Abstract_CF7_AntiSpam_Filter {
 					$bad_email_string = substr( $bad_email_string, 6 );
 					// @ to suppress warnings if the user writes an invalid regex
 					$result = @preg_match( $bad_email_string, $email );
-					if ( $result === 1 ) {
+					if ( 1 === $result ) {
 						$is_match = true;
 					}
-				} else {
+				} elseif ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
 					// Fallback to the standard substring check
-					if ( false !== stripos( strtolower( $email ), strtolower( $bad_email_string ) ) ) {
-						$is_match = true;
-					}
+					$is_match = true;
 				}
 
 				if ( $is_match ) {
