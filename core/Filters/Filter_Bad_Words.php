@@ -32,20 +32,18 @@ class Filter_Bad_Words extends Abstract_CF7_AntiSpam_Filter {
 			return $data;
 		}
 
-		$score_bad_string   = floatval( $options['score']['_bad_string'] );
 		$bad_words          = $options['bad_words_list'] ?? array();
 		$message_compressed = CF7_AntiSpam_Rules::cf7a_simplify_text( $data['message'] );
 
 		foreach ( $bad_words as $bad_word ) {
 			if ( false !== stripos( $message_compressed, CF7_AntiSpam_Rules::cf7a_simplify_text( $bad_word ) ) ) {
-				$data['spam_score']           += $score_bad_string;
 				$data['reasons']['bad_word'][] = $bad_word;
 			}
 		}
 
-		if ( ! empty( $data['reasons']['bad_word'] ) && is_array( $data['reasons']['bad_word'] ) ) {
-			$data['reasons']['bad_word'] = implode( ',', $data['reasons']['bad_word'] );
-			cf7a_log( "{$data['remote_ip']} has bad word in message " . $data['reasons']['bad_word'], 1 );
+		if ( ! empty( $data['reasons']['bad_word'] ) ) {
+			$logged_reasons = implode( ',', $data['reasons']['bad_word'] );
+			cf7a_log( "{$data['remote_ip']} has bad word in message " . $logged_reasons, 1 );
 		}
 		return $data;
 	}

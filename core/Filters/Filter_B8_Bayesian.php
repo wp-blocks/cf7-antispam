@@ -58,9 +58,8 @@ class Filter_B8_Bayesian extends Abstract_CF7_AntiSpam_Filter {
 
 		// Ensure B8 is enabled and there is a message to check
 		if ( $options['enable_b8'] ) {
-			$b8_threshold    = floatval( $options['b8_threshold'] );
-			$b8_threshold    = $b8_threshold > 0 && $b8_threshold < 1 ? $b8_threshold : 1;
-			$score_detection = floatval( $options['score']['_detection'] );
+			$b8_threshold = floatval( $options['b8_threshold'] );
+			$b8_threshold = $b8_threshold > 0 && $b8_threshold < 1 ? $b8_threshold : 1;
 
 			// Store the spam score before B8
 			$was_spam_before_b8 = $data['spam_score'] >= 1;
@@ -70,9 +69,8 @@ class Filter_B8_Bayesian extends Abstract_CF7_AntiSpam_Filter {
 
 			// If the rating is high, add to spam score
 			if ( $rating >= $b8_threshold ) {
-				$data['reasons']['b8'] = $rating;
-				$data['spam_score']   += $score_detection;
-				$data['is_spam']       = true;
+				$data['reasons']['b8'][] = $rating;
+				$data['is_spam']         = true;
 				cf7a_log( "B8 rating $rating / 1", 1 );
 			}
 

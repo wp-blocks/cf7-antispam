@@ -30,9 +30,8 @@ class Filter_Empty_IP extends Abstract_CF7_AntiSpam_Filter {
 			// Fallback to CF7 IP if main is missing, but flag as spam
 			$data['remote_ip'] = $data['cf7_remote_ip'] ? $data['cf7_remote_ip'] : null;
 
-			++$data['spam_score'];
-			$data['is_spam']          = true;
-			$data['reasons']['no_ip'] = 'Address field empty';
+			$data['is_spam']            = true;
+			$data['reasons']['no_ip'][] = 'Address field empty';
 
 			cf7a_log( "ip address field of {$data['remote_ip']} is empty, this means it has been modified, removed or hacked!", 1 );
 		}

@@ -27,9 +27,8 @@ class Filter_Plugin_Version extends Abstract_CF7_AntiSpam_Filter {
 	 * @return array The data array.
 	 */
 	public function process( array $data ): array {
-		$options              = $data['options'];
-		$prefix               = $this->get_prefix( $options );
-		$score_fingerprinting = floatval( $options['score']['_fingerprinting'] );
+		$options = $data['options'];
+		$prefix  = $this->get_prefix( $options );
 
 		// The right way to do this is BEFORE decrypting and THEN sanitize, because sanitized data are stripped of any special characters
 		$version_key = esc_attr( $prefix . 'version' );
@@ -38,8 +37,7 @@ class Filter_Plugin_Version extends Abstract_CF7_AntiSpam_Filter {
 
 		// CASE A: Version field is completely missing or empty -> SPAM
 		if ( ! $cf7a_version ) {
-			$data['spam_score']              += $score_fingerprinting;
-			$data['reasons']['data_mismatch'] = sprintf( "Version mismatch (empty) != '%s'", CF7ANTISPAM_VERSION );
+			$data['reasons']['data_mismatch'][] = sprintf( "Version mismatch (empty) != '%s'", CF7ANTISPAM_VERSION );
 			cf7a_log( sprintf( "The 'version' field submitted by %s is empty", $data['remote_ip'] ), 1 );
 
 			return $data;
@@ -100,8 +98,7 @@ class Filter_Plugin_Version extends Abstract_CF7_AntiSpam_Filter {
 			// --- REAL SPAM / INVALID VERSION ---
 			// Either the grace period expired, or the version is completely random
 
-			$data['spam_score']              += $score_fingerprinting;
-			$data['reasons']['data_mismatch'] = "Version mismatch '$cf7a_version' != '" . CF7ANTISPAM_VERSION . "'";
+			$data['reasons']['data_mismatch'][] = "Version mismatch '$cf7a_version' != '" . CF7ANTISPAM_VERSION . "'";
 			cf7a_log( "The 'version' field submitted by {$data['remote_ip']} is mismatching (expired grace period or invalid)", 1 );
 		}//end if
 

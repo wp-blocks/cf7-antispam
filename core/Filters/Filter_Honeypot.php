@@ -41,20 +41,18 @@ class Filter_Honeypot extends Abstract_CF7_AntiSpam_Filter {
 		if ( ! empty( $mail_tag_text ) ) {
 			$input_names    = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
 			$mail_tag_count = count( $input_names );
-			$score_honeypot = floatval( $options['score']['_honeypot'] );
 
 			for ( $i = 0; $i < $mail_tag_count; $i++ ) {
 				$val          = $this->get_posted_value( $input_names[ $i ] );
 				$has_honeypot = ! empty( $val );
 				if ( $has_honeypot ) {
-					$data['spam_score']           += $score_honeypot;
 					$data['reasons']['honeypot'][] = $input_names[ $i ];
 				}
 			}
 
-			if ( ! empty( $data['reasons']['honeypot'] ) && is_array( $data['reasons']['honeypot'] ) ) {
-				$data['reasons']['honeypot'] = implode( ', ', $data['reasons']['honeypot'] );
-				cf7a_log( "The {$data['remote_ip']} has filled the input honeypot(s) {$data['reasons']['honeypot']}", 1 );
+			if ( ! empty( $data['reasons']['honeypot'] ) ) {
+				$logged_reasons = implode( ', ', $data['reasons']['honeypot'] );
+				cf7a_log( "The {$data['remote_ip']} has filled the input honeypot(s) {$logged_reasons}", 1 );
 			}
 		}
 		return $data;

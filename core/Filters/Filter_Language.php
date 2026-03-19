@@ -32,8 +32,7 @@ class Filter_Language extends Abstract_CF7_AntiSpam_Filter {
 			return $data;
 		}
 
-		$prefix          = $this->get_prefix( $options );
-		$score_detection = floatval( $options['score']['_detection'] );
+		$prefix = $this->get_prefix( $options );
 
 		$languages                     = array();
 		$languages['browser_language'] = $this->get_posted_value( $prefix . 'browser_language' );
@@ -43,24 +42,21 @@ class Filter_Language extends Abstract_CF7_AntiSpam_Filter {
 		$languages['accept_language'] = isset( $_POST[ $prefix . '_language' ] ) ? sanitize_text_field( wp_unslash( cf7a_decrypt( $_POST[ $prefix . '_language' ], $options['cf7a_cipher'] ) ) ) : null;
 
 		if ( empty( $languages['browser_language'] ) ) {
-			$data['spam_score']                 += $score_detection;
-			$data['reasons']['browser_language'] = 'missing browser language';
+			$data['reasons']['browser_language'][] = 'missing browser language';
 		} else {
 			$languages_locales    = cf7a_get_browser_languages_locales_array( $languages['browser_language'] );
 			$languages['browser'] = $languages_locales['languages'];
 		}
 
 		if ( empty( $languages['accept_language'] ) ) {
-			$data['spam_score']               += $score_detection;
-			$data['reasons']['language_field'] = 'missing language field';
+			$data['reasons']['language_field'][] = 'missing language field';
 		} else {
 			$languages['accept'] = cf7a_get_accept_language_array( $languages['accept_language'] );
 		}
 
 		if ( ! empty( $languages['accept'] ) && ! empty( $languages['browser'] ) ) {
 			if ( ! array_intersect( $languages['browser'], $languages['accept'] ) ) {
-				$data['spam_score']                     += $score_detection;
-				$data['reasons']['language_incoherence'] = 'languages detected not coherent';
+				$data['reasons']['language_incoherence'][] = 'languages detected not coherent';
 			}
 
 			$client_languages     = array_unique( array_merge( $languages['browser'], $languages['accept'] ) );
@@ -70,8 +66,7 @@ class Filter_Language extends Abstract_CF7_AntiSpam_Filter {
 			$language_disallowed = CF7_AntiSpam_Rules::cf7a_check_languages_locales_allowed( $client_languages, $languages_disallowed, $languages_allowed );
 
 			if ( false === $language_disallowed ) {
-				$data['spam_score']                    += $score_detection;
-				$data['reasons']['disallowed_language'] = implode( ', ', $client_languages );
+				$data['reasons']['disallowed_language'][] = implode( ', ', $client_languages );
 			}
 		}
 		return $data;

@@ -31,9 +31,8 @@ class Filter_Honeyform extends Abstract_CF7_AntiSpam_Filter {
 			$form_class = sanitize_html_class( $options['cf7a_customizations_class'] );
 
 			if ( $this->get_posted_value( '_wpcf7_' . $form_class ) !== null ) {
-				++$data['spam_score'];
-				$data['is_spam']              = true;
-				$data['reasons']['honeyform'] = 'true';
+				$data['is_spam']                = true;
+				$data['reasons']['honeyform'][] = 'true';
 			}
 		}
 		return $data;

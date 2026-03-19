@@ -27,22 +27,20 @@ class Filter_Bad_IP extends Abstract_CF7_AntiSpam_Filter {
 	 */
 	public function process( array $data ): array {
 		$options     = $data['options'];
-		$bad_ip_list = isset( $options['bad_ip_list'] ) ? $options['bad_ip_list'] : array();
+		$bad_ip_list = $options['bad_ip_list'] ?? array();
 
 		if ( intval( $options['check_bad_ip'] ) === 1 && $data['remote_ip'] ) {
 			foreach ( $bad_ip_list as $bad_ip ) {
 				$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
 				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
 				if ( $bad_ip && $data['remote_ip'] === $bad_ip ) {
-					++$data['spam_score'];
 					$data['is_spam']             = true;
 					$data['reasons']['bad_ip'][] = $bad_ip;
 				}
 			}
 
-			if ( ! empty( $data['reasons']['bad_ip'] ) && is_array( $data['reasons']['bad_ip'] ) ) {
-				$ip_string                 = implode( ', ', $data['reasons']['bad_ip'] );
-				$data['reasons']['bad_ip'] = $ip_string;
+			if ( ! empty( $data['reasons']['bad_ip'] ) ) {
+				$ip_string = implode( ', ', $data['reasons']['bad_ip'] );
 				// Flatten for log
 				cf7a_log( "The ip address {$data['remote_ip']} is listed into bad ip list (contains $ip_string)", 1 );
 			}

@@ -35,7 +35,6 @@ class Filter_Geoip extends Abstract_CF7_AntiSpam_Filter {
 		}
 
 		$geoip              = new CF7_Antispam_Geoip();
-		$score_warn         = floatval( $options['score']['_warn'] );
 		$locales_allowed    = CF7_AntiSpam_Rules::cf7a_get_languages_or_locales( $options['languages_locales']['allowed'], 'locales' );
 		$locales_disallowed = CF7_AntiSpam_Rules::cf7a_get_languages_or_locales( $options['languages_locales']['disallowed'], 'locales' );
 
@@ -48,9 +47,9 @@ class Filter_Geoip extends Abstract_CF7_AntiSpam_Filter {
 
 				if ( ! empty( $geo_data ) ) {
 					if ( false === CF7_AntiSpam_Rules::cf7a_check_languages_locales_allowed( $geo_data, $locales_disallowed, $locales_allowed ) ) {
-						$data['reasons']['geo_ip'] = $geoip_continent . '-' . $geoip_country;
-						$data['spam_score']       += $score_warn;
-						cf7a_log( "The {$data['remote_ip']} is not allowed by geoip" . $data['reasons']['geo_ip'], 1 );
+						$data['reasons']['geo_ip'][] = $geoip_continent . '-' . $geoip_country;
+						$logged_reasons              = implode( ', ', $data['reasons']['geo_ip'] );
+						cf7a_log( "The {$data['remote_ip']} is not allowed by geoip " . $logged_reasons, 1 );
 					}
 				} else {
 					// Don't add to reasons if GeoIP lookup returned no data - just log it
