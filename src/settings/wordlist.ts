@@ -11,8 +11,8 @@ import apiFetch from '@wordpress/api-fetch';
 
 interface Word {
 	token: string;
-	count_spam: number | null;
-	count_ham: number | null;
+	count_spam: string | null;
+	count_ham: string | null;
 }
 
 interface WordlistResponse {
@@ -190,8 +190,8 @@ const renderWordlist = (words: Word[]): void => {
 
 	elements.tableBody.innerHTML = words
 		.map((word) => {
-			const spamCount = word.count_spam || 0;
-			const hamCount = word.count_ham || 0;
+			const spamCount = parseInt(word.count_spam || '0', 10);
+			const hamCount = parseInt(word.count_ham || '0', 10);
 			const score = calculateScore(spamCount, hamCount);
 			const scoreClass = getScoreClass(score);
 
@@ -210,11 +210,13 @@ const renderWordlist = (words: Word[]): void => {
 					<span class="cf7a-score-badge ${scoreClass}">${(score * 100).toFixed(0)}%</span>
 				</td>
 				<td class="column-actions">
-					<button type="button" class="button button-small cf7a-edit-word" data-token="${escapeHtml(word.token)}" data-spam="${spamCount}" data-ham="${hamCount}">
-						<span class="dashicons dashicons-edit"></span>
+					<button type="button" class="button button-small button-secondary cf7a-edit-word" data-token="${escapeHtml(word.token)}" data-spam="${spamCount}" data-ham="${hamCount}" title="Edit word">
+						<span class="dashicons dashicons-edit" aria-hidden="true"></span>
+						<span class="screen-reader-text">Edit word</span>
 					</button>
-					<button type="button" class="button button-small cf7a-delete-word" data-token="${escapeHtml(word.token)}">
-						<span class="dashicons dashicons-trash"></span>
+					<button type="button" class="button button-small button-link-delete cf7a-delete-word" data-token="${escapeHtml(word.token)}" title="Delete word">
+						<span class="dashicons dashicons-trash" aria-hidden="true"></span>
+						<span class="screen-reader-text">Delete word</span>
 					</button>
 				</td>
 			</tr>
