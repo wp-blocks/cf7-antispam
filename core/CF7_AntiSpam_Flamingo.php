@@ -584,8 +584,8 @@ class CF7_AntiSpam_Flamingo {
 	 * @param int    $post_id The post ID of the post being displayed.
 	 */
 	public static function flamingo_d8_column( string $column, int $post_id ) {
-		$classification = get_post_meta( $post_id, '_cf7a_b8_classification', true );
 		if ( 'd8' === $column ) {
+			$classification = get_post_meta( $post_id, '_cf7a_b8_classification', true );
 			echo wp_kses(
 			/* translators: none is a label, please keep it short! thanks! */
 				cf7a_format_rating( 'none' === $classification ? esc_html__( 'none', 'cf7-antispam' ) : floatval( $classification ) ),
