@@ -602,7 +602,12 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 				break;
 			case 'measure':
 			default:
-				$order_clause = "(COALESCE(count_spam, 0) + COALESCE(count_ham, 0)) {$order}";
+				// Calculate spam probability: spam_count / (spam_count + ham_count)
+				// Handle division by zero by treating 0/0 as 0.5 (neutral)
+				$order_clause = "CASE 
+					WHEN (COALESCE(count_spam, 0) + COALESCE(count_ham, 0)) = 0 THEN 0.5
+					ELSE COALESCE(count_spam, 0) / (COALESCE(count_spam, 0) + COALESCE(count_ham, 0))
+				END {$order}";
 				break;
 		}
 
