@@ -3,7 +3,7 @@
 namespace CF7_AntiSpam\Admin;
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
-use CF7_AntiSpam\Core\CF7_AntiSpam_Filters;
+use CF7_AntiSpam\Core\CF7_AntiSpam_Rules;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 use Exception;
 
@@ -1255,16 +1255,16 @@ class CF7_AntiSpam_Admin_Display {
 		$performance_test = array();
 
 		if ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-			$reverse_ip = CF7_AntiSpam_Filters::cf7a_reverse_ipv4( $remote_ip );
+			$reverse_ip = CF7_AntiSpam_Rules::cf7a_reverse_ipv4( $remote_ip );
 		} elseif ( filter_var( $remote_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-			$reverse_ip = CF7_AntiSpam_Filters::cf7a_reverse_ipv6( $remote_ip );
+			$reverse_ip = CF7_AntiSpam_Rules::cf7a_reverse_ipv6( $remote_ip );
 		} else {
 			$reverse_ip = false;
 		}
 
 		if ( $reverse_ip ) {
 			foreach ( $this->options['dnsbl_list'] as $dnsbl ) {
-				$is_spam                    = CF7_AntiSpam_Filters::cf7a_check_dnsbl( $reverse_ip, $dnsbl );
+				$is_spam                    = CF7_AntiSpam_Rules::cf7a_check_dnsbl( $reverse_ip, $dnsbl );
 				$microtime                  = cf7a_microtime_float();
 				$time_taken                 = strval( round( cf7a_microtime_float() - $microtime, 5 ) );
 				$performance_test[ $dnsbl ] =
