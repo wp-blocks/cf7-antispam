@@ -4,7 +4,7 @@
 // Comments form customization
 #comments-form {
 	span.cf7a-rating-label.cf7a-tag-none {
-		@extend .cf7a-rating-label-base;
+		@extend .cf7a-rating-label;
 
 		// Custom styling for comments form
 		background-color: colors.$color__info;
