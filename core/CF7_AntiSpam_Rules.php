@@ -279,13 +279,19 @@ class CF7_AntiSpam_Rules {
 		/* Getting the message field(s) */
 		if ( ! empty( $message_tag ) ) {
 			$message_meta = cf7a_get_mail_meta( $message_tag );
-			return cf7a_maybe_split_mail_meta( $posted_data, $message_meta );
+			$message      = cf7a_maybe_split_mail_meta( $posted_data, $message_meta );
+			if ( ! empty( $message ) ) {
+				return $message;
+			}
 		}
 
 		// fallback and search for the message field
 		$found_tag = self::search_for_message_field( $mail_tags );
 		if ( $found_tag ) {
-			return cf7a_maybe_split_mail_meta( $posted_data, $found_tag );
+			$message = cf7a_maybe_split_mail_meta( $posted_data, $found_tag );
+			if ( ! empty( $message ) ) {
+				return $message;
+			}
 		}
 
 		// in this case we will create a message from the posted data removing the "short" fields (because may contain sensitive data e.g. emails, phone numbers, etc.)
