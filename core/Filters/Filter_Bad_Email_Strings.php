@@ -49,7 +49,7 @@ class Filter_Bad_Email_Strings extends Abstract_CF7_AntiSpam_Filter {
 				// Check if the string is formatted as a Regular Expression (starts and ends with '/')
 				if ( str_starts_with( $bad_email_string, 'regex:' ) ) {
 					$bad_email_string = substr( $bad_email_string, 6 );
-					// @ to suppress warnings if the user writes an invalid regex
+					// phpcs:ignore  WordPress.PHP.NoSilencedErrors.Discouraged
 					$result = @preg_match( $bad_email_string, $email );
 					if ( 1 === $result ) {
 						$is_match = true;

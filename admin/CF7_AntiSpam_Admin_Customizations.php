@@ -744,7 +744,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_print_comments_settings() {
 		printf(
 			'<p>%s</p>',
-			esc_html__( 'Extend the use of time check and b8 for the comment section.', 'cf7-antispam' )
+			esc_html__( 'Extend the use of time check and b8 for the comments form.', 'cf7-antispam' )
 		);
 	}
 

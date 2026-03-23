@@ -1,0 +1,19 @@
+@use "colors";
+@use "utils";
+
+// Comments form customization
+#comments-form {
+
+	span.cf7a-rating-label.cf7a-tag-none {
+
+		@extend .cf7a-rating-label;
+
+		// Custom styling for comments form
+		background-color: colors.$color__info;
+		border: 1px solid colors.$color__info-hover;
+
+		b {
+			font-weight: 700;
+		}
+	}
+}

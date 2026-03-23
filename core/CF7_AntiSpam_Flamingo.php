@@ -228,42 +228,70 @@ class CF7_AntiSpam_Flamingo {
 	 */
 	private static function cf7a_get_mail_field( $flamingo_post, $field ) {
 
+		$form_id = 0;
+
 		/* get the form tax using the slug we find in the flamingo message */
 		$channel = isset( $flamingo_post->meta['channel'] ) ?
-			get_term( $flamingo_post->channel, 'flamingo_inbound_channel' ) :
-			get_term_by( 'slug', $flamingo_post->channel, 'flamingo_inbound_channel' );
+			get_term_by( 'slug', $flamingo_post->channel, 'flamingo_inbound_channel' ) :
+			get_term( $flamingo_post->channel, 'flamingo_inbound_channel' );
 
 		if ( isset( $channel->slug ) ) {
 			/* get the post where are stored the form data */
 			$form_post = get_page_by_path( $channel->slug, '', 'wpcf7_contact_form' );
+			if ( $form_post ) {
+				$form_id = $form_post->ID;
+			}
+		}
 
-			/* get the additional setting of the form */
-			$additional_settings = isset( $form_post->ID ) ? self::cf7a_get_mail_additional_data( $form_post->ID ) : null;
+		if ( empty( $form_id ) ) {
+			// Fallback: check if we have it in meta (from previous versions or explicit storage)
+			$form_id = get_post_meta( $flamingo_post->id(), '_wpcf7_form_id', true );
+			if ( empty( $form_id ) && isset( $flamingo_post->meta['form_id'] ) ) {
+				$form_id = $flamingo_post->meta['form_id'];
+			}
+		}
 
-			if ( 'message' !== $field ) {
-				if ( ! empty( $additional_settings ) && ! empty( $additional_settings[ $field ] ) && ! empty( $flamingo_post->fields[ $additional_settings[ $field ] ] ) ) {
-					return esc_html( $flamingo_post->fields[ $additional_settings[ $field ] ] );
-				}
-			} else {
-				/* the message field could be multiple */
-				$message_meta = $additional_settings[ $field ] ?? false;
-				$message      = cf7a_maybe_split_mail_meta( $flamingo_post->fields, $message_meta, ' ' );
+		/* get the additional setting of the form */
+		$additional_settings = ! empty( $form_id ) ? self::cf7a_get_mail_additional_data( $form_id ) : null;
 
-				if ( ! empty( $message ) ) {
-					return esc_html( $message );
+		if ( 'message' !== $field ) {
+			if ( ! empty( $additional_settings ) && ! empty( $additional_settings[ $field ] ) && ! empty( $flamingo_post->fields[ $additional_settings[ $field ] ] ) ) {
+				return esc_html( $flamingo_post->fields[ $additional_settings[ $field ] ] );
+			}
+		} else {
+			/* 1. Try the explicit flamingo_message additional setting first */
+			$message_meta = $additional_settings[ $field ] ?? false;
+			$message      = cf7a_maybe_split_mail_meta( $flamingo_post->fields, $message_meta, ' ' );
+
+			if ( ! empty( $message ) ) {
+				return esc_html( $message );
+			}
+
+			/* 2. Load the CF7 form and use the same field-detection logic as the live spam filter. This handles any custom textarea name (your-message, comments, msg, …) without requiring the user to configure flamingo_message in the additional settings. */
+			if ( ! empty( $form_id ) && class_exists( 'WPCF7_ContactForm' ) ) {
+				$contact_form = \WPCF7_ContactForm::get_instance( $form_id );
+
+				if ( $contact_form ) {
+					$mail_tags = $contact_form->scan_form_tags();
+					// get_email_message() tries: explicit tag → name heuristic → longest-field fallback
+					$message = CF7_AntiSpam_Rules::get_email_message( '', $flamingo_post->fields, $mail_tags );
+
+					if ( ! empty( $message ) ) {
+						return esc_html( $message );
+					}
 				}
 			}
 		}//end if
 
 		if ( 'message' === $field ) {
-			cf7a_log( 'Original contact form slug not found for flamingo post id ' . $flamingo_post->id() . '. please check your contact form 7 shortcode / settings', 2 );
-
-			/* the message field could be multiple */
+			/* 3. Last resort: use the message_field stored in flamingo meta (set by cf7a_flamingo_store_additional_data) */
 			$message = ! empty( $flamingo_post->meta['message_field'] ) ? cf7a_maybe_split_mail_meta( $flamingo_post->fields, $flamingo_post->meta['message_field'], ' ' ) : '';
 
 			if ( ! empty( $message ) ) {
 				return esc_html( $message );
 			}
+
+			cf7a_log( 'Original contact form slug not found for flamingo post id ' . $flamingo_post->id() . '. please check your contact form 7 shortcode / settings', 2 );
 		}
 
 		return false;
@@ -292,8 +320,8 @@ class CF7_AntiSpam_Flamingo {
 
 		/* get the form tax using the slug we find in the flamingo message */
 		$channel = isset( $flamingo_data->meta['channel'] ) ?
-			get_term( $flamingo_data->channel, 'flamingo_inbound_channel' ) :
-			get_term_by( 'slug', $flamingo_data->channel, 'flamingo_inbound_channel' );
+			get_term_by( 'slug', $flamingo_data->channel, 'flamingo_inbound_channel' ) :
+			get_term( $flamingo_data->channel, 'flamingo_inbound_channel' );
 
 		$form_id = 0;
 		if ( isset( $channel->slug ) ) {
@@ -584,8 +612,8 @@ class CF7_AntiSpam_Flamingo {
 	 * @param int    $post_id The post ID of the post being displayed.
 	 */
 	public static function flamingo_d8_column( string $column, int $post_id ) {
-		$classification = get_post_meta( $post_id, '_cf7a_b8_classification', true );
 		if ( 'd8' === $column ) {
+			$classification = get_post_meta( $post_id, '_cf7a_b8_classification', true );
 			echo wp_kses(
 			/* translators: none is a label, please keep it short! thanks! */
 				cf7a_format_rating( 'none' === $classification ? esc_html__( 'none', 'cf7-antispam' ) : floatval( $classification ) ),

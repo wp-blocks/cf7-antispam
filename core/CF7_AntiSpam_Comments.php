@@ -32,6 +32,14 @@ class CF7_AntiSpam_Comments {
 			// Increase priority to 99 to ensure we run late and override other plugins
 			add_filter( 'preprocess_comment', array( $this, 'check_comment_spam' ), 99 );
 
+			// Hooks for status transitions (Learning/Unlearning)
+			add_action( 'transition_comment_status', array( $this, 'on_comment_status_transition' ), 10, 3 );
+
+			// Hooks for the Admin UI
+			add_filter( 'manage_edit-comments_columns', array( $this, 'add_comment_columns' ) );
+			add_action( 'manage_comments_custom_column', array( $this, 'display_comment_columns' ), 10, 2 );
+			add_filter( 'comment_text', array( $this, 'display_spam_reasons' ), 10, 2 );
+
 			// Register filters for the comment chain once
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_IP_Allowlist(), 'process' ), 5 );
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_Empty_IP(), 'process' ), 10 );
@@ -39,7 +47,7 @@ class CF7_AntiSpam_Comments {
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_Time_Submission(), 'process' ), 10 );
 			// Reuses existing time check logic
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_B8_Bayesian(), 'process' ), 20 );
-		}
+		}//end if
 	}
 
 	/**
@@ -71,6 +79,11 @@ class CF7_AntiSpam_Comments {
 		// Run the spam check chain
 		$spam_data = $this->run_spam_check( $commentdata );
 
+		// Promote to spam if the accumulated score meets the threshold (mirrors main orchestrator logic).
+		if ( ! $spam_data['is_spam'] && $spam_data['spam_score'] >= 1 ) {
+			$spam_data['is_spam'] = true;
+		}
+
 		if ( $spam_data['is_spam'] ) {
 			// Force spam status
 			add_filter(
@@ -80,7 +93,17 @@ class CF7_AntiSpam_Comments {
 				}
 			);
 
-			$this->log_spam( 'Spam detected: ' . wp_json_encode( $spam_data['reasons'] ) );
+			$reasons_string = cf7a_compress_array( $spam_data['reasons'] );
+			$this->log_spam( 'Spam detected: ' . $reasons_string );
+
+			// Store reasons and classification for the UI
+			add_action(
+				'comment_post',
+				function ( $comment_id ) use ( $spam_data, $reasons_string ) {
+					update_comment_meta( $comment_id, '_cf7a_spam_reasons', $reasons_string );
+					update_comment_meta( $comment_id, '_cf7a_b8_classification', $spam_data['spam_score'] );
+				}
+			);
 
 			// Auto-ban if enabled
 			if ( ! empty( $this->options['autostore_bad_ip'] ) && ! empty( $spam_data['remote_ip'] ) ) {
@@ -90,8 +113,14 @@ class CF7_AntiSpam_Comments {
 					$spam_data['spam_score']
 				);
 			}
-
-			return $commentdata;
+		} else {
+			// Even if not spam, store the B8 rating for ham
+			add_action(
+				'comment_post',
+				function ( $comment_id ) use ( $spam_data ) {
+					update_comment_meta( $comment_id, '_cf7a_b8_classification', $spam_data['spam_score'] );
+				}
+			);
 		}//end if
 
 		return $commentdata;
@@ -193,5 +222,78 @@ class CF7_AntiSpam_Comments {
 		}
 
 		return $cleaned_data;
+	}
+
+	/**
+	 * Handles learning when a comment is manually moved to/from spam.
+	 *
+	 * @param string $new_status The new status for the comment.
+	 * @param string $old_status The previous status for the comment.
+	 * @param object $comment    The comment object.
+	 */
+	public function on_comment_status_transition( $new_status, $old_status, $comment ) {
+		if ( $new_status === $old_status ) {
+			return;
+		}
+
+		$b8      = new CF7_AntiSpam_B8();
+		$message = $comment->comment_content;
+
+		if ( 'spam' === $new_status ) {
+			$b8->cf7a_b8_unlearn_ham( $message );
+			$b8->cf7a_b8_learn_spam( $message );
+		} elseif ( 'approved' === $new_status && 'spam' === $old_status ) {
+			$b8->cf7a_b8_unlearn_spam( $message );
+			$b8->cf7a_b8_learn_ham( $message );
+		}
+
+		// Update rating after transition
+		$new_rating = $b8->cf7a_b8_classify( $message, true );
+		update_comment_meta( $comment->comment_ID, '_cf7a_b8_classification', $new_rating );
+	}
+
+	/**
+	 * Add custom columns to the comments list.
+	 *
+	 * @param array $columns The existing columns.
+	 * @return array The columns with custom columns added.
+	 */
+	public function add_comment_columns( $columns ) {
+		$columns['cf7a_rating'] = __( 'B8 Rating', 'cf7-antispam' );
+		return $columns;
+	}
+
+	/**
+	 * Render the custom comment columns.
+	 *
+	 * @param string $column     The column name.
+	 * @param int    $comment_id The comment ID.
+	 */
+	public function display_comment_columns( $column, $comment_id ) {
+		if ( 'cf7a_rating' === $column ) {
+			$rating = get_comment_meta( $comment_id, '_cf7a_b8_classification', true );
+			echo cf7a_format_rating( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+	}
+
+	/**
+	 * Append ban reasons to the comment text if it's marked as spam.
+	 *
+	 * @param string $text    The original comment text.
+	 * @param object $comment The comment object.
+	 * @return string The modified comment text.
+	 */
+	public function display_spam_reasons( $text, $comment ) {
+		if ( is_admin() && 'spam' === $comment->comment_approved ) {
+			$reasons = get_comment_meta( $comment->comment_ID, '_cf7a_spam_reasons', true );
+			if ( $reasons ) {
+				$text .= sprintf(
+					'<div class="cf7a-spam-reason" style="color: #d63638; margin-top: 5px; font-size: 0.9em;"><strong>%s:</strong> %s</div>',
+					esc_html__( 'Ban Reasons', 'cf7-antispam' ),
+					esc_html( $reasons )
+				);
+			}
+		}
+		return $text;
 	}
 }
