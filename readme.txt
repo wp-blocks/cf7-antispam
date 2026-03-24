@@ -172,6 +172,20 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 == Changelog ==
 
+= 0.7.5 =
+* Enhancement: Added WordPress Comment Spam Protection: Extended the plugin's capabilities beyond Contact Form 7 to actively protect native WordPress comments against spam.
+* Enhancement: Added Regex support for spam filtering: You can now use Regular Expressions in your filters, providing advanced and highly flexible rules to catch complex spam patterns. (thanks to @jackrus60 for suggesting it)
+* Enhancement: Introduced custom Wordlists: Administrators can now define specific keywords to filter, giving more granular control over blocked form submissions.
+* Security: Improved email header sanitization: Automatically strip newline characters from email headers to prevent Email Header Injection vulnerabilities.
+* Security: Enhanced overall plugin security with stricter sanitization, validation, and capability checks across the codebase.
+* Enhancement: Flamingo integration improvements: Enhanced the email resending functionality to ensure better reliability and smoother recovery of false positives.
+* Enhancement: CF7 SMTP Integration: Added seamless compatibility with SMTP configurations for Contact Form 7, ensuring reliable email delivery.
+* Fix: Improved action detection: Fixed issues with form submission detection to ensure spam checks are consistently and accurately triggered across various CF7 setups. Also fixes an issue with Flamingo plugin actions (thanks to @jackrus60 for suggesting it)
+* Fix: Ensure ban reasons are properly formatted: Addressed a bug in cf7a_compress_array to guarantee that logs accurately display the specific reason for rejection.
+* Fix: Resolved iframe/sandbox restrictions: Added the allow-scripts sandbox attribute to ensure necessary scripts can execute properly in restricted preview environments. (thanks to @oceandigitals for reporting it)
+* Fix: Restricted widget visibility: Ensured dashboard widgets are now correctly restricted and only visible to users with the appropriate permissions. (thanks to @islp for reporting it)
+* Enhancement: General code consolidation and major refactoring of the core anti-spam engine for better performance and maintainability.
+
 = 0.7.4 =
 * Fix: Improve message sanitization: handle arrays, skip empty/non-string values, and refine length checks (thanks to @sleepygoth for reporting it)
 
