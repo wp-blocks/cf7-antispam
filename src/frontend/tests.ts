@@ -234,10 +234,6 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 	testCanvasIframe[3] = document.createElement('iframe');
 	testCanvasIframe[3].id = 'canvas3-iframe';
 	testCanvasIframe[3].className = 'canvased';
-	testCanvasIframe[3].setAttribute(
-		'sandbox',
-		'allow-same-origin allow-scripts'
-	);
 	testCanvas[3].append(testCanvasIframe[3]);
 
 	testCanvas[4] = document.createElement('div');
@@ -245,10 +241,6 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 	testCanvasIframe[4] = document.createElement('iframe');
 	testCanvasIframe[4].id = 'canvas4-iframe';
 	testCanvasIframe[4].className = 'canvased';
-	testCanvasIframe[4].setAttribute(
-		'sandbox',
-		'allow-same-origin allow-scripts'
-	);
 	testCanvas[4].append(testCanvasIframe[4]);
 
 	testCanvas[5] = document.createElement('div');
@@ -311,7 +303,7 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 				if (
 					void 0 === canvas2d ||
 					'function' !==
-						typeof canvasElement?.getContext('2d')?.fillText
+					typeof canvasElement?.getContext('2d')?.fillText
 				) {
 					isOkCanvas = false;
 				} else {
