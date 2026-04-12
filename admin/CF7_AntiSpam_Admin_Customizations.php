@@ -354,6 +354,41 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bad_words'
 		);
 
+		/* Section High Entropy */
+		add_settings_section(
+			'cf7a_high_entropy',
+			__( 'High Entropy / Gibberish', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_high_entropy' ),
+			'cf7a-settings'
+		);
+
+		/* Settings check_high_entropy */
+		add_settings_field(
+			'check_high_entropy',
+			__( 'Check for High Entropy / Gibberish strings', 'cf7-antispam' ),
+			array( $this, 'cf7a_check_high_entropy_callback' ),
+			'cf7a-settings',
+			'cf7a_high_entropy'
+		);
+
+		/* Settings high_entropy_min_words */
+		add_settings_field(
+			'high_entropy_min_words',
+			__( 'Minimum Words', 'cf7-antispam' ),
+			array( $this, 'cf7a_high_entropy_min_words_callback' ),
+			'cf7a-settings',
+			'cf7a_high_entropy'
+		);
+
+		/* Settings high_entropy_consecutive_consonants */
+		add_settings_field(
+			'high_entropy_consecutive_consonants',
+			__( 'Consecutive Consonants', 'cf7-antispam' ),
+			array( $this, 'cf7a_high_entropy_consecutive_consonants_callback' ),
+			'cf7a-settings',
+			'cf7a_high_entropy'
+		);
+
 		/* Section Bad Email Strings */
 		add_settings_section(
 			'cf7a_bad_email_strings',
@@ -841,6 +876,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf( '<p>%s</p>', esc_html__( 'Check if the mail message contains "bad" words, all e-mails containing one of these words in the text will be flagged. A bad string per line', 'cf7-antispam' ) );
 	}
 
+	/** It prints the high_entropy info text */
+	public function cf7a_print_section_high_entropy() {
+		printf( '<p>%s</p>', esc_html__( 'Check if the mail message contains high entropy data or gibberish. This filter catches bots that submit keyboard smashes (e.g. many consecutive consonants) or paste huge uninterrupted walls of characters into the message field.', 'cf7-antispam' ) );
+	}
+
 	/** It prints the bad_email_strings info text */
 	public function cf7a_print_section_bad_email_strings() {
 		printf( '<p>%s</p>', esc_html__( 'Check if the mail content contains a word and in this case flag this mail, one forbidden word per line', 'cf7-antispam' ) );
@@ -1257,6 +1297,11 @@ class CF7_AntiSpam_Admin_Customizations {
 			$new_input['bad_words_list'] = array();
 		}
 
+		/* high entropy */
+		$new_input['check_high_entropy']                  = isset( $input['check_high_entropy'] ) ? 1 : 0;
+		$new_input['high_entropy_min_words']              = isset( $input['high_entropy_min_words'] ) ? intval( $input['high_entropy_min_words'] ) : 5;
+		$new_input['high_entropy_consecutive_consonants'] = isset( $input['high_entropy_consecutive_consonants'] ) ? intval( $input['high_entropy_consecutive_consonants'] ) : 6;
+
 		/* email strings */
 		$new_input['check_bad_email_strings'] = isset( $input['check_bad_email_strings'] ) ? 1 : 0;
 		if ( isset( $input['bad_email_strings_list'] ) ) {
@@ -1367,7 +1412,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			$html .= sprintf(
 				'<option value="%s"%s>%s</option>',
 				sanitize_title( $value ),
-				$value === $selected ? ' selected' : '',
+				sanitize_title( $value ) === $selected ? ' selected' : '',
 				$value
 			);
 		}
@@ -1616,6 +1661,32 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<textarea id="bad_words_list" name="cf7a_options[bad_words_list]" />%s</textarea>',
 			isset( $this->options['bad_words_list'] ) && is_array( $this->options['bad_words_list'] ) ? esc_textarea( implode( "\r\n", $this->options['bad_words_list'] ) ) : ''
+		);
+	}
+
+	/** It creates a checkbox with the id of "check_high_entropy" */
+	public function cf7a_check_high_entropy_callback() {
+		printf(
+			'<input type="checkbox" id="check_high_entropy" name="cf7a_options[check_high_entropy]" %s />',
+			! empty( $this->options['check_high_entropy'] ) ? 'checked="true"' : ''
+		);
+	}
+
+	/** It creates a number input for min words */
+	public function cf7a_high_entropy_min_words_callback() {
+		printf(
+			'<input type="number" id="high_entropy_min_words" name="cf7a_options[high_entropy_min_words]" value="%s" min="1" step="1" /> <small>%s</small>',
+			isset( $this->options['high_entropy_min_words'] ) ? esc_attr( $this->options['high_entropy_min_words'] ) : 5,
+			esc_html__( 'If a message has fewer words than this, it is suspected to be a single long gibberish word. Recommended: 5', 'cf7-antispam' )
+		);
+	}
+
+	/** It creates a number input for consecutive consonants */
+	public function cf7a_high_entropy_consecutive_consonants_callback() {
+		printf(
+			'<input type="number" id="high_entropy_consecutive_consonants" name="cf7a_options[high_entropy_consecutive_consonants]" value="%s" min="2" step="1" /> <small>%s</small>',
+			isset( $this->options['high_entropy_consecutive_consonants'] ) ? esc_attr( $this->options['high_entropy_consecutive_consonants'] ) : 6,
+			esc_html__( 'The maximum number of consecutive consonants allowed before a message is flagged as unnatural. Recommended: 6', 'cf7-antispam' )
 		);
 	}
 
