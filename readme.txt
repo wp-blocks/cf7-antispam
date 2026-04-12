@@ -31,6 +31,7 @@ GeoIP - (Optional) If you need to restrict which countries or languages can emai
 ✅ Time elapsed (with min/max values)
 ✅ Prohibited words in message/email and user agent
 ✅ B8 statistical "Bayesian" spam filter
+✅ High Entropy / Gibberish checks
 ✅ Identity protection
 ✅ Webmail protection
 
@@ -171,6 +172,10 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 
 
 == Changelog ==
+
+= 0.7.6 =
+* Fix:  Resolved an issue where form submissions failed on modern desktop browsers (Chrome, Edge, Firefox) by removing the sandbox attribute from canvas fingerprinting iframes to comply with strict security policies against sandbox escaping. (thanks to @khoehne for reporting it)
+* Enhancement: Added High Entropy (Gibberish) settings to the plugin's configuration dashboard allowing fine-tuning of minimum words and consecutive consonants.
 
 = 0.7.5 =
 * Enhancement: Added WordPress Comment Spam Protection: Extended the plugin's capabilities beyond Contact Form 7 to actively protect native WordPress comments against spam.
