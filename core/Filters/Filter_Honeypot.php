@@ -31,30 +31,26 @@ class Filter_Honeypot extends Abstract_CF7_AntiSpam_Filter {
 			return $data;
 		}
 
-		$mail_tag_text = array();
-		foreach ( $data['mail_tags'] as $mail_tag ) {
-			if ( 'text' === $mail_tag['type'] || 'text*' === $mail_tag['type'] ) {
-				$mail_tag_text[] = $mail_tag['name'];
+		/*
+		 * Resolve only the honeypot field names the administrator has explicitly
+		 * configured.  No legacy defaults are injected — cf7a_get_honeypot_input_names()
+		 * now returns a clean, de-duplicated array of exactly what was saved in options.
+		 * If nothing has been configured the array will be empty and the loop is skipped.
+		 */
+		$input_names = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
+
+		foreach ( $input_names as $honeypot_name ) {
+			// Flag the submission if the explicitly-configured honeypot field is non-empty.
+			if ( ! empty( $this->get_posted_value( $honeypot_name ) ) ) {
+				$data['reasons']['honeypot'][] = $honeypot_name;
 			}
 		}
 
-		if ( ! empty( $mail_tag_text ) ) {
-			$input_names    = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
-			$mail_tag_count = count( $input_names );
-
-			for ( $i = 0; $i < $mail_tag_count; $i++ ) {
-				$val          = $this->get_posted_value( $input_names[ $i ] );
-				$has_honeypot = ! empty( $val );
-				if ( $has_honeypot ) {
-					$data['reasons']['honeypot'][] = $input_names[ $i ];
-				}
-			}
-
-			if ( ! empty( $data['reasons']['honeypot'] ) ) {
-				$logged_reasons = implode( ', ', $data['reasons']['honeypot'] );
-				cf7a_log( "The {$data['remote_ip']} has filled the input honeypot(s) {$logged_reasons}", 1 );
-			}
+		if ( ! empty( $data['reasons']['honeypot'] ) ) {
+			$logged_reasons = implode( ', ', $data['reasons']['honeypot'] );
+			cf7a_log( "The {$data['remote_ip']} has filled the input honeypot(s) {$logged_reasons}", 1 );
 		}
+
 		return $data;
 	}
 }
