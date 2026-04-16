@@ -200,34 +200,25 @@ function cf7a_add_cron_steps( $schedules ) {
 add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 
 /**
- * It adds a bunch of common honeypot input names to the list of honeypot input names
+ * Returns only the explicitly configured honeypot input names.
  *
- * @param array $custom_names The array of input names to check for.
+ * Previously this function force-merged a hardcoded list of common field names
+ * (name, email, address, zip, phone, …) into the result, causing false positives
+ * when sites used those names for real form fields.  The legacy defaults have been
+ * removed entirely: only names the administrator has deliberately configured are
+ * returned, preventing legitimate submissions from being blocked.
  *
- * @return array An array of possible input names.
+ * @since 0.7.7
+ *
+ * @param array $custom_names The honeypot field names saved in the plugin options.
+ *
+ * @return string[] Unique, re-indexed array of honeypot field names.
  */
 function cf7a_get_honeypot_input_names( $custom_names = array() ) {
-	$defaults = array(
-		'name',
-		'email',
-		'address',
-		'zip',
-		'town',
-		'phone',
-		'credit-card',
-		'ship-address',
-		'billing_company',
-		'billing_city',
-		'billing_country',
-		'email-address',
-	);
+	// Cast to array to handle a stored string and remove any empty/duplicate entries.
+	$names = array_filter( array_unique( (array) $custom_names ), 'strlen' );
 
-	return array_unique(
-		array_merge(
-			(array) $custom_names,
-			$defaults
-		)
-	);
+	return array_values( $names );
 }
 
 /**
