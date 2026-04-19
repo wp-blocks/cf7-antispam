@@ -557,21 +557,36 @@ class CF7_AntiSpam_Flamingo {
 		$options = get_option( 'cf7a_options', array() );
 
 		if ( isset( $options['check_honeypot'] ) && intval( $options['check_honeypot'] ) === 1 ) {
-			$submission             = WPCF7_Submission::get_instance();
-			$honeypot_default_names = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
+			$submission = WPCF7_Submission::get_instance();
 
 			if ( ! $submission ) {
 				return true;
 			}
 
-			$posted_data = $submission->get_posted_data();
+			/*
+			 * Collect the real field names from the current submission's contact form,
+			 * then subtract them from the full honeypot candidate list. This ensures we
+			 * never accidentally delete a legitimate field (e.g. "email") from Flamingo.
+			 */
+			$real_field_names = array();
+			$contact_form     = $submission->get_contact_form();
+			if ( $contact_form ) {
+				foreach ( $contact_form->scan_form_tags() as $tag ) {
+					if ( ! empty( $tag->name ) ) {
+						$real_field_names[] = $tag->name;
+					}
+				}
+			}
 
-			$fields = array();
+			$all_honeypot_names  = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
+			$safe_honeypot_names = array_values( array_diff( $all_honeypot_names, $real_field_names ) );
+
+			$posted_data = $submission->get_posted_data();
+			$fields      = array();
 
 			foreach ( $posted_data as $key => $field ) {
-
-				/* if a honeypot field was found into posted data delete it */
-				if ( in_array( $key, $honeypot_default_names, true ) && empty( $field ) ) {
+				/* Remove the meta entry only for confirmed-safe, empty honeypot fields. */
+				if ( in_array( $key, $safe_honeypot_names, true ) && empty( $field ) ) {
 					delete_post_meta( $result['flamingo_inbound_id'], '_field_' . $key );
 				} else {
 					$fields[ $key ] = null;

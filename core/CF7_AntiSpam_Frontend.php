@@ -172,14 +172,28 @@ class CF7_AntiSpam_Frontend {
 	 * @return string - The form elements.
 	 */
 	public function cf7a_honeypot_add( $form_elements ) {
-		/* A list of default names for the honeypot fields. */
 		$options     = get_option( 'cf7a_options', array() );
-		$input_names = ! empty( $options['honeypot_input_names'] ) ? cf7a_get_honeypot_input_names( $options['honeypot_input_names'] ) : array();
 		$input_class = ! empty( $this->options['cf7a_customizations_class'] ) ? sanitize_html_class( $this->options['cf7a_customizations_class'] ) : 'cf7a';
+
+		/* Get the full candidate list (defaults + user-defined names). */
+		$all_honeypot_names = cf7a_get_honeypot_input_names(
+			! empty( $options['honeypot_input_names'] ) ? $options['honeypot_input_names'] : array()
+		);
+
+		/*
+		 * Extract every name="…" attribute already present in the rendered form HTML,
+		 * then subtract those from the candidate list so we never inject a honeypot
+		 * that shares a name with a real form field.
+		 */
+		preg_match_all( '/\bname="([^"]+)"/', $form_elements, $name_matches );
+		$existing_field_names = ! empty( $name_matches[1] ) ? $name_matches[1] : array();
+
+		$input_names = array_values( array_diff( $all_honeypot_names, $existing_field_names ) );
+
 		/**
 		 * Controls the maximum number of honeypots.
 		 *
-		 * @example add_filter( 'cf7a_additional_max_honeypots', function() {return 42});
+		 * @example add_filter( 'cf7a_additional_max_honeypots', function() { return 42; } );
 		 *
 		 * @returns int $max_replacements - replacement count number
 		 *
@@ -187,30 +201,34 @@ class CF7_AntiSpam_Frontend {
 		 */
 		$max_replacements = min( intval( apply_filters( 'cf7a_additional_max_honeypots', 5 ) ), count( $input_names ) );
 
-		/* find the input fields */
+		/* find the text input fields */
 		preg_match_all( '/<input\s.*?>/', $form_elements, $matches );
 		$inputs = $matches[0];
 
-		/* add honeypot fields */
-		foreach ( $inputs as $i => $input ) {
-			if ( stripos( $input, 'type="text"' ) !== false ) {
-				// TODO: add set of default values
-				$honeypot_names = isset( $input_names[ $i ] ) ? $input_names[ $i ] : 'hey_' . $i;
-				$honeypot_input = sprintf(
-					'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" aria-hidden="true" tabindex="-1" />',
-					esc_attr( $honeypot_names ),
-					esc_attr( $input_class )
-				);
-				// get a random true or false
-				$rand          = wp_rand( 0, 1 );
-				$form_elements = str_replace(
-					$input,
-					$rand ? $input . $honeypot_input : $honeypot_input . $input,
-					$form_elements
-				);
-				if ( $i >= $max_replacements ) {
-					break;
-				}
+		/* add honeypot fields adjacent to each text input */
+		$hp_index = 0;
+		foreach ( $inputs as $input ) {
+			if ( stripos( $input, 'type="text"' ) === false ) {
+				continue;
+			}
+
+			$honeypot_name  = isset( $input_names[ $hp_index ] ) ? $input_names[ $hp_index ] : 'hey_' . $hp_index;
+			$honeypot_input = sprintf(
+				'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" aria-hidden="true" tabindex="-1" />',
+				esc_attr( $honeypot_name ),
+				esc_attr( $input_class )
+			);
+
+			$rand          = wp_rand( 0, 1 );
+			$form_elements = str_replace(
+				$input,
+				$rand ? $input . $honeypot_input : $honeypot_input . $input,
+				$form_elements
+			);
+
+			++$hp_index;
+			if ( $hp_index >= $max_replacements ) {
+				break;
 			}
 		}//end foreach
 

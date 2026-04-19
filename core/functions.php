@@ -200,7 +200,11 @@ function cf7a_add_cron_steps( $schedules ) {
 add_filter( 'cron_schedules', 'cf7a_add_cron_steps' );
 
 /**
- * It adds a bunch of common honeypot input names to the list of honeypot input names
+ * It adds a bunch of common honeypot input names to the list of honeypot input names.
+ *
+ * Returns the full candidate list (user-defined names merged with the legacy defaults).
+ * Callers that operate on a live form MUST subtract the form's own real field names via
+ * array_diff() before injecting or checking honeypot inputs, to avoid false positives.
  *
  * @param array $custom_names The array of input names to check for.
  *
@@ -222,10 +226,12 @@ function cf7a_get_honeypot_input_names( $custom_names = array() ) {
 		'email-address',
 	);
 
-	return array_unique(
-		array_merge(
-			(array) $custom_names,
-			$defaults
+	return array_values(
+		array_unique(
+			array_merge(
+				(array) $custom_names,
+				$defaults
+			)
 		)
 	);
 }
