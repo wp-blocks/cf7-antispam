@@ -31,16 +31,23 @@ class Filter_Honeypot extends Abstract_CF7_AntiSpam_Filter {
 			return $data;
 		}
 
-		/*
-		 * Resolve only the honeypot field names the administrator has explicitly
-		 * configured.  No legacy defaults are injected — cf7a_get_honeypot_input_names()
-		 * now returns a clean, de-duplicated array of exactly what was saved in options.
-		 * If nothing has been configured the array will be empty and the loop is skipped.
-		 */
-		$input_names = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
+		/* Collect every real field name registered in this form (any tag type). */
+		$real_field_names = array();
+		foreach ( $data['mail_tags'] as $mail_tag ) {
+			if ( ! empty( $mail_tag['name'] ) ) {
+				$real_field_names[] = $mail_tag['name'];
+			}
+		}
 
-		foreach ( $input_names as $honeypot_name ) {
-			// Flag the submission if the explicitly-configured honeypot field is non-empty.
+		/*
+		 * Get the full candidate list, then subtract any name that belongs to a
+		 * real form field. This prevents false positives when a site uses field
+		 * names like "email" or "phone" that overlap with the legacy defaults.
+		 */
+		$all_honeypot_names  = cf7a_get_honeypot_input_names( $options['honeypot_input_names'] );
+		$safe_honeypot_names = array_values( array_diff( $all_honeypot_names, $real_field_names ) );
+
+		foreach ( $safe_honeypot_names as $honeypot_name ) {
 			if ( ! empty( $this->get_posted_value( $honeypot_name ) ) ) {
 				$data['reasons']['honeypot'][] = $honeypot_name;
 			}
