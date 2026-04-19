@@ -30,7 +30,7 @@ class Filter_High_Entropy extends Abstract_CF7_AntiSpam_Filter {
 		}
 
 		$options = $data['options'];
-		if ( intval( $options['check_high_entropy'] ) !== 1 ) {
+		if ( empty( $options['check_high_entropy'] ) || intval( $options['check_high_entropy'] ) !== 1 ) {
 			return $data;
 		}
 
