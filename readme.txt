@@ -4,7 +4,7 @@ Tags: antispam, honeypot, geoip, security
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.7.5
+Stable tag: 0.7.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,9 +24,9 @@ GeoIP - (Optional) If you need to restrict which countries or languages can emai
 ✅ Browser Fingerprinting
 ✅ Language checks (Geo-ip, http headers and browser)
 ✅ Honeypot
-️🆕 Honeyform*
-✅ Domain Name System Blackhole List (aka DNSBL)
-✅ blocklists (with automatic ban after N failed attempts, user defined ip exclusion list)
+️✅ Honeyform*
+✅ Domain Name System Blackhole List (DNSBL)
+✅ Blocklists (with automatic ban after N failed attempts, user defined ip exclusion list)
 ✅ Hidden fields with encrypted unique hash
 ✅ Time elapsed (with min/max values)
 ✅ Prohibited words in message/email and user agent
@@ -174,8 +174,11 @@ Enable **extended debug mode** ("CF7ANTISPAM_DEBUG" has to be enabled) - disable
 == Changelog ==
 
 = 0.7.6 =
-* Fix:  Resolved an issue where form submissions failed on modern desktop browsers (Chrome, Edge, Firefox) by removing the sandbox attribute from canvas fingerprinting iframes to comply with strict security policies against sandbox escaping. (thanks to @khoehne for reporting it)
+* Fix:  Resolved an issue where form submissions failed on modern desktop browsers (Chrome, Edge, Firefox) by removing the sandbox attribute from canvas fingerprinting iframes to comply with strict security policies against sandbox escaping. (thanks to @khoehne and @heikoppi for reporting it)
 * Enhancement: Added High Entropy (Gibberish) settings to the plugin's configuration dashboard allowing fine-tuning of minimum words and consecutive consonants.
+* Fix: Resolved an issue where the honeyform position dropdown selection did not reflect the saved value.
+* Fix: Eliminated severe false positives caused by `cf7a_get_honeypot_input_names()` force-merging legacy common field names (email, zip, phone, name, address, …) into every honeypot check. The function now returns only the names explicitly configured by the administrator, so legitimate form fields can no longer be mistaken for honeypots. (thanks to @heikoppi and @khoehne for reporting it)
+* Fix: Cleaned up dead code in `Filter_Honeypot::process()`: removed the unused `$mail_tag_text` collection and the outer guard that silently suppressed the honeypot check on forms without text-type tags. The filter now reliably checks only the user-configured honeypot field names on every submission.
 
 = 0.7.5 =
 * Enhancement: Added WordPress Comment Spam Protection: Extended the plugin's capabilities beyond Contact Form 7 to actively protect native WordPress comments against spam.
