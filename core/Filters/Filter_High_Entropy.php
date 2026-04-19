@@ -30,7 +30,7 @@ class Filter_High_Entropy extends Abstract_CF7_AntiSpam_Filter {
 		}
 
 		$options = $data['options'];
-		if ( intval( $options['check_bad_email_strings'] ) !== 1 || empty( $data['emails'] ) ) {
+		if ( empty( $options['check_high_entropy'] ) || intval( $options['check_high_entropy'] ) !== 1 ) {
 			return $data;
 		}
 
@@ -43,14 +43,17 @@ class Filter_High_Entropy extends Abstract_CF7_AntiSpam_Filter {
 		$is_spam = false;
 		$reasons = array();
 
+		$min_words  = isset( $options['high_entropy_min_words'] ) ? intval( $options['high_entropy_min_words'] ) : 5;
+		$consonants = isset( $options['high_entropy_consecutive_consonants'] ) ? intval( $options['high_entropy_consecutive_consonants'] ) : 6;
+
 		// The email should have a minimum number of words
-		if ( str_word_count( $message_clean ) < 5 ) {
+		if ( str_word_count( $message_clean ) < $min_words ) {
 			$is_spam   = true;
 			$reasons[] = 'single_long_gibberish_word';
 		}
 
-		// Unnatural consecutive consonants (6 or more in a row)
-		if ( ! $is_spam && preg_match( '/[bcdfghjklmnpqrstvwxyz]{6,}/i', $message_clean ) ) {
+		// Unnatural consecutive consonants (e.g. 6 or more in a row)
+		if ( ! $is_spam && preg_match( '/[bcdfghjklmnpqrstvwxyz]{' . $consonants . ',}/i', $message_clean ) ) {
 			$is_spam   = true;
 			$reasons[] = 'high_entropy_consonants';
 		}
