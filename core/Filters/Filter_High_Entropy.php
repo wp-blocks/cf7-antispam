@@ -53,7 +53,7 @@ class Filter_High_Entropy extends Abstract_CF7_AntiSpam_Filter {
 		}
 
 		// Unnatural consecutive consonants (e.g. 6 or more in a row)
-		if ( ! $is_spam && preg_match( '/[bcdfghjklmnpqrstvwxyz]{' . $consonants . ',}/i', $message_clean ) ) {
+		if ( preg_match( '/[bcdfghjklmnpqrstvwxyz]{' . $consonants . ',}/i', $message_clean ) ) {
 			$is_spam   = true;
 			$reasons[] = 'high_entropy_consonants';
 		}
