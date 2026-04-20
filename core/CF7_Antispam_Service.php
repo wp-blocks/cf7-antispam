@@ -12,6 +12,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Integration class from Contact Form 7
  */

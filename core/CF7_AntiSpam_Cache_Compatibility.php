@@ -10,6 +10,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * A class that handles cache compatibility
  */

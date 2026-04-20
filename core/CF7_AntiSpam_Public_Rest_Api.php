@@ -10,6 +10,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WP_REST_Controller;
 use WP_REST_Server;
 

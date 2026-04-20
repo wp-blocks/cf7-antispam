@@ -1,5 +1,4 @@
 <?php
-
 // SPDX-FileCopyrightText: 2009 Oliver Lillie <ollie@buggedcom.co.uk>
 // SPDX-FileCopyrightText: 2006-2021 Tobias Leupold <tl at stonemx dot de>
 //
@@ -12,6 +11,8 @@
  */
 
 namespace b8;
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 spl_autoload_register(
     function ($class) {

@@ -10,6 +10,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WP_Query;
 use WPCF7_ContactForm;
 use WPCF7_Submission;

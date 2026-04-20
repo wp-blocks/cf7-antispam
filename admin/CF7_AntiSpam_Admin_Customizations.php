@@ -2,6 +2,10 @@
 
 namespace CF7_AntiSpam\Admin;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 use WP_Query;

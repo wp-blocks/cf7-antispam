@@ -10,6 +10,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Uninstaller;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Updater;
@@ -604,7 +608,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			default:
 				// Calculate spam probability: spam_count / (spam_count + ham_count)
 				// Handle division by zero by treating 0/0 as 0.5 (neutral)
-				$order_clause = "CASE 
+				$order_clause = "CASE
 					WHEN (COALESCE(count_spam, 0) + COALESCE(count_ham, 0)) = 0 THEN 0.5
 					ELSE COALESCE(count_spam, 0) / (COALESCE(count_spam, 0) + COALESCE(count_ham, 0))
 				END {$order}";
@@ -612,7 +616,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		// Get total count
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM %i WHERE {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -621,7 +625,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		);
 
 		// Get paginated results
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$words = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT token, count_spam, count_ham FROM %i WHERE {$where} ORDER BY {$order_clause} LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
