@@ -294,7 +294,7 @@ class CF7_Antispam_Blocklist {
 		$table_name = $wpdb->prefix . 'cf7a_blocklist';
 
 		// Truncate the table
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$result = $wpdb->query( "TRUNCATE TABLE {$table_name}" );
 
 		return false !== $result;
