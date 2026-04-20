@@ -2,6 +2,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Flamingo_Inbound_Message;
 use WP_Query;
 use WPCF7_ContactForm;

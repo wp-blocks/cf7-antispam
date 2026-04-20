@@ -149,7 +149,9 @@ class CF7_AntiSpam_Updater {
 			)
 		);
 		if ( ! $has_blacklist_modified_col ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->query(
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 				$wpdb->prepare( 'ALTER TABLE %i ADD `modified` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP;', $blacklist_table )
 			);
 
@@ -171,7 +173,9 @@ class CF7_AntiSpam_Updater {
 			)
 		);
 		if ( ! $has_blacklist_created_col ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->query(
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 				$wpdb->prepare( 'ALTER TABLE %i ADD `created` datetime DEFAULT CURRENT_TIMESTAMP;', $blacklist_table )
 			);
 
@@ -226,6 +230,7 @@ class CF7_AntiSpam_Updater {
 
 			if ( $has_blocklist_table !== $blocklist_table ) {
 				// Rename the table
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->query(
 					$wpdb->prepare( 'RENAME TABLE %i TO %i', $blacklist_table, $blocklist_table )
 				);
@@ -233,7 +238,7 @@ class CF7_AntiSpam_Updater {
 				cf7a_log( 'CF7-antispam updated to 0.7.3: cf7a_blacklist table renamed to cf7a_blocklist', 1 );
 				$updated = true;
 			}
-		}
+		}//end if
 
 		if ( array_key_exists( 'ip_whitelist', $this->current_options ) ) {
 			$this->current_options['cf7a_version'] = $this->hc_version;

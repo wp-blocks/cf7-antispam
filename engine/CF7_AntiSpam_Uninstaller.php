@@ -26,7 +26,7 @@ class CF7_AntiSpam_Uninstaller {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'cf7a_blocklist';
-		$result = $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
+		$result     = $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
 
 		return false !== $result;
 	}

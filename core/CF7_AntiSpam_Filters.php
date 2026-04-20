@@ -10,6 +10,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use CF7_AntiSpam\Core\Filters\Filter_B8_Bayesian;
 use CF7_AntiSpam\Core\Filters\Filter_Bad_Email_Strings;
 use CF7_AntiSpam\Core\Filters\Filter_Bad_IP;

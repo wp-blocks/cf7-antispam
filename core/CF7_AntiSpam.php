@@ -16,6 +16,10 @@
 
 namespace CF7_AntiSpam\Core;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Core;
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
