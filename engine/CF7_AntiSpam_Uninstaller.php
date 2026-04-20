@@ -24,9 +24,11 @@ class CF7_AntiSpam_Uninstaller {
 	 */
 	public static function cf7a_clean_blocklist() {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$r = $wpdb->query( "TRUNCATE TABLE `{$wpdb->prefix}cf7a_blocklist`" );
-		return ! is_wp_error( $r );
+
+		$table_name = $wpdb->prefix . 'cf7a_blocklist';
+		$result = $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
+
+		return false !== $result;
 	}
 
 	/**
