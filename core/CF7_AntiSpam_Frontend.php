@@ -231,7 +231,7 @@ class CF7_AntiSpam_Frontend {
 			 */
 			$template = apply_filters(
 				'cf7a_honeypot_input_template',
-				'<input type="text" name="{name}" value="" autocomplete="off" class="{class}" aria-hidden="true" tabindex="-1" />',
+				'<input type="text" name="{name}" value="" autocomplete="fill" class="{class}" aria-hidden="true" tabindex="-1" />',
 				$replacements
 			);
 
