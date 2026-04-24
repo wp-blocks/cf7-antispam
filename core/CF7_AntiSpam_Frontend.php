@@ -216,11 +216,24 @@ class CF7_AntiSpam_Frontend {
 				continue;
 			}
 
-			$honeypot_name  = isset( $input_names[ $hp_index ] ) ? $input_names[ $hp_index ] : 'hey_' . $hp_index;
+			/**
+			 * Filters the honeypot input template string.
+			 *
+			 * @since 0.6.0
+			 *
+			 * @param string $template The honeypot input template string.
+			 */
+			$template = apply_filters(
+				'cf7a_honeypot_input_template',
+				'<input type="text" name="%name$s" value="" autocomplete="fill" class="%class$s" aria-hidden="true" tabindex="-1" />'
+			);
+
 			$honeypot_input = sprintf(
-				'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" aria-hidden="true" tabindex="-1" />',
-				esc_attr( $honeypot_name ),
-				esc_attr( $input_class )
+				$template,
+				array(
+					'name'  => $input_names[ $hp_index ] ?? cf7a_generate_random_string( 3 ) . '_' . $hp_index,
+					'class' => esc_attr( $input_class ),
+				)
 			);
 
 			$rand          = wp_rand( 0, 1 );
