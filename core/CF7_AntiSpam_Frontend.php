@@ -216,12 +216,27 @@ class CF7_AntiSpam_Frontend {
 				continue;
 			}
 
-			$honeypot_name  = isset( $input_names[ $hp_index ] ) ? $input_names[ $hp_index ] : 'hey_' . $hp_index;
-			$honeypot_input = sprintf(
-				'<input type="text" name="%1$s" value="" autocomplete="fill" class="%2$s" aria-hidden="true" tabindex="-1" />',
-				esc_attr( $honeypot_name ),
-				esc_attr( $input_class )
+			$replacements = array(
+				'{name}'  => $input_names[ $hp_index ] ?? ( cf7a_generate_random_string( 3 ) . '_' . $hp_index ),
+				'{class}' => esc_attr( $input_class ),
 			);
+
+			/**
+			 * Filters the honeypot input template string.
+			 *
+			 * @since 0.6.0
+			 *
+			 * @param string $template     The HTML template.
+			 * @param array  $replacements The data available for replacement.
+			 */
+			$template = apply_filters(
+				'cf7a_honeypot_input_template',
+				'<input type="text" name="{name}" value="" autocomplete="fill" class="{class}" aria-hidden="true" tabindex="-1" />',
+				$replacements
+			);
+
+			// Perform the replacement in a compact, readable way
+			$honeypot_input = strtr( $template, $replacements );
 
 			$rand          = wp_rand( 0, 1 );
 			$form_elements = str_replace(

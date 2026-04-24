@@ -542,3 +542,14 @@ function cf7a_str_array_to_uint_array( $str_array ) {
 		)
 	);
 }
+
+/**
+ * Create a random string
+ *
+ * @param int $length The length of the string to generate.
+ *
+ * @return string The generated string.
+ */
+function cf7a_generate_random_string( int $length = 10 ): string {
+	return substr( wp_generate_password( $length, false ), 0, $length );
+}
