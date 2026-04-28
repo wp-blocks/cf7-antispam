@@ -508,7 +508,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		/* Enable honeyform */
 		add_settings_field(
 			'check_honeyform',
-			__( 'Add an hidden form inside the page content', 'cf7-antispam' ),
+			__( 'Enable Proactive Honeyform (Bot Trap)', 'cf7-antispam' ),
 			array( $this, 'cf7a_enable_honeyform_callback' ),
 			'cf7a-settings',
 			'cf7a_honeyform'
@@ -590,6 +590,32 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_identity_protection_wp_callback' ),
 			'cf7a-settings',
 			'cf7a_identity_protection'
+		);
+
+		/* Section Endpoint Obfuscation */
+		add_settings_section(
+			'cf7a_endpoint_obfuscation',
+			__( 'Endpoint Obfuscation', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_endpoint_obfuscation' ),
+			'cf7a-settings'
+		);
+
+		/* Enable endpoint obfuscation */
+		add_settings_field(
+			'obfuscate_cf7_endpoint',
+			__( 'Enable CF7 Endpoint Obfuscation', 'cf7-antispam' ),
+			array( $this, 'cf7a_obfuscate_endpoint_callback' ),
+			'cf7a-settings',
+			'cf7a_endpoint_obfuscation'
+		);
+
+		/* Custom Endpoint Slug */
+		add_settings_field(
+			'cf7a_endpoint_slug',
+			__( 'Custom REST Namespace Slug', 'cf7-antispam' ),
+			array( $this, 'cf7a_endpoint_slug_callback' ),
+			'cf7a-settings',
+			'cf7a_endpoint_obfuscation'
 		);
 
 		/* Section b8 */
@@ -931,6 +957,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It prints the user protection info text */
 	public function cf7a_print_identity_protection() {
 		printf( '<p>%s</p>', esc_html__( 'Harden your site against automated enumeration and data harvesting. User protection disable the XML-RPC protocol, restrict unauthenticated access to REST API user directories, and block author enumeration. WordPress protection option, on the other hand, strip generator meta tags to hide your footprint and enforce strict HTTP security headers (HSTS, SAMEORIGIN, nosniff, Referrer-Policy).', 'cf7-antispam' ) );
+	}
+
+	/** It prints the endpoint obfuscation info text */
+	public function cf7a_print_endpoint_obfuscation() {
+		printf( '<p>%s</p>', esc_html__( 'Change the default Contact Form 7 REST API endpoint to block automated spam bots targeting the known namespace.', 'cf7-antispam' ) );
+		printf( '<p class="description">%s</p>', esc_html__( 'Note: If any third-party CF7 add-on hardcodes the string /contact-form-7/v1/ in its own JS (instead of reading wpcf7.api.namespace), that add-on\'s AJAX submissions will break. Well-coded extensions that follow CF7\'s documented JS API will work fine.', 'cf7-antispam' ) );
 	}
 
 	/** It prints the b8 info text */
@@ -1350,6 +1382,10 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['identity_protection_user'] = isset( $input['identity_protection_user'] ) ? 1 : 0;
 		$new_input['identity_protection_wp']   = isset( $input['identity_protection_wp'] ) ? 1 : 0;
 
+		/* endpoint obfuscation */
+		$new_input['obfuscate_cf7_endpoint'] = isset( $input['obfuscate_cf7_endpoint'] ) ? 1 : 0;
+		$new_input['cf7a_endpoint_slug']     = ! empty( $input['cf7a_endpoint_slug'] ) ? sanitize_text_field( trim( $input['cf7a_endpoint_slug'], '/' ) ) : 'cf7-antispam/v1/' . cf7a_generate_random_string( 8 );
+
 		/* comment protection */
 		$new_input['cf7_antispam_enable_comment_protection'] = isset( $input['cf7_antispam_enable_comment_protection'] ) ? 1 : 0;
 
@@ -1762,11 +1798,12 @@ class CF7_AntiSpam_Admin_Customizations {
 	}
 
 
-	/** It creates a checkbox with the id of "cf7a_enable_honeyform_callback" */
+	/** Callback for the proactive Honeyform decoy trap toggle */
 	public function cf7a_enable_honeyform_callback() {
 		printf(
-			'<input type="checkbox" id="check_honeyform" name="cf7a_options[check_honeyform]" %s />',
-			! empty( $this->options['check_honeyform'] ) ? 'checked="true"' : ''
+			'<input type="checkbox" id="check_honeyform" name="cf7a_options[check_honeyform]" %s /><br><small>%s</small>',
+			! empty( $this->options['check_honeyform'] ) ? 'checked="true"' : '',
+			esc_html__( 'Injects an invisible decoy form into singular pages. Any bot that submits it will be automatically banned. This is a proactive bot-trap that works independently from the Contact Form 7 REST API.', 'cf7-antispam' )
 		);
 	}
 
@@ -1775,7 +1812,7 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<select id="honeyform_position" name="cf7a_options[honeyform_position]">%s</select>',
 			wp_kses(
-				$this->cf7a_generate_options( array( 'before content', 'after content' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : '' ),
+				$this->cf7a_generate_options( array( 'wp_footer', 'before content', 'after content' ), isset( $this->options['honeyform_position'] ) ? esc_attr( $this->options['honeyform_position'] ) : 'wp_footer' ),
 				array(
 					'option' => array(
 						'value'    => array(),
@@ -1786,72 +1823,29 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-	/**
-	 * CF7_AntiSpam_Admin_Customizations.php
-	 *
-	 * This file contains a function that generates HTML code for a form in the WordPress admin panel.
-	 * The form allows the user to select pages to be excluded from the CF7 AntiSpam plugin's functionality.
-	 * The function retrieves all pages from the WordPress database and populates two select windows.
-	 * The user can add pages from the first dropdown to the second dropdown and remove pages from the second dropdown.
-	 * The selected pages are saved as options in the WordPress database.
-	 */
+	/** It creates a checkbox with the id of "cf7a_honeyform_excluded_pages_callback" */
 	public function cf7a_honeyform_excluded_pages_callback() {
 		$args = array(
-			'post_type'      => 'page',
-			// change this to the post type you're querying
-			'fields'         => 'ids',
-			// get only ids
 			'posts_per_page' => -1,
-		// get all posts
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_type'      => 'page',
 		);
-		$query = new WP_Query( $args );
 
-		$options = '';
+		$pages = get_posts( $args );
 
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$query->the_post();
-				$options .= '<option value="' . get_the_ID() . '">' . get_the_title() . '</option>';
-			}
+		echo '<select id="honeyform_excluded_pages" name="cf7a_options[honeyform_excluded_pages][]" multiple="multiple" style="min-height: 200px;">';
+		foreach ( $pages as $page ) {
+			printf(
+				'<option value="%d" %s>%s</option>',
+				esc_attr( $page->ID ),
+				isset( $this->options['honeyform_excluded_pages'] ) && is_array( $this->options['honeyform_excluded_pages'] ) && in_array( $page->ID, $this->options['honeyform_excluded_pages'], true ) ? 'selected="selected"' : '',
+				esc_html( $page->post_title )
+			);
 		}
-
-		$excluded     = isset( $this->options['honeyform_excluded_pages'] ) ? $this->options['honeyform_excluded_pages'] : array();
-		$str_excluded = '';
-		if ( is_array( $excluded ) ) {
-			foreach ( $excluded as $entry ) {
-				$str_excluded .= '<option selected="true" value="' . $entry . '">' . get_the_title( $entry ) . '</option>';
-			}
-		}
-		wp_reset_postdata();
-		$allowed_html = array(
-			'option' => array(
-				'selected' => array(),
-				'value'    => array(),
-			),
-		);
-		printf(
-			'<div class="honeyform-container">
-						 <div class="row">
-							  <div class="add">
-								<select name="add" multiple class="form-control add-select">
-								  %s
-								</select>
-								<div class="button button-primary honeyform-action add-list">%s ></div>
-							  </div>
-							  <div class="remove">
-								<select id="honeyform_excluded_pages" name="cf7a_options[honeyform_excluded_pages][]" multiple="multiple" class="form-control remove-select" >
-								%s
-								</select>
-								<div class="button button-primary honeyform-action remove-list">< %s</div>
-							  </div>
-						 </div>
-					 </div>',
-			wp_kses( $options, $allowed_html ),
-			esc_html__( 'Add', 'cf7-antispam' ),
-			wp_kses( $str_excluded, $allowed_html ),
-			esc_html__( 'Remove', 'cf7-antispam' )
-		);
+		echo '</select>';
 	}
+
 
 	/** It creates a checkbox with the id of "cf7a_identity_protection_user_callback" */
 	public function cf7a_mailbox_protection_multiple_send_callback() {
@@ -1876,6 +1870,25 @@ class CF7_AntiSpam_Admin_Customizations {
 			! empty( $this->options['identity_protection_wp'] ) ? 'checked="true"' : ''
 		);
 	}
+
+	/** Callback for the obfuscate endpoint checkbox */
+	public function cf7a_obfuscate_endpoint_callback() {
+		printf(
+			'<input type="checkbox" id="obfuscate_cf7_endpoint" name="cf7a_options[obfuscate_cf7_endpoint]" %s />',
+			! empty( $this->options['obfuscate_cf7_endpoint'] ) ? 'checked="true"' : ''
+		);
+	}
+
+	/** Callback for the custom endpoint slug input */
+	public function cf7a_endpoint_slug_callback() {
+		printf(
+			'<input type="text" id="cf7a_endpoint_slug" name="cf7a_options[cf7a_endpoint_slug]" value="%s" class="regular-text ltr" /><br><small>%s</small>',
+			isset( $this->options['cf7a_endpoint_slug'] ) ? esc_attr( $this->options['cf7a_endpoint_slug'] ) : 'cf7-antispam/v1/' . esc_attr( cf7a_generate_random_string( 8 ) ),
+			esc_html__( 'Note: If you change this value, you may need to flush your site\'s permalinks and cache.', 'cf7-antispam' )
+		);
+	}
+
+
 
 	/** It creates a checkbox with the id of "cf7a_enable_b8_callback" */
 	public function cf7a_enable_b8_callback() {
