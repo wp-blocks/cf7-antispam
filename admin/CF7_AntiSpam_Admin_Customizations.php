@@ -618,8 +618,6 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_endpoint_obfuscation'
 		);
 
-
-
 		/* Section b8 */
 		add_settings_section(
 			'cf7a_b8',
