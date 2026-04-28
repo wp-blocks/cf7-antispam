@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Core;
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
+use CF7_AntiSpam\Core\Filters\Filter_Endpoint_Obfuscation;
 
 /**
  * It sets the version, plugin name, and options. It loads
@@ -207,6 +208,9 @@ class CF7_AntiSpam {
 
 		/* comment protection */
 		new CF7_AntiSpam_Comments();
+
+		/* endpoint obfuscation */
+		new Filter_Endpoint_Obfuscation();
 	}
 
 	/**

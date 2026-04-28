@@ -90,6 +90,8 @@ class CF7_AntiSpam_Activator {
 				'allowed'    => array(),
 				'disallowed' => array(),
 			),
+			'obfuscate_cf7_endpoint'              => false,
+			'cf7a_endpoint_slug'                  => 'cf7-antispam/v1/' . cf7a_generate_random_string( 8 ),
 			'score'                               => array(
 				'_fingerprinting' => 0.1,
 				'_time'           => 0.3,
