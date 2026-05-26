@@ -398,7 +398,7 @@ class CF7_AntiSpam_Admin_Display {
 
 		// Get detailed reason stats with caching
 		$cache_key_reasons = 'cf7a_reason_counts';
-		$reason_counts     = wp_cache_get( $cache_key_reasons, 'cf7a_blocklist_stats' );
+		$reason_counts     = get_transient( $cache_key_reasons );
 
 		if ( false === $reason_counts ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -433,7 +433,7 @@ class CF7_AntiSpam_Admin_Display {
 				}
 			}
 
-			wp_cache_set( $cache_key_reasons, $reason_counts, 'cf7a_blocklist_stats', $cache_time_short );
+			set_transient( $cache_key_reasons, $reason_counts, $cache_time_short );
 		}//end if
 
 		// Sort reasons by count and get top 5
