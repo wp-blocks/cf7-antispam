@@ -21,10 +21,10 @@ use CF7_AntiSpam\Core\Filters\Filter_Bad_Words;
 use CF7_AntiSpam\Core\Filters\Filter_Bot_Fingerprint;
 use CF7_AntiSpam\Core\Filters\Filter_Bot_Fingerprint_Extras;
 use CF7_AntiSpam\Core\Filters\Filter_DNSBL;
+use CF7_AntiSpam\Core\Filters\Filter_Distributed_Bot;
 use CF7_AntiSpam\Core\Filters\Filter_Empty_IP;
 use CF7_AntiSpam\Core\Filters\Filter_Geoip;
 use CF7_AntiSpam\Core\Filters\Filter_High_Entropy;
-use CF7_AntiSpam\Core\Filters\Filter_Honeyform;
 use CF7_AntiSpam\Core\Filters\Filter_Honeypot;
 use CF7_AntiSpam\Core\Filters\Filter_IP_Allowlist;
 use CF7_AntiSpam\Core\Filters\Filter_IP_Blocklist_History;
@@ -70,8 +70,8 @@ class CF7_AntiSpam_Filters {
 			// Priority 10 – standard checks
 			'empty_ip'               => new Filter_Empty_IP(),
 			'bad_ip'                 => new Filter_Bad_IP(),
+			'distributed_bot'        => new Filter_Distributed_Bot(),
 			'ip_blocklist_history'   => new Filter_IP_Blocklist_History(),
-			'honeyform'              => new Filter_Honeyform(),
 			'referrer_protocol'      => new Filter_Referrer_Protocol(),
 			'plugin_version'         => new Filter_Plugin_Version(),
 			'high_entropy'           => new Filter_High_Entropy(),
@@ -102,8 +102,8 @@ class CF7_AntiSpam_Filters {
 		// Priority 10: Standard checks
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['empty_ip'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bad_ip'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['distributed_bot'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['ip_blocklist_history'], 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['honeyform'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['referrer_protocol'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['plugin_version'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['high_entropy'], 'check' ), 10 );
