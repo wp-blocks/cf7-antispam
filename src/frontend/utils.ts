@@ -31,6 +31,30 @@ export function createCF7Afield(
 }
 
 /**
+ * Update an existing hidden input field if present.
+ *
+ * @param {HTMLElement} hiddenInputsContainer The Element that contains the hidden fields
+ * @param {string}      name                  The full field name
+ * @param {string}      value                 The value to set
+ */
+export function setExistingHiddenFieldValue(
+	hiddenInputsContainer: HTMLElement,
+	name: string,
+	value: string
+): void {
+	const input = hiddenInputsContainer.querySelector(
+		`input[name="${name}"]`
+	) as HTMLInputElement | null;
+
+	if (!input) {
+		return;
+	}
+
+	input.setAttribute('value', value);
+	input.value = value;
+}
+
+/**
  * Generate a random string
  *
  * @param {number} length - The length of the string to generate.
@@ -54,7 +78,13 @@ export function randomString(length: number = 12): string {
  */
 export async function setTimestamp(tsInput: HTMLInputElement, restUrl: string) {
 	try {
-		const response = await fetch(`${restUrl}/get-timestamp`);
+		const response = await fetch(`${restUrl}/get-timestamp`, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+		});
 		if (response.ok) {
 			const data = await response.json();
 			if (data.timestamp) {
@@ -65,5 +95,36 @@ export async function setTimestamp(tsInput: HTMLInputElement, restUrl: string) {
 	} catch (e) {
 		// eslint-disable-next-line no-console
 		console.error('CF7 Antispam: Failed to fetch timestamp', e);
+	}
+}
+
+/**
+ * Fetch and set the distributed-bot token if the hidden field exists.
+ *
+ * @param {HTMLInputElement} tokenInput The input that contains the token value
+ * @param {string}           restUrl    The rest url of the current website
+ */
+export async function setDistributedBotToken(
+	tokenInput: HTMLInputElement,
+	restUrl: string
+) {
+	try {
+		const response = await fetch(`${restUrl}/get-ip-token`, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+		});
+		if (response.ok) {
+			const data = await response.json();
+			if (data.token) {
+				tokenInput.setAttribute('value', data.token);
+				tokenInput.value = data.token;
+			}
+		}
+	} catch (e) {
+		// eslint-disable-next-line no-console
+		console.error('CF7 Antispam: Failed to fetch distributed bot token', e);
 	}
 }
