@@ -876,7 +876,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				'<p>%s<br/><code>%s</code></p>',
 				esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
 				// 👇 this is an example of a key definition, isn't define itself.
-				"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
+				esc_html( "define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );" )
 			);
 		}
 	}

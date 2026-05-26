@@ -403,7 +403,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			$reason_counts = array();
 			foreach ( $meta_data as $row ) {
-				$decoded_meta = unserialize( $row->meta ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+				$decoded_meta = unserialize( $row->meta, array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 
 				if ( is_array( $decoded_meta ) ) {
 					foreach ( $decoded_meta as $entry ) {
