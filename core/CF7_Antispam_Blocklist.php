@@ -2,6 +2,8 @@
 
 namespace CF7_AntiSpam\Core;
 
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+
 /**
  * Blocklist management functions
  *
@@ -97,6 +99,31 @@ class CF7_Antispam_Blocklist {
 		}//end if
 
 		return false;
+	}
+
+	/**
+	 * Permanently ban an IP: write it to the blocklist table with the given score
+	 * and append it to the bad_ip_list plugin option so it survives cron unbanning.
+	 *
+	 * This is the single authoritative place for "distributed-bot-style" permanent bans.
+	 * It centralises the logic that was previously split across Filter_Distributed_Bot.
+	 *
+	 * @since      0.7.7
+	 *
+	 * @param string $ip     The IP address to ban (validated internally).
+	 * @param string $reason A human-readable reason stored in the blocklist meta.
+	 *
+	 * @return void
+	 */
+	public static function cf7a_ban_forever_and_add_to_list( string $ip, string $reason ): void {
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+
+		if ( ! $ip ) {
+			return;
+		}
+
+		self::cf7a_ban_by_ip( $ip, array( 'distributed_bot_trap' => $reason ) );
+		CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array( $ip ) );
 	}
 
 	/**
