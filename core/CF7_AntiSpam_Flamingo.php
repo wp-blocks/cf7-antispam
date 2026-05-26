@@ -84,7 +84,7 @@ class CF7_AntiSpam_Flamingo {
 	 * @param string $action the new status for the post
 	 */
 	private function process_flamingo_update( int $post_id, string $action ) {
-		$options = get_option( 'cf7a_options' );
+		$options = get_option( 'cf7a_options', array() );
 
 		$b8 = new CF7_AntiSpam_B8();
 
@@ -105,14 +105,14 @@ class CF7_AntiSpam_Flamingo {
 				$b8->cf7a_b8_unlearn_ham( $message );
 				$b8->cf7a_b8_learn_spam( $message );
 
-				if ( $options['autostore_bad_ip'] ) {
+				if ( ! empty( $options['autostore_bad_ip'] ) ) {
 					CF7_Antispam_Blocklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' => 'B8 classification' ) );
 				}
 			} elseif ( $flamingo_post->spam && 'ham' === $action ) {
 				$b8->cf7a_b8_unlearn_spam( $message );
 				$b8->cf7a_b8_learn_ham( $message );
 
-				if ( $options['autostore_bad_ip'] ) {
+				if ( ! empty( $options['autostore_bad_ip'] ) ) {
 					CF7_Antispam_Blocklist::cf7a_unban_by_ip( $flamingo_post->meta['remote_ip'] );
 				}
 			}
@@ -380,10 +380,16 @@ class CF7_AntiSpam_Flamingo {
 		if ( class_exists( 'WPCF7_Submission' ) ) {
 			$existing = WPCF7_Submission::get_instance();
 			if ( $existing ) {
-				$reflection = new \ReflectionClass( $existing );
-				$property   = $reflection->getProperty( 'instance' );
-				$property->setAccessible( true );
-				$property->setValue( null, null );
+				try {
+					$reflection = new \ReflectionClass( $existing );
+					if ( $reflection->hasProperty( 'instance' ) ) {
+						$property = $reflection->getProperty( 'instance' );
+						$property->setAccessible( true );
+						$property->setValue( null, null );
+					}
+				} catch ( \ReflectionException $e ) {
+					cf7a_log( 'CF7 AntiSpam: Unable to reset WPCF7_Submission singleton: ' . $e->getMessage() );
+				}
 			}
 		}
 
