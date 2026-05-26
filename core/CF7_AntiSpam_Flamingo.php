@@ -40,39 +40,46 @@ class CF7_AntiSpam_Flamingo {
 	 * classifier to classify the content as spam or ham
 	 */
 	public static function cf7a_flamingo_analyze_stored_mails() {
+		$b8       = new CF7_AntiSpam_B8();
+		$page     = 1;
+		$per_page = 100;
 
-		/* get all the flamingo inbound post and classify them */
-		$args = array(
-			'post_type'      => 'flamingo_inbound',
-			'posts_per_page' => -1,
-			'post_status'    => array( 'publish', 'flamingo-spam' ),
-		);
+		do {
+			$args = array(
+				'post_type'      => 'flamingo_inbound',
+				'posts_per_page' => $per_page,
+				'paged'          => $page,
+				'post_status'    => array( 'publish', 'flamingo-spam' ),
+				'no_found_rows'  => false,
+			);
 
-		$query = new WP_Query( $args );
+			$query = new WP_Query( $args );
 
-		$b8 = new CF7_AntiSpam_B8();
-
-		while ( $query->have_posts() ) :
-			$query->the_post();
-
-			$post_id = get_the_ID();
-
-			$flamingo_post = new Flamingo_Inbound_Message( $post_id );
-
-			$message = self::cf7a_get_mail_field( $flamingo_post, 'message' );
-
-			if ( $message ) {
-				if ( ! $flamingo_post->spam ) {
-					$b8->cf7a_b8_learn_ham( $message );
-				} else {
-					$b8->cf7a_b8_learn_spam( $message );
-				}
-
-				update_post_meta( $post_id, '_cf7a_b8_classification', $b8->cf7a_b8_classify( $message, true ) );
-			} else {
-				cf7a_log( "Flamingo post $post_id seems empty, so can't be analyzed", 1 );
+			if ( ! $query->have_posts() ) {
+				break;
 			}
-		endwhile;
+
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$post_id       = get_the_ID();
+				$flamingo_post = new Flamingo_Inbound_Message( $post_id );
+				$message       = self::cf7a_get_mail_field( $flamingo_post, 'message' );
+
+				if ( $message ) {
+					if ( ! $flamingo_post->spam ) {
+						$b8->cf7a_b8_learn_ham( $message );
+					} else {
+						$b8->cf7a_b8_learn_spam( $message );
+					}
+					update_post_meta( $post_id, '_cf7a_b8_classification', $b8->cf7a_b8_classify( $message, true ) );
+				} else {
+					cf7a_log( "Flamingo post $post_id seems empty, so can't be analyzed", 1 );
+				}
+			}
+
+			wp_reset_postdata();
+			++$page;
+		} while ( $page <= $query->max_num_pages );
 
 		return true;
 	}
