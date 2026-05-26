@@ -570,6 +570,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 		// Build WHERE clause
 		$where_clauses = array( "token != 'b8*texts'", "token != 'b8*dbversion'" );
+		$params        = array();
 
 		if ( 'spam' === $type ) {
 			$where_clauses[] = 'count_spam > 0';
@@ -578,7 +579,8 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		if ( ! empty( $search ) ) {
-			$where_clauses[] = $wpdb->prepare( 'token LIKE %s', '%' . $wpdb->esc_like( $search ) . '%' );
+			$where_clauses[] = 'token LIKE %s';
+			$params[]        = '%' . $wpdb->esc_like( $search ) . '%';
 		}
 
 		$where = implode( ' AND ', $where_clauses );
@@ -616,22 +618,22 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		// Get total count
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$total_params = array_merge( array( $table ), $params );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$total = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM %i WHERE {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$table
+				...$total_params
 			)
 		);
 
 		// Get paginated results
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$words_params = array_merge( array( $table ), $params, array( $per_page, $offset ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$words = $wpdb->get_results(
-			$wpdb->prepare(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 				"SELECT token, count_spam, count_ham FROM %i WHERE {$where} ORDER BY {$order_clause} LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$table,
-				$per_page,
-				$offset
+				...$words_params
 			)
 		);
 
