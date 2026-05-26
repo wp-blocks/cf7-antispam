@@ -390,20 +390,23 @@ class CF7_AntiSpam_Flamingo {
 		// Back up current $_POST and inject Flamingo submission data.
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified upstream before cf7a_resend_mail is called.
 		$original_post = $_POST;
-		$_POST         = $submission_data;
+		try {
+			$_POST = $submission_data;
 
-		// Skip spam checks and validation during resend.
-		add_filter( 'wpcf7_skip_spam_check', '__return_true' );
+			// Skip spam checks and validation during resend.
+			add_filter( 'wpcf7_skip_spam_check', '__return_true' );
 
-		$mock_submission = WPCF7_Submission::get_instance(
-			$contact_form,
-			array(
-				'skip_mail' => true,
-			)
-		);
-
-		// Restore original $_POST.
-		$_POST = $original_post;
+			$mock_submission = WPCF7_Submission::get_instance(
+				$contact_form,
+				array(
+					'skip_mail' => true,
+				)
+			);
+		} finally {
+			// Restore original $_POST and clean up filter.
+			$_POST = $original_post;
+			remove_filter( 'wpcf7_skip_spam_check', '__return_true' );
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		// 4. Send using the Template
