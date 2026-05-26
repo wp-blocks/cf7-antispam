@@ -152,6 +152,23 @@ class CF7_AntiSpam_Activator {
 
 
 	/**
+	 * Returns the master list of default plugin options.
+	 *
+	 * Used by the settings import validator so that newly added options (not yet
+	 * persisted to the database) are still accepted during a JSON import even when
+	 * the current saved options array is missing those keys.
+	 *
+	 * @since    0.7.7
+	 *
+	 * @return array The complete set of default options defined for this plugin.
+	 */
+	public static function get_default_options(): array {
+		self::init_vars();
+		return self::$default_cf7a_options;
+	}
+
+
+	/**
 	 * Script that runs when the plugin is installed
 	 *
 	 * @since    0.1.0

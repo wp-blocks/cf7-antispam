@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use WP_Query;
 
 /**
@@ -1182,8 +1183,23 @@ class CF7_AntiSpam_Admin_Customizations {
 			$json_data = json_decode( $to_import );
 
 			if ( ! empty( $json_data ) && is_object( $json_data ) ) {
-				$json_array      = (array) $json_data;
-				$allowed_keys    = array_keys( $this->options );
+				$json_array = (array) $json_data;
+
+				/*
+				 * Build the allowed-key set from the union of:
+				 * 1. Keys in the currently-saved options (from the database).
+				 * 2. Keys in the master defaults (from the Activator).
+				 *
+				 * This ensures that newly added default options that have not been
+				 * persisted to the database yet are still accepted during import,
+				 * preventing them from being silently dropped.
+				 */
+				$allowed_keys    = array_unique(
+					array_merge(
+						array_keys( $this->options ),
+						array_keys( CF7_AntiSpam_Activator::get_default_options() )
+					)
+				);
 				$filtered_import = array_intersect_key( $json_array, array_flip( $allowed_keys ) );
 
 				if ( ! empty( $filtered_import ) ) {
