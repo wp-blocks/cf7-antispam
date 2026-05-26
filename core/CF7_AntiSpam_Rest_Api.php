@@ -569,7 +569,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		$table = $wpdb->prefix . 'cf7a_wordlist';
 
 		// Build WHERE clause
-		$where_clauses = array( "token != 'b8*texts'", "token != 'b8*dbversion'" );
+		$where_clauses = array( "token NOT IN ('b8*texts', 'b8*dbversion')" );
 		$params        = array();
 
 		if ( 'spam' === $type ) {
