@@ -185,7 +185,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 		$mail_id = intval( $request['id'] );
 
-		if ( $mail_id > 1 ) {
+		if ( $mail_id > 0 ) {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 			$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
@@ -986,7 +986,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
@@ -1014,7 +1014,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
@@ -1035,7 +1035,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
@@ -1056,7 +1056,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
