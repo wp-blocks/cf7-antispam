@@ -23,6 +23,7 @@ class CF7_Antispam_Blocklist {
 	}
 
 	/**
+	 * Adds an IP address to the blocklist. You should add multiple times an ip tp ban it from sending emails.
 	 * It takes an IP address as a parameter, validates it, and then returns the row from the database that matches that IP
 	 * address
 	 *
@@ -45,7 +46,7 @@ class CF7_Antispam_Blocklist {
 	}
 
 	/**
-	 * It adds an IP address to the blocklist.
+	 * It adds an IP address to the blocklist with the specified reason and spam score.
 	 *
 	 * @param string $ip The IP address to ban.
 	 * @param array  $reason The reason why the IP is being banned.
@@ -294,8 +295,8 @@ class CF7_Antispam_Blocklist {
 		$table_name = $wpdb->prefix . 'cf7a_blocklist';
 
 		// Truncate the table
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$result = $wpdb->query( "TRUNCATE TABLE {$table_name}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$result = $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
 
 		return false !== $result;
 	}
