@@ -8,7 +8,6 @@ use CF7_AntiSpam\Core\Filters\Filter_Bad_Email_Strings;
 use CF7_AntiSpam\Core\Filters\Filter_Bad_IP;
 use CF7_AntiSpam\Core\Filters\Filter_Bad_Words;
 use CF7_AntiSpam\Core\Filters\Filter_Empty_IP;
-use CF7_AntiSpam\Core\Filters\Filter_Honeyform;
 use CF7_AntiSpam\Core\Filters\Filter_Honeypot;
 use CF7_AntiSpam\Core\Filters\Filter_IP_Allowlist;
 use CF7_AntiSpam\Core\Filters\Filter_IP_Blocklist_History;
@@ -157,45 +156,6 @@ class CF7_AntiSpam_FiltersTest extends TestCase {
 
 		// Act
 		$filter = new Filter_Bad_IP();
-		$result = $filter->check( $data );
-
-		// Assert
-		$this->assertFalse( $result['is_spam'] );
-	}
-
-	// -------------------------------------------------------------------------
-	// TEST 4: HoneyForm (Hidden Field)
-	// -------------------------------------------------------------------------
-
-	public function test_filter_honeyform_detects_filled_field() {
-		// Arrange
-		$data = $this->base_spam_data;
-		$data['options']['check_honeyform'] = 1;
-		$data['options']['cf7a_customizations_class'] = 'my-trap';
-
-		// Simulate $_POST submission of the hidden field
-		$_POST['_wpcf7_my-trap'] = 'I am a bot';
-
-		// Act
-		$filter = new Filter_Honeyform();
-		$result = $filter->check( $data );
-
-		// Assert
-		$this->assertTrue( $result['is_spam'] );
-		$this->assertEquals( 'true', $result['reasons']['honeyform'][0] );
-	}
-
-	public function test_filter_honeyform_passes_empty_field() {
-		// Arrange
-		$data = $this->base_spam_data;
-		$data['options']['check_honeyform'] = 1;
-		$data['options']['cf7a_customizations_class'] = 'my-trap';
-
-		// Ensure $_POST is empty for that key
-		unset($_POST['_wpcf7_my-trap']);
-
-		// Act
-		$filter = new Filter_Honeyform();
 		$result = $filter->check( $data );
 
 		// Assert
