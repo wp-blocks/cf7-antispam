@@ -930,7 +930,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<p>%s<a href="%s" target="_blank">%s</a></p>',
 			esc_html__( 'Here a you can find a list of servers: ', 'cf7-antispam' ),
 			esc_url( 'https://gist.github.com/search?q=dnsbl+list&ref=searchresults' ),
-			esc_url_raw( 'gist.github.com/search?q=dnsbl+list' )
+			esc_html( 'gist.github.com/search?q=dnsbl+list' )
 		);
 	}
 
@@ -1182,24 +1182,33 @@ class CF7_AntiSpam_Admin_Customizations {
 			$json_data = json_decode( $to_import );
 
 			if ( ! empty( $json_data ) && is_object( $json_data ) ) {
-				$input                                    = $this->cf7a_clean_recursive( $json_data );
-				$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
-				$input['ip_allowlist']                    = implode( ',', $input['ip_allowlist'] );
-				$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
-				$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] );
-				$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] );
-				$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] );
-				$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] );
-				$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] );
-				$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] );
-				$input['cf7a_enabled']                    = 1;
-				$input['cf7a_enable']                     = 1;
-				$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
+				$json_array      = (array) $json_data;
+				$allowed_keys    = array_keys( $this->options );
+				$filtered_import = array_intersect_key( $json_array, array_flip( $allowed_keys ) );
+
+				if ( ! empty( $filtered_import ) ) {
+					$input                                    = $this->cf7a_clean_recursive( (object) $filtered_import );
+					$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] ?? array() );
+					$input['ip_allowlist']                    = implode( ',', $input['ip_allowlist'] ?? array() );
+					$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] ?? array() );
+					$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] ?? array() );
+					$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] ?? array() );
+					$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] ?? array() );
+					$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] ?? array() );
+					$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] ?? array() );
+					$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] ?? array() );
+					$input['cf7a_enabled']                    = 1;
+					$input['cf7a_enable']                     = 1;
+					$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
+				} else {
+					cf7a_log( 'CF7 AntiSpam: The import data contained no valid keys' );
+					return $this->options;
+				}
 			} else {
 				cf7a_log( print_r( $to_import, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				cf7a_log( 'CF7 AntiSpam: The import data is invalid' );
 				return $this->options;
-			}
+			}//end if
 		}//end if
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
