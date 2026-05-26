@@ -71,11 +71,15 @@ class Filter_Endpoint_Obfuscation {
 	 */
 	public function handle_blocked_bot_request() {
 		if ( function_exists( 'cf7a_get_real_ip' ) ) {
-			$ip = cf7a_get_real_ip();
+			$ip         = cf7a_get_real_ip();
+			$time       = wp_date( 'Y-m-d H:i:s' );
+			$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+			// clean up the string and get only the first part of the user agent
+			$user_agent = explode( ' ', $user_agent )[0];
 			if ( $ip ) {
 				CF7_Antispam_Blocklist::cf7a_ban_by_ip(
 					$ip,
-					array( 'honeyform_trap' ),
+					array( 'honeyform_trap' => $user_agent ),
 					5
 				);
 				cf7a_log( "Honeyform Bot Trap triggered: banned IP {$ip} via blocked-bot endpoint." );
