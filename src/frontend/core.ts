@@ -11,7 +11,13 @@ import {
 	setupLanguageTest,
 	setupBotFingerprintTest,
 } from './tests';
-import { createCF7Afield, setTimestamp, randomString } from './utils';
+import {
+	createCF7Afield,
+	setTimestamp,
+	setDistributedBotToken,
+	setExistingHiddenFieldValue,
+	randomString,
+} from './utils';
 
 // eslint-disable-next-line camelcase
 declare const cf7a_settings: {
@@ -78,14 +84,20 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 		setTimestamp(tsInput, restUrl);
 	}
 
-	// Set the cf7 antispam version field
-	const cf7aVersionInput = hiddenInputsContainer.querySelector(
-		'input[name=' + prefix + 'version]'
+	const distributedBotTokenInput = hiddenInputsContainer.querySelector(
+		'input[name="_cf7a_ip_token"]'
 	) as HTMLInputElement | null;
 
-	if (cf7aVersionInput) {
-		cf7aVersionInput?.setAttribute('value', version);
+	if (distributedBotTokenInput) {
+		setDistributedBotToken(distributedBotTokenInput, restUrl);
 	}
+
+	// Fill cache-sensitive fields dynamically on the client.
+	setExistingHiddenFieldValue(
+		hiddenInputsContainer,
+		prefix + 'version',
+		version
+	);
 
 	// Get browser fingerprint data
 	const tests = browserFingerprint();

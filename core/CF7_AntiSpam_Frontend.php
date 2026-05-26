@@ -122,11 +122,6 @@ class CF7_AntiSpam_Frontend {
 			add_filter( 'wpcf7_form_elements', array( $this, 'cf7a_honeypot_add' ) );
 		}
 
-		/* It gets the form, formats it, and then echoes it out */
-		if ( isset( $this->options['check_honeyform'] ) && intval( $this->options['check_honeyform'] ) === 1 ) {
-			add_filter( 'the_content', array( $this, 'cf7a_honeyform' ), 99 );
-		}
-
 		/* Checking if the user has selected the option to protect the user's identity. If they have, it will call the function to protect the user's identity. */
 		if ( isset( $this->options['identity_protection_user'] ) && intval( $this->options['identity_protection_user'] ) === 1 ) {
 			$this->cf7a_protect_user();
@@ -147,6 +142,16 @@ class CF7_AntiSpam_Frontend {
 			( isset( $this->options['check_honeypot'] ) && 1 === intval( $this->options['check_honeypot'] ) ) || ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) )
 		) {
 			add_action( 'wp_footer', array( $this, 'cf7a_add_honeypot_css' ), 11 );
+		}
+
+		/* Inject the proactive Honeyform decoy trap based on selected position */
+		if ( isset( $this->options['check_honeyform'] ) && 1 === intval( $this->options['check_honeyform'] ) ) {
+			$position = isset( $this->options['honeyform_position'] ) ? sanitize_title( $this->options['honeyform_position'] ) : 'wp_footer';
+			if ( in_array( $position, array( 'before-content', 'after-content' ), true ) ) {
+				add_filter( 'the_content', array( $this, 'cf7a_honeyform_trap' ), 99 );
+			} else {
+				add_action( 'wp_footer', array( $this, 'cf7a_honeyform_trap' ), 10 );
+			}
 		}
 	}
 
@@ -254,12 +259,26 @@ class CF7_AntiSpam_Frontend {
 		return $form_elements;
 	}
 
+
 	/**
-	 * It gets the content of the page and appends a fake form at the end or at the beginning
-	 *
-	 * @param string $content The content of the post.
+	 * It adds a CSS style to the page that hides the honeypot field
 	 */
-	public function cf7a_honeyform( $content ) {
+	public function cf7a_add_honeypot_css() {
+		$form_class = empty( $this->options['cf7a_customizations_class'] ) ? 'cf7a_' : sanitize_html_class( $this->options['cf7a_customizations_class'] );
+		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
+	}
+
+	/**
+	 * Inject a proactive Honeyform decoy trap into the page footer or content.
+	 *
+	 * The form is visually invisible to humans but submittable by bots.
+	 * Any submission is routed to the blocked-bot REST endpoint, which bans the IP.
+	 * Field names are randomised on each request to prevent bots bypassing the trap.
+	 *
+	 * @param string $content The post content if called as a filter, otherwise empty string.
+	 * @return string The post content with the decoy trap appended/prepended.
+	 */
+	public function cf7a_honeyform_trap( $content = '' ) {
 		/**
 		 * Pages Excluded from the honeyform insertion
 		 *
@@ -272,125 +291,60 @@ class CF7_AntiSpam_Frontend {
 
 		// Check if the current post-ID is in the excluded IDs array
 		if ( in_array( $current_id, $excluded_ids, true ) ) {
-			// If the current post-ID is excluded, return the original content
 			return $content;
 		}
 
-		if ( is_array( $this->options['honeyform_excluded_pages'] ) && in_array( $current_id, $this->options['honeyform_excluded_pages'], true ) ) {
-			// If the current post-ID is excluded, return the original content
+		if ( isset( $this->options['honeyform_excluded_pages'] ) && is_array( $this->options['honeyform_excluded_pages'] ) && in_array( $current_id, $this->options['honeyform_excluded_pages'], true ) ) {
 			return $content;
 		}
 
-		/* The $html variable will store the honeyform HTML code */
-		$html = '';
+		// Only inject on singular non-archive pages in the main query.
+		if ( is_archive() || is_search() || is_404() || ! is_singular() ) {
+			return $content;
+		}
 
-		$form_class = sanitize_html_class( $this->options['cf7a_customizations_class'] );
+		$action_url = esc_url( rest_url( 'cf7-antispam/v1/blocked-bot' ) );
 
-		$args = array(
-			'post_type'      => 'wpcf7_contact_form',
-			'posts_per_page' => 1,
+		// Generate 3 random field name/value pairs per request.
+		$decoy_fields = '';
+		$field_count  = 3;
+		for ( $i = 0; $i < $field_count; $i++ ) {
+			$field_name    = cf7a_generate_random_string( 8 );
+			$field_label   = cf7a_generate_random_string( 6 );
+			$decoy_fields .= sprintf(
+				'<label for="%1$s">%2$s</label><input type="text" id="%1$s" name="%1$s" autocomplete="off" tabindex="-1" />',
+				esc_attr( $field_name ),
+				esc_html( $field_label )
+			);
+		}
+
+		$trap_html = sprintf(
+			'<div style="opacity:0.01;pointer-events:none;position:absolute;top:-9999px;left:-9999px;" aria-hidden="true">'
+			. '<form method="post" action="%s" tabindex="-1">%s'
+			. '<input type="submit" value="Submit" tabindex="-1" />'
+			. '</form></div>',
+			$action_url,
+			wp_kses(
+				$decoy_fields,
+				array(
+					'label' => array( 'for' => array() ),
+					'input' => array(
+						'type'         => array(),
+						'id'           => array(),
+						'name'         => array(),
+						'autocomplete' => array(),
+						'tabindex'     => array(),
+					),
+				)
+			)
 		);
 
-		$loop = new WP_Query( $args );
-		while ( $loop->have_posts() ) :
-			$loop->the_post();
+		if ( current_filter() === 'the_content' ) {
+			$position = isset( $this->options['honeyform_position'] ) ? sanitize_title( $this->options['honeyform_position'] ) : 'wp_footer';
+			return 'before-content' === $position ? $trap_html . $content : $content . $trap_html;
+		}
 
-			$wpcf7 = WPCF7_ContactForm::get_template();
-
-			static $global_count = 0;
-			++$global_count;
-
-			$unit_tag = sprintf(
-				'wpcf7-f%1$d-p%2$d-o%3$d',
-				$wpcf7->id(),
-				get_the_ID(),
-				$global_count
-			);
-
-			$url  = add_query_arg( array() );
-			$frag = strstr( $url, '#' );
-			if ( $frag ) {
-				$url = substr( $url, 0, -strlen( $frag ) );
-			}
-			$url .= '#' . $unit_tag;
-
-			$hidden_fields = array(
-				'_wpcf7'                  => $wpcf7->id(),
-				'_wpcf7_version'          => WPCF7_VERSION,
-				'_wpcf7_locale'           => $wpcf7->locale(),
-				'_wpcf7_unit_tag'         => $unit_tag,
-				'_wpcf7_posted_data_hash' => '',
-				'_wpcf7_' . $form_class   => '',
-			);
-
-			if ( in_the_loop() ) {
-				$hidden_fields['_wpcf7_container_post'] = (int) get_the_ID();
-			}
-
-			if ( $wpcf7->nonce_is_active() && is_user_logged_in() ) {
-				$hidden_fields['_wpnonce'] = wpcf7_create_nonce();
-			}
-
-			$hidden_fields_html = '';
-
-			foreach ( $hidden_fields as $name => $value ) {
-				$hidden_fields_html .= sprintf(
-					'<input type="hidden" name="%1$s" value="%2$s" />',
-					esc_attr( $name ),
-					esc_attr( $value )
-				) . "\n";
-			}
-
-			$atts = array(
-				'action'       => esc_url_raw( $url ),
-				'method'       => 'post',
-				'class'        => 'wpcf7-form init',
-				'enctype'      => wpcf7_enctype_value( '' ),
-				'autocomplete' => true,
-				'novalidate'   => wpcf7_support_html5() ? 'novalidate' : '',
-				'data-status'  => 'init',
-				'locale'       => $wpcf7->locale(),
-			);
-
-			$atts = wpcf7_format_atts( $atts );
-
-			$html .= sprintf(
-				'<div %s><div><div class="wpcf7-form"><div class="%s"><div>%s<form %s><div style="display: block;">%s</div>%s%s</form></div></div></div></div></div>',
-				wpcf7_format_atts(
-					array(
-						'role'  => 'form',
-						'class' => 'wpcf7',
-						'id'    => $unit_tag,
-						get_option( 'html_type' ) === 'text/html' ? 'lang' : 'xml:lang'
-								=> str_replace( '_', '-', $wpcf7->locale() ),
-						'dir'   => wpcf7_is_rtl( $wpcf7->locale() ) ? 'rtl' : 'ltr',
-					)
-				),
-				esc_html( $form_class ),
-				$wpcf7->screen_reader_response(),
-				$atts,
-				$hidden_fields_html,
-				$wpcf7->replace_all_form_tags(),
-				$wpcf7->form_response_output()
-			);
-
-			$html = html_entity_decode( $html, ENT_COMPAT, 'UTF-8' );
-		endwhile;
-
-		wp_reset_postdata();
-
-		/* long story, but thinking about the way these bots work the best thing is to have the fake form before the 'real' one */
-		return isset( $this->options['honeyform_position'] ) && 'before-content' === sanitize_title( $this->options['honeyform_position'] )
-			? sprintf( '%s%s', $html, $content )
-			: sprintf( '%s%s', $content, $html );
-	}
-
-	/**
-	 * It adds a CSS style to the page that hides the honeypot field
-	 */
-	public function cf7a_add_honeypot_css() {
-		$form_class = empty( $this->options['cf7a_customizations_class'] ) ? 'cf7a_' : sanitize_html_class( $this->options['cf7a_customizations_class'] );
-		printf( '<style>body div .wpcf7-form .%s{position:absolute;margin-left:-999em;}</style>', esc_attr( $form_class ) );
+		echo $trap_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -425,14 +379,20 @@ class CF7_AntiSpam_Frontend {
 			$fields[ $prefix . 'hash' ] = '';
 		}
 
+		/* distributed bot token, served empty for caching compatibility and populated via JS */
+		$fields['_cf7a_ip_token'] = '';
+
 		/* add the default hidden fields */
 		return array_merge(
 			$fields,
 			array(
-				$prefix . 'version'  => '1.0',
-				// Handled by Cache Compatibility
+				// Served empty for caching compatibility, populated dynamically.
+				$prefix . 'version'  => '',
+				// Handled by Cache Compatibility on submit.
 				$prefix . 'address'  => '',
+				// Populated dynamically on the client.
 				$prefix . 'referer'  => '',
+				// Populated dynamically on the client.
 				$prefix . 'protocol' => '',
 			)
 		);

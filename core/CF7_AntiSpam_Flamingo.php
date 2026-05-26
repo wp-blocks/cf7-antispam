@@ -106,7 +106,7 @@ class CF7_AntiSpam_Flamingo {
 				$b8->cf7a_b8_learn_spam( $message );
 
 				if ( $options['autostore_bad_ip'] ) {
-					CF7_Antispam_Blocklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' ) );
+					CF7_Antispam_Blocklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' => 'B8 classification' ) );
 				}
 			} elseif ( $flamingo_post->spam && 'ham' === $action ) {
 				$b8->cf7a_b8_unlearn_spam( $message );
