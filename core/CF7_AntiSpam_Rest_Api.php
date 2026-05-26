@@ -159,7 +159,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		$data = array(
 			'plugin_version' => CF7ANTISPAM_VERSION,
 			'status'         => $this->options['cf7a_enable'] ? 'enabled' : 'disabled',
-			'timestamp'      => date_i18n( 'Y-m-d H:i:s' ),
+			'timestamp'      => wp_date( 'Y-m-d H:i:s' ),
 		);
 
 		return rest_ensure_response( $data );
