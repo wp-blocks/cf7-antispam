@@ -48,8 +48,14 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private static function cf7a_welcome_message() {
 		self::is_flamingo_active()
-			/* translators: %s is the shortcode */
-			? printf( esc_html__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ), '<code>flamingo_message: "[your-message]"</code>' )
+			? printf(
+				wp_kses(
+					/* translators: %s is the shortcode */
+					__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ),
+					array( 'code' => array() )
+				),
+				'<code>flamingo_message: "[your-message]"</code>'
+			)
 			: esc_html_e( 'Please install and activate the Flamingo plugin to enable advanced B8 Bayesian filtering.', 'cf7-antispam' );
 	}
 
@@ -80,7 +86,11 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( isset( $_GET['tab'] ) ) {
 			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), $nonce_action ) ) {
-				$active_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
+				$requested_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
+				$allowed_tabs  = array( 'dashboard', 'settings', 'blocklist', 'tools', 'import-export', 'wordlist', 'debug' );
+				if ( in_array( $requested_tab, $allowed_tabs, true ) ) {
+					$active_tab = $requested_tab;
+				}
 			}
 		}
 		?>
