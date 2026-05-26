@@ -54,15 +54,19 @@ class CF7_AntiSpam_Public_Rest_Api extends WP_REST_Controller {
 		// Prevent aggressive browser/edge caching
 		nocache_headers();
 
+		// Use a per-IP transient so each client has a unique timestamp window
+		$ip        = cf7a_get_real_ip();
+		$cache_key = 'cf7a_ts_' . md5( $ip ?: 'unknown' );
+
 		// Check for a freshly generated timestamp to prevent CPU exhaustion
-		$cached_timestamp = get_transient( 'cf7a_public_timestamp' );
+		$cached_timestamp = get_transient( $cache_key );
 
 		if ( false === $cached_timestamp ) {
 			$cipher           = ! empty( $this->options['cf7a_cipher'] ) ? $this->options['cf7a_cipher'] : 'aes-256-cbc';
 			$cached_timestamp = cf7a_crypt( time(), $cipher );
 
 			// Cache for 30 seconds to absorb bot floods
-			set_transient( 'cf7a_public_timestamp', $cached_timestamp, 30 );
+			set_transient( $cache_key, $cached_timestamp, 30 );
 		}
 
 		return rest_ensure_response(
