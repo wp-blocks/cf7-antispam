@@ -11,7 +11,6 @@
 namespace CF7_AntiSpam\Core\Filters;
 
 use CF7_AntiSpam\Core\Abstract_CF7_AntiSpam_Filter;
-use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Blocklist;
 
 /**
@@ -47,31 +46,14 @@ class Filter_Distributed_Bot extends Abstract_CF7_AntiSpam_Filter {
 		$data['is_spam']                      = true;
 		$data['reasons']['distributed_bot'][] = "Scout IP: {$scout_ip} / Worker IP: {$worker_ip}";
 
-		$this->add_permanent_ban( $worker_ip, 'Distributed Bot: Worker' );
-		$this->add_permanent_ban( $scout_ip, 'Distributed Bot: Scout' );
+		/* We want the workers to work in order to get the bigger fish */
+		CF7_Antispam_Blocklist::cf7a_ban_by_ip( $worker_ip, array( 'distributed_bot_trap' => 'Distributed Bot: Worker' ), 1 );
+
+		/* We want the scout to be banned permanently and added to the persistent IP list */
+		CF7_Antispam_Blocklist::cf7a_ban_forever_and_add_to_list( $scout_ip, 'Distributed Bot: Scout' );
 
 		cf7a_log( "Distributed bot detected. Scout IP: {$scout_ip} / Worker IP: {$worker_ip}", 1 );
 
 		return $data;
-	}
-
-	/**
-	 * Permanently add an IP to the plugin bad IP list.
-	 *
-	 * @param string $ip     The IP address to ban.
-	 * @param string $reason The ban reason.
-	 *
-	 * @return void
-	 */
-	private function add_permanent_ban( string $ip, string $reason ): void {
-		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
-
-		if ( ! $ip ) {
-			return;
-		}
-
-		$blocklist = new CF7_Antispam_Blocklist();
-		$blocklist->cf7a_add_to_blocklist( $ip, 'banned', $reason );
-		CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array( $ip ) );
 	}
 }

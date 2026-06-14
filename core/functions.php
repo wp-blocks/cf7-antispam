@@ -19,11 +19,47 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return mixed|string - The real ip address.
  */
 function cf7a_get_real_ip() {
-	// Cloudflare: Most reliable when behind Cloudflare CDN.
-	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
-	$http_cf_connecting_ip = ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ), FILTER_VALIDATE_IP ) : false;
-	if ( ! empty( $http_cf_connecting_ip ) ) {
-		return $http_cf_connecting_ip;
+	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__
+	$remote_addr = ! empty( $_SERVER['REMOTE_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) : false;
+
+	// Only trust Cloudflare header if the connection genuinely comes from Cloudflare.
+	$cloudflare_ranges = apply_filters(
+		'cf7a_cloudflare_ip_ranges',
+		array(
+			'103.21.244.0/22',
+			'103.22.200.0/22',
+			'103.31.4.0/22',
+			'104.16.0.0/13',
+			'104.24.0.0/14',
+			'108.162.192.0/18',
+			'131.0.72.0/22',
+			'141.101.64.0/18',
+			'162.158.0.0/15',
+			'172.64.0.0/13',
+			'173.245.48.0/20',
+			'188.114.96.0/20',
+			'190.93.240.0/20',
+			'197.234.240.0/22',
+			'198.41.128.0/17',
+		)
+	);
+
+	$is_cloudflare = false;
+	if ( $remote_addr ) {
+		foreach ( $cloudflare_ranges as $range ) {
+			if ( cf7a_ip_in_range( $remote_addr, $range ) ) {
+				$is_cloudflare = true;
+				break;
+			}
+		}
+	}
+
+	if ( $is_cloudflare ) {
+		// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+		$http_cf_connecting_ip = ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? filter_var( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ), FILTER_VALIDATE_IP ) : false;
+		if ( ! empty( $http_cf_connecting_ip ) ) {
+			return $http_cf_connecting_ip;
+		}
 	}
 
 	// X-Forwarded-For: Standard proxy header, first IP is the client.
@@ -33,14 +69,29 @@ function cf7a_get_real_ip() {
 		return filter_var( trim( current( explode( ',', $http_x_forwarded_for ) ) ), FILTER_VALIDATE_IP );
 	}
 
-	// REMOTE_ADDR: Fallback, may be proxy IP if behind a reverse proxy.
-	// phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__
-	$remote_addr = ! empty( $_SERVER['REMOTE_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) : false;
 	if ( ! empty( $remote_addr ) ) {
 		return $remote_addr;
 	}
 
 	return '';
+}
+
+/**
+ * Check if an IP is within a CIDR range.
+ *
+ * @param string $ip    The IP address to check.
+ * @param string $range The CIDR block range.
+ * @return bool True if IP is in range.
+ */
+function cf7a_ip_in_range( $ip, $range ) {
+	list( $subnet, $bits ) = explode( '/', $range );
+	$ip_long               = ip2long( $ip );
+	$subnet_long           = ip2long( $subnet );
+	if ( false === $ip_long || false === $subnet_long ) {
+		return false;
+	}
+	$mask = -1 << ( 32 - (int) $bits );
+	return ( $ip_long & $mask ) === ( $subnet_long & $mask );
 }
 
 /**

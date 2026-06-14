@@ -2,6 +2,8 @@
 
 namespace CF7_AntiSpam\Core;
 
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+
 /**
  * Blocklist management functions
  *
@@ -23,6 +25,7 @@ class CF7_Antispam_Blocklist {
 	}
 
 	/**
+	 * Adds an IP address to the blocklist. You should add multiple times an ip tp ban it from sending emails.
 	 * It takes an IP address as a parameter, validates it, and then returns the row from the database that matches that IP
 	 * address
 	 *
@@ -45,7 +48,7 @@ class CF7_Antispam_Blocklist {
 	}
 
 	/**
-	 * It adds an IP address to the blocklist.
+	 * It adds an IP address to the blocklist with the specified reason and spam score.
 	 *
 	 * @param string $ip The IP address to ban.
 	 * @param array  $reason The reason why the IP is being banned.
@@ -96,6 +99,31 @@ class CF7_Antispam_Blocklist {
 		}//end if
 
 		return false;
+	}
+
+	/**
+	 * Permanently ban an IP: write it to the blocklist table with the given score
+	 * and append it to the bad_ip_list plugin option so it survives cron unbanning.
+	 *
+	 * This is the single authoritative place for "distributed-bot-style" permanent bans.
+	 * It centralises the logic that was previously split across Filter_Distributed_Bot.
+	 *
+	 * @since      0.7.7
+	 *
+	 * @param string $ip     The IP address to ban (validated internally).
+	 * @param string $reason A human-readable reason stored in the blocklist meta.
+	 *
+	 * @return void
+	 */
+	public static function cf7a_ban_forever_and_add_to_list( string $ip, string $reason ): void {
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+
+		if ( ! $ip ) {
+			return;
+		}
+
+		self::cf7a_ban_by_ip( $ip, array( 'distributed_bot_trap' => $reason ) );
+		CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array( $ip ) );
 	}
 
 	/**
@@ -294,8 +322,8 @@ class CF7_Antispam_Blocklist {
 		$table_name = $wpdb->prefix . 'cf7a_blocklist';
 
 		// Truncate the table
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$result = $wpdb->query( "TRUNCATE TABLE {$table_name}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$result = $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
 
 		return false !== $result;
 	}

@@ -234,10 +234,23 @@ class CF7_AntiSpam_Frontend {
 			 * @param string $template     The HTML template.
 			 * @param array  $replacements The data available for replacement.
 			 */
-			$template = apply_filters(
-				'cf7a_honeypot_input_template',
-				'<input type="text" name="{name}" value="" autocomplete="fill" class="{class}" aria-hidden="true" tabindex="-1" />',
-				$replacements
+			$template = wp_kses(
+				apply_filters(
+					'cf7a_honeypot_input_template',
+					'<input type="text" name="{name}" value="" autocomplete="fill" class="{class}" aria-hidden="true" tabindex="-1" />',
+					$replacements
+				),
+				array(
+					'input' => array(
+						'type'         => array(),
+						'name'         => array(),
+						'value'        => array(),
+						'autocomplete' => array(),
+						'class'        => array(),
+						'aria-hidden'  => array(),
+						'tabindex'     => array(),
+					),
+				)
 			);
 
 			// Perform the replacement in a compact, readable way
@@ -344,7 +357,31 @@ class CF7_AntiSpam_Frontend {
 			return 'before-content' === $position ? $trap_html . $content : $content . $trap_html;
 		}
 
-		echo $trap_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses(
+			$trap_html,
+			array(
+				'div'   => array(
+					'style'       => array(),
+					'aria-hidden' => array(),
+				),
+				'form'  => array(
+					'method'   => array(),
+					'action'   => array(),
+					'tabindex' => array(),
+				),
+				'label' => array(
+					'for' => array(),
+				),
+				'input' => array(
+					'type'         => array(),
+					'id'           => array(),
+					'name'         => array(),
+					'value'        => array(),
+					'autocomplete' => array(),
+					'tabindex'     => array(),
+				),
+			)
+		);
 	}
 
 	/**
@@ -360,7 +397,7 @@ class CF7_AntiSpam_Frontend {
 	public function cf7a_add_hidden_fields( $fields ) {
 
 		/* the base hidden field prefix */
-		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] ?? CF7ANTISPAM_PREFIX );
 
 		/* add the language if required */
 		if ( intval( $this->options['check_language'] ) === 1 ) {
@@ -406,7 +443,7 @@ class CF7_AntiSpam_Frontend {
 	 * @return array The array of fields is being returned.
 	 */
 	public function cf7a_add_bot_fingerprinting( $fields ) {
-		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] ?? CF7ANTISPAM_PREFIX );
 
 		return array_merge(
 			$fields,
@@ -424,7 +461,7 @@ class CF7_AntiSpam_Frontend {
 	 * @return array The $fields array is being merged with the $prefix . 'bot_fingerprint_extras' => false array.
 	 */
 	public function cf7a_add_bot_fingerprinting_extras( $fields ) {
-		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] ?? CF7ANTISPAM_PREFIX );
 
 		return array_merge(
 			$fields,
@@ -442,7 +479,7 @@ class CF7_AntiSpam_Frontend {
 	 * @return array The array of fields.
 	 */
 	public function cf7a_append_on_submit( $fields ) {
-		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] );
+		$prefix = sanitize_html_class( $this->options['cf7a_customizations_prefix'] ?? CF7ANTISPAM_PREFIX );
 
 		return array_merge(
 			$fields,
@@ -555,7 +592,7 @@ class CF7_AntiSpam_Frontend {
 			$this->plugin_name,
 			'cf7a_settings',
 			array(
-				'prefix'        => $this->options['cf7a_customizations_prefix'],
+				'prefix'        => $this->options['cf7a_customizations_prefix'] ?? CF7ANTISPAM_PREFIX,
 				'disableReload' => $this->options['cf7a_disable_reload'],
 				'version'       => cf7a_crypt( CF7ANTISPAM_VERSION, $this->options['cf7a_cipher'] ),
 				'restUrl'       => get_rest_url( null, 'cf7-antispam/v1' ),

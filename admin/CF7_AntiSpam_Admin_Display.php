@@ -48,8 +48,14 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private static function cf7a_welcome_message() {
 		self::is_flamingo_active()
-			/* translators: %s is the shortcode */
-			? printf( esc_html__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ), '<code>flamingo_message: "[your-message]"</code>' )
+			? printf(
+				wp_kses(
+					/* translators: %s is the shortcode */
+					__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ),
+					array( 'code' => array() )
+				),
+				'<code>flamingo_message: "[your-message]"</code>'
+			)
 			: esc_html_e( 'Please install and activate the Flamingo plugin to enable advanced B8 Bayesian filtering.', 'cf7-antispam' );
 	}
 
@@ -80,7 +86,11 @@ class CF7_AntiSpam_Admin_Display {
 
 		if ( isset( $_GET['tab'] ) ) {
 			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), $nonce_action ) ) {
-				$active_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
+				$requested_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
+				$allowed_tabs  = array( 'dashboard', 'settings', 'blocklist', 'tools', 'import-export', 'wordlist', 'debug' );
+				if ( in_array( $requested_tab, $allowed_tabs, true ) ) {
+					$active_tab = $requested_tab;
+				}
 			}
 		}
 		?>
@@ -388,7 +398,7 @@ class CF7_AntiSpam_Admin_Display {
 
 		// Get detailed reason stats with caching
 		$cache_key_reasons = 'cf7a_reason_counts';
-		$reason_counts     = wp_cache_get( $cache_key_reasons, 'cf7a_blocklist_stats' );
+		$reason_counts     = get_transient( $cache_key_reasons );
 
 		if ( false === $reason_counts ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -403,7 +413,7 @@ class CF7_AntiSpam_Admin_Display {
 
 			$reason_counts = array();
 			foreach ( $meta_data as $row ) {
-				$decoded_meta = unserialize( $row->meta ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+				$decoded_meta = unserialize( $row->meta, array( 'allowed_classes' => false ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 
 				if ( is_array( $decoded_meta ) ) {
 					foreach ( $decoded_meta as $entry ) {
@@ -423,7 +433,7 @@ class CF7_AntiSpam_Admin_Display {
 				}
 			}
 
-			wp_cache_set( $cache_key_reasons, $reason_counts, 'cf7a_blocklist_stats', $cache_time_short );
+			set_transient( $cache_key_reasons, $reason_counts, $cache_time_short );
 		}//end if
 
 		// Sort reasons by count and get top 5

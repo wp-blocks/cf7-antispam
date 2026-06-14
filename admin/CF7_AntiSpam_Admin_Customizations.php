@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
+use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
 use WP_Query;
 
 /**
@@ -876,7 +877,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				'<p>%s<br/><code>%s</code></p>',
 				esc_html__( 'Recommended - define a key your config.php the key in this way: ', 'cf7-antispam' ),
 				// 👇 this is an example of a key definition, isn't define itself.
-				"define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );"
+				esc_html( "define( 'CF7ANTISPAM_GEOIP_KEY', 'aBcDeFgGhiLmNoPqR' );" )
 			);
 		}
 	}
@@ -930,7 +931,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<p>%s<a href="%s" target="_blank">%s</a></p>',
 			esc_html__( 'Here a you can find a list of servers: ', 'cf7-antispam' ),
 			esc_url( 'https://gist.github.com/search?q=dnsbl+list&ref=searchresults' ),
-			esc_url_raw( 'gist.github.com/search?q=dnsbl+list' )
+			esc_html( 'gist.github.com/search?q=dnsbl+list' )
 		);
 	}
 
@@ -1032,8 +1033,8 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_get_scores_presets() {
 		return array(
 			'weak'     => array(
-				'_fingerprinting' => 0.1,
-				'_time'           => 0.3,
+				'_fingerprinting' => 0.2,
+				'_time'           => 0.5,
 				'_bad_string'     => 0.5,
 				'_dnsbl'          => 0.1,
 				'_honeypot'       => 0.5,
@@ -1041,21 +1042,21 @@ class CF7_AntiSpam_Admin_Customizations {
 				'_warn'           => 0.3,
 			),
 			'standard' => array(
-				'_fingerprinting' => 0.15,
-				'_time'           => 0.5,
+				'_fingerprinting' => 0.3,
+				'_time'           => 0.75,
 				'_bad_string'     => 1,
 				'_dnsbl'          => 0.15,
 				'_honeypot'       => 1,
-				'_detection'      => 1,
+				'_detection'      => 2,
 				'_warn'           => 0.5,
 			),
 			'secure'   => array(
-				'_fingerprinting' => 0.25,
+				'_fingerprinting' => 0.4,
 				'_time'           => 1,
 				'_bad_string'     => 1,
 				'_dnsbl'          => 0.2,
 				'_honeypot'       => 1,
-				'_detection'      => 5,
+				'_detection'      => 3,
 				'_warn'           => 1,
 			),
 		);
@@ -1182,24 +1183,48 @@ class CF7_AntiSpam_Admin_Customizations {
 			$json_data = json_decode( $to_import );
 
 			if ( ! empty( $json_data ) && is_object( $json_data ) ) {
-				$input                                    = $this->cf7a_clean_recursive( $json_data );
-				$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] );
-				$input['ip_allowlist']                    = implode( ',', $input['ip_allowlist'] );
-				$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] );
-				$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] );
-				$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] );
-				$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] );
-				$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] );
-				$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] );
-				$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] );
-				$input['cf7a_enabled']                    = 1;
-				$input['cf7a_enable']                     = 1;
-				$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
+				$json_array = (array) $json_data;
+
+				/*
+				 * Build the allowed-key set from the union of:
+				 * 1. Keys in the currently-saved options (from the database).
+				 * 2. Keys in the master defaults (from the Activator).
+				 *
+				 * This ensures that newly added default options that have not been
+				 * persisted to the database yet are still accepted during import,
+				 * preventing them from being silently dropped.
+				 */
+				$allowed_keys    = array_unique(
+					array_merge(
+						array_keys( $this->options ),
+						array_keys( CF7_AntiSpam_Activator::get_default_options() )
+					)
+				);
+				$filtered_import = array_intersect_key( $json_array, array_flip( $allowed_keys ) );
+
+				if ( ! empty( $filtered_import ) ) {
+					$input                                    = $this->cf7a_clean_recursive( (object) $filtered_import );
+					$input['bad_ip_list']                     = implode( ',', $input['bad_ip_list'] ?? array() );
+					$input['ip_allowlist']                    = implode( ',', $input['ip_allowlist'] ?? array() );
+					$input['bad_email_strings_list']          = implode( ',', $input['bad_email_strings_list'] ?? array() );
+					$input['bad_user_agent_list']             = implode( ',', $input['bad_user_agent_list'] ?? array() );
+					$input['dnsbl_list']                      = implode( ',', $input['dnsbl_list'] ?? array() );
+					$input['honeypot_input_names']            = implode( ',', $input['honeypot_input_names'] ?? array() );
+					$input['bad_words_list']                  = implode( ',', $input['bad_words_list'] ?? array() );
+					$input['languages_locales']['allowed']    = implode( ',', $input['languages_locales']['allowed'] ?? array() );
+					$input['languages_locales']['disallowed'] = implode( ',', $input['languages_locales']['disallowed'] ?? array() );
+					$input['cf7a_enabled']                    = 1;
+					$input['cf7a_enable']                     = 1;
+					$input['cf7a_version']                    = CF7ANTISPAM_VERSION;
+				} else {
+					cf7a_log( 'CF7 AntiSpam: The import data contained no valid keys' );
+					return $this->options;
+				}
 			} else {
 				cf7a_log( print_r( $to_import, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 				cf7a_log( 'CF7 AntiSpam: The import data is invalid' );
 				return $this->options;
-			}
+			}//end if
 		}//end if
 
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;

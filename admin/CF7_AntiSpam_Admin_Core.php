@@ -80,7 +80,7 @@ class CF7_AntiSpam_Admin_Core {
 			__( 'Antispam', 'cf7-antispam' ),
 			__( 'Antispam', 'cf7-antispam' ),
 			// phpcs:ignore WordPress.WP.Capabilities.Unknown
-			'wpcf7_edit_contact_forms',
+			'manage_options',
 			$this->plugin_name,
 			array( $this, 'cf7a_admin_dashboard' )
 		);
@@ -168,7 +168,8 @@ class CF7_AntiSpam_Admin_Core {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), $this->version );
+		$asset = include CF7ANTISPAM_PLUGIN_DIR . '/build/admin-scripts.asset.php';
+		wp_enqueue_style( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.css', array(), $asset['version'] );
 	}
 
 	/**
