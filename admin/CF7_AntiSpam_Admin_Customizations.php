@@ -1033,8 +1033,8 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_get_scores_presets() {
 		return array(
 			'weak'     => array(
-				'_fingerprinting' => 0.1,
-				'_time'           => 0.3,
+				'_fingerprinting' => 0.2,
+				'_time'           => 0.5,
 				'_bad_string'     => 0.5,
 				'_dnsbl'          => 0.1,
 				'_honeypot'       => 0.5,
@@ -1042,21 +1042,21 @@ class CF7_AntiSpam_Admin_Customizations {
 				'_warn'           => 0.3,
 			),
 			'standard' => array(
-				'_fingerprinting' => 0.15,
-				'_time'           => 0.5,
+				'_fingerprinting' => 0.3,
+				'_time'           => 0.75,
 				'_bad_string'     => 1,
 				'_dnsbl'          => 0.15,
 				'_honeypot'       => 1,
-				'_detection'      => 1,
+				'_detection'      => 2,
 				'_warn'           => 0.5,
 			),
 			'secure'   => array(
-				'_fingerprinting' => 0.25,
+				'_fingerprinting' => 0.4,
 				'_time'           => 1,
 				'_bad_string'     => 1,
 				'_dnsbl'          => 0.2,
 				'_honeypot'       => 1,
-				'_detection'      => 5,
+				'_detection'      => 3,
 				'_warn'           => 1,
 			),
 		);
