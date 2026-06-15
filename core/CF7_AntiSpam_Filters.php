@@ -302,6 +302,7 @@ class CF7_AntiSpam_Filters {
 		$reason     = $spam_data['reasons'];
 		$spam       = $spam_data['is_spam'];
 		$remote_ip  = $spam_data['remote_ip'] ? $spam_data['remote_ip'] : $spam_data['cf7_remote_ip'];
+		$country    = ! empty( $spam_data['country'] ) ? $spam_data['country'] : '';
 
 		/**
 		 * Final filter before the ban
@@ -323,7 +324,7 @@ class CF7_AntiSpam_Filters {
 
 		/* If the auto-store ip is enabled */
 		if ( isset( $options['autostore_bad_ip'] ) && $options['autostore_bad_ip'] ) {
-			if ( CF7_Antispam_Blocklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
+			if ( CF7_Antispam_Blocklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ), $country ) ) {
 				cf7a_log( "Ban for $remote_ip - results - " . $reasons_for_ban, 2 );
 			} else {
 				cf7a_log( "Unable to ban $remote_ip" );
