@@ -155,11 +155,51 @@ class CF7_AntiSpam_Admin_Charts {
 	}
 
 	/**
+	 * Retrieves and aggregates spammers by country from the blocklist table.
+	 *
+	 * @return array Array of countries and their spam counts.
+	 */
+	private function cf7a_get_spammers_by_country_data() {
+		global $wpdb;
+		$blocklist_table = $wpdb->prefix . 'cf7a_blocklist';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( "SELECT meta FROM {$blocklist_table} WHERE meta IS NOT NULL", ARRAY_A );
+
+		$country_counts = array();
+
+		if ( $results ) {
+			foreach ( $results as $row ) {
+				if ( empty( $row['meta'] ) ) {
+					continue;
+				}
+				$meta = maybe_unserialize( $row['meta'] );
+				if ( is_array( $meta ) && ! empty( $meta['country'] ) ) {
+					$country = sanitize_text_field( $meta['country'] );
+					if ( ! isset( $country_counts[ $country ] ) ) {
+						$country_counts[ $country ] = 0;
+					}
+					++$country_counts[ $country ];
+				}
+			}
+		}
+
+		// Sort by count descending
+		arsort( $country_counts );
+
+		return array(
+			'labels' => array_keys( $country_counts ),
+			'data'   => array_values( $country_counts ),
+		);
+	}
+
+	/**
 	 * Renders the JavaScript chart data
 	 *
 	 * @param array $chart_data Prepared chart data
+	 * @param array $country_data Spammers by country data
 	 */
-	private function cf7a_render_chart_script( $chart_data ) {
+	private function cf7a_render_chart_script( $chart_data, $country_data = array() ) {
 		?>
 			<script>
 					var spamChartData = {
@@ -189,7 +229,8 @@ class CF7_AntiSpam_Admin_Charts {
 													'rgb(248,49,47)'
 											]
 									}]
-							}
+							},
+							countryData: <?php echo empty( $country_data ) ? 'null' : wp_json_encode( $country_data ); ?>
 					}
 			</script>
 			<?php
@@ -284,6 +325,14 @@ class CF7_AntiSpam_Admin_Charts {
 		/* Prepare chart data */
 		$chart_data = $this->cf7a_prepare_chart_data( $mail_collection );
 
+		/* Fetch GeoIP data if enabled */
+		$options      = \CF7_AntiSpam\Core\CF7_AntiSpam::get_options();
+		$geoip_active = ! empty( $options['enable_geoip_download'] ) || ! empty( $options['check_geoip_enabled'] );
+		$country_data = array();
+		if ( $geoip_active ) {
+			$country_data = $this->cf7a_get_spammers_by_country_data();
+		}
+
 		/* Render the widget */
 		?>
 		<div id="antispam-charts">
@@ -294,9 +343,14 @@ class CF7_AntiSpam_Admin_Charts {
 				<div class="antispam-charts-line">
 					<canvas id="pie-chart" width="400" height="200"></canvas>
 				</div>
+				<?php if ( $geoip_active && ! empty( $country_data['data'] ) ) : ?>
+				<div class="antispam-charts-line">
+					<canvas id="country-pie-chart" width="400" height="200"></canvas>
+				</div>
+				<?php endif; ?>
 			</div>
 			<?php
-				$this->cf7a_render_chart_script( $chart_data );
+				$this->cf7a_render_chart_script( $chart_data, $country_data );
 			?>
 		</div>
 		<?php
