@@ -43,7 +43,12 @@ class Filter_Geoip extends Abstract_CF7_AntiSpam_Filter {
 				$geoip_data      = $geoip->check_ip( $data['remote_ip'] );
 				$geoip_continent = isset( $geoip_data['continent'] ) ? ( $geoip_data['continent'] ) : false;
 				$geoip_country   = isset( $geoip_data['country'] ) ? ( $geoip_data['country'] ) : false;
-				$geo_data        = array_filter( array( $geoip_continent, $geoip_country ) );
+
+				if ( $geoip_country ) {
+					$data['country'] = strtolower( $geoip_country );
+				}
+
+				$geo_data = array_filter( array( $geoip_continent, $geoip_country ) );
 
 				if ( ! empty( $geo_data ) ) {
 					if ( false === CF7_AntiSpam_Rules::cf7a_check_languages_locales_allowed( $geo_data, $locales_disallowed, $locales_allowed ) ) {
@@ -57,7 +62,7 @@ class Filter_Geoip extends Abstract_CF7_AntiSpam_Filter {
 				}
 			} catch ( Exception $e ) {
 				cf7a_log( "unable to check geoip for {$data['remote_ip']} - " . $e->getMessage(), 1 );
-			}
+			}//end try
 		}//end if
 		return $data;
 	}
