@@ -53,10 +53,11 @@ class CF7_Antispam_Blocklist {
 	 * @param string $ip The IP address to ban.
 	 * @param array  $reason The reason why the IP is being banned.
 	 * @param int    $spam_score This is the number of points that will be added to the IP's spam score.
+	 * @param string $country The country ISO code of the IP, if resolved.
 	 *
 	 * @return bool true if the given id was banned
 	 */
-	public static function cf7a_ban_by_ip( string $ip, array $reason = array(), $spam_score = 1 ): bool {
+	public static function cf7a_ban_by_ip( string $ip, array $reason = array(), $spam_score = 1, string $country = '' ): bool {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 
 		if ( $ip ) {
@@ -70,9 +71,22 @@ class CF7_Antispam_Blocklist {
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				$meta             = ! empty( $ip_row->meta ) ? unserialize( $ip_row->meta ) : array();
 				$previous_reasons = ! empty( $meta ) && ! empty( $meta['reason'] ) ? $meta['reason'] : array();
+				$existing_country = ! empty( $meta['country'] ) ? $meta['country'] : '';
 			} else {
 				// if the ip is not in the blocklist, add it and initialize the status
-				$status = floatval( $spam_score );
+				$status           = floatval( $spam_score );
+				$existing_country = '';
+			}
+
+			$meta_data = array(
+				'reason' => ! empty( $previous_reasons )
+					? array_merge( $previous_reasons, $reason )
+					: $reason,
+			);
+
+			$final_country = ! empty( $country ) ? $country : $existing_country;
+			if ( ! empty( $final_country ) ) {
+				$meta_data['country'] = strtolower( $final_country );
 			}
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -82,13 +96,7 @@ class CF7_Antispam_Blocklist {
 					'ip'     => $ip,
 					'status' => $status,
 					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-					'meta'   => serialize(
-						array(
-							'reason' => ! empty( $previous_reasons )
-								? array_merge( $previous_reasons, $reason )
-								: $reason,
-						)
-					),
+					'meta'   => serialize( $meta_data ),
 				),
 				array( '%s', '%d', '%s' )
 			);
@@ -486,5 +494,59 @@ class CF7_Antispam_Blocklist {
 		cf7a_log( "Removed {$updated_deletion} users from blocklist", 1 );
 
 		return true;
+	}
+
+	/**
+	 * Retroactively updates missing GeoIP country data for IPs in the blocklist.
+	 *
+	 * @since    1.0.0
+	 * @return   int Number of IPs successfully updated with GeoIP data.
+	 */
+	public function cf7a_retroactive_geoip_update() {
+		global $wpdb;
+
+		$table_name    = $wpdb->prefix . 'cf7a_blocklist';
+		$updated_count = 0;
+
+		// Select a batch of IPs that might be missing country data.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results( "SELECT id, ip, meta FROM {$table_name} WHERE meta NOT LIKE '%\"country\"%' LIMIT 200" );
+
+		if ( empty( $rows ) ) {
+			return $updated_count;
+		}
+
+		$geoip = new CF7_Antispam_Geoip();
+
+		foreach ( $rows as $row ) {
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+			$meta = ! empty( $row->meta ) ? unserialize( $row->meta ) : array();
+
+			if ( ! isset( $meta['country'] ) ) {
+				$geoip_data = $geoip->check_ip( $row->ip );
+
+				if ( ! empty( $geoip_data ) && empty( $geoip_data['error'] ) && ! empty( $geoip_data['country'] ) ) {
+					$meta['country'] = strtolower( $geoip_data['country'] );
+
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$result = $wpdb->update(
+						$table_name,
+						array(
+							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+							'meta' => serialize( $meta ),
+						),
+						array( 'id' => $row->id ),
+						array( '%s' ),
+						array( '%d' )
+					);
+
+					if ( false !== $result ) {
+						++$updated_count;
+					}
+				}
+			}//end if
+		}//end foreach
+
+		return $updated_count;
 	}
 }
