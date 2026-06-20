@@ -91,13 +91,13 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
 
+      - name: Installing NPM dependencies
+        run: npm i
+
       - name: Install Playwright Browsers
         run: |
           sudo npx playwright install-deps chromium
           npx playwright install
-
-      - name: Installing NPM dependencies
-        run: npm i
 
       - name: Build
         run: npm run build
