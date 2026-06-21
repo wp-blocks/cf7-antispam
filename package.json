@@ -2,11 +2,12 @@
 	"name": "cf7-antispam",
 	"author": "Erik Golinelli <erik@codekraft.it>",
 	"license": "GPL-2.0-only",
-	"version": "0.7.6",
+	"version": "0.7.7",
 	"description": "AntiSpam for Contact Form 7",
 	"files": [
 		"admin/*",
 		"assets/icon.svg",
+		"assets/flags/*",
 		"build/*",
 		"core/*",
 		"engine/*",
@@ -20,17 +21,17 @@
 		"readme.txt"
 	],
 	"scripts": {
+		"copy-flags": "node build-scripts/copy-flags.js",
 		"start": "wp-scripts start",
 		"build": "wp-scripts build",
-		"preplugin-zip": "npm run build && npm run makepot",
+		"preplugin-zip": "npm run copy-flags && npm run build && npm run makepot",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"--postplugin-zip": "composer install",
 		"lint:css": "wp-scripts lint-style ./src/**/*.scss --fix",
-		"lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
+		"lint:js": "wp-scripts lint-js ./src/**/*.ts --config package.json --fix",
 		"packages-update": "wp-scripts packages-update",
 		"wp-env:start": "wp-env start",
-		"wp-env:xdebug": "wp-env start --xdebug",
 		"wp-env:stop": "wp-env stop",
+		"wp-env:test": "wp-env start  --xdebug --config=.wp-env.test.json",
 		"wp-env:destroy": "wp-env destroy",
 		"test:e2e": "wp-scripts test-playwright --config tests/e2e/playwright.config.js",
 		"test:e2e:ui": "wp-scripts test-playwright --config tests/e2e/playwright.config.js --ui",
@@ -40,7 +41,7 @@
 		"PHPCS": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam PHPCS",
 		"composer:install": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam setup",
 		"composer:build": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam build",
-		"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
+		"test:unit:php": "wp-env run wordpress --config=.wp-env.test.json /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
 	},
 	"repository": {
 		"type": "git",
@@ -51,17 +52,20 @@
 	},
 	"homepage": "https://github.com/erikyo/contact-form-7-antispam#readme",
 	"dependencies": {
+		"@wordpress/i18n": "^6.21.1",
 		"chart.js": "^4.5.1",
 		"isotolanguage": "^1.3.1"
 	},
 	"devDependencies": {
 		"@wordpress/api-fetch": "^7.34.0",
 		"@wordpress/e2e-test-utils-playwright": "^1.34.0",
-		"@wordpress/env": "10.26.0",
-		"@wordpress/eslint-plugin": "^22.22.0",
+		"@wordpress/env": "^11.8.1",
+		"@wordpress/eslint-plugin": "^24.5.0",
 		"@wordpress/icons": "^10.19.0",
-		"@wordpress/scripts": "^31.2.0",
+		"@wordpress/scripts": "^32.4.1",
 		"@wp-blocks/make-pot": "^1.6.4",
+		"circle-flags": "github:hatscripts/circle-flags",
+		"copy": "^0.3.2",
 		"eslint-import-resolver-typescript": "^4.4.4",
 		"husky": "^9.1.7",
 		"prettier": "^3.7.4",
@@ -80,7 +84,11 @@
 			"plugin:@wordpress/eslint-plugin/i18n"
 		],
 		"rules": {
-			"@wordpress/dependency-group": "error"
+			"@wordpress/dependency-group": "error",
+			"camelcase": "off",
+			"no-console": "off",
+			"no-bitwise": "off",
+			"no-alert": "off"
 		}
 	},
 	"stylelint": {

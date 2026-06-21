@@ -401,11 +401,11 @@ class CF7_Antispam_Blocklist {
 	 *
 	 * @since    0.7.0
 	 * @param    string $ip The IP address to blocklist.
-	 * @param    string $status The status of the ban.
+	 * @param    mixed  $status The status of the ban, normally an integer.
 	 * @param    mixed  $meta Additional metadata.
 	 * @return   bool True on success, false on failure
 	 */
-	public function cf7a_add_to_blocklist( $ip, $status = 'banned', $meta = null ) {
+	public function cf7a_add_to_blocklist( $ip, $status = 1, $meta = null ) {
 		if ( self::is_ip_allowlisted( $ip ) ) {
 			return new \WP_Error( 'ip_allowlisted', __( 'Cannot add an allowlisted IP to the blocklist.', 'cf7-antispam' ) );
 		}
@@ -463,11 +463,11 @@ class CF7_Antispam_Blocklist {
 	 * @since    1.0.0
 	 * @param    int    $id The blocklist entry ID.
 	 * @param    string $ip The IP address to blocklist.
-	 * @param    string $status The status of the ban.
+	 * @param    mixed  $status The status of the ban, normally an integer.
 	 * @param    mixed  $meta Additional metadata.
 	 * @return   bool|\WP_Error True on success, false on failure, WP_Error if allowlisted.
 	 */
-	public function cf7a_update_blocklist_by_id( $id, $ip, $status = 'banned', $meta = null ) {
+	public function cf7a_update_blocklist_by_id( $id, $ip, $status = 1, $meta = null ) {
 		if ( self::is_ip_allowlisted( $ip ) ) {
 			return new \WP_Error( 'ip_allowlisted', __( 'Cannot update to an allowlisted IP.', 'cf7-antispam' ) );
 		}

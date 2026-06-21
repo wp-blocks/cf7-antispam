@@ -30,12 +30,7 @@ function actionHandler(el: HTMLElement) {
 	 * Confirmation alert
 	 * We are going to ask the user to confirm the action before proceeding using the confirm() function
 	 */
-	if (
-		// eslint-disable-next-line no-alert
-		message &&
-		// eslint-disable-next-line no-alert
-		!confirm(message)
-	) {
+	if (message && !confirm(message)) {
 		return;
 	}
 
@@ -96,14 +91,12 @@ function actionHandler(el: HTMLElement) {
 			const response = r as ApiResponse;
 			if (response.success) {
 				if (response.message) {
-					// eslint-disable-next-line no-alert
 					alert(response.message);
 				}
 				if (cb) {
 					cb(response);
 				}
 			} else {
-				// eslint-disable-next-line no-console
 				console.error(
 					'Error:',
 					response.message,
@@ -112,9 +105,8 @@ function actionHandler(el: HTMLElement) {
 			}
 		})
 		.catch((error: any) => {
-			// eslint-disable-next-line no-console
 			console.error('Error:', error.message);
-			// eslint-disable-next-line no-alert
+
 			alert('Request failed: ' + error.message);
 		});
 }

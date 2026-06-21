@@ -2,6 +2,7 @@ declare global {
 	interface Window {
 		wpcf7: () => void;
 		canvasCount: number;
+		cf7aInitCharts: (data?: any) => void;
 	}
 	interface String {
 		hashCode(): number;
@@ -19,12 +20,24 @@ declare global {
 	};
 
 	let spamChartData: {
-		lineData: any;
-		pieData: any;
+		dates?: string[];
+		ham?: number[];
+		spam?: number[];
+		blockedIps?: number[];
+		blockedComments?: number[];
+		by_type?: {
+			ham: number;
+			spam: number;
+		};
+		countryData?: {
+			labels: string[];
+			data: number[];
+		} | null;
 	};
 
 	let cf7a_admin_settings: {
 		alertMessage: string;
+		pieChartData?: Record<string, number>;
 	};
 }
 

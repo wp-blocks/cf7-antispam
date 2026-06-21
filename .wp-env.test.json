@@ -1,7 +1,7 @@
 {
 	"core": null,
+	"testsEnvironment": false,
 	"plugins": [
-		"https://downloads.wordpress.org/plugin/plugin-check.zip",
 		"https://downloads.wordpress.org/plugin/contact-form-7.zip",
 		"https://downloads.wordpress.org/plugin/flamingo.zip",
 		"."
@@ -14,6 +14,8 @@
 		"CF7ANTISPAM_DEBUG_EXTENDED": true,
 		"FS_METHOD": "direct"
 	},
-	"phpVersion": "8.4",
-	"testsEnvironment": false
+	"mappings": {
+		"/var/www/html/wp-content/plugins/cf7-antispam/": "."
+	},
+	"phpVersion": "8.4"
 }

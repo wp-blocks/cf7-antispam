@@ -16,15 +16,6 @@
 		font-family: monospace;
 	}
 
-	#pie-chart {
-		width: 36px !important;
-		height: 36px !important;
-		display: inline-block !important;
-		padding: 4px;
-		float: left;
-		margin-right: 4px;
-	}
-
 	.cf7-a_widget-empty {
 		text-align: center;
 
@@ -46,16 +37,45 @@
 	.antispam-charts-container {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 10%;
+		gap: 20px;
+
+		.antispam-charts-line {
+			min-width: 0;
+			position: relative;
+			height: 300px;
+			width: 100%;
+		}
+
+		.antispam-charts-pie {
+			max-width: 100%;
+			margin: 0 auto;
+			padding: 20px;
+			box-sizing: border-box;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			width: 100%;
+		}
+
+		.antispam-charts-line canvas {
+			width: 100% !important;
+			height: 100% !important;
+			display: block;
+		}
+
+		.antispam-charts-pie canvas {
+			width: 100% !important;
+			height: auto !important;
+			display: block;
+		}
 	}
 
 	/* Desktop layout */
-	@media (min-width: 768px) {
-
+	@media (min-width: 1024px) {
 		.antispam-charts-container {
 			grid-template-columns: 2fr 1fr;
-			align-self: start
+			align-self: start;
 		}
 	}
 }
-

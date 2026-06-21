@@ -42,14 +42,12 @@ function exportActionHandler(el: HTMLElement) {
 					window.URL.revokeObjectURL(url);
 				}
 			} else {
-				// eslint-disable-next-line no-console
 				console.error('Error: Failed to export file', message);
 			}
 		})
 		.catch((error: any) => {
-			// eslint-disable-next-line no-console
 			console.error('Error:', error.message);
-			// eslint-disable-next-line no-alert
+
 			alert('Request failed: ' + error.message);
 		});
 }

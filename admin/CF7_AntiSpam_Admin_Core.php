@@ -194,11 +194,14 @@ class CF7_AntiSpam_Admin_Core {
 		wp_register_script( $this->plugin_name, CF7ANTISPAM_PLUGIN_URL . '/build/admin-scripts.js', $asset['dependencies'], $asset['version'], true );
 		wp_enqueue_script( $this->plugin_name );
 
+		$charts_admin = new \CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Charts();
+
 		wp_localize_script(
 			$this->plugin_name,
 			'cf7a_admin_settings',
 			array(
 				'alertMessage' => esc_html__( 'Are you sure?', 'cf7-antispam' ),
+				'pieChartData' => $charts_admin->cf7a_get_pie_chart_data(),
 			)
 		);
 	}

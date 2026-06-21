@@ -3,6 +3,7 @@
 @use "utils";
 @use "flamingo";
 @use "tabs";
+@use "blocklist";
 @use "../charts/charts";
 @use "../settings/settings";
 
@@ -229,13 +230,42 @@
 	}
 
 	/* Blocklist info Tab */
-	.blocklist-table {
-		display: block;
-		max-width: 100%;
-		width: 100%;
+	#blocklist {
+
+		.card.ban-card {
+			.flex-col {
+				display: flex;
+				flex-direction: column;
+				gap: 0;
+				line-height: 1;
+
+				span.ip-label {
+					color: #888;
+					font-size: 80%;
+				}
+			}
+
+			.actions {
+				display: flex;
+				justify-content: end;
+				gap: 0.5rem;
+
+				.button {
+					min-height: 24px;
+					padding: 0 0.5rem;
+					line-height: 24px;
+
+					&.cf7a_action {
+						color: #444;
+						border-color: #aaa
+					}
+				}
+			}
+		}
 
 		div.row {
 			display: flex;
+			gap: .5rem;
 			font-size: 12px;
 			margin-bottom: 8px;
 			padding-bottom: 8px;
@@ -250,24 +280,24 @@
 			}
 
 			.status {
-				width: 50px;
-				margin-right: 8px;
+				margin-right: 0;
+				margin-left: auto;
 
 				.ico {
+					border-radius: 50%;
+					box-sizing: border-box;
+					color: #fff;
 					display: inline-block;
 					font-family: monospace;
-					text-align: center;
-					border-radius: 50%;
-					width: 40px;
-					height: 40px;
-					line-height: 30px;
-					box-sizing: border-box;
-					padding: 5px;
-					margin: 0;
-					color: colors.$color__white;
-					font-size: 20px;
+					font-size: 12px;
 					font-weight: 700;
-					text-shadow: 0 1px 1px colors.$color__text-shadow;
+					height: 24px;
+					line-height: 14px;
+					margin: 0;
+					padding: 5px;
+					text-align: center;
+					text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+					width: 24px;
 				}
 			}
 
@@ -275,6 +305,7 @@
 				font-family: monospace;
 				font-weight: 700;
 				margin: 0;
+				font-size: 0.9rem;
 
 				.actions span {
 					cursor: pointer;
@@ -859,4 +890,18 @@
 	display: flex;
 	gap: 12px;
 	justify-content: flex-end;
+}
+
+// Blocklist Grid UI
+.cf7a-blocklist-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 15px;
+	margin-bottom: 30px;
+}
+
+.cf7a-score-group {
+	margin: 20px 0 10px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #ccd0d4;
 }
