@@ -10,7 +10,7 @@
 export function createCF7Afield(
 	key: string,
 	value: string | number | boolean,
-	// eslint-disable-next-line camelcase
+
 	prefix: string = cf7a_settings.prefix
 ): HTMLElement {
 	const e = document.createElement('input');
@@ -93,7 +93,6 @@ export async function setTimestamp(tsInput: HTMLInputElement, restUrl: string) {
 			}
 		}
 	} catch (e) {
-		// eslint-disable-next-line no-console
 		console.error('CF7 Antispam: Failed to fetch timestamp', e);
 	}
 }
@@ -124,7 +123,6 @@ export async function setDistributedBotToken(
 			}
 		}
 	} catch (e) {
-		// eslint-disable-next-line no-console
 		console.error('CF7 Antispam: Failed to fetch distributed bot token', e);
 	}
 }

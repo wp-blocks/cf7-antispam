@@ -17,7 +17,7 @@ function main(): void {
 	}
 
 	// disable cf7 refill onload if disableReload is enabled
-	// eslint-disable-next-line camelcase
+
 	wpcf7.cached = parseInt(cf7a_settings.disableReload) === 0 && wpcf7.cached;
 
 	// Process existing forms

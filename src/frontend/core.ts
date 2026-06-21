@@ -19,7 +19,6 @@ import {
 	randomString,
 } from './utils';
 
-// eslint-disable-next-line camelcase
 declare const cf7a_settings: {
 	prefix: string;
 	version: string;
@@ -36,7 +35,6 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 		return;
 	}
 
-	// eslint-disable-next-line camelcase
 	const { prefix, version, restUrl } = cf7a_settings;
 
 	const hiddenInputsContainer = (wpcf7Form.querySelector(
@@ -46,7 +44,6 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 		null) as HTMLElement | null;
 
 	if (!hiddenInputsContainer) {
-		// eslint-disable-next-line no-console
 		console.error('CF7 Antispam: hidden-fields-container not found');
 		return;
 	}
@@ -155,7 +152,6 @@ export function processExistingForms(): void {
 export function setupMutationObserver(): void {
 	// Check if MutationObserver is supported
 	if (typeof MutationObserver === 'undefined') {
-		// eslint-disable-next-line no-console
 		console.warn('CF7 Antispam: MutationObserver not supported');
 		return;
 	}

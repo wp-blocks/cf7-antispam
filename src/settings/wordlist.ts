@@ -161,7 +161,6 @@ const fetchWordlist = async (): Promise<void> => {
 			showError('Failed to fetch wordlist');
 		}
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.error('Error fetching wordlist:', error);
 		showError('Failed to fetch wordlist. Please try again.');
 	}
@@ -303,7 +302,6 @@ const attachRowEventListeners = (): void => {
 			const target = e.currentTarget as HTMLButtonElement;
 			const token = target.dataset.token || '';
 			if (
-				// eslint-disable-next-line no-alert
 				confirm(
 					`Are you sure you want to delete the word "${token}" from the dictionary?`
 				)
@@ -372,13 +370,11 @@ const saveWord = async (): Promise<void> => {
 			closeEditModal();
 			fetchWordlist(); // Refresh the list
 		} else {
-			// eslint-disable-next-line no-alert
 			alert(response.message || 'Failed to update word');
 		}
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.error('Error updating word:', error);
-		// eslint-disable-next-line no-alert
+
 		alert('Failed to update word. Please try again.');
 	}
 };
@@ -401,13 +397,11 @@ const deleteWord = async (token: string): Promise<void> => {
 		if (response.success) {
 			fetchWordlist(); // Refresh the list
 		} else {
-			// eslint-disable-next-line no-alert
 			alert(response.message || 'Failed to delete word');
 		}
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.error('Error deleting word:', error);
-		// eslint-disable-next-line no-alert
+
 		alert('Failed to delete word. Please try again.');
 	}
 };
