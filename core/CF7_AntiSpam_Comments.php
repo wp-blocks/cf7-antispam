@@ -48,6 +48,8 @@ class CF7_AntiSpam_Comments {
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_IP_Allowlist(), 'process' ), 5 );
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_Empty_IP(), 'process' ), 10 );
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_Bad_IP(), 'process' ), 10 );
+			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_IP_Blocklist_History(), 'process' ), 10 );
+			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_High_Entropy(), 'process' ), 10 );
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_Time_Submission(), 'process' ), 10 );
 			// Reuses existing time check logic
 			add_filter( 'cf7a_comment_spam_check_chain', array( new Filters\Filter_B8_Bayesian(), 'process' ), 20 );

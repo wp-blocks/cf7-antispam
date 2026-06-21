@@ -854,6 +854,12 @@ class CF7_AntiSpam_Admin_Display {
 		<p><?php esc_html_e( 'If something has gone wrong during updates, you can perform a forced database and options update.', 'cf7-antispam' ); ?></p>
 		<button class="cf7a_action-button cf7a_action cf7a-action-info" data-action="force-update" data-nonce="<?php echo esc_attr( $nonce ); ?>" ><?php esc_html_e( 'Update Database', 'cf7-antispam' ); ?></button>
 
+		<h4><?php esc_html_e( 'Update Blocklist GeoIP', 'cf7-antispam' ); ?></h4>
+		<p><?php esc_html_e( 'Force an update of GeoIP information for all entries in the blocklist.', 'cf7-antispam' ); ?></p>
+		<button type="button" id="cf7a-force-geoip-update" class="cf7a_action-button cf7a_action cf7a-action-info" data-action="update-blocklist-geoip" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-message="<?php esc_attr_e( 'Are you sure you want to force a retroactive blocklist GeoIP update?', 'cf7-antispam' ); ?>">
+			<?php esc_html_e( 'Force Blocklist GeoIP Update', 'cf7-antispam' ); ?>
+		</button>
+
 		<div class="cf7a-danger-zone">
 			<h3><?php esc_html_e( 'Danger Zone', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'These actions are irreversible. Please make sure you know what you are doing.', 'cf7-antispam' ); ?></p>
@@ -943,10 +949,23 @@ class CF7_AntiSpam_Admin_Display {
 					$reason = array( 'legacy' => $reason );
 				}
 
+				$flag_html = '';
+				if ( ! empty( $meta['country'] ) ) {
+					$iso_code  = strtolower( $meta['country'] );
+					$flag_html = sprintf(
+						'<img src="%sassets/flags/%s.svg" width="24" alt="%s" class="cf7a-country-flag" style="vertical-align: middle; margin-right: 5px;"> ',
+						esc_url( plugin_dir_url( __DIR__ ) ),
+						esc_attr( $iso_code ),
+						esc_attr( strtoupper( $iso_code ) )
+					);
+				}
+
 				$rows .= sprintf(
-					'<div class="row row-%s"><div class="status">%s</div><div><p class="ip">%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></p><span class="data">%s</span><span class="data date"><b>%s:</b> %s</span></div></div>',
+					'<div class="row row-%s"><div class="status">%s</div><div><a href="https://www.abuseipdb.com/check/%s" class="ip">%s%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></a><span class="data">%s</span><span class="data date"><b>%s:</b> %s</span></div></div>',
 					esc_attr( intval( $row->id ) ),
 					cf7a_format_status( $row->status - $max_attempts ),
+					$flag_html,
+					esc_html( $row->ip ),
 					esc_html( $row->ip ),
 					esc_attr( $row->id ),
 					esc_attr( $nonce ),
@@ -972,6 +991,13 @@ class CF7_AntiSpam_Admin_Display {
 						'a'     => array( 'href' => array() ),
 						'b'     => array(),
 						'br'    => array(),
+						'img'   => array(
+							'src'   => array(),
+							'width' => array(),
+							'alt'   => array(),
+							'class' => array(),
+							'style' => array(),
+						),
 						'span'  => array(
 							'class'         => array(),
 							'style'         => array(),

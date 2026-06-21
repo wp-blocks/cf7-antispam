@@ -794,6 +794,37 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		);
 	}
 
+	/**
+	 * Retroactively update blocklist GeoIP data.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_update_blocklist_geoip( $request ) {
+		/** Verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$blocklist     = new CF7_Antispam_Blocklist();
+		$updated_count = $blocklist->cf7a_retroactive_geoip_update();
+
+		return rest_ensure_response(
+			array(
+				'success'       => true,
+				/* translators: %d is the number of updated IPs. */
+				'message'       => sprintf( __( 'Successfully updated %d IPs with GeoIP data', 'cf7-antispam' ), $updated_count ),
+				'updated_count' => $updated_count,
+			)
+		);
+	}
+
 
 	/**
 	 * Register the routes for the objects of the controller.
@@ -1157,6 +1188,27 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required' => true,
 							'type'     => 'string',
 						),
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'update-blocklist-geoip',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_update_blocklist_geoip' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
 						'nonce' => array(
 							'required'          => true,
 							'type'              => 'string',
