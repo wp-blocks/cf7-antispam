@@ -6,6 +6,7 @@ use CF7_AntiSpam\Core\CF7_AntiSpam;
 use CF7_AntiSpam\Core\CF7_AntiSpam_Rules;
 use CF7_AntiSpam\Core\CF7_Antispam_Geoip;
 use Exception;
+use Locale;
 
 /**
  * The plugin notices and ui stuff.
@@ -50,7 +51,7 @@ class CF7_AntiSpam_Admin_Display {
 		self::is_flamingo_active()
 			? printf(
 				wp_kses(
-					/* translators: %s is the shortcode */
+				/* translators: %s is the shortcode */
 					__( 'Please do not forget to add %s to your forms to enable B8 Bayesian filtering.', 'cf7-antispam' ),
 					array( 'code' => array() )
 				),
@@ -87,7 +88,7 @@ class CF7_AntiSpam_Admin_Display {
 		if ( isset( $_GET['tab'] ) ) {
 			if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), $nonce_action ) ) {
 				$requested_tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
-				$allowed_tabs  = array( 'dashboard', 'settings', 'blocklist', 'tools', 'import-export', 'wordlist', 'debug' );
+				$allowed_tabs  = array( 'dashboard', 'settings', 'geoip', 'blocklist', 'tools', 'wordlist', 'debug' );
 				if ( in_array( $requested_tab, $allowed_tabs, true ) ) {
 					$active_tab = $requested_tab;
 				}
@@ -103,6 +104,10 @@ class CF7_AntiSpam_Admin_Display {
 				class="cf7a-nav-tab tab-settings <?php echo 'settings' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-settings"></span> <?php esc_html_e( 'Settings', 'cf7-antispam' ); ?>
 			</a>
+			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'geoip' ), $nonce_action ) ); ?>"
+				class="cf7a-nav-tab tab-geoip <?php echo 'geoip' === $active_tab ? 'nav-tab-active' : ''; ?>">
+				<span class="dashicons dashicons-location"></span> <?php esc_html_e( 'GeoIP Database', 'cf7-antispam' ); ?>
+			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'blocklist' ), $nonce_action ) ); ?>"
 				class="cf7a-nav-tab tab-blocklist <?php echo 'blocklist' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-shield"></span> <?php esc_html_e( 'Blocklist', 'cf7-antispam' ); ?>
@@ -110,10 +115,6 @@ class CF7_AntiSpam_Admin_Display {
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'tools' ), $nonce_action ) ); ?>"
 				class="cf7a-nav-tab tab-tools <?php echo 'tools' === $active_tab ? 'nav-tab-active' : ''; ?>">
 				<span class="dashicons dashicons-admin-tools"></span> <?php esc_html_e( 'Tools', 'cf7-antispam' ); ?>
-			</a>
-			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'import-export' ), $nonce_action ) ); ?>"
-				class="cf7a-nav-tab tab-import-export <?php echo 'import-export' === $active_tab ? 'nav-tab-active' : ''; ?>">
-				<span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Import/Export', 'cf7-antispam' ); ?>
 			</a>
 			<a href="<?php echo esc_url( wp_nonce_url( $this->get_tab_url( 'wordlist' ), $nonce_action ) ); ?>"
 				class="cf7a-nav-tab tab-wordlist <?php echo 'wordlist' === $active_tab ? 'nav-tab-active' : ''; ?>">
@@ -142,6 +143,13 @@ class CF7_AntiSpam_Admin_Display {
 				}
 				?>
 			</div>
+			<div id="geoip" class="cf7a-tab-panel <?php echo 'geoip' === $active_tab ? 'active' : ''; ?>">
+				<?php
+				if ( 'geoip' === $active_tab ) {
+					$this->render_geoip_tab();
+				}
+				?>
+			</div>
 			<div id="blocklist" class="cf7a-tab-panel <?php echo 'blocklist' === $active_tab ? 'active' : ''; ?>">
 				<?php
 				if ( 'blocklist' === $active_tab ) {
@@ -153,13 +161,6 @@ class CF7_AntiSpam_Admin_Display {
 				<?php
 				if ( 'tools' === $active_tab ) {
 					$this->render_tools_tab();
-				}
-				?>
-			</div>
-			<div id="import-export" class="cf7a-tab-panel <?php echo 'import-export' === $active_tab ? 'active' : ''; ?>">
-				<?php
-				if ( 'import-export' === $active_tab ) {
-					$this->render_import_export_tab();
 				}
 				?>
 			</div>
@@ -310,7 +311,7 @@ class CF7_AntiSpam_Admin_Display {
 		$cf7a_charts = new CF7_AntiSpam_Admin_Charts();
 
 		echo '<div class="cf7a-stat-card dashboard-charts-section cf7a-stat-card cf7a-stat-card-wide">';
-		echo '<h2>' . esc_html__( 'Email Statistics', 'cf7-antispam' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'AntiSpam Statistics', 'cf7-antispam' ) . '</h2>';
 
 		$cf7a_charts->cf7a_dash_charts();
 
@@ -568,7 +569,7 @@ class CF7_AntiSpam_Admin_Display {
 								<em>
 								<?php
 								printf(
-									/* translators: %d is the number of unique reasons */
+								/* translators: %d is the number of unique reasons */
 									esc_html__( 'Total unique reasons: %d', 'cf7-antispam' ),
 									count( $reason_counts )
 								);
@@ -679,9 +680,29 @@ class CF7_AntiSpam_Admin_Display {
 			<?php $this->cf7a_print_section_options_subtitle(); ?>
 			<?php $this->cf7a_get_debug_info_forms(); ?>
 			<form method="post" action="options.php" id="cf7a_settings" enctype="multipart/form-data">
+				<input type="hidden" name="cf7a_options[form_source]" value="settings_tab" />
 				<?php
 				settings_fields( 'cf7_antispam_options' );
 				do_settings_sections( 'cf7a-settings' );
+				submit_button();
+				?>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the GeoIP Tab
+	 */
+	private function render_geoip_tab() {
+		?>
+		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'GeoIP Database Management', 'cf7-antispam' ); ?></h3>
+			<form method="post" action="options.php" id="cf7a_geoip_settings" enctype="multipart/form-data">
+				<input type="hidden" name="cf7a_options[form_source]" value="geoip_tab" />
+				<?php
+				settings_fields( 'cf7_antispam_options' );
+				do_settings_sections( 'cf7a-geoip-settings' );
 				submit_button();
 				?>
 			</form>
@@ -694,9 +715,14 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	private function cf7a_export_button() {
 		printf(
-			'<p class="cf7a-export-blocklist-button alignright"><button class="button cf7a_export_action" data-action="export-blocklist" data-nonce="%s">%s</button></p>',
+			'<div class="cf7a-export-import-buttons alignright">'
+			. '<input type="file" id="cf7a_import_file" accept=".csv" style="display:none;" />'
+			. '<button class="button cf7a_import_action" data-action="import-blocklist" data-nonce="%1$s">%3$s</button>'
+			. '<button class="button cf7a_export_action" data-action="export-blocklist" data-nonce="%1$s">%2$s</button>'
+			. '</div>',
 			esc_attr( wp_create_nonce( 'cf7a-nonce' ) ),
-			esc_html__( 'Export blocklist', 'cf7-antispam' )
+			esc_html__( 'Export blocklist', 'cf7-antispam' ),
+			esc_html__( 'Import CSV', 'cf7-antispam' )
 		);
 	}
 
@@ -704,24 +730,176 @@ class CF7_AntiSpam_Admin_Display {
 	 * Render the Blocklist Tab
 	 */
 	private function render_blocklist_tab() {
+		$allowlist   = $this->options['ip_allowlist'] ?? array();
+		$bad_ip_list = $this->options['bad_ip_list'] ?? array();
+		$geoip       = new CF7_Antispam_Geoip();
+		$nonce       = wp_create_nonce( 'cf7a-nonce' );
 		?>
-		<div class="cf7a-card">
-			<?php $this->cf7a_export_button(); ?>
-			<h3><?php esc_html_e( 'Blocklisted IPs', 'cf7-antispam' ); ?></h3>
-			<p><?php esc_html_e( 'Here you can see all the IPs that have been blocklisted by the plugin.', 'cf7-antispam' ); ?></p>
-			<?php $this->cf7a_get_blocklisted_table(); ?>
-		</div>
-		<?php
-	}
+		<div class="cf7a-unified-blocklist-card">
+			<!-- Top-Level Header & Actions -->
+			<div class="cf7a-blocklist-main-header">
+				<h2><?php esc_html_e( 'Blocklist Management', 'cf7-antispam' ); ?></h2>
+				<div class="cf7a-top-actions">
+					<input type="search" id="cf7a_blocklist_search" class="regular-text" placeholder="<?php esc_attr_e( 'Search IP, country, or reason...', 'cf7-antispam' ); ?>">
+					<?php $this->cf7a_export_button(); ?>
+				</div>
+			</div>
 
-	/**
-	 * Render the Blocklist Tab
-	 */
-	private function render_import_export_tab() {
-		?>
-		<div class="cf7a-card">
-			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
-			<?php $this->cf7a_export_options(); ?>
+			<!-- Allowlist Section -->
+			<div class="cf7a-allowlist-section">
+				<div class="cf7a-section-header">
+					<h3><?php esc_html_e( 'Allowlist', 'cf7-antispam' ); ?></h3>
+					<span class="cf7a-count-badge"><?php echo esc_html( count( $allowlist ) ); ?></span>
+					<button type="button" class="button cf7a-add-entry" data-list="ip_allowlist" data-nonce="<?php echo esc_attr( $nonce ); ?>" style="margin-left: auto;">+ Add Entry</button>
+				</div>
+				
+				<?php
+				$current_ip            = cf7a_get_real_ip();
+				$is_current_ip_allowed = is_array( $allowlist ) && in_array( $current_ip, $allowlist, true );
+				?>
+				
+				<?php if ( empty( $allowlist ) && $is_current_ip_allowed ) : ?>
+					<div class="cf7a-empty-state cf7a-allowlist-empty-state">
+						<p><?php esc_html_e( 'Your allowlist is empty.', 'cf7-antispam' ); ?></p>
+					</div>
+				<?php else : ?>
+					<div class="cf7a-blocklist-grid">
+						<?php if ( ! $is_current_ip_allowed ) : ?>
+							<div class="card ban-card cf7a-tip-card" style="opacity: 0.6; cursor: pointer; border: 2px dashed #00a0d2; box-shadow: none;" data-action="quick-allow-ip" data-ip="<?php echo esc_attr( $current_ip ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>" title="<?php esc_attr_e( 'Click to allowlist your current IP', 'cf7-antispam' ); ?>">
+								<div class="row" style="pointer-events: none;">
+									<p class="ip flex-col" style="margin: 0;"><?php echo esc_html( $current_ip ); ?> <span class="ip-label" style="display: block; font-size: 11px; margin-top: 4px;"><?php esc_html_e( 'Your current IP', 'cf7-antispam' ); ?></span></p>
+								</div>
+								<div class="card-details" style="border-top: none; padding-top: 0; pointer-events: none;">
+									<span style="color: #00a0d2; font-weight: bold; display: block; margin-top: 10px;"><?php esc_html_e( '+ Add to Allowlist', 'cf7-antispam' ); ?></span>
+								</div>
+							</div>
+						<?php endif; ?>
+
+						<?php foreach ( (array) $allowlist as $ip ) : ?>
+							<?php
+							$abuseipdb_url = 'https://www.abuseipdb.com/check/' . esc_attr( $ip );
+							if ( strpos( $ip, '/' ) !== false ) {
+								$parts         = explode( '/', $ip );
+								$abuseipdb_url = 'https://www.abuseipdb.com/check-block/' . rawurlencode( $parts[0] ) . '/' . rawurlencode( $parts[1] );
+							}
+							?>
+							<div class="card ban-card" data-search="<?php echo esc_attr( strtolower( $ip ) ); ?>">
+								<div class="row">
+									<p class="ip flex-col"><?php echo esc_html( $ip ); ?></p>
+								</div>
+								<small class="actions">
+									<a target="_blank" href="<?php echo esc_url( $abuseipdb_url ); ?>" class="button cf7a_scan"><?php esc_html_e( 'scan', 'cf7-antispam' ); ?></a>
+									<button type="button" class="button cf7a-remove-manual" data-list="ip_allowlist" data-ip="<?php echo esc_attr( $ip ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>"><?php esc_html_e( 'remove', 'cf7-antispam' ); ?></button>
+								</small>
+							</div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+
+			<!-- Permanently Banned IPs Section -->
+			<div class="cf7a-manual-blacklist-section">
+				<div class="cf7a-section-header">
+					<h3><?php esc_html_e( 'Permanently Banned IPs', 'cf7-antispam' ); ?></h3>
+					<span class="cf7a-count-badge"><?php echo esc_html( count( $bad_ip_list ) ); ?></span>
+					<button type="button" class="button cf7a-add-entry" data-list="bad_ip_list" data-nonce="<?php echo esc_attr( $nonce ); ?>" style="margin-left: auto;">+ Add Entry</button>
+				</div>
+
+				<?php if ( empty( $bad_ip_list ) ) : ?>
+					<div class="cf7a-empty-state">
+						<p><?php esc_html_e( 'Your permanently banned IPs list is empty.', 'cf7-antispam' ); ?></p>
+					</div>
+				<?php else : ?>
+					<div class="cf7a-blocklist-grid">
+						<?php foreach ( $bad_ip_list as $ip ) : ?>
+							<?php
+							$flag_html    = '';
+							$country_name = '';
+							if ( $geoip->is_ready() ) {
+								// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+								try {
+									$ip_data = $geoip->reader->country( $ip );
+									if ( $ip_data ) {
+										$iso_code     = strtolower( $ip_data->country->isoCode );
+										$country_name = \Locale::getDisplayRegion( '-' . $iso_code, 'en' );
+										$flag_html    = sprintf(
+											'<img src="%sassets/flags/%s.svg" width="24" alt="%s" class="cf7a-country-flag"> ',
+											esc_url( plugin_dir_url( __DIR__ ) ),
+											esc_attr( $iso_code ),
+											esc_attr( strtoupper( $iso_code ) )
+										);
+									}
+								// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+								} catch ( \Exception $e ) {
+									// Ignore error.
+								}
+							}
+
+							$abuseipdb_url = 'https://www.abuseipdb.com/check/' . esc_attr( $ip );
+							if ( strpos( $ip, '/' ) !== false ) {
+								$parts         = explode( '/', $ip );
+								$abuseipdb_url = 'https://www.abuseipdb.com/check-block/' . rawurlencode( $parts[0] ) . '/' . rawurlencode( $parts[1] );
+							}
+							?>
+							<div class="card ban-card" data-search="<?php echo esc_attr( strtolower( $ip . ' ' . $country_name ) ); ?>">
+								<div class="row">
+									<?php echo wp_kses_post( $flag_html ); ?>
+									<p class="ip flex-col"><?php echo esc_html( $ip ); ?> <span class="ip-label"><?php echo esc_html( $country_name ); ?></span></p>
+								</div>
+								<small class="actions">
+									<a target="_blank" href="<?php echo esc_url( $abuseipdb_url ); ?>" class="button cf7a_scan"><?php esc_html_e( 'scan', 'cf7-antispam' ); ?></a>
+									<button type="button" class="button cf7a-remove-manual" data-list="bad_ip_list" data-ip="<?php echo esc_attr( $ip ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>"><?php esc_html_e( 'remove', 'cf7-antispam' ); ?></button>
+								</small>
+							</div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+
+			<?php
+			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$blocklisted  = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blocklist' ) );
+			$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
+
+			$banned_ips  = array();
+			$warning_ips = array();
+
+			if ( $blocklisted ) {
+				foreach ( $blocklisted as $row ) {
+					if ( $row->status >= $max_attempts ) {
+						$banned_ips[] = $row;
+					} else {
+						$warning_ips[] = $row;
+					}
+				}
+			}
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$banned_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE status >= %d', $wpdb->prefix . 'cf7a_blocklist', $max_attempts ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$warning_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE status < %d', $wpdb->prefix . 'cf7a_blocklist', $max_attempts ) );
+			?>
+
+			<!-- Automated Banned IPs Section -->
+			<div class="cf7a-automated-blacklist-section">
+				<div class="cf7a-section-header">
+					<h3><?php esc_html_e( 'Automated Banned IPs', 'cf7-antispam' ); ?></h3>
+					<span class="cf7a-count-badge"><?php echo esc_html( $banned_count ); ?></span>
+				</div>
+				<p><?php esc_html_e( 'Here you can see all the IPs that have been blocklisted by the plugin.', 'cf7-antispam' ); ?></p>
+				<?php $this->cf7a_render_blocklist_grid( $banned_ips, __( 'No automated blocklisted IPs found.', 'cf7-antispam' ) ); ?>
+			</div>
+
+			<!-- Warnings IPs Section -->
+			<div class="cf7a-warnings-section">
+				<div class="cf7a-section-header">
+					<h3><?php esc_html_e( 'Warning IPs', 'cf7-antispam' ); ?></h3>
+					<span class="cf7a-count-badge"><?php echo esc_html( $warning_count ); ?></span>
+				</div>
+				<p><?php esc_html_e( 'Here you can see all the IPs that are currently under warning but not yet banned.', 'cf7-antispam' ); ?></p>
+				<?php $this->cf7a_render_blocklist_grid( $warning_ips, __( 'No warning IPs found.', 'cf7-antispam' ) ); ?>
+			</div>
 		</div>
 		<?php
 	}
@@ -763,21 +941,21 @@ class CF7_AntiSpam_Admin_Display {
 				<div class="cf7a-wordlist-table-container">
 					<table class="wp-list-table widefat fixed striped cf7a-wordlist-table">
 						<thead>
-							<tr>
-								<th class="column-token cf7a-sortable" data-sort="token"><?php esc_html_e( 'Word/Token', 'cf7-antispam' ); ?></th>
-								<th class="column-spam cf7a-sortable" data-sort="count_spam"><?php esc_html_e( 'Spam Count', 'cf7-antispam' ); ?></th>
-								<th class="column-ham cf7a-sortable" data-sort="count_ham"><?php esc_html_e( 'Ham Count', 'cf7-antispam' ); ?></th>
-								<th class="column-score cf7a-sortable" data-sort="measure"><?php esc_html_e( 'Score', 'cf7-antispam' ); ?></th>
-								<th class="column-actions"><?php esc_html_e( 'Actions', 'cf7-antispam' ); ?></th>
-							</tr>
+						<tr>
+							<th class="column-token cf7a-sortable" data-sort="token"><?php esc_html_e( 'Word/Token', 'cf7-antispam' ); ?></th>
+							<th class="column-spam cf7a-sortable" data-sort="count_spam"><?php esc_html_e( 'Spam Count', 'cf7-antispam' ); ?></th>
+							<th class="column-ham cf7a-sortable" data-sort="count_ham"><?php esc_html_e( 'Ham Count', 'cf7-antispam' ); ?></th>
+							<th class="column-score cf7a-sortable" data-sort="measure"><?php esc_html_e( 'Score', 'cf7-antispam' ); ?></th>
+							<th class="column-actions"><?php esc_html_e( 'Actions', 'cf7-antispam' ); ?></th>
+						</tr>
 						</thead>
 						<tbody id="cf7a-wordlist-body">
-							<tr class="cf7a-loading-row">
-								<td colspan="5">
-									<span class="spinner is-active"></span>
-									<?php esc_html_e( 'Loading words...', 'cf7-antispam' ); ?>
-								</td>
-							</tr>
+						<tr class="cf7a-loading-row">
+							<td colspan="5">
+								<span class="spinner is-active"></span>
+								<?php esc_html_e( 'Loading words...', 'cf7-antispam' ); ?>
+							</td>
+						</tr>
 						</tbody>
 					</table>
 				</div>
@@ -835,6 +1013,11 @@ class CF7_AntiSpam_Admin_Display {
 	private function render_tools_tab() {
 		?>
 		<div class="cf7a-card">
+			<h3><?php esc_html_e( 'Export/Import Options', 'cf7-antispam' ); ?></h3>
+			<?php $this->cf7a_export_options(); ?>
+		</div>
+
+		<div class="cf7a-card" style="margin-top: 20px;">
 			<h3><?php esc_html_e( 'Advanced Tools', 'cf7-antispam' ); ?></h3>
 			<p><?php esc_html_e( 'This section contains features that completely change what is stored in the cf7-antispam database, use them with caution!', 'cf7-antispam' ); ?></p>
 
@@ -918,34 +1101,86 @@ class CF7_AntiSpam_Admin_Display {
 			<h2 class="title cf7a-card-title"><?php esc_html_e( 'Debug Information', 'cf7-antispam' ); ?></h2>
 
 			<p><?php esc_html_e( 'Debug information is only visible when WP_DEBUG or CF7ANTISPAM_DEBUG are enabled.', 'cf7-antispam' ); ?></p>
-
 			<?php $this->cf7a_get_debug_info(); ?>
 		</div>
 		<?php
 	}
 
 	/**
-	 * It gets the blocklisted IPs from the database and displays them in a table
+	 * It renders a grid of blocklisted IPs
+	 *
+	 * @param array  $blocklisted   The array of blocklisted IP rows.
+	 * @param string $empty_message The message to display if no IPs are found.
 	 */
-	public static function cf7a_get_blocklisted_table() {
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blocklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC LIMIT 1000', $wpdb->prefix . 'cf7a_blocklist' ) );
-		$nonce       = wp_create_nonce( 'cf7a-nonce' );
+	public function cf7a_render_blocklist_grid( $blocklisted, $empty_message ) {
+		$nonce = wp_create_nonce( 'cf7a-nonce' );
 
-		if ( $blocklisted ) {
+		if ( ! empty( $blocklisted ) ) {
 			$count = count( $blocklisted );
 			$rows  = '';
+
+			// Pre-calculate counts per score group
+			$score_counts = array();
+			foreach ( $blocklisted as $row ) {
+				if ( ! isset( $score_counts[ $row->status ] ) ) {
+					$score_counts[ $row->status ] = 0;
+				}
+				++$score_counts[ $row->status ];
+			}
+
+			$current_score = null;
 
 			foreach ( $blocklisted as $row ) {
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				$meta         = unserialize( $row->meta );
 				$max_attempts = intval( get_option( 'cf7a_options' )['max_attempts'] );
 
+				if ( $current_score !== $row->status ) {
+					if ( null !== $current_score ) {
+						$rows .= '</div>';
+						// close previous grid
+					}
+					$current_score = $row->status;
+					$total_count   = $score_counts[ $current_score ];
+					$rank          = intval( $current_score - $max_attempts );
+
+					switch ( true ) {
+						case $rank < 0:
+							/* translators: %d: Warning level score */
+							$rank_clean = sprintf( esc_html__( '⚠️ Warning Level %d', 'cf7-antispam' ), $current_score );
+							break;
+						case $rank > 100:
+							$rank_clean = esc_html__( '🏆', 'cf7-antispam' );
+							break;
+						default:
+							/* translators: %d: Ban level rank */
+							$rank_clean = sprintf( esc_html__( 'Ban Level %d', 'cf7-antispam' ), $rank );
+					}
+
+					if ( $rank > 0 ) {
+						$green = intval( max( 200 - ( $rank * 2 ), 0 ) );
+						$color = cf7a_rgb2hex( 250, $green, 0 );
+					} else {
+						$color = '#aaa';
+					}
+
+					$rows .= sprintf(
+						'<h4 class="cf7a-score-group" data-total="%d">'
+						. '<span class="cf7a-status-dot" style="background-color: %s;"></span>'
+						. '<span class="cf7a-score-title">%s</span>'
+						. '<span class="cf7a-score-count">(count %d)</span>'
+						. '</h4>'
+						. '<div class="cf7a-blocklist-grid">',
+						$total_count,
+						esc_attr( $color ),
+						esc_html( $rank_clean ),
+						$total_count
+					);
+				}//end if
+
 				// Ensure reason is properly formatted for cf7a_compress_array
 				$reason = isset( $meta['reason'] ) ? $meta['reason'] : array();
 				if ( is_string( $reason ) ) {
-					// Convert legacy string reasons to array format
 					$reason = array( 'legacy' => $reason );
 				}
 
@@ -953,31 +1188,82 @@ class CF7_AntiSpam_Admin_Display {
 				if ( ! empty( $meta['country'] ) ) {
 					$iso_code  = strtolower( $meta['country'] );
 					$flag_html = sprintf(
-						'<img src="%sassets/flags/%s.svg" width="24" alt="%s" class="cf7a-country-flag" style="vertical-align: middle; margin-right: 5px;"> ',
+						'<img src="%sassets/flags/%s.svg" width="24" alt="%s" class="cf7a-country-flag"> ',
 						esc_url( plugin_dir_url( __DIR__ ) ),
 						esc_attr( $iso_code ),
 						esc_attr( strtoupper( $iso_code ) )
 					);
 				}
 
+				$abuseipdb_url = 'https://www.abuseipdb.com/check/' . esc_attr( $row->ip );
+				if ( strpos( $row->ip, '/' ) !== false ) {
+					$parts         = explode( '/', $row->ip );
+					$abuseipdb_url = 'https://www.abuseipdb.com/check-block/' . rawurlencode( $parts[0] ) . '/' . rawurlencode( $parts[1] );
+				}
+
+				// The card action links
+				$action_scan = sprintf(
+					'<a target="_blank" href="%s" class="button cf7a_scan">%s</a>',
+					esc_url( $abuseipdb_url ),
+					esc_html__( 'scan', 'cf7-antispam' )
+				);
+
+				$action_unban = sprintf(
+					'<button type="button" class="button cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</button>',
+					esc_attr( $row->id ),
+					esc_attr( $nonce ),
+					esc_html__( 'unban ip', 'cf7-antispam' )
+				);
+
+				$action_ban_forever = sprintf(
+					'<button type="button" class="button cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</button>',
+					esc_attr( $row->id ),
+					esc_attr( $nonce ),
+					esc_html__( 'ban forever', 'cf7-antispam' )
+				);
+
+				// Group the actions together inside their original <small> wrapper
+				$actions_html = sprintf(
+					'<small class="actions">%s %s %s</small>',
+					$action_scan,
+					$action_unban,
+					$action_ban_forever
+				);
+
+				$country_code = strtolower( $meta['country'] ?? '' );
+				$country_name = $country_code ? Locale::getDisplayRegion( '-' . $country_code, 'en' ) : '';
+
+				// Render the final row HTML.
 				$rows .= sprintf(
-					'<div class="row row-%s"><div class="status">%s</div><div><a href="https://www.abuseipdb.com/check/%s" class="ip">%s%s <small class="actions"><span class="cf7a_action" data-action="unban-ip" data-id="%s" data-nonce="%s" data-callback="hide">%s</span> <span class="cf7a_action" data-action="ban-forever" data-id="%s" data-nonce="%s" data-callback="hide">%s</span></small></a><span class="data">%s</span><span class="data date"><b>%s:</b> %s</span></div></div>',
+					'<div class="card ban-card row-%s" data-search="%s">
+						<div class="row">
+							%s
+							<p class="ip flex-col">%s <span class="ip-label">%s</span></p>
+							<span class="status">%s</span>
+						</div>
+						<div class="card-details">
+							<p class="data">%s</p>
+							<p class="data date"><b>%s:</b> %s</p>
+						</div>
+						%s
+					</div>',
 					esc_attr( intval( $row->id ) ),
-					cf7a_format_status( $row->status - $max_attempts ),
+					esc_attr( strtolower( $row->ip . ' ' . $country_name . ' ' . implode( ' ', $reason ) ) ),
 					$flag_html,
 					esc_html( $row->ip ),
-					esc_html( $row->ip ),
-					esc_attr( $row->id ),
-					esc_attr( $nonce ),
-					esc_html__( '[unban ip]', 'cf7-antispam' ),
-					esc_attr( $row->id ),
-					esc_attr( $nonce ),
-					esc_html__( '[ban forever]', 'cf7-antispam' ),
+					$country_name,
+					cf7a_format_status( $row->status - $max_attempts ),
 					cf7a_compress_array( $reason, true ),
 					esc_html__( 'First seen on', 'cf7-antispam' ),
-					$row->created
+					$row->created,
+					$actions_html
 				);
 			}//end foreach
+
+			if ( null !== $current_score ) {
+				$rows .= '</div>';
+				// close last grid
+			}
 
 			/* The table */
 			printf(
@@ -985,37 +1271,56 @@ class CF7_AntiSpam_Admin_Display {
 				wp_kses(
 					$rows,
 					array(
-						'div'   => array( 'class' => array() ),
-						'small' => array( 'class' => array() ),
-						'p'     => array( 'class' => array() ),
-						'a'     => array( 'href' => array() ),
-						'b'     => array(),
-						'br'    => array(),
-						'img'   => array(
+						'div'    => array(
+							'class'       => array(),
+							'style'       => array(),
+							'data-search' => array(),
+						),
+						'h4'     => array(
+							'class'      => array(),
+							'data-total' => array(),
+						),
+						'small'  => array( 'class' => array() ),
+						'p'      => array(
+							'class' => array(),
+							'style' => array(),
+						),
+						'a'      => array(
+							'href'   => array(),
+							'class'  => array(),
+							'target' => array(),
+						),
+						'button' => array(
+							'type'          => array(),
+							'class'         => array(),
+							'data-action'   => array(),
+							'data-id'       => array(),
+							'data-nonce'    => array(),
+							'data-callback' => array(),
+						),
+						'b'      => array(),
+						'br'     => array(),
+						'img'    => array(
 							'src'   => array(),
 							'width' => array(),
 							'alt'   => array(),
 							'class' => array(),
 							'style' => array(),
 						),
-						'span'  => array(
-							'class'         => array(),
-							'style'         => array(),
-							'data-action'   => array(),
-							'data-id'       => array(),
-							'data-nonce'    => array(),
-							'data-callback' => array(),
+						'span'   => array(
+							'class' => array(),
+							'style' => array(),
 						),
 					)
 				),
 				sprintf(
 					/* translators: %d is the number of blocklisted IPs */
-					esc_html__( 'Showing %d blocklisted IPs', 'cf7-antispam' ),
+					esc_html__( 'Showing %d IPs', 'cf7-antispam' ),
 					intval( $count )
 				)
 			);
 		} else {
-			echo '<p>' . esc_html__( 'No blocklisted IPs found.', 'cf7-antispam' ) . '</p>';
+			echo '<p>' . esc_html( $empty_message ) . '</p>';
 		}//end if
 	}
 
@@ -1024,19 +1329,19 @@ class CF7_AntiSpam_Admin_Display {
 	 */
 	public function cf7a_get_debug_info() {
 
-			printf(
-				'<p><strong>%s</strong> %s</p>',
-				esc_html__( 'Plugin Version:', 'cf7-antispam' ),
-				esc_html( CF7ANTISPAM_VERSION )
-			);
+		printf(
+			'<p><strong>%s</strong> %s</p>',
+			esc_html__( 'Plugin Version:', 'cf7-antispam' ),
+			esc_html( CF7ANTISPAM_VERSION )
+		);
 
-			$this->cf7a_get_debug_options();
+		$this->cf7a_get_debug_options();
 
-			$this->cf7a_get_debug_info_tables();
+		$this->cf7a_get_debug_info_tables();
 
-			$this->cf7a_get_debug_ip_analysis();
+		$this->cf7a_get_debug_ip_analysis();
 
-			$this->cf7a_get_debug_info_rest_api();
+		$this->cf7a_get_debug_info_rest_api();
 
 		if ( ! empty( $this->options['check_language'] ) ) {
 			$result = $this->cf7a_get_debug_info_geoip();
@@ -1064,7 +1369,7 @@ class CF7_AntiSpam_Admin_Display {
 			);
 		}
 
-			$this->cf7a_get_debug_info_options();
+		$this->cf7a_get_debug_info_options();
 	}
 
 	/**
@@ -1375,8 +1680,8 @@ class CF7_AntiSpam_Admin_Display {
 					),
 					esc_html__( 'Your IP address', 'cf7-antispam' ),
 					filter_var( $your_ip, FILTER_VALIDATE_IP ),
-						// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
-						wp_kses( print_r( $server_data, true ), array( 'pre' => array() ) )
+					// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r
+					wp_kses( print_r( $server_data, true ), array( 'pre' => array() ) )
 				);
 			} else {
 				$res['content'] = sprintf(
@@ -1455,5 +1760,17 @@ class CF7_AntiSpam_Admin_Display {
 				'<code>CF7ANTISPAM_DEBUG_EXTENDED</code> ' . esc_html( __( 'is disabled, use CF7ANTISPAM_DEBUG_EXTENDED to enable it if needed', 'cf7-antispam' ) )
 			);
 		}
+	}
+
+	/**
+	 * Get the country name by its ISO code.
+	 *
+	 * @since    1.0.0
+	 * @param    string $country_iso Country ISO code.
+	 * @return   string Country name.
+	 */
+	private function get_country_name( string $country_iso ) {
+		// return the country name using the WordPress functions
+		return wp_locale()->get_country_name( $country_iso );
 	}
 }
