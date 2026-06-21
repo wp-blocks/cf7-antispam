@@ -28,12 +28,15 @@ class CF7_Antispam_Blocklist {
 	 * Check if an IP address is in the allowlist.
 	 *
 	 * @since    1.0.0
-	 * @param    string $ip The IP address to check.
+	 * @param    string     $ip The IP address to check.
+	 * @param    array|null $ip_allowlist Optional array of allowlisted IPs.
 	 * @return   bool True if allowlisted, false otherwise.
 	 */
-	public static function is_ip_allowlisted( string $ip ): bool {
-		$options      = \CF7_AntiSpam\Core\CF7_AntiSpam::get_options();
-		$ip_allowlist = $options['ip_allowlist'] ?? array();
+	public static function is_ip_allowlisted( string $ip, ?array $ip_allowlist = null ): bool {
+		if ( null === $ip_allowlist ) {
+			$options      = \CF7_AntiSpam\Core\CF7_AntiSpam::get_options();
+			$ip_allowlist = $options['ip_allowlist'] ?? array();
+		}
 
 		if ( empty( $ip_allowlist ) || ! $ip ) {
 			return false;
