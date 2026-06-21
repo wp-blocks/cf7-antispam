@@ -155,7 +155,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_check_geoip',
 			__( 'GeoIP', 'cf7-antispam' ),
 			array( $this, 'cf7a_check_geoip' ),
-			'cf7a-settings'
+			'cf7a-geoip-settings'
 		);
 
 		/* Settings enable geoip */
@@ -163,7 +163,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'enable_geoip_download',
 			__( 'Enable automatic download', 'cf7-antispam' ),
 			array( $this, 'cf7a_enable_geoip_callback' ),
-			'cf7a-settings',
+			'cf7a-geoip-settings',
 			'cf7a_check_geoip'
 		);
 
@@ -175,7 +175,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'geoip_dbkey',
 			__( 'MaxMind Update Key', 'cf7-antispam' ),
 			array( $this, 'cf7a_geoip_key_callback' ),
-			'cf7a-settings',
+			'cf7a-geoip-settings',
 			'cf7a_check_geoip'
 		);
 
@@ -185,7 +185,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				'enable_geoip_force_download',
 				__( 'Force database download', 'cf7-antispam' ),
 				array( $this, 'cf7a_force_download_callback' ),
-				'cf7a-settings',
+				'cf7a-geoip-settings',
 				'cf7a_check_geoip'
 			);
 		}
@@ -196,7 +196,7 @@ class CF7_AntiSpam_Admin_Customizations {
 				'enable_geoip_manual_upload',
 				__( 'Database manual upload', 'cf7-antispam' ),
 				array( $this, 'cf7a_enable_geoip_manual_upload_callback' ),
-				'cf7a-settings',
+				'cf7a-geoip-settings',
 				'cf7a_check_geoip'
 			);
 		}
@@ -206,7 +206,7 @@ class CF7_AntiSpam_Admin_Customizations {
 			'check_geoip_enabled',
 			__( 'Database available', 'cf7-antispam' ),
 			array( $this, 'cf7a_geoip_is_enabled_callback' ),
-			'cf7a-settings',
+			'cf7a-geoip-settings',
 			'cf7a_check_geoip'
 		);
 
@@ -289,12 +289,20 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_time_elapsed'
 		);
 
-		/* Section Bad IP */
+		/* Section Bad IP / Advanced Network Analysis */
 		add_settings_section(
 			'cf7a_bad_ip',
-			__( 'Bad IP Address', 'cf7-antispam' ),
+			__( 'Advanced Network Analysis', 'cf7-antispam' ),
 			array( $this, 'cf7a_print_section_bad_ip' ),
 			'cf7a-settings'
+		);
+
+		/* Section Blocklist Tab */
+		add_settings_section(
+			'cf7a_blocklist_tab',
+			__( 'Manual IP Management', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_blocklist_tab' ),
+			'cf7a-blocklist-settings'
 		);
 
 		/* Settings check_bad_ip */
@@ -329,8 +337,8 @@ class CF7_AntiSpam_Admin_Customizations {
 			'bad_ip_list',
 			__( 'Bad IP Address List', 'cf7-antispam' ),
 			array( $this, 'cf7a_bad_ip_list_callback' ),
-			'cf7a-settings',
-			'cf7a_bad_ip'
+			'cf7a-blocklist-settings',
+			'cf7a_blocklist_tab'
 		);
 
 		/* Settings ip_allowlist */
@@ -338,8 +346,8 @@ class CF7_AntiSpam_Admin_Customizations {
 			'ip_allowlist',
 			__( 'IP Allowlist', 'cf7-antispam' ),
 			array( $this, 'cf7a_ip_allowlist_callback' ),
-			'cf7a-settings',
-			'cf7a_bad_ip'
+			'cf7a-blocklist-settings',
+			'cf7a_blocklist_tab'
 		);
 
 		/* Section Bad Words */
@@ -890,7 +898,7 @@ class CF7_AntiSpam_Admin_Customizations {
 	public function cf7a_check_geoip() {
 		printf(
 			'<p>%s</p><p>%s <a href="https://www.maxmind.com/en/geolite2/eula">%s</a> %s <a href="https://www.maxmind.com/en/geolite2/signup">%s</a></p> <p>%s</p>',
-			esc_html__( 'Detect user location using MaxMind GeoIP2 database.', 'cf7-antispam' ),
+			esc_html__( 'Configure and manage the MaxMind GeoIP2 database for IP location detection.', 'cf7-antispam' ),
 			esc_html__( 'In order to enable this functionality you need to agree at  ', 'cf7-antispam' ),
 			esc_html__( 'GeoLite2 End User License Agreement', 'cf7-antispam' ),
 			esc_html__( 'and sign up ', 'cf7-antispam' ),
@@ -923,9 +931,14 @@ class CF7_AntiSpam_Admin_Customizations {
 		);
 	}
 
-	/** It prints the bad_ip info text */
+	/** It prints the advanced network analysis info text */
 	public function cf7a_print_section_bad_ip() {
-		printf( '<p>%s</p>', esc_html__( 'After an ip check via the http headers, it is checked that the ip is not blocklisted in the following list, one "bad" ip each line', 'cf7-antispam' ) );
+		printf( '<p>%s</p>', esc_html__( 'Perform advanced checks against the HTTP headers and IP subnets to identify automated bots.', 'cf7-antispam' ) );
+	}
+
+	/** It prints the blocklist tab info text */
+	public function cf7a_print_section_blocklist_tab() {
+		printf( '<p>%s</p>', esc_html__( 'Manage your explicit IP blocklist and allowlist. Enter one IP address or CIDR range (e.g., 1.1.1.0/24 or 1.1.0.0/16) per line.', 'cf7-antispam' ) );
 	}
 
 	/** It prints the bad_words info text */
@@ -936,6 +949,11 @@ class CF7_AntiSpam_Admin_Customizations {
 	/** It prints the high_entropy info text */
 	public function cf7a_print_section_high_entropy() {
 		printf( '<p>%s</p>', esc_html__( 'Check if the mail message contains high entropy data or gibberish. This filter catches bots that submit keyboard smashes (e.g. many consecutive consonants) or paste huge uninterrupted walls of characters into the message field.', 'cf7-antispam' ) );
+	}
+
+	/** It prints the max_links info text */
+	public function cf7a_print_section_max_links() {
+		printf( '<p>%s</p>', esc_html__( 'Check the combined total of links across all fields (name, message, etc.) to prevent link spamming.', 'cf7-antispam' ) );
 	}
 
 	/** It prints the bad_email_strings info text */
@@ -1253,6 +1271,94 @@ class CF7_AntiSpam_Admin_Customizations {
 			}//end if
 		}//end if
 
+		// Check form source to avoid resetting checkboxes from partial submissions
+		$form_source = isset( $input['form_source'] ) ? sanitize_text_field( $input['form_source'] ) : 'all';
+
+		if ( 'blocklist_tab' === $form_source ) {
+			if ( isset( $input['bad_ip_list'] ) && is_string( $input['bad_ip_list'] ) ) {
+				$new_input['bad_ip_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_ip_list'] ) );
+			}
+			if ( isset( $input['ip_allowlist'] ) && is_string( $input['ip_allowlist'] ) ) {
+				$new_input['ip_allowlist'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['ip_allowlist'] ) );
+			}
+			return $new_input;
+		}
+
+		if ( 'geoip_tab' === $form_source ) {
+			/**
+			 * Checking if the enable_geoip_download is not set (note the name is $new_input but actually is the copy of the stored options)
+			 * and the user has chosen to enable the geoip, in this case download the database if needed
+			 */
+			if ( ! empty( $new_input['enable_geoip_download'] ) ) {
+				$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
+			}
+
+			$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
+
+			// if the download is disabled, check if the database is uploaded
+			if ( ! $new_input['enable_geoip_download'] ) {
+
+				// Get the file name
+				if ( ! empty( $_FILES ) && ! empty( $_FILES['geoip_dbfile'] ) ) {
+					// Fix for the file type check
+					add_filter(
+						'wp_check_filetype_and_ext',
+						function ( $types, $file, $filename ) {
+							if ( 'tar.gz' === substr( $filename, -6 ) ) {
+								$types['ext']  = 'tar.gz';
+								$types['type'] = 'application/gzip';
+							}
+							return $types;
+						},
+						10,
+						3
+					);
+
+					// Validate the uploaded file - The second parameter $overrides enables security
+					$upload = wp_handle_upload(
+						$_FILES['geoip_dbfile'],
+						array(
+							'test_form' => false,
+							'mimes'     => array(
+								'mmdb'   => 'application/octet-stream',
+								'tar.gz' => 'application/gzip',
+							),
+						)
+					);
+
+					if ( ! empty( $upload['error'] ) ) {
+						// If the file upload failed
+						if ( UPLOAD_ERR_NO_FILE !== $upload['error'] ) {
+							CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
+								sprintf(
+									/* translators: %s is the error message */
+									esc_html__( 'Error uploading file: %s', 'cf7-antispam' ),
+									$upload['error']
+								)
+							);
+						}
+						// Continue
+					} else {
+						// Upload success
+						$temp   = $upload['file'];
+						$result = $this->geoip->manual_upload( $temp );
+						if ( $result ) {
+							CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
+								esc_html__( 'GeoIP database uploaded successfully.', 'cf7-antispam' )
+							);
+						} else {
+							CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
+								esc_html__( 'Error processing the uploaded file.', 'cf7-antispam' )
+							);
+						}
+					}//end if
+				}//end if
+			}//end if
+
+			$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
+			return $new_input;
+		}//end if
+
 		$new_input['cf7a_enabled'] = isset( $input['cf7a_enabled'] ) ? 1 : 0;
 
 		$new_input['cf7a_enable'] = $input['cf7a_enable'] ?? $new_input['cf7a_enable'];
@@ -1267,78 +1373,6 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		$new_input['check_time_min'] = isset( $input['check_time_min'] ) ? intval( $input['check_time_min'] ) : 6;
 		$new_input['check_time_max'] = isset( $input['check_time_max'] ) ? intval( $input['check_time_max'] ) : intval( YEAR_IN_SECONDS );
-
-		/**
-		 * Checking if the enable_geoip_download is not set (note the name is $new_input but actually is the copy of the stored options)
-		 * and the user has chosen to enable the geoip, in this case download the database if needed
-		 */
-		if ( ! empty( $new_input['enable_geoip_download'] ) ) {
-			$this->cf7a_enable_geo( $new_input['enable_geoip_download'] );
-		}
-
-		$new_input['enable_geoip_download'] = isset( $input['enable_geoip_download'] ) ? 1 : 0;
-
-		// if the download is disabled, check if the database is uploaded
-		if ( ! $new_input['enable_geoip_download'] ) {
-
-			// Get the file name
-			if ( ! empty( $_FILES ) && ! empty( $_FILES['geoip_dbfile'] ) ) {
-				// Fix for the file type check
-				add_filter(
-					'wp_check_filetype_and_ext',
-					function ( $types, $file, $filename ) {
-						if ( 'tar.gz' === substr( $filename, -6 ) ) {
-							$types['ext']  = 'tar.gz';
-							$types['type'] = 'application/gzip';
-						}
-						return $types;
-					},
-					10,
-					3
-				);
-
-				// Validate the uploaded file - The second parameter $overrides enables security
-				$upload = wp_handle_upload(
-					$_FILES['geoip_dbfile'],
-					array(
-						'test_form' => false,
-						'mimes'     => array(
-							'mmdb'   => 'application/octet-stream',
-							'tar.gz' => 'application/gzip',
-						),
-					)
-				);
-
-				if ( ! empty( $upload['error'] ) ) {
-					// If the file upload failed
-					if ( UPLOAD_ERR_NO_FILE !== $upload['error'] ) {
-						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
-							sprintf(
-								/* translators: %s is the error message */
-								esc_html__( 'Error uploading file: %s', 'cf7-antispam' ),
-								$upload['error']
-							)
-						);
-					}
-					// Continue
-				} else {
-					// Upload success
-					$temp   = $upload['file'];
-					$result = $this->geoip->manual_upload( $temp );
-					if ( $result ) {
-						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
-							esc_html__( 'GeoIP database uploaded successfully.', 'cf7-antispam' )
-						);
-					} else {
-						CF7_AntiSpam_Admin_Tools::cf7a_push_notice(
-							esc_html__( 'Error processing the uploaded file.', 'cf7-antispam' )
-						);
-					}
-				}//end if
-			}//end if
-		}//end if
-
-		$new_input['geoip_dbkey'] = isset( $input['geoip_dbkey'] ) ? sanitize_textarea_field( $input['geoip_dbkey'] ) : false;
 
 		/* browser language check enabled */
 		$new_input['check_language'] = ! empty( $input['check_language'] ) ? 1 : 0;
