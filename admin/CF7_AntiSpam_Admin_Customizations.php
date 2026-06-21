@@ -315,6 +315,15 @@ class CF7_AntiSpam_Admin_Customizations {
 			'cf7a_bad_ip'
 		);
 
+		/* Settings botnet_subnet_protection */
+		add_settings_field(
+			'botnet_subnet_protection',
+			__( 'Botnet Subnet Protection', 'cf7-antispam' ),
+			array( $this, 'cf7a_botnet_subnet_protection_callback' ),
+			'cf7a-settings',
+			'cf7a_bad_ip'
+		);
+
 		/* Settings bad_ip_list */
 		add_settings_field(
 			'bad_ip_list',
@@ -392,6 +401,23 @@ class CF7_AntiSpam_Admin_Customizations {
 			array( $this, 'cf7a_high_entropy_consecutive_consonants_callback' ),
 			'cf7a-settings',
 			'cf7a_high_entropy'
+		);
+
+		/* Section Max Links */
+		add_settings_section(
+			'cf7a_max_links_filter',
+			__( 'Max Allowed Links', 'cf7-antispam' ),
+			array( $this, 'cf7a_print_section_max_links' ),
+			'cf7a-settings'
+		);
+
+		/* Max Links */
+		add_settings_field(
+			'max_links',
+			__( 'Max Allowed Links', 'cf7-antispam' ),
+			array( $this, 'cf7a_max_links_callback' ),
+			'cf7a-settings',
+			'cf7a_max_links_filter'
 		);
 
 		/* Section Bad Email Strings */
@@ -1341,8 +1367,11 @@ class CF7_AntiSpam_Admin_Customizations {
 		$new_input['unban_after'] = $this->cf7a_input_cron_schedule( $input, 'unban_after', 'cf7a_cron', $schedule );
 
 		/* bad ip */
-		$new_input['check_refer']  = isset( $input['check_refer'] ) ? 1 : 0;
-		$new_input['check_bad_ip'] = isset( $input['check_bad_ip'] ) ? 1 : 0;
+		$new_input['check_refer']              = isset( $input['check_refer'] ) ? 1 : 0;
+		$new_input['check_bad_ip']             = isset( $input['check_bad_ip'] ) ? 1 : 0;
+		$new_input['botnet_subnet_protection'] = isset( $input['botnet_subnet_protection'] ) ? 1 : 0;
+
+		// We still parse these here just in case they are submitted from a legacy form or 'all' source
 		if ( isset( $input['bad_ip_list'] ) && is_string( $input['bad_ip_list'] ) ) {
 			$new_input['bad_ip_list'] = $this->cf7a_settings_format_user_input( sanitize_textarea_field( $input['bad_ip_list'] ) );
 		}
@@ -1458,6 +1487,8 @@ class CF7_AntiSpam_Admin_Customizations {
 
 		$input['cf7a_cipher']     = sanitize_html_class( $input['cf7a_cipher'] );
 		$new_input['cf7a_cipher'] = ! empty( $input['cf7a_cipher'] ) && in_array( $input['cf7a_cipher'], openssl_get_cipher_methods(), true ) ? $input['cf7a_cipher'] : CF7ANTISPAM_CYPHER;
+
+		$new_input['max_links'] = isset( $input['max_links'] ) ? absint( $input['max_links'] ) : 2;
 
 		/* store the sanitized options */
 		return $new_input;
@@ -1690,6 +1721,15 @@ class CF7_AntiSpam_Admin_Customizations {
 		printf(
 			'<input type="checkbox" id="check_bad_ip" name="cf7a_options[check_bad_ip]" %s />',
 			! empty( $this->options['check_bad_ip'] ) ? 'checked="true"' : ''
+		);
+	}
+
+	/** It creates the input field "cf7a_botnet_subnet_protection" */
+	public function cf7a_botnet_subnet_protection_callback() {
+		printf(
+			'<label for="botnet_subnet_protection"><input type="checkbox" id="botnet_subnet_protection" name="cf7a_options[botnet_subnet_protection]" value="1" %s /> %s</label>',
+			! empty( $this->options['botnet_subnet_protection'] ) ? 'checked="checked"' : '',
+			esc_html__( 'Automatically block submissions if multiple IPs from the same /24 subnet have recently been blocklisted.', 'cf7-antispam' )
 		);
 	}
 
@@ -1945,6 +1985,15 @@ class CF7_AntiSpam_Admin_Customizations {
 			'<input type="text" id="cf7a_customizations_prefix" name="cf7a_options[cf7a_customizations_prefix]" value="%s"/>',
 			isset( $this->options['cf7a_customizations_prefix'] ) ? sanitize_html_class( $this->options['cf7a_customizations_prefix'] ) : sanitize_html_class( CF7ANTISPAM_PREFIX )
 		);
+	}
+
+	/** It creates the input field "max_links" */
+	public function cf7a_max_links_callback() {
+		printf(
+			'<input type="number" id="max_links" name="cf7a_options[max_links]" value="%d" min="0" />',
+			isset( $this->options['max_links'] ) ? absint( $this->options['max_links'] ) : 2
+		);
+		echo '<p class="description">' . esc_html__( 'Checks the combined total of links across all fields (name, message, etc.).', 'cf7-antispam' ) . '</p>';
 	}
 
 	/** It creates a checkbox with the id of "cf7a_customizations_cipher_callback" */
