@@ -39,14 +39,14 @@ class CF7_AntiSpam_Rest_ApiTest extends WP_UnitTestCase {
 	private function create_csv( $lines ) {
 		$handle = fopen( $this->tmp_csv_file, 'w' );
 		foreach ( $lines as $line ) {
-			fputcsv( $handle, $line );
+			fputcsv( $handle, $line, ',', '"', '\\' );
 		}
 		fclose( $handle );
 	}
 
 	public function test_cf7a_parse_import_csv() {
 		// 1. Prepare initial database state
-		$this->blocklist->cf7a_add_to_blocklist( '192.168.1.100', 'banned' );
+		$this->blocklist->cf7a_add_to_blocklist( '192.168.1.100', 1 );
 		
 		// Find the ID of the inserted IP
 		global $wpdb;
@@ -56,13 +56,13 @@ class CF7_AntiSpam_Rest_ApiTest extends WP_UnitTestCase {
 		$csv_data = array(
 			array( 'ID', 'IP', 'Status', 'Extra_Field', 'Another_Field' ),
 			// Update existing record by ID
-			array( $id_to_update, '192.168.1.100', 'investigating', 'drop_me', 'ignored' ),
+			array( $id_to_update, '192.168.1.100', '2', 'drop_me', 'ignored' ),
 			// Insert new record without ID
-			array( '', '10.0.0.50', 'banned', 'drop', 'drop' ),
+			array( '', '10.0.0.50', '3', 'drop', 'drop' ),
 			// Permanent ban record (should go to bad_ip_list)
 			array( '', '200.200.200.200', 'permanent', 'drop', 'drop' ),
 			// Invalid IP (should be skipped)
-			array( '', 'invalid_ip', 'banned', '', '' ),
+			array( '', 'invalid_ip', '1', '', '' ),
 		);
 		$this->create_csv( $csv_data );
 
@@ -74,11 +74,11 @@ class CF7_AntiSpam_Rest_ApiTest extends WP_UnitTestCase {
 
 		// 4. Verify the database state
 		$updated_record = $this->blocklist->cf7a_blocklist_get_id( $id_to_update );
-		$this->assertEquals( 'investigating', $updated_record->status, 'Status should be updated by ID' );
+		$this->assertEquals( '2', $updated_record->status, 'Status should be updated by ID' );
 
 		$new_record = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cf7a_blocklist WHERE ip = '10.0.0.50'" );
 		$this->assertNotNull( $new_record, 'New IP should be inserted' );
-		$this->assertEquals( 'banned', $new_record->status, 'New IP should have banned status' );
+		$this->assertEquals( '3', $new_record->status, 'New IP should have banned status' );
 
 		// 5. Verify permanent ban
 		$permanent_record = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cf7a_blocklist WHERE ip = '200.200.200.200'" );

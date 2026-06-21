@@ -711,7 +711,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			$status_index = -1;
 
 		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-		while ( ( $data = fgetcsv( $handle ) ) !== false ) {
+		while ( ( $data = fgetcsv( $handle, 0, ',', '"', '\\' ) ) !== false ) {
 			if ( $is_first ) {
 				$is_first = false;
 				// Check if first column of first row is a valid IP/CIDR
@@ -757,7 +757,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 			}
 
 			$id     = null;
-			$status = 'banned';
+			$status = 1;
 
 			if ( -1 !== $id_index && isset( $data[ $id_index ] ) && '' !== trim( $data[ $id_index ] ) ) {
 				$id = intval( trim( $data[ $id_index ] ) );
@@ -765,7 +765,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 			if ( -1 !== $status_index && isset( $data[ $status_index ] ) ) {
 				$status_val = sanitize_text_field( trim( $data[ $status_index ] ) );
-				if ( ! empty( $status_val ) ) {
+				if ( '' !== $status_val ) {
 					$status = $status_val;
 				}
 			}

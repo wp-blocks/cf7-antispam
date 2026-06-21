@@ -222,8 +222,9 @@ class CF7_AntiSpam_Frontend {
 			}
 
 			$replacements = array(
-				'{name}'  => $input_names[ $hp_index ] ?? ( cf7a_generate_random_string( 3 ) . '_' . $hp_index ),
-				'{class}' => esc_attr( $input_class ),
+				'{name}'       => $input_names[ $hp_index ] ?? ( cf7a_generate_random_string( 3 ) . '_' . $hp_index ),
+				'{class}'      => esc_attr( $input_class ),
+				'{aria_label}' => esc_attr__( 'Please leave this field empty.', 'cf7-antispam' ),
 			);
 
 			/**
@@ -237,7 +238,7 @@ class CF7_AntiSpam_Frontend {
 			$template = wp_kses(
 				apply_filters(
 					'cf7a_honeypot_input_template',
-					'<input type="text" name="{name}" value="" autocomplete="fill" class="{class}" aria-hidden="true" tabindex="-1" />',
+					'<input type="text" name="{name}" value="" autocomplete="off" class="{class}" aria-label="{aria_label}" aria-hidden="true" tabindex="-1" />',
 					$replacements
 				),
 				array(
@@ -247,6 +248,7 @@ class CF7_AntiSpam_Frontend {
 						'value'        => array(),
 						'autocomplete' => array(),
 						'class'        => array(),
+						'aria-label'   => array(),
 						'aria-hidden'  => array(),
 						'tabindex'     => array(),
 					),
