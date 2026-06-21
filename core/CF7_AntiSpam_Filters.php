@@ -21,6 +21,7 @@ use CF7_AntiSpam\Core\Filters\Filter_Bad_Words;
 use CF7_AntiSpam\Core\Filters\Filter_Bot_Fingerprint;
 use CF7_AntiSpam\Core\Filters\Filter_Bot_Fingerprint_Extras;
 use CF7_AntiSpam\Core\Filters\Filter_DNSBL;
+use CF7_AntiSpam\Core\Filters\Filter_Botnet_Subnet;
 use CF7_AntiSpam\Core\Filters\Filter_Distributed_Bot;
 use CF7_AntiSpam\Core\Filters\Filter_Empty_IP;
 use CF7_AntiSpam\Core\Filters\Filter_Geoip;
@@ -33,6 +34,7 @@ use CF7_AntiSpam\Core\Filters\Filter_Plugin_Version;
 use CF7_AntiSpam\Core\Filters\Filter_Referrer_Protocol;
 use CF7_AntiSpam\Core\Filters\Filter_Time_Submission;
 use CF7_AntiSpam\Core\Filters\Filter_User_Agent;
+use CF7_AntiSpam\Core\Filters\Filter_Max_Links;
 use WPCF7_Submission;
 
 /**
@@ -70,6 +72,7 @@ class CF7_AntiSpam_Filters {
 			// Priority 10 – standard checks
 			'empty_ip'               => new Filter_Empty_IP(),
 			'bad_ip'                 => new Filter_Bad_IP(),
+			'botnet_subnet'          => new Filter_Botnet_Subnet(),
 			'distributed_bot'        => new Filter_Distributed_Bot(),
 			'ip_blocklist_history'   => new Filter_IP_Blocklist_History(),
 			'referrer_protocol'      => new Filter_Referrer_Protocol(),
@@ -85,6 +88,7 @@ class CF7_AntiSpam_Filters {
 			'bad_words'              => new Filter_Bad_Words(),
 			'dnsbl'                  => new Filter_DNSBL(),
 			'honeypot'               => new Filter_Honeypot(),
+			'max_links'              => new Filter_Max_Links(),
 
 			// Priority 20 – Bayesian filter (runs last)
 			'b8'                     => new Filter_B8_Bayesian(),
@@ -102,6 +106,7 @@ class CF7_AntiSpam_Filters {
 		// Priority 10: Standard checks
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['empty_ip'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bad_ip'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['botnet_subnet'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['distributed_bot'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['ip_blocklist_history'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['referrer_protocol'], 'check' ), 10 );
@@ -117,6 +122,7 @@ class CF7_AntiSpam_Filters {
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bad_words'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['dnsbl'], 'check' ), 10 );
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['honeypot'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['max_links'], 'check' ), 10 );
 
 		// Priority 20: Bayesian filter
 		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['b8'], 'check' ), 20 );
@@ -253,6 +259,7 @@ class CF7_AntiSpam_Filters {
 				'bad_word'               => '_bad_string',
 				'email_blocklisted'      => '_bad_string',
 				'bad_ip'                 => '_bad_ip',
+				'botnet_subnet'          => '_bad_ip',
 				'bot_fingerprint'        => '_fingerprinting',
 				'bot_fingerprint_extras' => '_fingerprinting',
 				'dnsbl'                  => '_dnsbl',
