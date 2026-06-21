@@ -30,8 +30,8 @@
 		"lint:js": "wp-scripts lint-js ./src/**/*.ts --fix",
 		"packages-update": "wp-scripts packages-update",
 		"wp-env:start": "wp-env start",
-		"wp-env:xdebug": "wp-env start --xdebug",
 		"wp-env:stop": "wp-env stop",
+		"wp-env:test": "wp-env start  --xdebug --config=.wp-env.test.json",
 		"wp-env:destroy": "wp-env destroy",
 		"test:e2e": "wp-scripts test-playwright --config tests/e2e/playwright.config.js",
 		"test:e2e:ui": "wp-scripts test-playwright --config tests/e2e/playwright.config.js --ui",
@@ -41,7 +41,7 @@
 		"PHPCS": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam PHPCS",
 		"composer:install": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam setup",
 		"composer:build": "wp-env run cli composer --env-cwd=wp-content/plugins/cf7-antispam build",
-		"test:unit:php": "wp-env run tests-wordpress /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
+		"test:unit:php": "wp-env run wordpress --config=.wp-env.test.json /var/www/html/wp-content/plugins/cf7-antispam/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/cf7-antispam/phpunit.xml.dist --verbose"
 	},
 	"repository": {
 		"type": "git",
@@ -58,7 +58,7 @@
 	"devDependencies": {
 		"@wordpress/api-fetch": "^7.34.0",
 		"@wordpress/e2e-test-utils-playwright": "^1.34.0",
-		"@wordpress/env": "10.26.0",
+		"@wordpress/env": "^11.8.1",
 		"@wordpress/eslint-plugin": "^22.22.0",
 		"@wordpress/icons": "^10.19.0",
 		"@wordpress/scripts": "^31.2.0",
