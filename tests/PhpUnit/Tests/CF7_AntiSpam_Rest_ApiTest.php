@@ -20,7 +20,12 @@ class CF7_AntiSpam_Rest_ApiTest extends WP_UnitTestCase {
 		$this->tmp_csv_file = wp_tempnam( 'cf7a_test_import.csv' );
 		
 		// Ensure fresh options and blocklist
-		delete_option( 'cf7a_options' );
+		\CF7_AntiSpam\Engine\CF7_AntiSpam_Activator::install();
+		$options = CF7_AntiSpam::get_options();
+		if ( is_array( $options ) ) {
+			$options['bad_ip_list'] = array();
+			CF7_AntiSpam::update_plugin_options( $options );
+		}
 		$this->blocklist->cf7a_clean_blocklist();
 	}
 
