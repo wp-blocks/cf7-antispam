@@ -58,6 +58,7 @@ class CF7_AntiSpam_Activator {
 			'max_attempts'                        => 3,
 			'unban_after'                         => 'disabled',
 			'check_bad_words'                     => true,
+			'max_links'                           => 2,
 			'check_high_entropy'                  => true,
 			'high_entropy_min_words'              => 5,
 			'high_entropy_consecutive_consonants' => 6,
