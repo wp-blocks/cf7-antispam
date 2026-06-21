@@ -84,14 +84,30 @@ function cf7a_get_real_ip() {
  * @return bool True if IP is in range.
  */
 function cf7a_ip_in_range( $ip, $range ) {
-	list( $subnet, $bits ) = explode( '/', $range );
-	$ip_long               = ip2long( $ip );
-	$subnet_long           = ip2long( $subnet );
-	if ( false === $ip_long || false === $subnet_long ) {
+	if ( strpos( $range, '/' ) === false ) {
+		return $ip === $range;
+	}
+
+	list( $subnet, $bits ) = explode( '/', $range, 2 );
+	$bits                  = (int) $bits;
+	$ip_bytes              = inet_pton( $ip );
+	$subnet_bytes          = inet_pton( $subnet );
+
+	if ( false === $ip_bytes || false === $subnet_bytes || strlen( $ip_bytes ) !== strlen( $subnet_bytes ) ) {
 		return false;
 	}
-	$mask = -1 << ( 32 - (int) $bits );
-	return ( $ip_long & $mask ) === ( $subnet_long & $mask );
+
+	$ip_bin = '';
+	foreach ( str_split( $ip_bytes ) as $char ) {
+		$ip_bin .= str_pad( decbin( ord( $char ) ), 8, '0', STR_PAD_LEFT );
+	}
+
+	$subnet_bin = '';
+	foreach ( str_split( $subnet_bytes ) as $char ) {
+		$subnet_bin .= str_pad( decbin( ord( $char ) ), 8, '0', STR_PAD_LEFT );
+	}
+
+	return substr( $ip_bin, 0, $bits ) === substr( $subnet_bin, 0, $bits );
 }
 
 /**
@@ -603,4 +619,47 @@ function cf7a_str_array_to_uint_array( $str_array ) {
  */
 function cf7a_generate_random_string( int $length = 10 ): string {
 	return substr( wp_generate_password( $length, false ), 0, $length );
+}
+
+/**
+ * Get the C-class subnet from an IP address.
+ *
+ * @param string $ip The IP address.
+ * @return string|false The C-class subnet string (e.g. 192.168.1.) or false if invalid.
+ */
+function cf7a_get_c_class_subnet( $ip ) {
+	if ( ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+		return false;
+	}
+
+	$parts = explode( '.', $ip );
+	if ( count( $parts ) === 4 ) {
+		return $parts[0] . '.' . $parts[1] . '.' . $parts[2] . '.';
+	}
+
+	return false;
+}
+
+/**
+ * Count the number of banned IPs in a subnet.
+ *
+ * @param string $subnet_prefix The subnet prefix (e.g. 192.168.1.).
+ * @return int The count of banned IPs.
+ */
+function cf7a_count_banned_ips_in_subnet( $subnet_prefix ) {
+	global $wpdb;
+
+	$table_name   = $wpdb->prefix . 'cf7a_blocklist';
+	$like_pattern = $wpdb->esc_like( $subnet_prefix ) . '%';
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$count = $wpdb->get_var(
+		$wpdb->prepare(
+			'SELECT COUNT(*) FROM %i WHERE ip LIKE %s',
+			$table_name,
+			$like_pattern
+		)
+	);
+
+	return intval( $count );
 }
