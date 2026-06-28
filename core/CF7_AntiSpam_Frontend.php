@@ -230,10 +230,14 @@ class CF7_AntiSpam_Frontend {
 			/**
 			 * Filters the honeypot input template string.
 			 *
-			 * @since 0.6.0
+			 * NOTE: Keep autocomplete="new-password". Do NOT revert to "off".
+			 * Modern browsers (Chrome) ignore "off" and trigger autofill,
+			 * which breaks honeypot validation.
 			 *
 			 * @param string $template     The HTML template.
 			 * @param array  $replacements The data available for replacement.
+			 *
+			 *@since 0.6.0
 			 */
 			$template = wp_kses(
 				apply_filters(
