@@ -238,7 +238,7 @@ class CF7_AntiSpam_Frontend {
 			$template = wp_kses(
 				apply_filters(
 					'cf7a_honeypot_input_template',
-					'<input type="text" name="{name}" value="" autocomplete="off" class="{class}" aria-label="{aria_label}" aria-hidden="true" tabindex="-1" />',
+					'<input type="text" name="{name}" value="" autocomplete="new-password" class="{class}" aria-label="{aria_label}" aria-hidden="true" tabindex="-1" />',
 					$replacements
 				),
 				array(
@@ -248,6 +248,7 @@ class CF7_AntiSpam_Frontend {
 						'value'        => array(),
 						'autocomplete' => array(),
 						'class'        => array(),
+						'style'        => array(),
 						'aria-label'   => array(),
 						'aria-hidden'  => array(),
 						'tabindex'     => array(),
