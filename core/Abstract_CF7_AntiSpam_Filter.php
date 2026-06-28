@@ -18,6 +18,15 @@ namespace CF7_AntiSpam\Core;
 abstract class Abstract_CF7_AntiSpam_Filter {
 
 	/**
+	 * The slug key that identifies this filter within the native_filters array.
+	 * Injected by CF7_AntiSpam_Filters::__construct() after instantiation.
+	 * Used by check() to honour the cf7a_active_filters opt-out mechanism.
+	 *
+	 * @var string
+	 */
+	public $filter_key;
+
+	/**
 	 * Run the filter check.
 	 *
 	 * @param array $spam_data The spam data context.
@@ -25,6 +34,13 @@ abstract class Abstract_CF7_AntiSpam_Filter {
 	 * @return array The updated spam data context.
 	 */
 	public function check( array $spam_data ): array {
+		// If the developer removed this filter via the cf7a_active_filters hook, skip processing.
+		if ( ! empty( $this->filter_key ) && isset( $spam_data['active_filters'] ) ) {
+			if ( ! isset( $spam_data['active_filters'][ $this->filter_key ] ) ) {
+				return $spam_data;
+			}
+		}
+
 		if ( isset( $spam_data['is_allowlisted'] ) && $spam_data['is_allowlisted'] ) {
 			return $spam_data;
 		}

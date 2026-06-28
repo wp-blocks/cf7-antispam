@@ -159,10 +159,39 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		$data = array(
 			'plugin_version' => CF7ANTISPAM_VERSION,
 			'status'         => $this->options['cf7a_enable'] ? 'enabled' : 'disabled',
-			'timestamp'      => date_i18n( 'Y-m-d H:i:s' ),
+			'timestamp'      => wp_date( 'Y-m-d H:i:s' ),
 		);
 
 		return rest_ensure_response( $data );
+	}
+
+	/**
+	 * Get dashboard stats for charts and activity list.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_Error|WP_REST_Response
+	 */
+	public function cf7a_get_dashboard_stats( $request ) {
+		$period = $request->get_param( 'period' );
+		if ( empty( $period ) ) {
+			$period = 'week';
+		}
+
+		$date_after = '30 days ago';
+		$limit      = 50;
+
+		if ( 'week' === $period ) {
+			$date_after = '7 days ago';
+			$limit      = 25;
+			// max_mail_count default is 25 for widget, 50 for main charts
+		}
+
+		// Instantiate the charts admin class to reuse its fetching/formatting logic
+		$charts_admin = new \CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Charts();
+		$stats        = $charts_admin->cf7a_get_dashboard_stats_data( $date_after, $limit );
+
+		return rest_ensure_response( $stats );
 	}
 
 	/**
@@ -185,7 +214,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 
 		$mail_id = intval( $request['id'] );
 
-		if ( $mail_id > 1 ) {
+		if ( $mail_id > 0 ) {
 			$cf7a_flamingo = new CF7_AntiSpam_Flamingo();
 			$r             = $cf7a_flamingo->cf7a_resend_mail( $mail_id );
 
@@ -537,6 +566,247 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 	}
 
 	/**
+	 * Import blocklist from CSV.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_import_blocklist( $request ) {
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		if ( empty( $_FILES['file'] ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'No file uploaded', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$file        = $_FILES['file'];
+		$wp_filetype = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'], array( 'csv' => 'text/csv' ) );
+		if ( ! $wp_filetype['ext'] ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid file type. Only CSV allowed.', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		$upload_overrides = array( 'test_form' => false );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		$movefile = wp_handle_upload( $_FILES['file'], $upload_overrides );
+
+		if ( $movefile && ! isset( $movefile['error'] ) ) {
+			$file_path = $movefile['file'];
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+			$handle = fopen( $file_path, 'r' );
+
+			if ( ! $handle ) {
+				wp_delete_file( $file_path );
+				return rest_ensure_response(
+					array(
+						'success' => false,
+						'message' => __( 'Unable to open file', 'cf7-antispam' ),
+					)
+				);
+			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			fclose( $handle );
+
+			$count = $this->cf7a_parse_import_csv( $file_path );
+
+			wp_delete_file( $file_path );
+
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					/* translators: %d is the number of imported IPs. */
+					'message' => sprintf( __( '%d IPs imported successfully.', 'cf7-antispam' ), $count ),
+				)
+			);
+		} else {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => $movefile['error'],
+				)
+			);
+		}//end if
+	}
+
+	/**
+	 * Securely validate if a string is a valid IP or CIDR range.
+	 *
+	 * @param string $ip_string The IP or CIDR string.
+	 * @return bool True if valid, false otherwise.
+	 */
+	private function cf7a_is_valid_ip_or_cidr( $ip_string ) {
+		if ( strpos( $ip_string, '/' ) === false ) {
+			return (bool) rest_is_ip_address( $ip_string );
+		}
+
+		$parts = explode( '/', $ip_string, 2 );
+		if ( count( $parts ) !== 2 ) {
+			return false;
+		}
+
+		$ip   = $parts[0];
+		$mask = $parts[1];
+
+		if ( ! rest_is_ip_address( $ip ) ) {
+			return false;
+		}
+
+		// Ensure the mask is strictly an integer
+		if ( ! is_numeric( $mask ) || strval( intval( $mask ) ) !== strval( $mask ) ) {
+			return false;
+		}
+
+		$mask_int = intval( $mask );
+
+		// Check bounds for IPv4 and IPv6
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+			return $mask_int >= 1 && $mask_int <= 32;
+		} elseif ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+			return $mask_int >= 1 && $mask_int <= 128;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Parse and process the imported CSV file.
+	 *
+	 * @since    1.0.0
+	 * @param    string $file_path Absolute path to the CSV file.
+	 * @return   int    Number of successfully imported/updated IPs.
+	 */
+	public function cf7a_parse_import_csv( $file_path ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		$handle = fopen( $file_path, 'r' );
+		if ( ! $handle ) {
+			return 0;
+		}
+
+			$blocklist    = new CF7_Antispam_Blocklist();
+			$count        = 0;
+			$is_first     = true;
+			$ip_index     = 0;
+			$id_index     = -1;
+			$status_index = -1;
+
+		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+		while ( ( $data = fgetcsv( $handle, 0, ',', '"', '\\' ) ) !== false ) {
+			if ( $is_first ) {
+				$is_first = false;
+				// Check if first column of first row is a valid IP/CIDR
+				$first_cell = trim( $data[0] );
+				$is_ip      = $this->cf7a_is_valid_ip_or_cidr( $first_cell );
+
+				if ( ! $is_ip ) {
+					// It's a header row. Find ID, IP, Status column indices.
+					foreach ( $data as $i => $col ) {
+						$col_lower = strtolower( trim( $col ) );
+						if ( 'ip' === $col_lower ) {
+							$ip_index = $i;
+						} elseif ( 'id' === $col_lower ) {
+							$id_index = $i;
+						} elseif ( 'status' === $col_lower ) {
+							$status_index = $i;
+						}
+					}
+					continue;
+					// skip header row
+				}
+			}//end if
+
+			if ( ! isset( $data[ $ip_index ] ) ) {
+				continue;
+			}
+
+			$ip = sanitize_text_field( trim( $data[ $ip_index ] ) );
+
+			if ( empty( $ip ) ) {
+				continue;
+			}
+
+			// Basic validation for IP or CIDR format
+			$is_valid = $this->cf7a_is_valid_ip_or_cidr( $ip );
+
+			if ( ! $is_valid ) {
+				continue;
+			}
+
+			if ( CF7_Antispam_Blocklist::is_ip_allowlisted( $ip ) ) {
+				continue;
+			}
+
+			$id     = null;
+			$status = 1;
+
+			if ( -1 !== $id_index && isset( $data[ $id_index ] ) && '' !== trim( $data[ $id_index ] ) ) {
+				$id = intval( trim( $data[ $id_index ] ) );
+			}
+
+			if ( -1 !== $status_index && isset( $data[ $status_index ] ) ) {
+				$status_val = sanitize_text_field( trim( $data[ $status_index ] ) );
+				if ( '' !== $status_val ) {
+					$status = $status_val;
+				}
+			}
+
+			// Handle permanent ban
+			if ( 'permanent' === strtolower( $status ) ) {
+				$plugin_options  = CF7_AntiSpam::get_options();
+				$current_bad_ips = $plugin_options['bad_ip_list'] ?? array();
+
+				if ( ! in_array( $ip, $current_bad_ips, true ) ) {
+					if ( CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array_merge( $current_bad_ips, array( $ip ) ) ) ) {
+						if ( $id ) {
+							$blocklist->cf7a_unban_by_id( $id );
+						}
+						++$count;
+					}
+				} elseif ( $id ) {
+					// Already permanently banned, just remove from blocklist table if it's there
+					$blocklist->cf7a_unban_by_id( $id );
+				}
+				continue;
+			}
+
+			if ( $id ) {
+				$result = $blocklist->cf7a_update_blocklist_by_id( $id, $ip, $status );
+			} else {
+				$result = $blocklist->cf7a_add_to_blocklist( $ip, $status );
+			}
+
+			if ( ! is_wp_error( $result ) && $result ) {
+				++$count;
+			}
+		}//end while
+
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			fclose( $handle );
+
+			return $count;
+	}
+
+	/**
 	 * Helper method to get blocklist data.
 	 * This should call the actual method that retrieves the blocklist from database.
 	 *
@@ -569,7 +839,8 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		$table = $wpdb->prefix . 'cf7a_wordlist';
 
 		// Build WHERE clause
-		$where_clauses = array( "token != 'b8*texts'", "token != 'b8*dbversion'" );
+		$where_clauses = array( "token NOT IN ('b8*texts', 'b8*dbversion')" );
+		$params        = array();
 
 		if ( 'spam' === $type ) {
 			$where_clauses[] = 'count_spam > 0';
@@ -578,7 +849,8 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		if ( ! empty( $search ) ) {
-			$where_clauses[] = $wpdb->prepare( 'token LIKE %s', '%' . $wpdb->esc_like( $search ) . '%' );
+			$where_clauses[] = 'token LIKE %s';
+			$params[]        = '%' . $wpdb->esc_like( $search ) . '%';
 		}
 
 		$where = implode( ' AND ', $where_clauses );
@@ -616,22 +888,22 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		}
 
 		// Get total count
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$total_params = array_merge( array( $table ), $params );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$total = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM %i WHERE {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$table
+				...$total_params
 			)
 		);
 
 		// Get paginated results
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$words_params = array_merge( array( $table ), $params, array( $per_page, $offset ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$words = $wpdb->get_results(
-			$wpdb->prepare(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 				"SELECT token, count_spam, count_ham FROM %i WHERE {$where} ORDER BY {$order_clause} LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$table,
-				$per_page,
-				$offset
+				...$words_params
 			)
 		);
 
@@ -792,6 +1064,37 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 		);
 	}
 
+	/**
+	 * Retroactively update blocklist GeoIP data.
+	 *
+	 * @since    1.0.0
+	 * @param    WP_REST_Request $request Full data about the request.
+	 * @return   WP_REST_Response
+	 */
+	public function cf7a_update_blocklist_geoip( $request ) {
+		/** Verify nonce */
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$blocklist     = new CF7_Antispam_Blocklist();
+		$updated_count = $blocklist->cf7a_retroactive_geoip_update();
+
+		return rest_ensure_response(
+			array(
+				'success'       => true,
+				/* translators: %d is the number of updated IPs. */
+				'message'       => sprintf( __( 'Successfully updated %d IPs with GeoIP data', 'cf7-antispam' ), $updated_count ),
+				'updated_count' => $updated_count,
+			)
+		);
+	}
+
 
 	/**
 	 * Register the routes for the objects of the controller.
@@ -829,6 +1132,24 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'cf7a_get_status' ),
 					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'dashboard-stats',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'cf7a_get_dashboard_stats' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'period' => array(
+							'required' => false,
+							'type'     => 'string',
+						),
+					),
 				),
 			)
 		);
@@ -986,7 +1307,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
@@ -1014,7 +1335,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
@@ -1035,7 +1356,7 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
@@ -1056,7 +1377,28 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 							'required'          => true,
 							'type'              => 'string',
 							'validate_callback' => function ( $param ) {
-								return $this->cf7a_validate_param( $param );
+								return is_string( $param ) && ! empty( $param );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'import-blocklist',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_import_blocklist' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return is_string( $param ) && ! empty( $param );
 							},
 						),
 					),
@@ -1164,6 +1506,215 @@ class CF7_AntiSpam_Rest_Api extends WP_REST_Controller {
 						),
 					),
 				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'update-blocklist-geoip',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_update_blocklist_geoip' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'blocklist/add',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_add_blocklist_entry' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+						'list'  => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+						'ip'    => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'blocklist/remove',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_remove_blocklist_entry' ),
+					'permission_callback' => array( $this, 'cf7a_get_permissions_check' ),
+					'args'                => array(
+						'nonce' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'validate_callback' => function ( $param ) {
+								return $this->cf7a_validate_param( $param, 'nonce' );
+							},
+						),
+						'list'  => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+						'ip'    => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Add an IP to manual blocklist or allowlist.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 * @return WP_REST_Response
+	 */
+	public function cf7a_add_blocklist_entry( $request ) {
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$list = sanitize_key( $request['list'] );
+		$ip   = sanitize_text_field( trim( $request['ip'] ) );
+
+		if ( ! in_array( $list, array( 'bad_ip_list', 'ip_allowlist' ), true ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid list specified', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		if ( ! $this->cf7a_is_valid_ip_or_cidr( $ip ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid IP address or CIDR range', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$options      = CF7_AntiSpam::get_options();
+		$current_list = isset( $options[ $list ] ) && is_array( $options[ $list ] ) ? $options[ $list ] : array();
+
+		if ( in_array( $ip, $current_list, true ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'IP address or CIDR range already exists in the list', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$current_list[]   = $ip;
+		$options[ $list ] = array_values( array_unique( $current_list ) );
+
+		if ( CF7_AntiSpam::update_plugin_options( $options ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					'message' => __( 'Entry added successfully', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => false,
+				'message' => __( 'Error updating options in the database', 'cf7-antispam' ),
+			)
+		);
+	}
+
+	/**
+	 * Remove an IP from manual blocklist or allowlist.
+	 *
+	 * @param WP_REST_Request $request The REST request.
+	 * @return WP_REST_Response
+	 */
+	public function cf7a_remove_blocklist_entry( $request ) {
+		if ( ! wp_verify_nonce( $request['nonce'], 'cf7a-nonce' ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid nonce', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$list = sanitize_key( $request['list'] );
+		$ip   = sanitize_text_field( trim( $request['ip'] ) );
+
+		if ( ! in_array( $list, array( 'bad_ip_list', 'ip_allowlist' ), true ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'Invalid list specified', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		$options      = CF7_AntiSpam::get_options();
+		$current_list = isset( $options[ $list ] ) && is_array( $options[ $list ] ) ? $options[ $list ] : array();
+
+		$key = array_search( $ip, $current_list, true );
+		if ( false === $key ) {
+			return rest_ensure_response(
+				array(
+					'success' => false,
+					'message' => __( 'IP address or CIDR range not found in the list', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		unset( $current_list[ $key ] );
+		$options[ $list ] = array_values( $current_list );
+
+		if ( CF7_AntiSpam::update_plugin_options( $options ) ) {
+			return rest_ensure_response(
+				array(
+					'success' => true,
+					'message' => __( 'Entry removed successfully', 'cf7-antispam' ),
+				)
+			);
+		}
+
+		return rest_ensure_response(
+			array(
+				'success' => false,
+				'message' => __( 'Error updating options in the database', 'cf7-antispam' ),
 			)
 		);
 	}

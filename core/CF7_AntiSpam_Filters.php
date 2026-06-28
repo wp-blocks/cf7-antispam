@@ -21,10 +21,11 @@ use CF7_AntiSpam\Core\Filters\Filter_Bad_Words;
 use CF7_AntiSpam\Core\Filters\Filter_Bot_Fingerprint;
 use CF7_AntiSpam\Core\Filters\Filter_Bot_Fingerprint_Extras;
 use CF7_AntiSpam\Core\Filters\Filter_DNSBL;
+use CF7_AntiSpam\Core\Filters\Filter_Botnet_Subnet;
+use CF7_AntiSpam\Core\Filters\Filter_Distributed_Bot;
 use CF7_AntiSpam\Core\Filters\Filter_Empty_IP;
 use CF7_AntiSpam\Core\Filters\Filter_Geoip;
 use CF7_AntiSpam\Core\Filters\Filter_High_Entropy;
-use CF7_AntiSpam\Core\Filters\Filter_Honeyform;
 use CF7_AntiSpam\Core\Filters\Filter_Honeypot;
 use CF7_AntiSpam\Core\Filters\Filter_IP_Allowlist;
 use CF7_AntiSpam\Core\Filters\Filter_IP_Blocklist_History;
@@ -33,6 +34,7 @@ use CF7_AntiSpam\Core\Filters\Filter_Plugin_Version;
 use CF7_AntiSpam\Core\Filters\Filter_Referrer_Protocol;
 use CF7_AntiSpam\Core\Filters\Filter_Time_Submission;
 use CF7_AntiSpam\Core\Filters\Filter_User_Agent;
+use CF7_AntiSpam\Core\Filters\Filter_Max_Links;
 use WPCF7_Submission;
 
 /**
@@ -41,8 +43,19 @@ use WPCF7_Submission;
 class CF7_AntiSpam_Filters {
 
 	/**
+	 * Associative array of instantiated native filter objects, keyed by their slug.
+	 * Populated in __construct() so filters can be referenced and selectively
+	 * disabled at submission-time via the cf7a_active_filters hook.
+	 *
+	 * @var array
+	 */
+	public $native_filters = array();
+
+	/**
 	 * CF7_AntiSpam_Filters constructor.
-	 * Registers the individual spam checks to the custom filter hook.
+	 * Instantiates all native spam-check filters, stores them in $native_filters
+	 * (keyed by slug), injects each instance's own key, and registers the
+	 * cf7a_spam_check_chain hooks with their original priorities.
 	 *
 	 * @param bool $register_hooks Whether to register the default hooks.
 	 */
@@ -50,32 +63,69 @@ class CF7_AntiSpam_Filters {
 		if ( ! $register_hooks ) {
 			return;
 		}
-		// Priority 5: Allowlist checks (should run first to stop processing if safe)
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_IP_Allowlist(), 'check' ), 5 );
+
+		// Instantiate every native filter and store it under a stable slug key.
+		$this->native_filters = array(
+			// Priority 5 – runs first
+			'ip_allowlist'           => new Filter_IP_Allowlist(),
+
+			// Priority 10 – standard checks
+			'empty_ip'               => new Filter_Empty_IP(),
+			'bad_ip'                 => new Filter_Bad_IP(),
+			'botnet_subnet'          => new Filter_Botnet_Subnet(),
+			'distributed_bot'        => new Filter_Distributed_Bot(),
+			'ip_blocklist_history'   => new Filter_IP_Blocklist_History(),
+			'referrer_protocol'      => new Filter_Referrer_Protocol(),
+			'plugin_version'         => new Filter_Plugin_Version(),
+			'high_entropy'           => new Filter_High_Entropy(),
+			'bot_fingerprint'        => new Filter_Bot_Fingerprint(),
+			'bot_fingerprint_extras' => new Filter_Bot_Fingerprint_Extras(),
+			'language'               => new Filter_Language(),
+			'geoip'                  => new Filter_Geoip(),
+			'time_submission'        => new Filter_Time_Submission(),
+			'bad_email_strings'      => new Filter_Bad_Email_Strings(),
+			'user_agent'             => new Filter_User_Agent(),
+			'bad_words'              => new Filter_Bad_Words(),
+			'dnsbl'                  => new Filter_DNSBL(),
+			'honeypot'               => new Filter_Honeypot(),
+			'max_links'              => new Filter_Max_Links(),
+
+			// Priority 20 – Bayesian filter (runs last)
+			'b8'                     => new Filter_B8_Bayesian(),
+		);
+
+		// Inject each filter's own slug so it can identify itself at check-time.
+		foreach ( $this->native_filters as $key => $instance ) {
+			$instance->filter_key = $key;
+		}
+
+		// Register hooks – preserve original priorities exactly.
+		// Priority 5: Allowlist (must run first to short-circuit remaining checks)
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['ip_allowlist'], 'check' ), 5 );
 
 		// Priority 10: Standard checks
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Empty_IP(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Bad_IP(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_IP_Blocklist_History(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Honeyform(), 'check' ), 10 );
-
-		// Checks that originally ran only if score < 1 (See logic inside methods)
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Referrer_Protocol(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Plugin_Version(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_High_Entropy(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Bot_Fingerprint(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Bot_Fingerprint_Extras(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Language(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Geoip(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Time_Submission(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Bad_Email_Strings(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_User_Agent(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Bad_Words(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_DNSBL(), 'check' ), 10 );
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_Honeypot(), 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['empty_ip'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bad_ip'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['botnet_subnet'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['distributed_bot'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['ip_blocklist_history'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['referrer_protocol'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['plugin_version'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['high_entropy'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bot_fingerprint'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bot_fingerprint_extras'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['language'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['geoip'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['time_submission'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bad_email_strings'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['user_agent'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['bad_words'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['dnsbl'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['honeypot'], 'check' ), 10 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['max_links'], 'check' ), 10 );
 
 		// Priority 20: Bayesian filter
-		add_filter( 'cf7a_spam_check_chain', array( new Filter_B8_Bayesian(), 'check' ), 20 );
+		add_filter( 'cf7a_spam_check_chain', array( $this->native_filters['b8'], 'check' ), 20 );
 	}
 
 	// ------------------------
@@ -148,6 +198,19 @@ class CF7_AntiSpam_Filters {
 		// -------------------------------------------------------------
 		// BUILD THE DATA OBJECT (Context)
 		// -------------------------------------------------------------
+
+		/**
+		 * Allow developers to disable specific native filters on a per-form basis.
+		 *
+		 * The callback receives the full $native_filters array (keyed by slug) and
+		 * the current form ID. Removing an entry (e.g. unset( $filters['b8'] ))
+		 * will cause that filter's check() method to return $spam_data unchanged.
+		 *
+		 * @param array $native_filters Associative array of filter instances keyed by slug.
+		 * @param int   $form_id        The ID of the CF7 form being submitted.
+		 */
+		$active_filters = apply_filters( 'cf7a_active_filters', $this->native_filters, $contact_form->id() );
+
 		$spam_data = array(
 			'submission'     => $submission,
 			'options'        => $options,
@@ -163,7 +226,8 @@ class CF7_AntiSpam_Filters {
 			'is_spam'        => $spam,
 			'reasons'        => array(),
 			'is_allowlisted' => false,
-		// Flag to stop processing
+			// Active filter map – used by each filter's check() for opt-out support.
+			'active_filters' => $active_filters,
 		);
 
 		if ( CF7ANTISPAM_DEBUG_EXTENDED ) {
@@ -195,13 +259,14 @@ class CF7_AntiSpam_Filters {
 				'bad_word'               => '_bad_string',
 				'email_blocklisted'      => '_bad_string',
 				'bad_ip'                 => '_bad_ip',
+				'botnet_subnet'          => '_bad_ip',
 				'bot_fingerprint'        => '_fingerprinting',
 				'bot_fingerprint_extras' => '_fingerprinting',
 				'dnsbl'                  => '_dnsbl',
 				'no_ip'                  => '_warn',
-				'geo_ip'                 => '_warn',
+				'geo_ip'                 => '_detection',
 				'high_entropy'           => '_detection',
-				'honeyform'              => '_honeypot',
+				'honeyform'              => '_detection',
 				'honeypot'               => '_honeypot',
 				'blocklisted'            => '_detection',
 				'browser_language'       => '_detection',
@@ -244,6 +309,7 @@ class CF7_AntiSpam_Filters {
 		$reason     = $spam_data['reasons'];
 		$spam       = $spam_data['is_spam'];
 		$remote_ip  = $spam_data['remote_ip'] ? $spam_data['remote_ip'] : $spam_data['cf7_remote_ip'];
+		$country    = ! empty( $spam_data['country'] ) ? $spam_data['country'] : '';
 
 		/**
 		 * Final filter before the ban
@@ -265,7 +331,7 @@ class CF7_AntiSpam_Filters {
 
 		/* If the auto-store ip is enabled */
 		if ( isset( $options['autostore_bad_ip'] ) && $options['autostore_bad_ip'] ) {
-			if ( CF7_Antispam_Blocklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ) ) ) {
+			if ( CF7_Antispam_Blocklist::cf7a_ban_by_ip( $remote_ip, $reason, round( $spam_score ), $country ) ) {
 				cf7a_log( "Ban for $remote_ip - results - " . $reasons_for_ban, 2 );
 			} else {
 				cf7a_log( "Unable to ban $remote_ip" );

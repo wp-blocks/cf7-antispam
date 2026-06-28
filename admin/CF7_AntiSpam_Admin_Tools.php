@@ -40,20 +40,7 @@ class CF7_AntiSpam_Admin_Tools {
 		return trim( str_replace( array( "\r", "\n", '%0A', '%0D' ), '', $input ) );
 	}
 
-	/**
-	 * It exports the blocklist
-	 */
-	public static function cf7a_export_blocklist() {
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$blocklisted = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY `status` DESC', $wpdb->prefix . 'cf7a_blocklist' ) );
-		foreach ( $blocklisted as $row ) {
-			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-			$meta      = unserialize( $row->meta );
-			$row->meta = $meta;
-		}
-		return $blocklisted;
-	}
+
 
 	/**
 	 * It handles the actions that are triggered by the user

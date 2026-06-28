@@ -1,0 +1,256 @@
+.cf7a-unified-blocklist-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+
+    .cf7a-blocklist-main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #f0f0f1;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+
+        h2 {
+            margin: 0;
+            font-size: 1.4em;
+        }
+
+        .cf7a-top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+            flex-wrap: wrap;
+
+            #cf7a_blocklist_search {
+                margin: 0;
+                min-width: 250px;
+            }
+        }
+    }
+
+    .cf7a-allowlist-section,
+    .cf7a-manual-blacklist-section,
+    .cf7a-automated-blacklist-section {
+        border-bottom: 1px solid #f0f0f1;
+        padding-bottom: 25px;
+        margin-bottom: 25px;
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+    }
+
+    .cf7a-section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+
+        h3 {
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        .cf7a-count-badge {
+            background: #f0f0f1;
+            color: #3c434a;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .cf7a-add-entry {
+            margin-left: auto;
+        }
+    }
+
+    .cf7a-empty-state {
+        background: #f9f9f9;
+        border: 1px dashed #dcdcde;
+        padding: 20px;
+        text-align: center;
+        color: #646970;
+        border-radius: 4px;
+        margin-bottom: 20px;
+
+        p {
+            margin: 0;
+        }
+
+        &.cf7a-allowlist-empty-state {
+            height: 100px;
+            min-height: 100px; // Override main.scss min-height: 400px
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    }
+
+
+    .cf7a-blocklist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+
+        .ban-card {
+            background: #fff;
+            border: 1px solid #dcdcde;
+            padding: 15px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+
+            &:hover {
+                background: #f6f7f7;
+            }
+
+            .row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+
+                .cf7a-country-flag {
+                    vertical-align: middle;
+                    margin-right: 8px;
+                }
+
+                .ip {
+                    margin: 0;
+                    display: flex;
+                    flex-direction: column;
+
+                    .ip-label {
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 2px;
+                    }
+                }
+
+                .status {
+                    margin-left: auto;
+                }
+            }
+
+            .card-details {
+                margin-bottom: 15px;
+
+                .data {
+										margin: 0 0 5px 0;
+										font-size: 12px;
+                }
+            }
+
+            .actions {
+                display: flex;
+                gap: 5px;
+                align-items: center;
+            }
+        }
+    }
+
+    .cf7a-settings-form-wrapper {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+
+        .form-table {
+            margin-top: 0;
+        }
+    }
+
+    .cf7a-banned-ips-section {
+        padding-top: 10px;
+    }
+
+    .cf7a-score-group {
+        display: flex;
+        align-items: center;
+        margin: 25px 0 15px 0;
+        font-weight: 600;
+
+        .cf7a-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .cf7a-score-title {
+            font-size: 1.25em;
+            color: #1d2327;
+            margin-right: 8px;
+        }
+
+        .cf7a-score-count {
+            font-size: 0.9em;
+            color: #646970;
+            font-weight: 400;
+        }
+    }
+}
+
+/* Modal styles for manual entry add */
+.cf7a-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+
+    .cf7a-modal-content {
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 450px;
+        padding: 20px;
+        box-sizing: border-box;
+
+        .cf7a-modal-title {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: #1d2327;
+            border-bottom: 1px solid #dcdcde;
+            padding-bottom: 10px;
+        }
+
+        .cf7a-modal-body {
+
+            p {
+                margin-top: 0;
+                margin-bottom: 15px;
+                color: #50575e;
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            code {
+                background: #f6f7f7;
+                padding: 2px 4px;
+                border-radius: 3px;
+                font-family: monospace;
+            }
+        }
+    }
+}
+

@@ -29,22 +29,40 @@ class Filter_Bad_IP extends Abstract_CF7_AntiSpam_Filter {
 		$options     = $data['options'];
 		$bad_ip_list = $options['bad_ip_list'] ?? array();
 
-		if ( intval( $options['check_bad_ip'] ) === 1 && $data['remote_ip'] ) {
+		if ( ! empty( $bad_ip_list ) && $data['remote_ip'] ) {
 			foreach ( $bad_ip_list as $bad_ip ) {
-				$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
-				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
-				if ( $bad_ip && $data['remote_ip'] === $bad_ip ) {
+				$bad_ip = trim( $bad_ip );
+
+				if ( empty( $bad_ip ) ) {
+					continue;
+				}
+
+				$is_match = false;
+
+				if ( false !== strpos( $bad_ip, '/' ) ) {
+					if ( function_exists( 'cf7a_ip_in_range' ) && cf7a_ip_in_range( $data['remote_ip'], $bad_ip ) ) {
+						$is_match = true;
+					}
+				} else {
+					$bad_ip = filter_var( $bad_ip, FILTER_VALIDATE_IP );
+					// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40).
+					if ( $bad_ip && $data['remote_ip'] === $bad_ip ) {
+						$is_match = true;
+					}
+				}
+
+				if ( $is_match ) {
 					$data['is_spam']             = true;
 					$data['reasons']['bad_ip'][] = $bad_ip;
 				}
-			}
+			}//end foreach
 
 			if ( ! empty( $data['reasons']['bad_ip'] ) ) {
 				$ip_string = implode( ', ', $data['reasons']['bad_ip'] );
-				// Flatten for log
+				// Flatten for log.
 				cf7a_log( "The ip address {$data['remote_ip']} is listed into bad ip list (contains $ip_string)", 1 );
 			}
-		}
+		}//end if
 		return $data;
 	}
 }

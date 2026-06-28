@@ -206,9 +206,9 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 			}
 			for (i = 0; i < this.length; i++) {
 				chr = this.charCodeAt(i);
-				// eslint-disable-next-line no-bitwise
+
 				hash = (hash << 5) - hash + chr;
-				// eslint-disable-next-line no-bitwise
+
 				hash |= 0; // Convert to 32bit integer
 			}
 			return hash;
@@ -303,7 +303,7 @@ export function setupCanvasTest(hiddenInputsContainer: HTMLElement): void {
 				if (
 					void 0 === canvas2d ||
 					'function' !==
-					typeof canvasElement?.getContext('2d')?.fillText
+						typeof canvasElement?.getContext('2d')?.fillText
 				) {
 					isOkCanvas = false;
 				} else {
@@ -448,7 +448,6 @@ export function setupBotFingerprintTest(
 				'form'
 			) as HTMLFormElement | null;
 			if (!formElem) {
-				// eslint-disable-next-line no-console
 				console.error('CF7 Antispam: form not found');
 				return;
 			}

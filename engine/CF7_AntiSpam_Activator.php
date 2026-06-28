@@ -58,6 +58,7 @@ class CF7_AntiSpam_Activator {
 			'max_attempts'                        => 3,
 			'unban_after'                         => 'disabled',
 			'check_bad_words'                     => true,
+			'max_links'                           => 2,
 			'check_high_entropy'                  => true,
 			'high_entropy_min_words'              => 5,
 			'high_entropy_consecutive_consonants' => 6,
@@ -90,9 +91,11 @@ class CF7_AntiSpam_Activator {
 				'allowed'    => array(),
 				'disallowed' => array(),
 			),
+			'obfuscate_cf7_endpoint'              => false,
+			'cf7a_endpoint_slug'                  => 'cf7-antispam/v1/' . cf7a_generate_random_string( 8 ),
 			'score'                               => array(
-				'_fingerprinting' => 0.1,
-				'_time'           => 0.3,
+				'_fingerprinting' => 0.2,
+				'_time'           => 0.5,
 				'_bad_string'     => 0.5,
 				'_dnsbl'          => 0.1,
 				'_honeypot'       => 0.5,
@@ -146,6 +149,23 @@ class CF7_AntiSpam_Activator {
 				'disallowed' => array(),
 			),
 		);
+	}
+
+
+	/**
+	 * Returns the master list of default plugin options.
+	 *
+	 * Used by the settings import validator so that newly added options (not yet
+	 * persisted to the database) are still accepted during a JSON import even when
+	 * the current saved options array is missing those keys.
+	 *
+	 * @since    0.7.7
+	 *
+	 * @return array The complete set of default options defined for this plugin.
+	 */
+	public static function get_default_options(): array {
+		self::init_vars();
+		return self::$default_cf7a_options;
 	}
 
 

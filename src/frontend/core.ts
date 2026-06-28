@@ -11,9 +11,14 @@ import {
 	setupLanguageTest,
 	setupBotFingerprintTest,
 } from './tests';
-import { createCF7Afield, setTimestamp, randomString } from './utils';
+import {
+	createCF7Afield,
+	setTimestamp,
+	setDistributedBotToken,
+	setExistingHiddenFieldValue,
+	randomString,
+} from './utils';
 
-// eslint-disable-next-line camelcase
 declare const cf7a_settings: {
 	prefix: string;
 	version: string;
@@ -30,7 +35,6 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 		return;
 	}
 
-	// eslint-disable-next-line camelcase
 	const { prefix, version, restUrl } = cf7a_settings;
 
 	const hiddenInputsContainer = (wpcf7Form.querySelector(
@@ -40,7 +44,6 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 		null) as HTMLElement | null;
 
 	if (!hiddenInputsContainer) {
-		// eslint-disable-next-line no-console
 		console.error('CF7 Antispam: hidden-fields-container not found');
 		return;
 	}
@@ -78,14 +81,20 @@ function processCF7Form(wpcf7Form: HTMLFormElement): void {
 		setTimestamp(tsInput, restUrl);
 	}
 
-	// Set the cf7 antispam version field
-	const cf7aVersionInput = hiddenInputsContainer.querySelector(
-		'input[name=' + prefix + 'version]'
+	const distributedBotTokenInput = hiddenInputsContainer.querySelector(
+		'input[name="_cf7a_ip_token"]'
 	) as HTMLInputElement | null;
 
-	if (cf7aVersionInput) {
-		cf7aVersionInput?.setAttribute('value', version);
+	if (distributedBotTokenInput) {
+		setDistributedBotToken(distributedBotTokenInput, restUrl);
 	}
+
+	// Fill cache-sensitive fields dynamically on the client.
+	setExistingHiddenFieldValue(
+		hiddenInputsContainer,
+		prefix + 'version',
+		version
+	);
 
 	// Get browser fingerprint data
 	const tests = browserFingerprint();
@@ -143,7 +152,6 @@ export function processExistingForms(): void {
 export function setupMutationObserver(): void {
 	// Check if MutationObserver is supported
 	if (typeof MutationObserver === 'undefined') {
-		// eslint-disable-next-line no-console
 		console.warn('CF7 Antispam: MutationObserver not supported');
 		return;
 	}

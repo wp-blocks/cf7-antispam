@@ -7,7 +7,8 @@ const { RequestUtils } = require('@wordpress/e2e-test-utils-playwright');
  */
 
 async function globalSetup(config) {
-	const { storageState, baseURL } = config.projects[0].use;
+	const storageState = config.projects[0].use?.storageState || config.use?.storageState;
+	const baseURL = process.env.WP_BASE_URL || config.projects[0].use?.baseURL || config.use?.baseURL || 'http://localhost:8888';
 	const storageStatePath =
 		typeof storageState === 'string' ? storageState : undefined;
 	const requestContext = await request.newContext({

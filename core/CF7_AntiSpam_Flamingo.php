@@ -40,39 +40,46 @@ class CF7_AntiSpam_Flamingo {
 	 * classifier to classify the content as spam or ham
 	 */
 	public static function cf7a_flamingo_analyze_stored_mails() {
+		$b8       = new CF7_AntiSpam_B8();
+		$page     = 1;
+		$per_page = 100;
 
-		/* get all the flamingo inbound post and classify them */
-		$args = array(
-			'post_type'      => 'flamingo_inbound',
-			'posts_per_page' => -1,
-			'post_status'    => array( 'publish', 'flamingo-spam' ),
-		);
+		do {
+			$args = array(
+				'post_type'      => 'flamingo_inbound',
+				'posts_per_page' => $per_page,
+				'paged'          => $page,
+				'post_status'    => array( 'publish', 'flamingo-spam' ),
+				'no_found_rows'  => false,
+			);
 
-		$query = new WP_Query( $args );
+			$query = new WP_Query( $args );
 
-		$b8 = new CF7_AntiSpam_B8();
-
-		while ( $query->have_posts() ) :
-			$query->the_post();
-
-			$post_id = get_the_ID();
-
-			$flamingo_post = new Flamingo_Inbound_Message( $post_id );
-
-			$message = self::cf7a_get_mail_field( $flamingo_post, 'message' );
-
-			if ( $message ) {
-				if ( ! $flamingo_post->spam ) {
-					$b8->cf7a_b8_learn_ham( $message );
-				} else {
-					$b8->cf7a_b8_learn_spam( $message );
-				}
-
-				update_post_meta( $post_id, '_cf7a_b8_classification', $b8->cf7a_b8_classify( $message, true ) );
-			} else {
-				cf7a_log( "Flamingo post $post_id seems empty, so can't be analyzed", 1 );
+			if ( ! $query->have_posts() ) {
+				break;
 			}
-		endwhile;
+
+			while ( $query->have_posts() ) {
+				$query->the_post();
+				$post_id       = get_the_ID();
+				$flamingo_post = new Flamingo_Inbound_Message( $post_id );
+				$message       = self::cf7a_get_mail_field( $flamingo_post, 'message' );
+
+				if ( $message ) {
+					if ( ! $flamingo_post->spam ) {
+						$b8->cf7a_b8_learn_ham( $message );
+					} else {
+						$b8->cf7a_b8_learn_spam( $message );
+					}
+					update_post_meta( $post_id, '_cf7a_b8_classification', $b8->cf7a_b8_classify( $message, true ) );
+				} else {
+					cf7a_log( "Flamingo post $post_id seems empty, so can't be analyzed", 1 );
+				}
+			}
+
+			wp_reset_postdata();
+			++$page;
+		} while ( $page <= $query->max_num_pages );
 
 		return true;
 	}
@@ -84,7 +91,7 @@ class CF7_AntiSpam_Flamingo {
 	 * @param string $action the new status for the post
 	 */
 	private function process_flamingo_update( int $post_id, string $action ) {
-		$options = get_option( 'cf7a_options' );
+		$options = get_option( 'cf7a_options', array() );
 
 		$b8 = new CF7_AntiSpam_B8();
 
@@ -105,14 +112,14 @@ class CF7_AntiSpam_Flamingo {
 				$b8->cf7a_b8_unlearn_ham( $message );
 				$b8->cf7a_b8_learn_spam( $message );
 
-				if ( $options['autostore_bad_ip'] ) {
-					CF7_Antispam_Blocklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' ) );
+				if ( ! empty( $options['autostore_bad_ip'] ) ) {
+					CF7_Antispam_Blocklist::cf7a_ban_by_ip( $flamingo_post->meta['remote_ip'], array( 'flamingo ban' => 'B8 classification' ) );
 				}
 			} elseif ( $flamingo_post->spam && 'ham' === $action ) {
 				$b8->cf7a_b8_unlearn_spam( $message );
 				$b8->cf7a_b8_learn_ham( $message );
 
-				if ( $options['autostore_bad_ip'] ) {
+				if ( ! empty( $options['autostore_bad_ip'] ) ) {
 					CF7_Antispam_Blocklist::cf7a_unban_by_ip( $flamingo_post->meta['remote_ip'] );
 				}
 			}
@@ -380,30 +387,39 @@ class CF7_AntiSpam_Flamingo {
 		if ( class_exists( 'WPCF7_Submission' ) ) {
 			$existing = WPCF7_Submission::get_instance();
 			if ( $existing ) {
-				$reflection = new \ReflectionClass( $existing );
-				$property   = $reflection->getProperty( 'instance' );
-				$property->setAccessible( true );
-				$property->setValue( null, null );
+				try {
+					$reflection = new \ReflectionClass( $existing );
+					if ( $reflection->hasProperty( 'instance' ) ) {
+						$property = $reflection->getProperty( 'instance' );
+						$property->setAccessible( true );
+						$property->setValue( null, null );
+					}
+				} catch ( \ReflectionException $e ) {
+					cf7a_log( 'CF7 AntiSpam: Unable to reset WPCF7_Submission singleton: ' . $e->getMessage() );
+				}
 			}
 		}
 
 		// Back up current $_POST and inject Flamingo submission data.
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified upstream before cf7a_resend_mail is called.
 		$original_post = $_POST;
-		$_POST         = $submission_data;
+		try {
+			$_POST = $submission_data;
 
-		// Skip spam checks and validation during resend.
-		add_filter( 'wpcf7_skip_spam_check', '__return_true' );
+			// Skip spam checks and validation during resend.
+			add_filter( 'wpcf7_skip_spam_check', '__return_true' );
 
-		$mock_submission = WPCF7_Submission::get_instance(
-			$contact_form,
-			array(
-				'skip_mail' => true,
-			)
-		);
-
-		// Restore original $_POST.
-		$_POST = $original_post;
+			$mock_submission = WPCF7_Submission::get_instance(
+				$contact_form,
+				array(
+					'skip_mail' => true,
+				)
+			);
+		} finally {
+			// Restore original $_POST and clean up filter.
+			$_POST = $original_post;
+			remove_filter( 'wpcf7_skip_spam_check', '__return_true' );
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		// 4. Send using the Template

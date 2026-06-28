@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Core;
 use CF7_AntiSpam\Admin\CF7_AntiSpam_Admin_Tools;
 use CF7_AntiSpam\Engine\CF7_AntiSpam_Activator;
+use CF7_AntiSpam\Core\Filters\Filter_Endpoint_Obfuscation;
 
 /**
  * It sets the version, plugin name, and options. It loads
@@ -207,6 +208,9 @@ class CF7_AntiSpam {
 
 		/* comment protection */
 		new CF7_AntiSpam_Comments();
+
+		/* endpoint obfuscation */
+		new Filter_Endpoint_Obfuscation();
 	}
 
 	/**
@@ -252,23 +256,23 @@ class CF7_AntiSpam {
 				/* the action that handles the spam and ham requests and pass the mail message to b8 */
 				add_action( 'load-flamingo_page_flamingo_inbound', array( $cf7a_flamingo, 'cf7a_d8_flamingo_classify' ), 9, 0 );
 
-				/**
-				 * Widget Visibility
-				 * Define the capability needed to see the widget (default: manage_options for Admins).
-				 *
-				 * @since 0.7.4
-				 */
-				$capability = apply_filters( 'cf7a_stats_capability', 'manage_options' );
-
-				if ( current_user_can( $capability ) ) {
-					$this->loader->add_action( 'wp_dashboard_setup', $plugin_admin, 'cf7a_dashboard_widget' );
-				}
-
 				/* adds the custom table columns*/
 				add_filter( 'manage_flamingo_inbound_posts_columns', array( $cf7a_flamingo, 'flamingo_columns' ) );
 				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_d8_column' ), 10, 2 );
 				add_action( 'manage_flamingo_inbound_posts_custom_column', array( $cf7a_flamingo, 'flamingo_resend_column' ), 11, 2 );
 			}//end if
+
+			/**
+			 * Widget Visibility
+			 * Define the capability needed to see the widget (default: manage_options for Admins).
+			 *
+			 * @since 0.7.4
+			 */
+			$capability = apply_filters( 'cf7a_stats_capability', 'manage_options' );
+
+			if ( current_user_can( $capability ) ) {
+				$this->loader->add_action( 'wp_dashboard_setup', $plugin_admin, 'cf7a_dashboard_widget' );
+			}
 		}//end if
 	}
 

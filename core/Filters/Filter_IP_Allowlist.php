@@ -26,18 +26,11 @@ class Filter_IP_Allowlist extends Abstract_CF7_AntiSpam_Filter {
 	 * @return array The data array.
 	 */
 	public function process( array $data ): array {
-		$ip_allowlist = $data['options']['ip_allowlist'] ?? array();
-
-		if ( ! empty( $ip_allowlist ) && $data['remote_ip'] ) {
-			foreach ( $ip_allowlist as $good_ip ) {
-				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
-				// Use strict equality to avoid partial matches (e.g., 1.2.3.4 matching 1.2.3.40)
-				if ( $good_ip && $data['remote_ip'] === $good_ip ) {
-					$data['is_allowlisted'] = true;
-					return $data;
-				}
-			}
+		$allowlist = $data['options']['ip_allowlist'] ?? null;
+		if ( \CF7_AntiSpam\Core\CF7_Antispam_Blocklist::is_ip_allowlisted( (string) $data['remote_ip'], $allowlist ) ) {
+			$data['is_allowlisted'] = true;
 		}
+
 		return $data;
 	}
 }

@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use WP_REST_Controller;
+use WP_REST_Response;
 use WP_REST_Server;
 
 /**
@@ -23,58 +24,83 @@ use WP_REST_Server;
 class CF7_AntiSpam_Public_Rest_Api extends WP_REST_Controller {
 
 	/**
-	 * The namespace of this controller's route.
+	 * The cf7a rest endpoint namespace.
 	 *
-	 * @since    0.6.5
-	 * @access   protected
-	 * @var      string    $namespace    The namespace of this controller's route.
+	 * @var string
 	 */
 	protected $namespace = 'cf7-antispam/v1';
 
 	/**
-	 * The options of this plugin.
+	 * The plugin options.
 	 *
-	 * @since    0.6.5
-	 * @access   private
-	 * @var      array    $options    options of this plugin.
+	 * @var array
 	 */
 	private array $options;
 
 	/**
-	 * CF7_AntiSpam_Public_Rest_Api constructor.
-	 *
-	 * @since    0.6.5
+	 * Constructor.
 	 */
 	public function __construct() {
-
-		/* the plugin options */
 		$this->options = CF7_AntiSpam::get_options();
-
-		/* register the routes */
 		add_action( 'rest_api_init', array( $this, 'cf7a_register_routes' ) );
 	}
 
 	/**
 	 * Get the current timestamp encrypted for REST API.
 	 *
-	 * @since    0.6.5
-	 * @param    \WP_REST_Request $request Full data about the request.
-	 * @return   \WP_REST_Response
+	 * @return WP_REST_Response The response object.
 	 */
-	public function cf7a_get_timestamp_callback( $request ) {
-		$cipher = ! empty( $this->options['cf7a_cipher'] ) ? $this->options['cf7a_cipher'] : 'aes-256-cbc';
+	public function cf7a_get_timestamp_callback() {
+		// Prevent aggressive browser/edge caching
+		nocache_headers();
+
+		// Use a per-IP transient so each client has a unique timestamp window
+		$ip        = cf7a_get_real_ip();
+		$cache_key = 'cf7a_ts_' . md5( $ip ?: 'unknown' );
+
+		// Check for a freshly generated timestamp to prevent CPU exhaustion
+		$cached_timestamp = get_transient( $cache_key );
+
+		if ( false === $cached_timestamp ) {
+			$cipher           = ! empty( $this->options['cf7a_cipher'] ) ? $this->options['cf7a_cipher'] : 'aes-256-cbc';
+			$cached_timestamp = cf7a_crypt( time(), $cipher );
+
+			// Cache for 30 seconds to absorb bot floods
+			set_transient( $cache_key, $cached_timestamp, 30 );
+		}
+
 		return rest_ensure_response(
 			array(
-				'timestamp' => cf7a_crypt( time(), $cipher ),
-				'cypher'    => $cipher,
+				'timestamp' => $cached_timestamp,
+			)
+		);
+	}
+
+	/**
+	 * Get a distributed-bot token and map it to the request IP.
+	 */
+	public function cf7a_get_ip_token_callback() {
+		// Prevent caching so every user gets a unique token
+		nocache_headers();
+
+		$token = bin2hex( random_bytes( 8 ) );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) : false;
+
+		if ( $ip ) {
+			// 15 minutes is plenty of time for a user to fill out a contact form.
+			set_transient( 'cf7a_ip_token_' . $token, $ip, 15 * MINUTE_IN_SECONDS );
+		}
+
+		return rest_ensure_response(
+			array(
+				'token' => $token,
 			)
 		);
 	}
 
 	/**
 	 * Register the routes for the objects of the controller.
-	 *
-	 * @since    0.6.5
 	 */
 	public function cf7a_register_routes() {
 
@@ -83,8 +109,20 @@ class CF7_AntiSpam_Public_Rest_Api extends WP_REST_Controller {
 			'get-timestamp',
 			array(
 				array(
-					'methods'             => WP_REST_Server::READABLE,
+					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'cf7a_get_timestamp_callback' ),
+					'permission_callback' => '__return_true',
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'get-ip-token',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'cf7a_get_ip_token_callback' ),
 					'permission_callback' => '__return_true',
 				),
 			)

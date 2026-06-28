@@ -22,7 +22,6 @@ function importExportOptions(e: SubmitEvent) {
 	e.preventDefault();
 
 	if (
-		// eslint-disable-next-line no-alert
 		!confirm(
 			__(
 				'Are you sure you want to import options? This will overwrite your current settings.',
@@ -44,9 +43,8 @@ function importExportOptions(e: SubmitEvent) {
 	try {
 		cf7aOptions = JSON.parse(optionsContent);
 	} catch (err) {
-		// eslint-disable-next-line no-console
 		console.error(err);
-		// eslint-disable-next-line no-alert
+
 		alert(
 			__(
 				'Invalid JSON. Please check your file and try again.',
@@ -80,7 +78,6 @@ function importExportOptions(e: SubmitEvent) {
 			.then((response) => {
 				// Handle the response
 				if (response.status === 200) {
-					// eslint-disable-next-line no-alert
 					alert('Data imported successfully');
 					// emulate the php non async behavior
 					window.location.reload();
@@ -88,7 +85,7 @@ function importExportOptions(e: SubmitEvent) {
 			})
 			.catch((error) => {
 				// Handle the error
-				// eslint-disable-next-line no-console
+
 				console.error(error);
 				loaderElement.remove();
 			});
@@ -115,7 +112,6 @@ function downloadText(optionsContent: string) {
 		window.URL.revokeObjectURL(url);
 		return true;
 	} catch (err) {
-		// eslint-disable-next-line no-console
 		console.error(err);
 		return false;
 	}
@@ -132,7 +128,6 @@ function downloadOptions() {
 
 	downloadText(optionsContent);
 
-	// eslint-disable-next-line no-alert
 	alert('Your file has downloaded!');
 }
 

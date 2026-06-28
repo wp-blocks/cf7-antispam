@@ -2,6 +2,8 @@
 
 namespace CF7_AntiSpam\Core;
 
+use CF7_AntiSpam\Core\CF7_AntiSpam;
+
 /**
  * Blocklist management functions
  *
@@ -23,6 +25,47 @@ class CF7_Antispam_Blocklist {
 	}
 
 	/**
+	 * Check if an IP address is in the allowlist.
+	 *
+	 * @since    1.0.0
+	 * @param    string     $ip The IP address to check.
+	 * @param    array|null $ip_allowlist Optional array of allowlisted IPs.
+	 * @return   bool True if allowlisted, false otherwise.
+	 */
+	public static function is_ip_allowlisted( string $ip, ?array $ip_allowlist = null ): bool {
+		if ( null === $ip_allowlist ) {
+			$options      = \CF7_AntiSpam\Core\CF7_AntiSpam::get_options();
+			$ip_allowlist = $options['ip_allowlist'] ?? array();
+		}
+
+		if ( empty( $ip_allowlist ) || ! $ip ) {
+			return false;
+		}
+
+		foreach ( $ip_allowlist as $good_ip ) {
+			$good_ip = trim( $good_ip );
+
+			if ( empty( $good_ip ) ) {
+				continue;
+			}
+
+			if ( false !== strpos( $good_ip, '/' ) ) {
+				if ( function_exists( 'cf7a_ip_in_range' ) && cf7a_ip_in_range( $ip, $good_ip ) ) {
+					return true;
+				}
+			} else {
+				$good_ip = filter_var( $good_ip, FILTER_VALIDATE_IP );
+				if ( $good_ip && $ip === $good_ip ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Adds an IP address to the blocklist. You should add multiple times an ip tp ban it from sending emails.
 	 * It takes an IP address as a parameter, validates it, and then returns the row from the database that matches that IP
 	 * address
 	 *
@@ -32,6 +75,11 @@ class CF7_Antispam_Blocklist {
 	 */
 	public static function cf7a_blocklist_get_ip( string $ip ) {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+
+		if ( $ip && self::is_ip_allowlisted( $ip ) ) {
+			return null;
+		}
+
 		if ( $ip ) {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -45,18 +93,24 @@ class CF7_Antispam_Blocklist {
 	}
 
 	/**
-	 * It adds an IP address to the blocklist.
+	 * It adds an IP address to the blocklist with the specified reason and spam score.
 	 *
 	 * @param string $ip The IP address to ban.
 	 * @param array  $reason The reason why the IP is being banned.
 	 * @param int    $spam_score This is the number of points that will be added to the IP's spam score.
+	 * @param string $country The country ISO code of the IP, if resolved.
 	 *
 	 * @return bool true if the given id was banned
 	 */
-	public static function cf7a_ban_by_ip( string $ip, array $reason = array(), $spam_score = 1 ): bool {
+	public static function cf7a_ban_by_ip( string $ip, array $reason = array(), $spam_score = 1, string $country = '' ): bool {
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 
 		if ( $ip ) {
+			if ( self::is_ip_allowlisted( $ip ) ) {
+				cf7a_log( "Notice: IP $ip is allowlisted, skipping blocklist addition.", 1 );
+				return false;
+			}
+
 			global $wpdb;
 
 			$ip_row = self::cf7a_blocklist_get_ip( $ip );
@@ -67,9 +121,32 @@ class CF7_Antispam_Blocklist {
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				$meta             = ! empty( $ip_row->meta ) ? unserialize( $ip_row->meta ) : array();
 				$previous_reasons = ! empty( $meta ) && ! empty( $meta['reason'] ) ? $meta['reason'] : array();
+				$existing_country = ! empty( $meta['country'] ) ? $meta['country'] : '';
 			} else {
 				// if the ip is not in the blocklist, add it and initialize the status
-				$status = floatval( $spam_score );
+				$status           = floatval( $spam_score );
+				$existing_country = '';
+			}
+
+			$meta_data = array(
+				'reason' => ! empty( $previous_reasons )
+					? array_merge( $previous_reasons, $reason )
+					: $reason,
+			);
+
+			$final_country = ! empty( $country ) ? $country : $existing_country;
+
+			if ( empty( $final_country ) ) {
+				$geoip      = new CF7_Antispam_Geoip();
+				$geoip_data = $geoip->check_ip( $ip );
+
+				if ( ! empty( $geoip_data ) && empty( $geoip_data['error'] ) && ! empty( $geoip_data['country'] ) ) {
+					$final_country = $geoip_data['country'];
+				}
+			}
+
+			if ( ! empty( $final_country ) ) {
+				$meta_data['country'] = strtolower( $final_country );
 			}
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -79,13 +156,7 @@ class CF7_Antispam_Blocklist {
 					'ip'     => $ip,
 					'status' => $status,
 					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-					'meta'   => serialize(
-						array(
-							'reason' => ! empty( $previous_reasons )
-								? array_merge( $previous_reasons, $reason )
-								: $reason,
-						)
-					),
+					'meta'   => serialize( $meta_data ),
 				),
 				array( '%s', '%d', '%s' )
 			);
@@ -96,6 +167,31 @@ class CF7_Antispam_Blocklist {
 		}//end if
 
 		return false;
+	}
+
+	/**
+	 * Permanently ban an IP: write it to the blocklist table with the given score
+	 * and append it to the bad_ip_list plugin option so it survives cron unbanning.
+	 *
+	 * This is the single authoritative place for "distributed-bot-style" permanent bans.
+	 * It centralises the logic that was previously split across Filter_Distributed_Bot.
+	 *
+	 * @since      0.7.7
+	 *
+	 * @param string $ip     The IP address to ban (validated internally).
+	 * @param string $reason A human-readable reason stored in the blocklist meta.
+	 *
+	 * @return void
+	 */
+	public static function cf7a_ban_forever_and_add_to_list( string $ip, string $reason ): void {
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
+
+		if ( ! $ip ) {
+			return;
+		}
+
+		self::cf7a_ban_by_ip( $ip, array( 'distributed_bot_trap' => $reason ) );
+		CF7_AntiSpam::update_plugin_option( 'bad_ip_list', array( $ip ) );
 	}
 
 	/**
@@ -141,12 +237,12 @@ class CF7_Antispam_Blocklist {
 
 		// Check if table exists
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %i', $table_name ) ) !== $table_name ) {
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table_name ) ) ) !== $table_name ) {
 			return array();
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$results = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i', $table_name ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( "SELECT * FROM {$table_name}" );
 
 		return $results ?: array();
 	}
@@ -294,8 +390,8 @@ class CF7_Antispam_Blocklist {
 		$table_name = $wpdb->prefix . 'cf7a_blocklist';
 
 		// Truncate the table
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$result = $wpdb->query( "TRUNCATE TABLE {$table_name}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$result = $wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
 
 		return false !== $result;
 	}
@@ -305,11 +401,15 @@ class CF7_Antispam_Blocklist {
 	 *
 	 * @since    0.7.0
 	 * @param    string $ip The IP address to blocklist.
-	 * @param    string $status The status of the ban.
+	 * @param    mixed  $status The status of the ban, normally an integer.
 	 * @param    mixed  $meta Additional metadata.
 	 * @return   bool True on success, false on failure
 	 */
-	public function cf7a_add_to_blocklist( $ip, $status = 'banned', $meta = null ) {
+	public function cf7a_add_to_blocklist( $ip, $status = 1, $meta = null ) {
+		if ( self::is_ip_allowlisted( $ip ) ) {
+			return new \WP_Error( 'ip_allowlisted', __( 'Cannot add an allowlisted IP to the blocklist.', 'cf7-antispam' ) );
+		}
+
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . 'cf7a_blocklist';
@@ -353,6 +453,42 @@ class CF7_Antispam_Blocklist {
 				array( '%s', '%s', '%s', '%s', '%s' )
 			);
 		}//end if
+
+		return false !== $result;
+	}
+
+	/**
+	 * Update an entry in the blocklist by ID.
+	 *
+	 * @since    1.0.0
+	 * @param    int    $id The blocklist entry ID.
+	 * @param    string $ip The IP address to blocklist.
+	 * @param    mixed  $status The status of the ban, normally an integer.
+	 * @param    mixed  $meta Additional metadata.
+	 * @return   bool|\WP_Error True on success, false on failure, WP_Error if allowlisted.
+	 */
+	public function cf7a_update_blocklist_by_id( $id, $ip, $status = 1, $meta = null ) {
+		if ( self::is_ip_allowlisted( $ip ) ) {
+			return new \WP_Error( 'ip_allowlisted', __( 'Cannot update to an allowlisted IP.', 'cf7-antispam' ) );
+		}
+
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'cf7a_blocklist';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->update(
+			$table_name,
+			array(
+				'ip'       => $ip,
+				'status'   => $status,
+				'meta'     => is_array( $meta ) ? wp_json_encode( $meta ) : $meta,
+				'modified' => current_time( 'mysql' ),
+			),
+			array( 'id' => $id ),
+			array( '%s', '%s', '%s', '%s' ),
+			array( '%d' )
+		);
 
 		return false !== $result;
 	}
@@ -458,5 +594,59 @@ class CF7_Antispam_Blocklist {
 		cf7a_log( "Removed {$updated_deletion} users from blocklist", 1 );
 
 		return true;
+	}
+
+	/**
+	 * Retroactively updates missing GeoIP country data for IPs in the blocklist.
+	 *
+	 * @since    1.0.0
+	 * @return   int Number of IPs successfully updated with GeoIP data.
+	 */
+	public function cf7a_retroactive_geoip_update() {
+		global $wpdb;
+
+		$table_name    = $wpdb->prefix . 'cf7a_blocklist';
+		$updated_count = 0;
+
+		// Select a batch of IPs that might be missing country data.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results( "SELECT id, ip, meta FROM {$table_name} WHERE meta NOT LIKE '%\"country\"%' LIMIT 200" );
+
+		if ( empty( $rows ) ) {
+			return $updated_count;
+		}
+
+		$geoip = new CF7_Antispam_Geoip();
+
+		foreach ( $rows as $row ) {
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+			$meta = ! empty( $row->meta ) ? unserialize( $row->meta ) : array();
+
+			if ( ! isset( $meta['country'] ) ) {
+				$geoip_data = $geoip->check_ip( $row->ip );
+
+				if ( ! empty( $geoip_data ) && empty( $geoip_data['error'] ) && ! empty( $geoip_data['country'] ) ) {
+					$meta['country'] = strtolower( $geoip_data['country'] );
+
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$result = $wpdb->update(
+						$table_name,
+						array(
+							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+							'meta' => serialize( $meta ),
+						),
+						array( 'id' => $row->id ),
+						array( '%s' ),
+						array( '%d' )
+					);
+
+					if ( false !== $result ) {
+						++$updated_count;
+					}
+				}
+			}//end if
+		}//end foreach
+
+		return $updated_count;
 	}
 }
